@@ -1,7 +1,7 @@
-#include "framework/framework.h"
-#include "framework/bmath.h"
-#include "framework/vector.h"
-#include "framework/vertex.h"
+#include "Framework/Framework.hpp"
+#include "Framework/Math/BMath.hpp"
+#include "Framework/Math/Vector.hpp"
+#include "Framework/Math/Vertex.hpp"
 
 using namespace Framework;
 

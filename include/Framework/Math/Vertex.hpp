@@ -1,8 +1,8 @@
 #ifndef VERTEX_H_
 # define VERTEX_H_
 
-# include "framework/api.h"
-# include "framework/vector.h"
+# include "Framework/API.hpp"
+# include "Framework/Math/Vector.hpp"
 
 namespace Framework
 {

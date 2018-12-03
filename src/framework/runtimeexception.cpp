@@ -1,5 +1,5 @@
-#include "framework/framework.h"
-#include "framework/runtimeexception.h"
+#include "Framework/Framework.hpp"
+#include "Framework/RuntimeException.hpp"
 
 using namespace Framework;
 

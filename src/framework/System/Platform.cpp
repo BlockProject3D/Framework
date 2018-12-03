@@ -4,7 +4,7 @@
 # include <windows.h>
 #endif
 #include <stdlib.h>
-#include "framework/framework.h"
+#include "Framework/Framework.hpp"
 
 using namespace Framework;
 
@@ -149,7 +149,6 @@ void FPlatform::Initialize()
 #endif
     SetProperty("ENGINE_NAME", "BPEngine");
     SetProperty("ENGINE_LONG_NAME", "BlockProjectEngine");
-    SetProperty("ENGINE_VERSION", VERSION_ENGINE_STR);
     if (sizeof(int *) > 4)
         SetProperty("ARCHITECTURE", "x64");
     else

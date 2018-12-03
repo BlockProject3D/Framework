@@ -1,7 +1,7 @@
 #include <iostream>
 #include <climits>
-#include "framework/framework.h"
-#include "framework/file.h"
+#include "Framework/Framework.hpp"
+#include "Framework/IO/File.hpp"
 
 using namespace Framework;
 

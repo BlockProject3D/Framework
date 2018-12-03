@@ -1,9 +1,11 @@
-project(BlockProject::Framework)
 cmake_minimum_required(VERSION 3.11)
+project(BlockProject::Framework)
+
+include("${CMAKE_SOURCE_DIR}/CMakes/Framework.cmake")
 
 set(CMAKE_CXX_STANDARD 11)
 
-set(SRC_FRAMEWORK
+set(SOURCES
     ./include/Framework/IO/File.hpp
     ./include/Framework/IO/FileSystem.hpp
     ./include/Framework/IO/IInputStream.hpp
@@ -32,6 +34,7 @@ set(SRC_FRAMEWORK
     ./include/Framework/System/Platform.hpp
     ./include/Framework/System/System.hpp
     ./include/Framework/API.hpp
+    ./include/Framework/Types.hpp
     ./include/Framework/Array.hpp
     ./include/Framework/Array.impl.hpp
     ./include/Framework/Class.hpp
@@ -88,11 +91,7 @@ set(SRC_FRAMEWORK
     ./src/Framework/String.cpp
 )
 
-add_library(BPFramework SHARED ${SRC_FRAMEWORK})
-if (WIN32)
-	target_link_libraries(BPFramework PRIVATE pthread)
-endif (WIN32)
-
-source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}"
-             PREFIX ""
-             FILES ${SRC_FRAMEWORK})
+bp_setup()
+if (!WIN32)
+	target_link_libraries(${BP_NAME} PRIVATE pthread)
+endif (!WIN32)

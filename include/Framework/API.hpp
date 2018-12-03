@@ -7,4 +7,6 @@
 #  define DEPRECATED(func) __declspec(deprecated) func
 # endif
 
+#define ENGINE_API BPF_API
+
 #endif /* !API_H_ */

@@ -1,5 +1,5 @@
-#include "framework/framework.h"
-#include "framework/object.h"
+#include "Framework/Framework.hpp"
+#include "Framework/Object.hpp"
 
 using namespace Framework;
 

@@ -2,7 +2,7 @@
 # define MODULEMANAGER_H_
 
 # include <map>
-# include "engine/version.h"
+//# include "engine/version.h"
 
 # ifdef WINDOWS
 #  define IMPLEMENT_MODULE(name, clname) \

@@ -1,7 +1,7 @@
 #include <time.h>
-#include "framework/framework.h"
-#include "framework/bmath.h"
-#include "framework/random.h"
+#include "Framework/Framework.hpp"
+#include "Framework/Math/BMath.hpp"
+#include "Framework/Random.hpp"
 
 using namespace Framework;
 

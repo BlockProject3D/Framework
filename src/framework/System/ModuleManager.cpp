@@ -1,4 +1,6 @@
-#include "framework/framework.h"
+#include "Framework/Framework.hpp"
+
+#define VERSION_ENGINE_INT 0x0 //TODO : Fix
 
 using namespace Framework;
 

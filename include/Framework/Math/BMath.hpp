@@ -2,14 +2,14 @@
 # define BMATH_H_
 
 # include <cmath>
-# include "framework/api.h"
-# include "framework/vector.h"
-# include "framework/matrix.h"
-# include "framework/quaternion.h"
-# include "framework/transform.h"
-# include "framework/vertex.h"
-# include "framework/triangle.h"
-# include "framework/viewport.h"
+# include "Framework/API.hpp"
+# include "Framework/Math/Vector.hpp"
+# include "Framework/Math/Matrix.hpp"
+# include "Framework/Math/Quaternion.hpp"
+# include "Framework/Math/Transform.hpp"
+# include "Framework/Math/Vertex.hpp"
+# include "Framework/Math/Triangle.hpp"
+# include "Framework/Math/Viewport.hpp"
 
 namespace Framework
 {

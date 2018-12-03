@@ -1,5 +1,5 @@
-#include "framework/framework.h"
-#include "framework/bmath.h"
+#include "Framework/Framework.hpp"
+#include "Framework/Math/BMath.hpp"
 
 using namespace Framework;
 
