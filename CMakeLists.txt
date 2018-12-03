@@ -37,11 +37,12 @@ set(SOURCES
     ./include/Framework/Types.hpp
     ./include/Framework/Array.hpp
     ./include/Framework/Array.impl.hpp
+    ./include/Framework/ArrayList.hpp
+    ./include/Framework/ArrayList.impl.hpp
     ./include/Framework/Class.hpp
     ./include/Framework/Color.hpp
     ./include/Framework/Delegate.hpp
     ./include/Framework/EntryPoint.hpp
-    ./include/Framework/Exception.hpp
     ./include/Framework/Factory.hpp
     ./include/Framework/Framework.hpp
     ./include/Framework/Hash.hpp
@@ -52,10 +53,13 @@ set(SOURCES
     ./include/Framework/Map.hpp
     ./include/Framework/Map.impl.hpp
     ./include/Framework/Object.hpp
+    ./include/Framework/ObjectPtr.hpp
     ./include/Framework/Path.hpp
     ./include/Framework/Profiler.hpp
     ./include/Framework/Random.hpp
+    ./include/Framework/Exception.hpp
     ./include/Framework/RuntimeException.hpp
+    ./include/Framework/IndexException.hpp
     ./include/Framework/Stack.hpp
     ./include/Framework/Stack.impl.hpp
     ./include/Framework/String.hpp
@@ -81,13 +85,14 @@ set(SOURCES
     ./src/Framework/System/ModuleManager.cpp
     ./src/Framework/System/System.cpp
     ./src/Framework/Color.cpp
-    ./src/Framework/Exception.cpp
     ./src/Framework/Logger.cpp
     ./src/Framework/Object.cpp
     ./src/Framework/Path.cpp
     ./src/Framework/Profiler.cpp
     ./src/Framework/Random.cpp
+    ./src/Framework/Exception.cpp
     ./src/Framework/RuntimeException.cpp
+    ./src/Framework/IndexException.cpp
     ./src/Framework/String.cpp
 )
 

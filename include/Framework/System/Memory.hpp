@@ -9,7 +9,7 @@
 
 namespace Framework
 {
-    class ENGINE_API FMemoryException final : public FException
+    class ENGINE_API FMemoryException final : public bpf::Exception
     {
     public:
         inline FMemoryException() {}

@@ -5,8 +5,8 @@
 using namespace Framework;
 
 FLogger *FModuleManager::Log = NULL;
-FMap<const char *, FModuleEntry *> FModuleManager::ModuleMap;
-FList<FModuleEntry *> FModuleManager::ModuleList;
+bpf::Map<const char *, FModuleEntry *> FModuleManager::ModuleMap;
+bpf::List<FModuleEntry *> FModuleManager::ModuleList;
 
 void FModuleManager::Initialize()
 {
@@ -28,8 +28,8 @@ void FModuleManager::Shutdown()
 
 bool FModuleManager::LoadModule(const char *name)
 {
-    FString moduleFile = FPaths::Modules() + FString(name);
-    FString vname = FString(name).Sub(0, FString(name).LastIndexOf('.'));
+    bpf::String moduleFile = FPaths::Modules() + bpf::String(name);
+    bpf::String vname = bpf::String(name).Sub(0, bpf::String(name).LastIndexOf('.'));
 
     if (ModuleLoaded(name))
     {
@@ -39,8 +39,8 @@ bool FModuleManager::LoadModule(const char *name)
     try
     {
         FModuleEntry *md = new FModuleEntry(moduleFile, vname);
-        FString moduleLnkSymbol = md->Name + "_Link";
-        FString moduleDescSymbol = md->Name + "_Describe";
+        bpf::String moduleLnkSymbol = md->Name + "_Link";
+        bpf::String moduleDescSymbol = md->Name + "_Describe";
         ModuleLinkFunc sym = (ModuleLinkFunc)md->Module.LoadSymbol(moduleLnkSymbol);
         ModuleDescribeFunc sym1 = (ModuleDescribeFunc)md->Module.LoadSymbol(moduleDescSymbol);
         int version = sym1();

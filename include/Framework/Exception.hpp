@@ -4,13 +4,16 @@
 namespace Framework
 {
     class FLogger;
+}
 
-    class ENGINE_API FException
+namespace bpf
+{
+    class BPF_API Exception
     {
     private:
     public:
-        virtual ~FException() {}
-        FException() noexcept {}
+        virtual ~Exception() {}
+        Exception() noexcept {}
 
         /**
          * Returns exception type
@@ -23,7 +26,7 @@ namespace Framework
         /**
          * Logs the exception to the given logger
          */
-        virtual void Log(FLogger &logger) const;
+        virtual void Log(Framework::FLogger &logger) const;
     };
 };
 

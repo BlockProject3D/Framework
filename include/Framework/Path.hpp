@@ -6,20 +6,20 @@ namespace Framework
     class ENGINE_API FPaths
     {
     private:
-        static FString GameDataRoot;
-        static FString ShaderFolder;
-        static FString ModulesFolder;
+        static bpf::String GameDataRoot;
+        static bpf::String ShaderFolder;
+        static bpf::String ModulesFolder;
     public:
-        static FString Shaders();
-        static FString ShadersSrc();
-        static FString Models();
-        static FString Textures();
-        static FString Modules();
-        static FString Assets();
-        static FString GameRoot();
-        static void SetShaderSubfolder(const FString &folder);
-        static void SetGameRoot(const FString &folder, const FString &suffix = "");
-        static void SetModuleRoot(const FString &folder);
+        static bpf::String Shaders();
+        static bpf::String ShadersSrc();
+        static bpf::String Models();
+        static bpf::String Textures();
+        static bpf::String Modules();
+        static bpf::String Assets();
+        static bpf::String GameRoot();
+        static void SetShaderSubfolder(const bpf::String &folder);
+        static void SetGameRoot(const bpf::String &folder, const bpf::String &suffix = "");
+        static void SetModuleRoot(const bpf::String &folder);
     };
 };
 

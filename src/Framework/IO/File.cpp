@@ -5,7 +5,7 @@
 
 using namespace Framework;
 
-FFile::FFile(const FString &path)
+FFile::FFile(const bpf::String &path)
     : Stream(Null), FullPath(path), FileName(path.Sub(path.LastIndexOf('/') + 1)),
     FileExt(path.Sub(path.LastIndexOf('.') + 1))
 {
@@ -32,7 +32,7 @@ void FFile::Copy(const FFile &dst)
     IFileStream *src = Open(FILEMODE_READ);
 
     if (dst.IsDirectory())
-        out = FFile(FString(dst.GetPath()) + FString("/") + GetFileName());
+        out = FFile(bpf::String(dst.GetPath()) + bpf::String("/") + GetFileName());
     IFileStream *dest = out.Open(FILEMODE_WRITE);
     uint8 buf[4096];
     uint32 len;
@@ -65,9 +65,9 @@ void FFile::Delete()
         FPlatform::GetFileSystem()->DeleteFile(FullPath);
 }
 
-void FFile::ListFiles(FList<FFile> &files)
+void FFile::ListFiles(bpf::List<FFile> &files)
 {
-    FList<FString> flns;
+    bpf::List<bpf::String> flns;
 
     FPlatform::GetFileSystem()->ListFiles(FullPath, flns);
     for (auto it = flns.Begin() ; it ; ++it)
@@ -99,7 +99,7 @@ IFileStream *FFile::Open(const EFileMode mode)
     return (Stream);
 }
 
-FString	FFile::ToString() const
+bpf::String	FFile::ToString() const
 {
-    return (FString("File(") + FullPath + ")");
+    return (bpf::String("File(") + FullPath + ")");
 }

@@ -3,6 +3,11 @@
 
 # include <initializer_list>
 
+namespace bpf
+{
+    class String;
+} // TODO : Remove
+
 namespace Framework
 {
     class IFileSystem;
@@ -46,7 +51,7 @@ namespace Framework
         static bool Exit;
         static IFileSystem *FileSys;
         static ISystemManager *BaseSys;
-        static FMap<const char *, FString> PropMap;
+        static bpf::Map<const char *, bpf::String> PropMap;
     public:
         static void RequestExit(bool force=false);
         static bool IsExiting();
@@ -66,8 +71,8 @@ namespace Framework
         static void ReverseBuffer(uint8 *buf, const uint32 groupsize, const uint32 size);
         static void Initialize();
         static void Shutdown();
-        static const FString &GetProperty(const char *vname);
-        static void SetProperty(const char *vname, const FString &prop);
+        static const bpf::String &GetProperty(const char *vname);
+        static void SetProperty(const char *vname, const bpf::String &prop);
     };
 };
 

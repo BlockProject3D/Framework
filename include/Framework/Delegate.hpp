@@ -63,7 +63,7 @@ namespace Framework
     class ENGINE_API FDelegate
     {
     private:
-        FList<FDelegateFunction<T, Args...>> List;
+        bpf::List<FDelegateFunction<T, Args...>> List;
     public:
         inline int GetDelegatesNum()
         {
@@ -99,7 +99,7 @@ namespace Framework
     class ENGINE_API FDelegate<void, Args...>
     {
     private:
-        FList<FDelegateFunction<void, Args...>> List;
+        bpf::List<FDelegateFunction<void, Args...>> List;
     public:
         inline int GetDelegatesNum()
         {

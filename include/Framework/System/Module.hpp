@@ -3,11 +3,11 @@
 
 namespace Framework
 {
-    class ENGINE_API FModuleException : public FRuntimeException
+    class ENGINE_API FModuleException : public bpf::RuntimeException
     {
     public:
-        inline FModuleException(const FString &msg) noexcept
-            : FRuntimeException("Module", msg)
+        inline FModuleException(const bpf::String &msg) noexcept
+            : bpf::RuntimeException("Module", msg)
         {
         }
     };
@@ -15,26 +15,26 @@ namespace Framework
     class ENGINE_API FModule
     {
     private:
-        FString Path;
+        bpf::String Path;
         void *Handle;
     public:
         /**
          * Opens a module binary at a specified path, file extension omitted.
          * @param path the path to the binary module without file extension
          */
-        FModule(const FString &path);
+        FModule(const bpf::String &path);
         ~FModule();
 
         /**
          * Loads a symbol from the module
          * @param name the symbol name
          */
-        void *LoadSymbol(const FString &name);
+        void *LoadSymbol(const bpf::String &name);
 
         /**
          * Returns the path to this module
          */
-        inline const FString &GetPath() const
+        inline const bpf::String &GetPath() const
         {
             return (Path);
         }

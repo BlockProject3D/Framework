@@ -1,19 +1,20 @@
 #ifndef STACK_H_
 # define STACK_H_
 
-namespace Framework
+namespace bpf
 {
     template <typename T>
-    class ENGINE_API FStack
+    class BPF_API Stack
     {
     private:
         T *Content;
         int MaxSize;
         int CurSize;
         int CurPtr;
+        
     public:
-        FStack(int maxsize);
-        ~FStack();
+        Stack(int maxsize);
+        ~Stack();
         void Push(const T &element);
         const T &Pop();
         const T &Get(const int id) const;
@@ -21,14 +22,14 @@ namespace Framework
         bool IsEmpty() const;
         int Size() const;
 
-        inline typename FArray<T>::Iterator Begin() const
+        inline typename Array<T>::Iterator Begin() const
         {
-            return (typename FArray<T>::Iterator(Content, MaxSize, 0));
+            return (typename Array<T>::Iterator(Content, MaxSize, 0));
         }
 
-        inline typename FArray<T>::Iterator End() const
+        inline typename Array<T>::Iterator End() const
         {
-            return (typename FArray<T>::Iterator(Content, MaxSize, MaxSize - 1));
+            return (typename Array<T>::Iterator(Content, MaxSize, MaxSize - 1));
         }
     };
 };

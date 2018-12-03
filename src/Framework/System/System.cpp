@@ -3,9 +3,9 @@
 
 using namespace Framework;
 
-FString FTimeDate::Format(const FString &format)
+bpf::String FTimeDate::Format(const bpf::String &format)
 {
-    FString res;
+    bpf::String res;
 
     for (int i = 0 ; i < format.Size() ; i++)
     {
@@ -13,17 +13,17 @@ FString FTimeDate::Format(const FString &format)
         {
             i++;
             if (format[i] == 'h')
-                res += FString::ValueOf(Hours);
+                res += bpf::String::ValueOf(Hours);
             else if (format[i] == 'n')
-                res += FString::ValueOf(Minutes);
+                res += bpf::String::ValueOf(Minutes);
             else if (format[i] == 's')
-                res += FString::ValueOf(Seconds);
+                res += bpf::String::ValueOf(Seconds);
             else if (format[i] == 'm')
-                res += FString::ValueOf(Month);
+                res += bpf::String::ValueOf(Month);
             else if (format[i] == 'd')
-                res += FString::ValueOf(Day);
+                res += bpf::String::ValueOf(Day);
             else if (format[i] == 'y')
-                res += FString::ValueOf(Year);
+                res += bpf::String::ValueOf(Year);
         }
         else
             res += format[i];

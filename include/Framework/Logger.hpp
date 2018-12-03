@@ -17,23 +17,23 @@ namespace Framework
     {
     public:
         virtual ~ILogBase() {}
-        virtual FString HandleFormating(const char *format, va_list *lst) = 0;
-        virtual FString FormatLevel(const ELogLevel level) = 0;
-        virtual void LogMessage(const char *name, const FString &level, const FString &msg) = 0;
+        virtual bpf::String HandleFormating(const char *format, va_list *lst) = 0;
+        virtual bpf::String FormatLevel(const ELogLevel level) = 0;
+        virtual void LogMessage(const char *name, const bpf::String &level, const bpf::String &msg) = 0;
     };
 
     class ENGINE_API FLogHandler : public ILogBase
     {
     public:
-        virtual FString HandleFormating(const char *format, va_list *lst);
-        virtual FString FormatLevel(const ELogLevel level);
-        virtual void LogMessage(const char *name, const FString &level, const FString &msg) = 0;
+        virtual bpf::String HandleFormating(const char *format, va_list *lst);
+        virtual bpf::String FormatLevel(const ELogLevel level);
+        virtual void LogMessage(const char *name, const bpf::String &level, const bpf::String &msg) = 0;
     };
 
     class ENGINE_API FDefaultLogger : public FLogHandler
     {
     public:
-        virtual void LogMessage(const char *name, const FString &level, const FString &msg);
+        virtual void LogMessage(const char *name, const bpf::String &level, const bpf::String &msg);
     };
 
     class ENGINE_API FLogger
@@ -44,7 +44,7 @@ namespace Framework
         void Log(const ELogLevel level, const char *format, ...);
         void AddLogHandler(ILogBase *hdl);
     private:
-        FList<ILogBase *> *Loggers;
+        bpf::List<ILogBase *> *Loggers;
         const char *Name;
     };
 };

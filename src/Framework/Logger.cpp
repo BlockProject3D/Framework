@@ -3,7 +3,7 @@
 
 using namespace Framework;
 
-FString FLogHandler::FormatLevel(const ELogLevel level)
+bpf::String FLogHandler::FormatLevel(const ELogLevel level)
 {
     switch (level)
     {
@@ -19,9 +19,9 @@ FString FLogHandler::FormatLevel(const ELogLevel level)
     return ("NULL");
 }
 
-FString FLogHandler::HandleFormating(const char *format, va_list *lst)
+bpf::String FLogHandler::HandleFormating(const char *format, va_list *lst)
 {
-    FString res;
+    bpf::String res;
 
     int i = 0;
     while (format[i]) {
@@ -30,19 +30,19 @@ FString FLogHandler::HandleFormating(const char *format, va_list *lst)
             switch (format[++i])
             {
 	    case 'i':
-	        res += FString::ValueOf(va_arg(*lst, int));
+	        res += bpf::String::ValueOf(va_arg(*lst, int));
 	        break;
             case 'c':
 	        res += (char) va_arg(*lst, int);
 	        break;
 	    case 's':
-	        res += FString(va_arg(*lst, char *));
+	        res += bpf::String(va_arg(*lst, char *));
 	        break;
 	    case 'f':
-	        res += FString::ValueOf(va_arg(*lst, double));
+	        res += bpf::String::ValueOf(va_arg(*lst, double));
 	        break;
 	    case 'd':
-	        res += FString::ValueOf(va_arg(*lst, double));
+	        res += bpf::String::ValueOf(va_arg(*lst, double));
 	        break;
             case 'b':
                 {
@@ -62,9 +62,9 @@ FString FLogHandler::HandleFormating(const char *format, va_list *lst)
     return (res);
 }
 
-void FDefaultLogger::LogMessage(const char *name, const FString &level, const FString &msg)
+void FDefaultLogger::LogMessage(const char *name, const bpf::String &level, const bpf::String &msg)
 {
-    FString tim;
+    bpf::String tim;
     FTimeDate date;
 
     if (FPlatform::GetBaseSystem() != NULL)
@@ -84,7 +84,7 @@ void FDefaultLogger::LogMessage(const char *name, const FString &level, const FS
 FLogger::FLogger(const char *logname)
 {
     Name = logname;
-    Loggers = new FList<ILogBase*>();
+    Loggers = new bpf::List<ILogBase*>();
 }
 
 FLogger::~FLogger()
@@ -102,8 +102,8 @@ void FLogger::Log(const ELogLevel level, const char *format, ...)
     for (uint32 i = 0; i < Loggers->Size(); i++)
     {
         ILogBase *logger = *Loggers->Get(i);
-        FString msg = logger->HandleFormating(format, &lst);
-        FString lvl = logger->FormatLevel(level);
+        bpf::String msg = logger->HandleFormating(format, &lst);
+        bpf::String lvl = logger->FormatLevel(level);
         logger->LogMessage(Name, lvl, msg);
     }
     va_end(lst);

@@ -47,9 +47,9 @@ namespace Framework
     {
     public:
         IModuleInterface *Interface;
-        FString Name;
+        bpf::String Name;
         FModule Module;
-        inline FModuleEntry(const FString &path, const FString &name)
+        inline FModuleEntry(const bpf::String &path, const bpf::String &name)
             : Interface(Null), Name(name), Module(path)
         {
         }
@@ -59,8 +59,8 @@ namespace Framework
     {
     private:
         static FLogger *Log;
-        static FList<FModuleEntry *> ModuleList;
-        static FMap<const char *, FModuleEntry *> ModuleMap;
+        static bpf::List<FModuleEntry *> ModuleList;
+        static bpf::Map<const char *, FModuleEntry *> ModuleMap;
 
         static void UnloadModule(FModuleEntry *entry);
     public:

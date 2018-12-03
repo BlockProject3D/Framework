@@ -54,14 +54,17 @@ inline type DefaultOf<type>() \
 # include "Framework/Hash.hpp"
 # include "Framework/Map.hpp"
 # include "Framework/System/Platform.hpp"
+# include "Framework/ObjectPtr.hpp"
 # include "Framework/Object.hpp"
 # include "Framework/Delegate.hpp"
 # include "Framework/String.hpp"
 # include "Framework/Array.hpp"
+# include "Framework/ArrayList.hpp"
 # include "Framework/Stack.hpp"
 # include "Framework/Factory.hpp"
 # include "Framework/Logger.hpp"
 # include "Framework/RuntimeException.hpp"
+# include "Framework/IndexException.hpp"
 # include "Framework/Path.hpp"
 # include "Framework/System/Module.hpp"
 # include "Framework/System/ModuleManager.hpp"
@@ -73,13 +76,11 @@ inline type DefaultOf<type>() \
 # include "Framework/IO/File.hpp"
 # include "Framework/Profiler.hpp"
 
-namespace Framework
-{
-# include "Framework/List.impl.hpp"
-# include "Framework/Map.impl.hpp"
-# include "Framework/Array.impl.hpp"
-# include "Framework/Stack.impl.hpp"
-};
+#include "Framework/List.impl.hpp"
+#include "Framework/Array.impl.hpp"
+#include "Framework/ArrayList.impl.hpp"
+#include "Framework/Stack.impl.hpp"
+#include "Framework/Map.impl.hpp"
 
 /**
  * Returns the type name as a string of a given type

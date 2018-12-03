@@ -15,7 +15,7 @@ namespace Framework
 {
     struct ENGINE_API FProfilerSection
     {
-        FString Name;
+        bpf::String Name;
         long long Time; //In micro seconds
         int Pos;
         uint32 CreationID;
@@ -25,17 +25,17 @@ namespace Framework
     {
     private:
         uint32 CurCreationID;
-        FMap<FString, FProfilerSection> ProfilerMap;
-        FStack<FProfilerSection> Stack = FStack<FProfilerSection>(32);
-        FArray<FProfilerSection> Sections = FArray<FProfilerSection>(0);
+        bpf::Map<bpf::String, FProfilerSection> ProfilerMap;
+        bpf::Stack<FProfilerSection> Stack = bpf::Stack<FProfilerSection>(32);
+        bpf::Array<FProfilerSection> Sections = bpf::Array<FProfilerSection>(0);
 
-        void Push(const FString &name);
+        void Push(const bpf::String &name);
         void Pop();
         FProfiler();
     public:
         static FProfiler *Instance();
-        FArray<FProfilerSection> &GenDisplayList();
-        inline static void PushSection(const FString &name)
+        bpf::Array<FProfilerSection> &GenDisplayList();
+        inline static void PushSection(const bpf::String &name)
         {
             Instance()->Push(name);
         }

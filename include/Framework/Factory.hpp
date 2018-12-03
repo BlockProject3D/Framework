@@ -25,7 +25,7 @@ namespace Framework
     class ENGINE_API FFactory
     {
     private:
-        FMap<FString, IConstructor<T, Args...> *> Registry;
+        bpf::Map<FString, IConstructor<T, Args...> *> Registry;
     public:
         inline void AddClass(const FString &name, IConstructor<T, Args...> *c)
         {

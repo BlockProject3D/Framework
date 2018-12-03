@@ -1,7 +1,7 @@
 #ifndef ITERATOR_H_
 # define ITERATOR_H_
 
-namespace Framework
+namespace bpf
 {
     /**
      * Abstract iterator
@@ -9,7 +9,7 @@ namespace Framework
      * @tparam T the target iterated object
      */
     template <typename C, typename T>
-    class ENGINE_API IIterator
+    class BPF_API IIterator
     {
     public:
         virtual ~IIterator() {}

@@ -1,21 +1,22 @@
 #ifndef RUNTIMEEXCEPTION_H_
 #define RUNTIMEEXCEPTION_H_
 
-namespace Framework
+namespace bpf
 {
-    class ENGINE_API FRuntimeException : public FException
+    class BPF_API RuntimeException : public Exception
     {
     private:
-        FString Type;
-        FString Message;
+        String Type;
+        String Message;
+
     public:
-        virtual ~FRuntimeException() {}
-        FRuntimeException(const FString &type, const FString &message) noexcept;
+        virtual ~RuntimeException() {}
+        RuntimeException(const String &type, const String &message) noexcept;
 
         /**
          * Returns the exception's message
          */
-        inline const FString &GetMessage() const
+        inline const String &GetMessage() const
         {
             return (Message);
         }
@@ -24,19 +25,7 @@ namespace Framework
         {
             return (*Type);
         }
-        virtual void Log(FLogger &logger) const override;
-    };
-
-    class ENGINE_API FIndexException : public FRuntimeException
-    {
-    private:
-        int ID;
-    public:
-        inline FIndexException(const int id) noexcept
-            : FRuntimeException("Index", ""), ID(id)
-        {
-        }
-        void Log(FLogger &logger) const;
+        virtual void Log(Framework::FLogger &logger) const override;
     };
 }
 

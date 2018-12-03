@@ -7,7 +7,7 @@ namespace Framework
     {
     public:
         virtual ~IInputStream() {}
-        virtual bool ReadLine(FString &line) = 0;
+        virtual bool ReadLine(bpf::String &line) = 0;
         virtual uint8 ReadByte() = 0;
         virtual int16 ReadShort() = 0;
         virtual uint16 ReadUShort() = 0;
@@ -21,7 +21,7 @@ namespace Framework
     {
     public:
         virtual ~IOutputStream() {}
-        virtual void WriteString(const FString &str) = 0;
+        virtual void WriteString(const bpf::String &str) = 0;
         virtual void WriteByte(const uint8 b) = 0;
         virtual void WriteShort(const int16 s) = 0;
         virtual void WriteUShort(const uint16 s) = 0;
@@ -46,7 +46,7 @@ namespace Framework
         FByteBuf(uint8 *bytes, const uint32 size, const EPlatformEndianess order = PLATFORM_LITTLEENDIAN);
         FByteBuf();
         virtual ~FByteBuf();
-        bool ReadLine(FString &line);
+        bool ReadLine(bpf::String &line);
         uint8 ReadByte();
         uint16 ReadUShort();
         inline int16 ReadShort()
@@ -60,7 +60,7 @@ namespace Framework
         }
         uint32 ReadUInt();
         uint32 Read(uint8 *buffer, const uint32 sizebytes);
-        void WriteString(const FString &str);
+        void WriteString(const bpf::String &str);
         virtual void WriteByte(const uint8 b); //Virtual for FDynamicByteBuf
         inline void WriteShort(const int16 s)
         {

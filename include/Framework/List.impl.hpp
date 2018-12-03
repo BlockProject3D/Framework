@@ -1,309 +1,308 @@
 #ifndef LIST_IMPL_H_
 # define LIST_IMPL_H_
 
-template <typename T>
-inline FList<T>::FList()
-    : First(Null), Last(Null), Count(0)
+namespace bpf
 {
-}
-
-template <typename T>
-inline FList<T>::~FList()
-{
-    this->Clear();
-}
-
-template <typename T>
-void FList<T>::Insert(const T &elem, uint32 pos)
-{
-    FListNode<T> *nd = GetNode(pos);
-    FListNode<T> *newi = new FListNode<T>(elem);
-
-    newi->Next = nd;
-    if (nd != Null)
+    template <typename T>
+    inline List<T>::List()
+        : First(Null), Last(Null), Count(0)
     {
-        newi->Prev = nd->Prev;
-        nd->Prev = newi;
-        if (newi->Prev != Null)
-            newi->Prev->Next = newi;
-        if (pos == 0)
+    }
+
+    template <typename T>
+    inline List<T>::~List()
+    {
+        this->Clear();
+    }
+
+    template <typename T>
+    void List<T>::Insert(const T &elem, uint32 pos)
+    {
+        ListNode<T> *nd = GetNode(pos);
+        ListNode<T> *newi = new ListNode<T>(elem);
+
+        newi->Next = nd;
+        if (nd != Null)
+        {
+            newi->Prev = nd->Prev;
+            nd->Prev = newi;
+            if (newi->Prev != Null)
+                newi->Prev->Next = newi;
+            if (pos == 0)
+                First = newi;
+        }
+        else if (Last)
+        {
+            newi->Prev = Last;
+            Last->Next = newi;
+            Last = newi;
+        }
+        else
+            First = Last = newi;
+        ++Count;
+    }
+
+    template <typename T>
+    void List<T>::Add(const T &elem)
+    {
+        ListNode<T> *newi = new ListNode<T>(elem);
+
+        if (Last == Null)
             First = newi;
-    }
-    else if (Last)
-    {
-        newi->Prev = Last;
-        Last->Next = newi;
+        else
+        {
+            newi->Prev = Last;
+            Last->Next = newi;
+        }
         Last = newi;
+        ++Count;
     }
-    else
-        First = Last = newi;
-    ++Count;
-}
 
-template <typename T>
-void FList<T>::Add(const T &elem)
-{
-    FListNode<T> *newi = new FListNode<T>(elem);
-
-    if (Last == Null)
-        First = newi;
-    else
+    template <typename T>
+    void List<T>::Insert(T &&elem, uint32 pos)
     {
-        newi->Prev = Last;
-        Last->Next = newi;
+        ListNode<T> *nd = GetNode(pos);
+        ListNode<T> *newi = new ListNode<T>(std::move(elem));
+
+        newi->Next = nd;
+        if (nd != Null)
+        {
+            newi->Prev = nd->Prev;
+            nd->Prev = newi;
+            if (newi->Prev != Null)
+                newi->Prev->Next = newi;
+            if (pos == 0)
+                First = newi;
+        }
+        else if (Last)
+        {
+            newi->Prev = Last;
+            Last->Next = newi;
+            Last = newi;
+        }
+        else
+            First = Last = newi;
+        ++Count;
     }
-    Last = newi;
-    ++Count;
-}
 
-template <typename T>
-void FList<T>::Insert(T &&elem, uint32 pos)
-{
-    FListNode<T> *nd = GetNode(pos);
-    FListNode<T> *newi = new FListNode<T>(std::move(elem));
-
-    newi->Next = nd;
-    if (nd != Null)
+    template <typename T>
+    void List<T>::Add(T &&elem)
     {
-        newi->Prev = nd->Prev;
-        nd->Prev = newi;
-        if (newi->Prev != Null)
-            newi->Prev->Next = newi;
-        if (pos == 0)
+        ListNode<T> *newi = new ListNode<T>(std::move(elem));
+
+        if (Last == Null)
             First = newi;
-    }
-    else if (Last)
-    {
-        newi->Prev = Last;
-        Last->Next = newi;
+        else
+        {
+            newi->Prev = Last;
+            Last->Next = newi;
+        }
         Last = newi;
+        ++Count;
     }
-    else
-        First = Last = newi;
-    ++Count;
-}
 
-template <typename T>
-void FList<T>::Add(T &&elem)
-{
-    FListNode<T> *newi = new FListNode<T>(std::move(elem));
-
-    if (Last == Null)
-        First = newi;
-    else
+    template <typename T>
+    inline void List<T>::Clear()
     {
-        newi->Prev = Last;
-        Last->Next = newi;
+        while (Count > 0)
+            RemoveLast();
     }
-    Last = newi;
-    ++Count;
-}
-
-template <typename T>
-inline void FList<T>::Clear()
-{
-    while (Count > 0)
-        RemoveLast();
-}
 
 /*template<typename T>
-void	FList<T>::Sort(void)
+void    FList<T>::Sort(void)
 {
-	T		*tmp = Null;
+    T        *tmp = Null;
 
-	for (int i = 0 ; i < Count ; i++)
+    for (int i = 0 ; i < Count ; i++)
     {
-		for (int j = 0 ; j < (Count - i) ; j++)
-		{
-			if (Get(j) != Null && Get(j + 1) != Null
-				&& *Get(j) > *Get(j + 1))
-			{
-				tmp = GetNode(j)->Data;
-				GetNode(j)->Data = GetNode(j + 1)->Data;
-				GetNode(j + 1)->Data = tmp;
-			}
-		}
+        for (int j = 0 ; j < (Count - i) ; j++)
+        {
+            if (Get(j) != Null && Get(j + 1) != Null
+                && *Get(j) > *Get(j + 1))
+            {
+                tmp = GetNode(j)->Data;
+                GetNode(j)->Data = GetNode(j + 1)->Data;
+                GetNode(j + 1)->Data = tmp;
+            }
+        }
     }
 }*/
 
-template <typename T>
-FListNode<T> *FList<T>::Partition(FListNode<T> *start, FListNode<T> *end)
-{
-    FListNode<T> *tmp = (start != Null) ? (start->Prev) : Null;
-
-    while (start != Null && end != Null && start != end->Prev)
+    template <typename T>
+    ListNode<T> *List<T>::Partition(ListNode<T> *start, ListNode<T> *end)
     {
-        if (start->Data < end->Data && tmp != Null)
+        ListNode<T> *tmp = (start != Null) ? (start->Prev) : Null;
+
+        while (start != Null && end != Null && start != end->Prev)
         {
-            tmp = tmp->Next;
-            T tmpdata = tmp->Data;
-            tmp->Data = start->Data;
-            start->Data = tmpdata;
+            if (start->Data < end->Data && tmp != Null)
+            {
+                tmp = tmp->Next;
+                T tmpdata = tmp->Data;
+                tmp->Data = start->Data;
+                start->Data = tmpdata;
+            }
+            start = start->Next;
         }
-        start = start->Next;
-    }
-    if (tmp != Null && tmp->Next != Null)
-    {
-        T tmpdata = tmp->Next->Data;
-        tmp->Next->Data = end->Data;
-        end->Data = tmpdata;
-    }
-    return (tmp == Null ? Null : tmp->Next);
-}
-
-template <typename T>
-void FList<T>::QuickSort(FListNode<T> *start, FListNode<T> *end) //QuickSort seem to be a crap : does not do anything at all
-{
-    FListNode<T> *res = Partition(First, Last);
-    if (res != Null)
-    {
-        QuickSort(start, res->Prev);
-        QuickSort(res->Next, end);
-    }
-}
-
-template <typename T>
-void FList<T>::Sort()
-{
-    if (Size() <= 0)
-        return;
-    QuickSort(First, Last);
-}
-
-template <typename T>
-FListNode<T> *FList<T>::GetNode(uint32 id) const
-{
-    if (id < Count)
-    {
-        if (id <= (Count / 2))
+        if (tmp != Null && tmp->Next != Null)
         {
-            FListNode<T> *cur = First;
-
-            while (id-- > 0)
-                cur = cur->Next;
-            return (cur);
+            T tmpdata = tmp->Next->Data;
+            tmp->Next->Data = end->Data;
+            end->Data = tmpdata;
         }
-        else
-        {
-            FListNode<T> *cur = Last;
+        return (tmp == Null ? Null : tmp->Next);
+    }
 
-            while (++id < Count)
-                cur = cur->Prev;
-            return cur;
+    template <typename T>
+    void List<T>::QuickSort(ListNode<T> *start, ListNode<T> *end) //QuickSort seem to be a crap : does not do anything at all
+    {
+        ListNode<T> *res = Partition(First, Last);
+
+        if (res != Null)
+        {
+            QuickSort(start, res->Prev);
+            QuickSort(res->Next, end);
         }
     }
-    return Null;
-}
 
-template <typename T>
-inline T *FList<T>::Get(uint32 const id) const
-{
-    FListNode<T> *cur = this->GetNode(id);
-
-    return ((cur) ? &cur->Data : Null);
-}
-
-template <typename T>
-inline T *FList<T>::GetFirst() const
-{
-    return ((First) ? &First->Data : Null);
-}
-
-template <typename T>
-inline T *FList<T>::GetLast() const
-{
-    return ((Last) ? &Last->Data : Null);
-}
-
-template <typename T>
-void FList<T>::RemoveAt(uint32 const id)
-{
-    FListNode<T> *toRM = GetNode(id);
-
-    if (toRM)
-        RemoveNode(toRM);
-}
-
-/* Private Remove */
-template <typename T>
-void FList<T>::RemoveNode(FListNode<T> *toRM)
-{
-    if (toRM == Last)
-        RemoveLast();
-    else
+    template <typename T>
+    void List<T>::Sort()
     {
-        FListNode<T> *prev = toRM->Prev;
-        FListNode<T> *next = toRM->Next;
-
-        if (prev)
-            prev->Next = next;
-        else
-            First = next;
-        if (next)
-            next->Prev = prev;
-        delete toRM;
-        --Count;
+        if (Size() <= 0)
+            return;
+        QuickSort(First, Last);
     }
-}
-/* End Private */
 
-template <typename T>
-void FList<T>::Remove(const T &elem, const bool all)
-{
-    FListNode<T> *cur = First;
-
-    while (cur)
+    template <typename T>
+    ListNode<T> *List<T>::GetNode(uint32 id) const
     {
-        if (cur->Data == elem)
+        if (id < Count)
         {
-            FListNode<T> *toRM = cur;
+            if (id <= (Count / 2))
+            {
+                ListNode<T> *cur = First;
+                while (id-- > 0)
+                    cur = cur->Next;
+                return (cur);
+            }
+            else
+            {
+                ListNode<T> *cur = Last;
+                while (++id < Count)
+                    cur = cur->Prev;
+                return cur;
+            }
+        }
+        return Null;
+    }
 
-            cur = (all) ? cur->Next : Null;
+    template <typename T>
+    inline T *List<T>::Get(uint32 const id) const
+    {
+        ListNode<T> *cur = this->GetNode(id);
+
+        return ((cur) ? &cur->Data : Null);
+    }
+
+    template <typename T>
+    inline T *List<T>::GetFirst() const
+    {
+        return ((First) ? &First->Data : Null);
+    }
+
+    template <typename T>
+    inline T *List<T>::GetLast() const
+    {
+        return ((Last) ? &Last->Data : Null);
+    }
+
+    template <typename T>
+    void List<T>::RemoveAt(uint32 const id)
+    {
+        ListNode<T> *toRM = GetNode(id);
+
+        if (toRM)
             RemoveNode(toRM);
-        }
-        else
-            cur = cur->Next;
     }
-}
 
-template <typename T>
-void FList<T>::RemoveLast()
-{
-    if (Last)
+    template <typename T>
+    void List<T>::RemoveNode(ListNode<T> *toRM)
     {
-        FListNode<T> *lst = Last->Prev;
-
-        if (lst)
-            lst->Next = Null;
+        if (toRM == Last)
+            RemoveLast();
         else
-            First = Null;
-        delete Last;
-        Last = lst;
-        --Count;
+        {
+            ListNode<T> *prev = toRM->Prev;
+            ListNode<T> *next = toRM->Next;
+
+            if (prev)
+                prev->Next = next;
+            else
+                First = next;
+            if (next)
+                next->Prev = prev;
+            delete toRM;
+            --Count;
+        }
     }
-}
 
-template <typename T>
-inline uint32 FList<T>::Size() const
-{
-    return (Count);
-}
+    template <typename T>
+    void List<T>::Remove(const T &elem, const bool all)
+    {
+        ListNode<T> *cur = First;
 
-template <typename T>
-inline T FList<T>::operator[](uint32 const id) const
-{
-    T *elem = Get(id);
+        while (cur)
+        {
+            if (cur->Data == elem)
+            {
+                ListNode<T> *toRM = cur;
+                cur = (all) ? cur->Next : Null;
+                RemoveNode(toRM);
+            }
+            else
+                cur = cur->Next;
+        }
+    }
 
-    if (elem == Null)
-        throw FIndexException(id);
-    return (*elem);
-}
+    template <typename T>
+    void List<T>::RemoveLast()
+    {
+        if (Last)
+        {
+            ListNode<T> *lst = Last->Prev;
 
-template <typename T>
-inline void FList<T>::ForEach(FDelegateFunction<void, const T &> &fnc) const
-{
-    for (auto it = Begin(); it; ++it)
-        fnc(*it);
+            if (lst)
+                lst->Next = Null;
+            else
+                First = Null;
+            delete Last;
+            Last = lst;
+            --Count;
+        }
+    }
+
+    template <typename T>
+    inline uint32 List<T>::Size() const
+    {
+        return (Count);
+    }
+
+    template <typename T>
+    inline T List<T>::operator[](uint32 const id) const
+    {
+        T *elem = Get(id);
+
+        if (elem == Null)
+            throw IndexException(id);
+        return (*elem);
+    }
+
+    template <typename T>
+    inline void List<T>::ForEach(const std::function<void(const T &)> &fnc) const
+    {
+        for (auto it = Begin(); it; ++it)
+            fnc(*it);
+    }
 }
 
 #endif /* !LIST_IMPL_H_ */

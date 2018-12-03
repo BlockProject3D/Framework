@@ -2,57 +2,57 @@
 
 using namespace Framework;
 
-FString FPaths::ShaderFolder = "NONE";
-FString FPaths::ModulesFolder = "NULL";
-FString FPaths::GameDataRoot = "";
+bpf::String FPaths::ShaderFolder = "NONE";
+bpf::String FPaths::ModulesFolder = "NULL";
+bpf::String FPaths::GameDataRoot = "";
 
-FString FPaths::ShadersSrc()
+bpf::String FPaths::ShadersSrc()
 {
-    return (GameDataRoot + FString("Shaders/") + ShaderFolder + "/");
+    return (GameDataRoot + bpf::String("Shaders/") + ShaderFolder + "/");
 }
 
-FString FPaths::Shaders()
+bpf::String FPaths::Shaders()
 {
     return (GameDataRoot + "Shaders/");
 }
 
-FString FPaths::Assets()
+bpf::String FPaths::Assets()
 {
-    return (GameDataRoot + FString("Assets/"));
+    return (GameDataRoot + bpf::String("Assets/"));
 }
 
-FString FPaths::Models()
+bpf::String FPaths::Models()
 {
     return (GameDataRoot + "Assets/Models/");
 }
 
-FString FPaths::Textures()
+bpf::String FPaths::Textures()
 {
     return (GameDataRoot + "Assets/Textures/");
 }
 
-FString FPaths::Modules()
+bpf::String FPaths::Modules()
 {
     return (ModulesFolder + "/");
 }
 
-FString FPaths::GameRoot()
+bpf::String FPaths::GameRoot()
 {
     return (GameDataRoot + "/");
 }
 
-void FPaths::SetGameRoot(const FString &folder, const FString &suffix)
+void FPaths::SetGameRoot(const bpf::String &folder, const bpf::String &suffix)
 {
     GameDataRoot = folder.Sub(0, folder.LastIndexOf('/') + 1);
     GameDataRoot += suffix;
 }
 
-void FPaths::SetShaderSubfolder(const Framework::FString &folder)
+void FPaths::SetShaderSubfolder(const bpf::String &folder)
 {
     ShaderFolder = folder;
 }
 
-void FPaths::SetModuleRoot(const FString &folder)
+void FPaths::SetModuleRoot(const bpf::String &folder)
 {
     ModulesFolder = folder.Sub(0, folder.LastIndexOf('/') + 1);
 }

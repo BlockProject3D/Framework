@@ -11,7 +11,7 @@ using namespace Framework;
 bool FPlatform::Exit = false;
 IFileSystem *FPlatform::FileSys = NULL;
 ISystemManager *FPlatform::BaseSys = NULL;
-FMap<const char *, FString> FPlatform::PropMap;
+bpf::Map<const char *, bpf::String> FPlatform::PropMap;
 
 void FPlatform::RequestExit(bool force)
 {
@@ -161,14 +161,14 @@ void FPlatform::Shutdown()
     FModuleManager::Shutdown();
 }
 
-const FString &FPlatform::GetProperty(const char *vname)
+const bpf::String &FPlatform::GetProperty(const char *vname)
 {
     if (PropMap.HasKey(vname))
         return (PropMap[vname]);
-    return (FString::Empty);
+    return (bpf::String::Empty);
 }
 
-void FPlatform::SetProperty(const char *vname, const FString &prop)
+void FPlatform::SetProperty(const char *vname, const bpf::String &prop)
 {
     PropMap[vname] = prop;
 }

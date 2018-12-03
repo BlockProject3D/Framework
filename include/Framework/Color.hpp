@@ -1,9 +1,9 @@
 #ifndef COLOR_H_
 # define COLOR_H_
 
-namespace Framework
+namespace bpf
 {
-    class ENGINE_API FColor
+    class BPF_API Color
     {
     public:
         /**
@@ -29,7 +29,7 @@ namespace Framework
         /**
          * Initializes a FColor at BLACK
          */
-        inline FColor()
+        inline Color()
             : R(0), G(0), B(0), A(255)
         {
         }
@@ -41,7 +41,7 @@ namespace Framework
          * @param b the b component
          * @param a the a component
          */
-        inline FColor(const uint8 r, const uint8 g, const uint8 b, const uint8 a = 255)
+        inline Color(const uint8 r, const uint8 g, const uint8 b, const uint8 a = 255)
             : R(r), G(g), B(b), A(a)
         {
         }
@@ -51,7 +51,7 @@ namespace Framework
          * @param other the other FColor to copy RGB from
          * @param a the new alpha value
          */
-        inline FColor(const FColor &other, const uint8 a)
+        inline Color(const Color &other, const uint8 a)
             : R(other.R), G(other.G), B(other.B), A(a)
         {
         }
@@ -60,7 +60,7 @@ namespace Framework
          * Initializes a FColor from a grey scale value
          * @param grey the grey scale value
          */
-        inline FColor(const uint8 grey)
+        inline Color(const uint8 grey)
             : R(grey), G(grey), B(grey), A(255)
         {
         }
@@ -69,67 +69,67 @@ namespace Framework
          * Initializes a FColor from a packed rgb int
          * @param rgb the packed rgb integer
          */
-        FColor(const int rgb); //TODO : Implement
+        Color(const int rgb); //TODO : Implement
 
         /**
          * Blends two colors by addition
          */
-        FColor operator+(const FColor &other) const;
+        Color operator+(const Color &other) const;
 
         /**
          * Blends two colors by multiplication
          */
-        FColor operator*(const FColor &other) const;
+        Color operator*(const Color &other) const;
         
-        inline bool operator==(const FColor &other)
+        inline bool operator==(const Color &other)
         {
             return (R == other.R && G == other.G && B == other.B && A == other.A);
         }
 
-        inline bool operator!=(const FColor &other)
+        inline bool operator!=(const Color &other)
         {
             return (!(R == other.R && G == other.G && B == other.B && A == other.A));
         }
 
-        inline FString ToString() const
+        inline String ToString() const
         {
-            return (FString("Color(") + R + ", " + G + ", " + B + ", " + A + ")");
+            return (String("Color(") + R + ", " + G + ", " + B + ", " + A + ")");
         }
 
         /**
          * RED constant
          */
-        static const FColor Red;
+        static const Color Red;
 
         /**
          * GREEN constant
          */
-        static const FColor Green;
+        static const Color Green;
 
         /**
          * BLUE constant
          */
-        static const FColor Blue;
+        static const Color Blue;
 
         /**
          * WHITE constant
          */
-        static const FColor White;
+        static const Color White;
 
         /**
          * BLACK constant
          */
-        static const FColor Black;
+        static const Color Black;
 
         /**
          * YELLOW constant
          */
-        static const FColor Yellow;
+        static const Color Yellow;
 
         /**
          * CYAN constant
          */
-        static const FColor Cyan;
+        static const Color Cyan;
     };
 };
 

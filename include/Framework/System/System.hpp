@@ -30,7 +30,7 @@ namespace Framework
          * Formats this date in a string
          * %h = Hours, %n = Minutes, %s = Seconds, %m = Month, %d = Day, %y = Year
          */
-        FString Format(const FString &format);
+        bpf::String Format(const bpf::String &format);
     };
 
     /**
@@ -71,7 +71,7 @@ namespace Framework
         /**
          * Returns the process binary name
          */
-        virtual const FString &GetBinaryName() const = 0;
+        virtual const bpf::String &GetBinaryName() const = 0;
 
         /**
          * Returns the exit code
@@ -224,7 +224,7 @@ namespace Framework
          * @param args the arguments
          * @param redirectoutput set to true if you require redirecting the output of the process to the main process
          */
-        virtual IProcess *CreateProcess(const FString &binname, const FArray<FString> &args, const bool redirectoutput = false) = 0;
+        virtual IProcess *CreateProcess(const bpf::String &binname, const bpf::Array<bpf::String> &args, const bool redirectoutput = false) = 0;
 
         /**
          * Destroys a process
@@ -272,9 +272,9 @@ namespace Framework
         inline FMutexPtr()
         {
             if (FPlatform::GetBaseSystem() == Null)
-                throw FRuntimeException("Mutex", "No system module");
+                throw bpf::RuntimeException("Mutex", "No system module");
             if ((Mutex = FPlatform::GetBaseSystem()->CreateMutex()) == Null)
-                throw FRuntimeException("Mutex", "Creation failure");
+                throw bpf::RuntimeException("Mutex", "Creation failure");
         }
         inline ~FMutexPtr()
         {
@@ -295,9 +295,9 @@ namespace Framework
         inline FThreadPtr(const FString &name, const std::function<void()> &threadfunc)
         {
             if (FPlatform::GetBaseSystem() == Null)
-                throw FRuntimeException("Thread", "No system module");
+                throw bpf::RuntimeException("Thread", "No system module");
             if ((Thread = FPlatform::GetBaseSystem()->CreateThread(name, threadfunc)) == Null)
-                throw FRuntimeException("Thread", "Creation failure");
+                throw bpf::RuntimeException("Thread", "Creation failure");
         }
         inline ~FThreadPtr()
         {

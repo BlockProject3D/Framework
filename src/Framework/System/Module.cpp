@@ -7,7 +7,7 @@
 
 using namespace Framework;
 
-FModule::FModule(const FString &path)
+FModule::FModule(const bpf::String &path)
     : Path(path + FPlatform::GetProperty("OS_MODULE_EXT"))
 {
 #ifdef WINDOWS
@@ -32,7 +32,7 @@ FModule::~FModule()
 #endif
 }
 
-void *FModule::LoadSymbol(const FString &name)
+void *FModule::LoadSymbol(const bpf::String &name)
 {
 #ifdef WINDOWS
     void *res = (void *)GetProcAddress((HMODULE)Handle, *name);

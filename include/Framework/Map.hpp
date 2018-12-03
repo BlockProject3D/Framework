@@ -1,23 +1,23 @@
 #ifndef MAP_H_
 # define MAP_H_
 
-namespace Framework
+namespace bpf
 {
     constexpr int MAP_INIT_BUF_SIZE = 2;
     constexpr float MAP_LIMIT_UNTIL_EXTEND = 0.5f;
 
     template<typename K, typename V>
-    struct FMapEntry
+    struct MapEntry
     {
         K Key;
         V Value;
     };
 
     template <typename K, typename V>
-    class ENGINE_API FMap
+    class BPF_API Map
     {
     public:
-        class ENGINE_API Iterator final : public IIterator<typename FMap<K, V>::Iterator, FMapEntry<K, V>>
+        class BPF_API Iterator final : public IIterator<typename Map<K, V>::Iterator, MapEntry<K, V>>
         {
         private:
             V *Data;
@@ -25,7 +25,8 @@ namespace Framework
             bool *EmptyKeys;
             uint32 MaxSize;
             uint32 CurID;
-            FMapEntry<K, V> Entry;
+            MapEntry<K, V> Entry;
+
         public:
             inline Iterator(V *data, K *keydata, bool *empty, uint32 start, uint32 size)
                 : Data(data), KeyData(keydata), EmptyKeys(empty), MaxSize(size), CurID(start)
@@ -35,35 +36,13 @@ namespace Framework
                 else
                     operator--();
             }
-            inline void operator++()
-            {
-                if (CurID < MaxSize)
-                    ++CurID;
-                while (CurID < MaxSize && EmptyKeys[CurID])
-                    ++CurID;
-                if (CurID < MaxSize && !EmptyKeys[CurID])
-                {
-                    Entry.Key = KeyData[CurID];
-                    Entry.Value = Data[CurID];
-                }
-            }
-            inline void operator--()
-            {
-                if (CurID > 0)
-                    --CurID;
-                while (CurID > 0 && EmptyKeys[CurID])
-                    --CurID;
-                if (CurID > 0 && !EmptyKeys[CurID])
-                {
-                    Entry.Key = KeyData[CurID];
-                    Entry.Value = Data[CurID];
-                }
-            }
-            inline const FMapEntry<K, V> &operator*() const
+            void operator++();
+            void operator--();
+            inline const MapEntry<K, V> &operator*() const
             {
                 return (Entry);
             }
-            inline const FMapEntry<K, V> &operator->() const
+            inline const MapEntry<K, V> &operator->() const
             {
                 return (Entry);
             }
@@ -80,6 +59,7 @@ namespace Framework
                 return (CurID != other.CurID);
             }
         };
+
     private:
         V *Data;
         K *KeyData;
@@ -87,12 +67,14 @@ namespace Framework
         bool *EmptyKeys;
         uint32 CurSize;
         uint32 ElemCount;
+
         void TryExtend(); //Checks and extends the hash table by the multiplier
         int QuadraticSearch(uint32 hkey) const;
         int QuadraticInsert(uint32 hkey);
+
     public:
-        FMap();
-        ~FMap();
+        Map();
+        ~Map();
       
         /**
          * Adds a new element in this hash map, replaces if key already exists

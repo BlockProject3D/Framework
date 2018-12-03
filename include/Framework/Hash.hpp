@@ -1,7 +1,7 @@
 #ifndef HASH_H_
 # define HASH_H_
 
-namespace Framework
+namespace bpf
 {
     /**
      * Hashes a given tyoe

@@ -4,16 +4,16 @@
 #include <cstdlib>
 #include "Framework/Framework.hpp"
 
-using namespace Framework;
+using namespace bpf;
 
-const FString FString::Empty = FString();
+const String String::Empty = String();
 
-FString::FString()
+String::String()
     : Data(Null), StrLen(0), UnicodeLen(0)
 {
 }
 
-fchar FString::UTF32(const char *utf8char)
+fchar String::UTF32(const char *utf8char)
 {
     fchar res = 0;
 
@@ -41,7 +41,7 @@ fchar FString::UTF32(const char *utf8char)
     return (res);
 }
 
-FString::FString(const char *str)
+String::String(const char *str)
     : Data(Null), StrLen(0), UnicodeLen(0)
 {
     if (str == Null)
@@ -53,26 +53,26 @@ FString::FString(const char *str)
         StrLen += charLen;
         strIndex += charLen;
     }
-    Data = static_cast<char *>(FMemory::Malloc(sizeof(char) * (StrLen + 1)));
+    Data = static_cast<char *>(Framework::FMemory::Malloc(sizeof(char) * (StrLen + 1)));
     CopyString(str, Data, StrLen);
 }
 
-FString::FString(const char c)
+String::String(const char c)
     : Data(NULL), StrLen(1), UnicodeLen(1)
 {
-    Data = static_cast<char *>(FMemory::Malloc(sizeof(char) * (StrLen + 1)));
+    Data = static_cast<char *>(Framework::FMemory::Malloc(sizeof(char) * (StrLen + 1)));
     Data[0] = c;
     Data[1] = '\0';
 }
 
-FString::FString(const FString &s)
-    : Data(static_cast<char *>(FMemory::Malloc(sizeof(char) * (s.StrLen + 1)))),
+String::String(const String &s)
+    : Data(static_cast<char *>(Framework::FMemory::Malloc(sizeof(char) * (s.StrLen + 1)))),
     StrLen(s.StrLen), UnicodeLen(s.UnicodeLen)
 {
     CopyString(s.Data, Data, s.StrLen);
 }
 
-FString::FString(FString &&s)
+String::String(String &&s)
     : Data(s.Data), StrLen(s.StrLen), UnicodeLen(s.UnicodeLen)
 {
     s.Data = NULL;
@@ -80,20 +80,22 @@ FString::FString(FString &&s)
     s.UnicodeLen = 0;
 }
 
-fchar FString::operator[](const int id) const
+fchar String::operator[](const int id) const
 {
-    return (FString::UTF32(Data + CalcStartFromUnicode(id)));
+    if (id < 0 || id >= Size())
+        throw IndexException(id);
+    return (String::UTF32(Data + CalcStartFromUnicode(id)));
 }
 
-void FString::MakeSized(FString &str, const uint32 len) const
+void String::MakeSized(String &str, const uint32 len) const
 {
     str.StrLen = len;
-    str.Data = static_cast<char *>(FMemory::Malloc(sizeof(char) * (len + 1)));
+    str.Data = static_cast<char *>(Framework::FMemory::Malloc(sizeof(char) * (len + 1)));
 }
 
-FString &FString::operator=(FString &&other)
+String &String::operator=(String &&other)
 {
-    FMemory::Free(Data);
+    Framework::FMemory::Free(Data);
     Data = other.Data;
     StrLen = other.StrLen;
     UnicodeLen = other.UnicodeLen;
@@ -103,7 +105,7 @@ FString &FString::operator=(FString &&other)
     return (*this);
 }
 
-bool FString::operator==(const FString &other) const
+bool String::operator==(const String &other) const
 {
     if (StrLen != other.StrLen)
         return (false);
@@ -115,7 +117,7 @@ bool FString::operator==(const FString &other) const
     return (true);
 }
 
-bool FString::operator<(const FString &other) const
+bool String::operator<(const String &other) const
 {
     for (unsigned int i = 0 ; i < StrLen ; i++)
     {
@@ -125,7 +127,7 @@ bool FString::operator<(const FString &other) const
     return (false);
 }
 
-bool FString::operator>(const FString &other) const
+bool String::operator>(const String &other) const
 {
     for (unsigned int i = 0 ; i < StrLen ; i++)
     {
@@ -135,9 +137,9 @@ bool FString::operator>(const FString &other) const
     return (false);
 }
 
-FString FString::operator+(const FString &other) const
+String String::operator+(const String &other) const
 {
-    FString str;
+    String str;
 
     MakeSized(str, StrLen + other.StrLen);
     CopyString(Data, str.Data, StrLen);
@@ -146,9 +148,9 @@ FString FString::operator+(const FString &other) const
     return (str);
 }
 
-FString FString::operator+(const char other) const
+String String::operator+(const char other) const
 {
-  FString str;
+  String str;
 
   MakeSized(str, StrLen + 1);
   CopyString(Data, str.Data, StrLen);
@@ -158,45 +160,45 @@ FString FString::operator+(const char other) const
   return (str);
 }
 
-FString &FString::operator+=(const FString &other)
+String &String::operator+=(const String &other)
 {
-    Data = static_cast<char *>(FMemory::Realloc(Data, sizeof(char) * (StrLen + other.StrLen + 1)));
+    Data = static_cast<char *>(Framework::FMemory::Realloc(Data, sizeof(char) * (StrLen + other.StrLen + 1)));
     CopyString(other.Data, Data + StrLen, other.StrLen);
     StrLen += other.StrLen;
     UnicodeLen += other.UnicodeLen;
     return (*this);
 }
 
-FString &FString::operator+=(const char other)
+String &String::operator+=(const char other)
 {
-    Data = static_cast<char *>(FMemory::Realloc(Data, sizeof(char) * (StrLen + 2)));
+    Data = static_cast<char *>(Framework::FMemory::Realloc(Data, sizeof(char) * (StrLen + 2)));
     Data[StrLen++] = other;
     Data[StrLen] = '\0';
     ++UnicodeLen;
     return (*this);
 }
 
-FString &FString::operator=(const FString &other)
+String &String::operator=(const String &other)
 {
-    FMemory::Free(Data);
-    Data = static_cast<char *>(FMemory::Malloc(sizeof(char) * (other.StrLen + 1)));
+    Framework::FMemory::Free(Data);
+    Data = static_cast<char *>(Framework::FMemory::Malloc(sizeof(char) * (other.StrLen + 1)));
     StrLen = other.StrLen;
     CopyString(other.Data, Data, StrLen);
     UnicodeLen = other.UnicodeLen;
     return (*this);
 }
 
-void FString::Print()
+void String::Print()
 {
     std::cout << Data;
 }
 
-FString::~FString()
+String::~String()
 {
-    FMemory::Free(Data);
+    Framework::FMemory::Free(Data);
 }
 
-void FString::CopyString(const char *src, char *dest, const uint32 len) const
+void String::CopyString(const char *src, char *dest, const uint32 len) const
 {
     size_t const *fsrc = reinterpret_cast<size_t const *>(src);
     size_t *fdest = reinterpret_cast<size_t *>(dest);
@@ -211,7 +213,7 @@ void FString::CopyString(const char *src, char *dest, const uint32 len) const
     *dest = '\0';
 }
 
-uint8 FString::CalcCharIncrement(const char c) // 1101 & 1111
+uint8 String::CalcCharIncrement(const char c) // 1101 & 1111
 {
     switch (c & 0xF0) //Identified UTF-8 sequence with 4 first strong bits
     {
@@ -225,7 +227,7 @@ uint8 FString::CalcCharIncrement(const char c) // 1101 & 1111
     return 0;
 }
 
-uint32 FString::CalcUnicodeLen(const char *str, const uint32 len) const
+uint32 String::CalcUnicodeLen(const char *str, const uint32 len) const
 {
     uint32 ulen = 0;
     uint32 i = 0;
@@ -238,7 +240,7 @@ uint32 FString::CalcUnicodeLen(const char *str, const uint32 len) const
     return (ulen);
 }
 
-char *FString::Duplicate() const
+char *String::Duplicate() const
 {
     char *res = new char[StrLen + 1];
 
@@ -247,7 +249,7 @@ char *FString::Duplicate() const
     return (res);
 }
 
-uint32 FString::CalcStartFromUnicode(const uint32 start) const
+uint32 String::CalcStartFromUnicode(const uint32 start) const
 {
     uint32 i = 0;
 
@@ -256,9 +258,9 @@ uint32 FString::CalcStartFromUnicode(const uint32 start) const
     return (i);
 }
 
-FString FString::Sub(const int begin, const int end) const
+String String::Sub(const int begin, const int end) const
 {
-    FString s;
+    String s;
     uint32 min;
     uint32 max;
 
@@ -275,9 +277,9 @@ FString FString::Sub(const int begin, const int end) const
     return (s);
 }
 
-FString FString::Sub(const int begin) const
+String String::Sub(const int begin) const
 {
-    FString s;
+    String s;
     uint32 min;
 
     if ((uint32)begin > UnicodeLen)
@@ -292,7 +294,7 @@ FString FString::Sub(const int begin) const
     return (s);
 }
 
-bool my_strstr(const char *pathern, const char *str)
+static bool my_strstr(const char *pathern, const char *str)
 {
     while (*pathern && *str)
         if (*pathern++ != *str++)
@@ -300,7 +302,7 @@ bool my_strstr(const char *pathern, const char *str)
     return (true);
 }
 
-bool FString::Contains(const FString &other) const
+bool String::Contains(const String &other) const
 {
     for (uint32 i = 0 ; i < StrLen ; i++)
     {
@@ -310,7 +312,7 @@ bool FString::Contains(const FString &other) const
     return (false);
 }
 
-bool FString::IsNumeric() const
+bool String::IsNumeric() const
 {
     bool coma = false;
 
@@ -328,26 +330,26 @@ bool FString::IsNumeric() const
     return (true);
 }
 
-void FString::Explode(FList<FString> &l, const char c) const
+void String::Explode(List<String> &l, const char c) const
 {
-    FString cur;
+    String cur;
 
     for (uint32 i = 0 ; i < StrLen ; i++)
     {
         if (Data[i] != c)
             cur += Data[i];
-        else if (cur != FString::Empty)
+        else if (cur != String::Empty)
         {
             l.Add(cur);
-            cur = FString::Empty;
+            cur = String::Empty;
         }
     }
     l.Add(cur);
 }
 
-void FString::ExplodeIgnoreChar(FList<FString> &l, const char c, const char ignore) const
+void String::ExplodeIgnoreChar(List<String> &l, const char c, const char ignore) const
 {
-    FString cur;
+    String cur;
     bool ign = false;
 
     for (uint32 i = 0 ; i < StrLen ; i++)
@@ -356,35 +358,35 @@ void FString::ExplodeIgnoreChar(FList<FString> &l, const char c, const char igno
             ign = !ign;
         if (Data[i] != c || ign)
             cur += Data[i];
-        else if (cur != FString::Empty)
+        else if (cur != String::Empty)
         {
             l.Add(cur);
-            cur = FString::Empty;
+            cur = String::Empty;
         }
     }
     l.Add(cur);
 }
 
-void FString::Explode(FList<FString> &l, const FString &str) const
+void String::Explode(List<String> &l, const String &str) const
 {
-    FString cur;
+    String cur;
 
     for (uint32 i = 0 ; i < StrLen ; i++)
     {
         if (!my_strstr(str.Data, Data + i))
             cur += Data[i];
-        else if (cur != FString::Empty)
+        else if (cur != String::Empty)
         {
             l.Add(cur);
-            cur = FString::Empty;
+            cur = String::Empty;
         }
     }
     l.Add(cur);
 }
 
-void FString::ExplodeIgnoreChar(FList<FString> &l, const FString &str, const FString &ignore) const
+void String::ExplodeIgnoreChar(List<String> &l, const String &str, const String &ignore) const
 {
-    FString cur;
+    String cur;
     bool ign = false;
 
     for (uint32 i = 0 ; i < StrLen ; i++)
@@ -393,16 +395,16 @@ void FString::ExplodeIgnoreChar(FList<FString> &l, const FString &str, const FSt
             ign = !ign;
         if (!my_strstr(str.Data, Data + i) || ign)
             cur += Data[i];
-        else if (cur != FString::Empty)
+        else if (cur != String::Empty)
         {
             l.Add(cur);
-            cur = FString::Empty;
+            cur = String::Empty;
         }
     }
     l.Add(cur);
 }
 
-bool FString::StartsWith(const FString &other) const
+bool String::StartsWith(const String &other) const
 {
     if (StrLen < (uint32)other.Len())
         return (false);
@@ -412,7 +414,7 @@ bool FString::StartsWith(const FString &other) const
     return (true);
 }
 
-bool FString::EndsWith(const FString &other) const
+bool String::EndsWith(const String &other) const
 {
     if (StrLen < (uint32)other.Len())
         return (false);
@@ -422,9 +424,9 @@ bool FString::EndsWith(const FString &other) const
     return (true);
 }
 
-FString FString::Replace(const FString &search, const FString &repby) const
+String String::Replace(const String &search, const String &repby) const
 {
-    FString str;
+    String str;
 
     for (uint32 i = 0 ; i < StrLen ; i++)
     {
@@ -439,7 +441,7 @@ FString FString::Replace(const FString &search, const FString &repby) const
     return (str);
 }
 
-int FString::IndexOf(const FString &str) const
+int String::IndexOf(const String &str) const
 {
     uint32 i;
     uint32 charid = 0;
@@ -454,7 +456,7 @@ int FString::IndexOf(const FString &str) const
     return (-1);
 }
 
-int FString::LastIndexOf(const FString &str) const
+int String::LastIndexOf(const String &str) const
 {
     int i;
     int charid = UnicodeLen - 1;
@@ -469,7 +471,7 @@ int FString::LastIndexOf(const FString &str) const
     return (-1);
 }
 
-int FString::IndexOf(const char c) const
+int String::IndexOf(const char c) const
 {
     uint32 i;
     uint32 charid = 0;
@@ -484,7 +486,7 @@ int FString::IndexOf(const char c) const
     return (-1);
 }
 
-int FString::LastIndexOf(const char c) const
+int String::LastIndexOf(const char c) const
 {
     int i;
     int charid = UnicodeLen - 1;
@@ -499,24 +501,24 @@ int FString::LastIndexOf(const char c) const
     return (-1);
 }
 
-int FString::ToInt() const
+int String::ToInt() const
 {
     return (atoi(Data));
 }
 
-float FString::ToFloat() const
+float String::ToFloat() const
 {
     return ((float)atof(Data));
 }
 
-double FString::ToDouble() const
+double String::ToDouble() const
 {
     return (atof(Data));
 }
 
-FString FString::ToUpper() const
+String String::ToUpper() const
 {
-    FString res;
+    String res;
 
     for (uint32 i = 0 ; i < StrLen ; ++i)
     {
@@ -528,9 +530,9 @@ FString FString::ToUpper() const
     return (res);
 }
 
-FString FString::ToLower() const
+String String::ToLower() const
 {
-    FString res;
+    String res;
 
     for (uint32 i = 0 ; i < StrLen ; ++i)
     {
@@ -730,16 +732,16 @@ namespace FEvalExpr
     }
 }
 
-EEvalExprCode FString::Evaluate(char const *expr, double &res)
+EEvalExprCode String::Evaluate(char const *expr, double &res)
 {
     res = 0;
     return FEvalExpr::Operation(&expr, res, false);
 }
 /* END Eval expr */
 
-FString FString::ValueOf(EEvalExprCode cde)
+String String::ValueOf(EEvalExprCode cde)
 {
-    FString res;
+    String res;
 
     switch (cde)
     {
@@ -765,55 +767,55 @@ FString FString::ValueOf(EEvalExprCode cde)
     return (res);
 }
 
-FString FString::ValueOf(int i)
+String String::ValueOf(int i)
 {
     std::stringstream    strs;
 
     strs << i;
-    return (FString(strs.str().c_str()));
+    return (String(strs.str().c_str()));
 }
 
-FString FString::ValueOf(uint32 i)
+String String::ValueOf(uint32 i)
 {
     std::stringstream    strs;
 
     strs << i;
-    return (FString(strs.str().c_str()));
+    return (String(strs.str().c_str()));
 }
 
-FString FString::ValueOf(uint64 i)
+String String::ValueOf(uint64 i)
 {
     std::stringstream    strs;
 
     strs << i;
-    return (FString(strs.str().c_str()));
+    return (String(strs.str().c_str()));
 }
 
-FString FString::ValueOf(int64 i)
+String String::ValueOf(int64 i)
 {
     std::stringstream    strs;
 
     strs << i;
-    return (FString(strs.str().c_str()));
+    return (String(strs.str().c_str()));
 }
 
-FString FString::ValueOf(float f)
+String String::ValueOf(float f)
 {
     std::stringstream    strs;
 
     strs << f;
-    return (FString(strs.str().c_str()));
+    return (String(strs.str().c_str()));
 }
 
-FString FString::ValueOf(double d)
+String String::ValueOf(double d)
 {
     std::stringstream    strs;
 
     strs << d;
-    return (FString(strs.str().c_str()));
+    return (String(strs.str().c_str()));
 }
 
-FString FString::ValueOf(void *ptr)
+String String::ValueOf(void *ptr)
 {
     std::stringstream    strs;
 

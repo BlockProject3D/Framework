@@ -7,12 +7,12 @@ namespace Framework
     {
     private:
         IFileStream *Stream;
-        FString FullPath;
-        FString FileName;
-        FString FileExt;
-        FString AbsolutePath;
+        bpf::String FullPath;
+        bpf::String FileName;
+        bpf::String FileExt;
+        bpf::String AbsolutePath;
     public:
-        FFile(const FString &path);
+        FFile(const bpf::String &path);
         FFile();
         ~FFile();
 
@@ -40,7 +40,7 @@ namespace Framework
          * Lists all files in that directory (of course if this is a directory)
          * @param files the output list of files to fill
          */
-        void ListFiles(FList<FFile> &files);
+        void ListFiles(bpf::List<FFile> &files);
 
         /**
          * Creates the directory if this is a directory
@@ -56,7 +56,7 @@ namespace Framework
         /**
          * Returns the full path to the file (as given in the constructor)
          */
-        inline const FString &GetPath() const
+        inline const bpf::String &GetPath() const
         {
             return (FullPath);
         }
@@ -65,7 +65,7 @@ namespace Framework
          * Returns the absolute path constructed from this path,
          * That means a path that starts from system's root folder
          */
-        inline const FString &GetAbsolutePath() const
+        inline const bpf::String &GetAbsolutePath() const
         {
             return (AbsolutePath);
         }
@@ -75,7 +75,7 @@ namespace Framework
             return (FFile(FullPath + "/" + other.FullPath));
         }
 
-        inline FFile operator+(const FString &other) const
+        inline FFile operator+(const bpf::String &other) const
         {
             return (FFile(FullPath + "/" + other));
         }
@@ -83,7 +83,7 @@ namespace Framework
         /**
          * Returns the file's name
          */
-        inline const FString &GetFileName() const
+        inline const bpf::String &GetFileName() const
         {
             return (FileName);
         }
@@ -91,7 +91,7 @@ namespace Framework
         /**
          * Returns the file's extension
          */
-        inline const FString &GetFileExt() const
+        inline const bpf::String &GetFileExt() const
         {
             return (FileExt);
         }
@@ -107,7 +107,7 @@ namespace Framework
          */
         IFileStream *Open(const EFileMode mode);
 
-        FString ToString() const;
+        bpf::String ToString() const;
     };
 };
 

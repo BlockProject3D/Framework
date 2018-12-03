@@ -3,7 +3,7 @@
 
 # include <type_traits>
 
-namespace Framework
+namespace bpf
 {
     enum EEvalExprCode
     {
@@ -15,7 +15,7 @@ namespace Framework
         EVAL_EXPR_SUCCESS,
     };
 
-    class ENGINE_API FString
+    class BPF_API String
     {
     private:
         char *Data;
@@ -26,36 +26,36 @@ namespace Framework
         uint32 CalcUnicodeLen(const char *str, const uint32 len) const;
         uint32 CalcStartFromUnicode(const uint32 start) const;
         static uint8 CalcCharIncrement(const char c);
-        void MakeSized(FString &str, const uint32 len) const;
+        void MakeSized(String &str, const uint32 len) const;
     public:
         /**
          * Constructs a new empty string
          */
-        FString();
+        String();
 
         /**
          * Constructs a new string from a string literal
          * @param str pointer to an array of bytes containing UTF-8 data
          */
-        FString(const char *str);
+        String(const char *str);
 
         /**
          * Constructs a new string from a single character
          * @param c the character to copy in the string
          */
-        FString(const char c);
+        String(const char c);
 
         /**
          * Copy constructor
          */
-        FString(const FString &s);
+        String(const String &s);
 
         /**
          * Move constructor
          */
-        FString(FString &&s);
+        String(String &&s);
 
-        ~FString();
+        ~String();
 
         /**
          * Returns a UTF32 character from a null-terminated UTF8 byte sequence
@@ -75,17 +75,17 @@ namespace Framework
         /**
          * Returns a new string from concatenation of this + other
          */
-        FString operator+(const FString &other) const;
+        String operator+(const String &other) const;
 
         /**
          * Returns a new string from concatenation of this + other
          */
-        FString operator+(const char other) const;
+        String operator+(const char other) const;
         
         /**
          * Returns a new string from concatenation of this + other
          */
-        inline FString operator+(const int other) const
+        inline String operator+(const int other) const
         {
             return (operator+(ValueOf(other)));
         }
@@ -93,7 +93,7 @@ namespace Framework
         /**
          * Returns a new string from concatenation of this + other
          */
-        inline FString operator+(const float other) const
+        inline String operator+(const float other) const
         {
             return (operator+(ValueOf(other)));
         }
@@ -101,7 +101,7 @@ namespace Framework
         /**
          * Returns a new string from concatenation of this + other
          */
-        inline FString operator+(const double other) const
+        inline String operator+(const double other) const
         {
             return (operator+(ValueOf(other)));
         }
@@ -109,7 +109,7 @@ namespace Framework
         /**
          * Returns a new string from concatenation of this + other
          */
-        inline FString operator+(const uint32 other) const
+        inline String operator+(const uint32 other) const
         {
             return (operator+(ValueOf(other)));
         }
@@ -117,7 +117,7 @@ namespace Framework
         /**
          * Returns a new string from concatenation of this + other
          */
-        inline FString operator+(const uint64 other) const
+        inline String operator+(const uint64 other) const
         {
             return (operator+(ValueOf(other)));
         }
@@ -125,17 +125,17 @@ namespace Framework
         /**
          * Appends a string at the end of this string
          */
-        FString &operator+=(const FString &other);
+        String &operator+=(const String &other);
 
         /**
          * Appends a single byte at the end of this string
          */
-        FString &operator+=(const char other);
+        String &operator+=(const char other);
 
         /**
          * Appends an int at the end of this string
          */
-        inline FString &operator+=(const int other)
+        inline String &operator+=(const int other)
         {
             return (operator+=(ValueOf(other)));
         }
@@ -143,7 +143,7 @@ namespace Framework
         /**
          * Appends a float at the end of this string
          */
-        inline FString &operator+=(const float other)
+        inline String &operator+=(const float other)
         {
             return (operator+=(ValueOf(other)));
         }
@@ -151,7 +151,7 @@ namespace Framework
         /**
          * Appends a double at the end of this string
          */
-        inline FString &operator+=(const double other)
+        inline String &operator+=(const double other)
         {
             return (operator+=(ValueOf(other)));
         }
@@ -159,7 +159,7 @@ namespace Framework
         /**
          * Appends a uint32 number at the end of this string
          */
-        inline FString &operator+=(const uint32 other)
+        inline String &operator+=(const uint32 other)
         {
             return (operator+=(ValueOf(other)));
         }
@@ -167,7 +167,7 @@ namespace Framework
         /**
          * Appends a uint64 number at the end of this string
          */
-        inline FString &operator+=(const uint64 other)
+        inline String &operator+=(const uint64 other)
         {
             return (operator+=(ValueOf(other)));
         }
@@ -175,24 +175,24 @@ namespace Framework
         /**
          * Copy assignment operator
          */
-        FString &operator=(const FString &other);
+        String &operator=(const String &other);
 
         /**
          * Move assignment operator
          */
-        FString &operator=(FString &&other);
+        String &operator=(String &&other);
 
         /**
          * Returns true if this string is equal to other
          * @param other the other string to compare with
          */
-        bool operator==(const FString &other) const;
+        bool operator==(const String &other) const;
 
         /**
          * Returns true if this string is not equal to other
          * @param other the other string to compare with
          */
-        inline bool operator!=(const FString &other) const
+        inline bool operator!=(const String &other) const
         {
             return (!operator==(other));
         }
@@ -201,20 +201,20 @@ namespace Framework
          * Compares this string with another : returns true if this is less than other
          * @param other the other string to compare with
          */
-        bool operator<(const FString &other) const;
+        bool operator<(const String &other) const;
 
         /**
          * Compares this string with another : returns true if this is greater than other
          * @param other the other string to compare with
          */
-        bool operator>(const FString &other) const;
+        bool operator>(const String &other) const;
 
         /**
          * Returns a new string with all occurenses of search replaced by repby
          * @param search the string to search for
          * @param repby the string to replace occurenses of search with
          */
-        FString Replace(const FString &search, const FString &repby) const;
+        String Replace(const String &search, const String &repby) const;
 
         /**
          * Returns a character of this string at offset id
@@ -273,37 +273,37 @@ namespace Framework
          * Returns a copy of this string in all upper case
          * Not working with non ascii characters
          */
-        FString ToUpper() const;
+        String ToUpper() const;
 
         /**
          * Returns a copy of this string in all lower case
          * Not working with non ascii characters
          */
-        FString ToLower() const;
+        String ToLower() const;
 
         /**
          * Appends a string to this string
          * @param other the other string to copy characters from
          * @param n how many characters should be copied
          */
-        FString &Append(const FString &other, const uint32 n);
+        String &Append(const String &other, const uint32 n);
 
         /**
          * Appends a string to this string
          * @param data an arry of characetrs to copy from
          * @param n how many characters should be copied
          */
-        FString &Append(const char *data, const uint32 n);
+        String &Append(const char *data, const uint32 n);
 
         /**
          * Returns the index of the first occurence of str in this
          */
-        int IndexOf(const FString &str) const;
+        int IndexOf(const String &str) const;
 
         /**
          * Returns the index of the last occurence of str in this
          */
-        int LastIndexOf(const FString &str) const;
+        int LastIndexOf(const String &str) const;
 
         /**
          * Returns the index of the first occurence of c in this
@@ -320,7 +320,7 @@ namespace Framework
          * @param l the list to load of tokens
          * @param c the sperator char
          */
-        void Explode(FList<FString> &l, const char c) const;
+        void Explode(List<String> &l, const char c) const;
 
         /**
          * Splits this string using a delimiter
@@ -328,14 +328,14 @@ namespace Framework
          * @param c the seperator char
          * @param ignore character to identify escape sequences (all characters between two of this ignore char will be interpreted as a single token)
          */
-        void ExplodeIgnoreChar(FList<FString> &l, const char c, const char ignore) const;
+        void ExplodeIgnoreChar(List<String> &l, const char c, const char ignore) const;
 
         /**
          * Splits this string using a delimiter
          * @param l the list to load of tokens
          * @param str the separator string
          */
-        void Explode(FList<FString> &l, const FString &str) const;
+        void Explode(List<String> &l, const String &str) const;
 
         /**
          * Splits this string using a delimiter
@@ -343,35 +343,35 @@ namespace Framework
          * @param str the separator string
          * @param ignore string to identify escape sequences (all characters between two of this ignore string will be interpreted as a single token)
          */
-        void ExplodeIgnoreChar(FList<FString> &l, const FString &str, const FString &ignore) const;
+        void ExplodeIgnoreChar(List<String> &l, const String &str, const String &ignore) const;
 
         /**
          * Returns true if this string starts with other
          */
-        bool StartsWith(const FString &other) const;
+        bool StartsWith(const String &other) const;
 
         /**
          * Returns true if this string ends with other
          */
-        bool EndsWith(const FString &other) const;
+        bool EndsWith(const String &other) const;
 
         /**
          * Returns true if this string contains other
          */
-        bool Contains(const FString &other) const;
+        bool Contains(const String &other) const;
 
         /**
          * Returns a substring
          * @param begin the begin index in characters included
          * @param end the end index in characters included
          */
-        FString Sub(const int begin, const int end) const;
+        String Sub(const int begin, const int end) const;
 
         /**
          * Returns a substring where the end is the end of this string
          * @param begin the begin index in characters included
          */
-        FString Sub(const int begin) const;
+        String Sub(const int begin) const;
 
         /**
          * Converts this string to an integer
@@ -398,7 +398,7 @@ namespace Framework
          */
         inline EEvalExprCode Evaluate(double &res)
         {
-            return (FString::Evaluate(Data, res));
+            return (String::Evaluate(Data, res));
         }
 
         /**
@@ -407,7 +407,7 @@ namespace Framework
          * @param format the given format
          */
         template <typename ...Args>
-        inline static FString Format(const FString &format, Args&&...)
+        inline static String Format(const String &format, Args&&...)
       	{
             return (format);
       	}
@@ -418,24 +418,24 @@ namespace Framework
          * @param format the given format
          */
         template <typename T, typename ...Args>
-        static FString Format(const FString &format, T &&t, Args&&... args)
+        static String Format(const String &format, T &&t, Args&&... args)
         {
-            FString res;
+            String res;
 
             int i = format.IndexOf('[');
             int j = format.IndexOf(']');
             if (i > -1 && j > -1 && format.Sub(i - 1, i) != "\\")
             {
                 res += format.Sub(0, i);
-                FString pattern = format.Sub(i + 1, j);
-                FList<FString> tokens;
+                String pattern = format.Sub(i + 1, j);
+                List<String> tokens;
                 pattern.Explode(tokens, ',');
                 if (tokens.Size() < 3)
                     return (res + ValueOf(t) + Format(format.Sub(j + 1), args...));
                 int maxn = tokens[0].ToInt();
                 bool left = tokens[1] == "left";
-                FString leading = tokens[2];
-                FString data = ValueOf(t);
+                String leading = tokens[2];
+                String data = ValueOf(t);
                 if (data.Len() > maxn)
                     data = data.Sub(0, maxn);
                 else if (data.Len() < maxn)
@@ -460,21 +460,21 @@ namespace Framework
             }
         }
 
-        inline FString ToString() const
+        inline String ToString() const
         {
             return (*this);
         }
 
         inline uint32 Hash() const
         {
-            return (Framework::Hash<const char *>(Data));
+            return (bpf::Hash<const char *>(Data));
         }
 
         /**
          * Converts any object to it's string representation by calling ToString on it
          */
         template <typename T, typename std::enable_if<std::is_class<T>::value>::type * = nullptr>
-        inline static FString ValueOf(const T &val)
+        inline static String ValueOf(const T &val)
         {
             return (val.ToString());
         }
@@ -483,7 +483,7 @@ namespace Framework
          * Converts any pointer type to it's string representation
          */
         template <typename T, typename std::enable_if<std::is_pointer<T>::value>::type * = nullptr>
-        inline static FString ValueOf(T val)
+        inline static String ValueOf(T val)
         {
             return (ValueOf((void *)val));
         }
@@ -491,87 +491,87 @@ namespace Framework
         /**
          * Converts an EvalExpr result code in string
          */
-        static FString ValueOf(EEvalExprCode cde);
+        static String ValueOf(EEvalExprCode cde);
         
         /**
          * Converts a signed integer 32 bits to it's string representation
          */
-        static FString ValueOf(int i);
+        static String ValueOf(int i);
         
         /**
          * Converts an unsigned integer 32 bits to it's string representation
          */
-        static FString ValueOf(uint32 i);
+        static String ValueOf(uint32 i);
         
         /**
          * Converts an unsigned integer 64 bits to it's string representation
          */
-        static FString ValueOf(uint64 i);
+        static String ValueOf(uint64 i);
         
         /**
          * Converts a signed integer 64 bits to it's string representation
          */
-        static FString ValueOf(int64 i);
+        static String ValueOf(int64 i);
         
         /**
          * Converts a float to it's string representation
          */
-        static FString ValueOf(float f);
+        static String ValueOf(float f);
         
         /**
          * Converts a double to it's string representation
          */
-        static FString ValueOf(double d);
+        static String ValueOf(double d);
         
         /**
          * Converts a raw pointer to it's string representation
          */
-        static FString ValueOf(void *ptr);
+        static String ValueOf(void *ptr);
         
         /**
          * Converts a signed integer 8 bits to it's string representation
          */
-        inline static FString ValueOf(int8 i)
+        inline static String ValueOf(int8 i)
         {
-            return (ValueOf((int)i));
+            return (ValueOf(static_cast<int>(i)));
         }
         
         /**
          * Converts an unsigned integer 8 bits to it's string representation
          */
-        inline static FString ValueOf(uint8 i)
+        inline static String ValueOf(uint8 i)
         {
-            return (ValueOf((int)i));
+            return (ValueOf(static_cast<int>(i)));
         }
         
         /**
          * Converts a signed integer 16 bits to it's string representation
          */
-        inline static FString ValueOf(int16 i)
+        inline static String ValueOf(int16 i)
         {
-            return (ValueOf((int)i));
+            return (ValueOf(static_cast<int>(i)));
         }
         
         /**
          * Converts an unsigned integer 16 bits to it's string representation
          */
-        inline static FString ValueOf(uint16 i)
+        inline static String ValueOf(uint16 i)
         {
-            return (ValueOf((int)i));
+            return (ValueOf(static_cast<int>(i)));
         }
         
         /**
          * Converts a low-level C string to a high level string
          */
-        inline static FString ValueOf(const char *s)
+        inline static String ValueOf(const char *s)
         {
-            return (FString(s));
+            return (String(s));
         }
 
         /**
          * Converts a bool to it's string representation
          */
-        inline static FString ValueOf(bool b)
+        inline static String ValueOf(bool b)
         {
             return (b ? "TRUE" : "FALSE");
         }
@@ -579,10 +579,10 @@ namespace Framework
         /**
          * Empty string constant
          */
-        static const FString Empty;
+        static const String Empty;
     };
-};
+}
 
-DEFINE_DEFAULT(Framework::FString, Framework::FString());
+DEFINE_DEFAULT(bpf::String, bpf::String());
 
 #endif /* !STRING_H_ */

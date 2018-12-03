@@ -8,7 +8,7 @@ FProfiler::FProfiler()
 {
 }
 
-void FProfiler::Push(const FString &name)
+void FProfiler::Push(const bpf::String &name)
 {
     FProfilerSection section;
 
@@ -25,10 +25,10 @@ void FProfiler::Push(const FString &name)
     Stack.Push(section);
 }
 
-FArray<FProfilerSection> &FProfiler::GenDisplayList()
+bpf::Array<FProfilerSection> &FProfiler::GenDisplayList()
 {
     if (Sections.Length() != CurCreationID)
-        Sections = FArray<FProfilerSection>(CurCreationID);
+        Sections = bpf::Array<FProfilerSection>(CurCreationID);
     for (auto it = ProfilerMap.Begin() ; it ; ++it)
         Sections[(*it).Value.CreationID] = (*it).Value;
     return (Sections);

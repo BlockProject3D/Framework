@@ -1,72 +1,75 @@
 #ifndef ARRAY_H_
 # define ARRAY_H_
 
-namespace Framework
+namespace bpf
 {
     template <typename T>
-    class ENGINE_API FArray
+    class BPF_API Array
     {
     public:
-        class ENGINE_API Iterator final : public IIterator<typename FArray<T>::Iterator, T>
+        class BPF_API Iterator final : public IIterator<typename Array<T>::Iterator, T>
         {
         private:
-            int CurID;
-            int Max;
-            T *Array;
+            int _curid;
+            int _max;
+            T *_arr;
+
         public:
             inline Iterator(T *lowlevel, const int size, const int start)
-                : CurID(start), Max(size), Array(lowlevel)
+                : _curid(start), _max(size), _arr(lowlevel)
             {
             }
             inline void operator++()
             {
-                if (CurID < Max)
-                    CurID++;
+                if (_curid < _max)
+                    _curid++;
             }
             inline void operator--()
             {
-                if (CurID > -1)
-                    CurID--;
+                if (_curid > -1)
+                    _curid--;
             }
             inline const T &operator*() const
             {
-                return (Array[CurID]);
+                return (_arr[_curid]);
             }
             inline const T &operator->() const
             {
-                return (Array[CurID]);
+                return (_arr[_curid]);
             }
             inline operator bool() const
             {
-                return (CurID != Max && CurID != -1);
+                return (_curid != _max && _curid != -1);
             }
             inline bool operator==(const Iterator &other) const
             {
-                return (CurID == other.CurID);
+                return (_curid == other._curid);
             }
             inline bool operator!=(const Iterator &other) const
             {
-                return (CurID != other.CurID);
+                return (_curid != other._curid);
             }
         };
+
     private:
-        uint32 FixedSize;
-        T *Array;
+        uint32 _size;
+        T *_arr;
+
     public:
         /**
          * Constructs an empty array
          */
-        FArray();
+        Array();
 
         /**
          * Constructs an array of given size
          * @param size the size of the new array
          */
-        FArray(const uint32 size);
+        Array(const uint32 size);
 
-        FArray(FArray<T> &&arr);
-        ~FArray();
-        FArray<T> &operator=(FArray<T> &&arr);
+        Array(Array<T> &&arr);
+        ~Array();
+        Array<T> &operator=(Array<T> &&arr);
 
         /**
          * Returns an element const mode
@@ -85,11 +88,11 @@ namespace Framework
          */
         uint32 Length() const;
 
-        FString ToString() const;
+        String ToString() const;
 
         inline T *operator*() const
         {
-            return (Array);
+            return (_arr);
         }
 
         /**
@@ -97,7 +100,7 @@ namespace Framework
          */
         inline Iterator Begin() const
         {
-            return (Iterator(Array, FixedSize, 0));
+            return (Iterator(_arr, _size, 0));
         }
 
         /**
@@ -105,82 +108,7 @@ namespace Framework
          */
         inline Iterator End() const
         {
-            return (Iterator(Array, FixedSize, FixedSize - 1));
-        }
-    };
-    
-    template <typename T>
-    class ENGINE_API FArrayList
-    {
-    private:
-        uint32 CurID;
-        FArray<T> Array;
-    public:
-        inline FArrayList()
-            : CurID(0), Array(16)
-        {
-        }
-
-        inline void Add(const T &elem)
-        {
-            Array[CurID++] = elem;
-        }
-
-        inline void Remove(const uint32 id)
-        {
-            Array[id] = DefaultOf<T>();
-            for (uint32 i = id ; i < CurID ; i += 2)
-                Array[i] = Array[i + 1];
-            --CurID;
-        }
-        
-        inline void Remove(const T &elem)
-        {
-            for (uint32 i = CurID ; i > 0 ; --i)
-            {
-                if (Array[i] == elem)
-                    Remove(i);
-            }
-            if (Array[0] == elem)
-                Remove((uint32)0);
-        }
-        
-        inline T *GetLast() const
-        {
-            if (CurID == 0)
-                return (Null);
-            return (&Array[CurID]);
-        }
-        
-        inline void RemoveLast()
-        {
-            Remove(CurID);
-        }
-        
-        inline uint32 Size() const
-        {
-            return (CurID);
-        }
-        
-        inline FString ToString() const
-        {
-            return (Array.ToString());
-        }
-        
-        /**
-         * Returns an iterator to the begining of the array
-         */
-        inline typename FArray<T>::Iterator Begin() const
-        {
-            return (typename FArray<T>::Iterator(*Array, CurID, 0));
-        }
-
-        /**
-         * Returns an iterator to the end of the array
-         */
-        inline typename FArray<T>::Iterator End() const
-        {
-            return (typename FArray<T>::Iterator(*Array, CurID, CurID));
+            return (Iterator(_arr, _size, _size - 1));
         }
     };
 };

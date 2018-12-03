@@ -80,7 +80,7 @@ namespace Framework
     public:
         virtual ~IFileStream() {}
         virtual void Seek(const uint64 pos) = 0;
-        virtual bool ReadLine(FString &line) = 0;
+        virtual bool ReadLine(bpf::String &line) = 0;
         virtual uint8 ReadByte() = 0;
         virtual int16 ReadShort() = 0;
         virtual uint16 ReadUShort() = 0;
@@ -88,7 +88,7 @@ namespace Framework
         virtual int ReadInt() = 0;
         virtual uint32 ReadUInt() = 0;
         virtual uint32 Read(uint8 *buffer, const uint32 sizebytes) = 0;
-        virtual void WriteString(const FString &str) = 0;
+        virtual void WriteString(const bpf::String &str) = 0;
         virtual void NewLine() = 0;
         virtual void WriteByte(const uint8 b) = 0;
         virtual void WriteShort(const int16 s) = 0;
@@ -107,15 +107,15 @@ namespace Framework
     {
     public:
         virtual ~IFileSystem() {}
-        virtual IFileStream *OpenFile(const FString &file, const EFileMode mode) = 0;
+        virtual IFileStream *OpenFile(const bpf::String &file, const EFileMode mode) = 0;
         virtual void CloseFile(IFileStream *f) = 0;
-        virtual bool FileExists(const FString &file) const = 0;
-        virtual bool IsDirectory(const FString &file) const = 0;
-        virtual void DeleteFile(const FString &file) = 0;
-        virtual void DeleteDirectory(const FString &file, bool recursive=true) = 0;
-        virtual void CreateDirectory(const FString &file) = 0;
-        virtual void ListFiles(const FString &dir, FList<FString> &l) = 0;
-        virtual uint64 GetFileSize(const FString &file) const = 0;
+        virtual bool FileExists(const bpf::String &file) const = 0;
+        virtual bool IsDirectory(const bpf::String &file) const = 0;
+        virtual void DeleteFile(const bpf::String &file) = 0;
+        virtual void DeleteDirectory(const bpf::String &file, bool recursive=true) = 0;
+        virtual void CreateDirectory(const bpf::String &file) = 0;
+        virtual void ListFiles(const bpf::String &dir, bpf::List<bpf::String> &l) = 0;
+        virtual uint64 GetFileSize(const bpf::String &file) const = 0;
         virtual FString GetSystemPath(const ESystemPath path) const = 0;
     };
 };

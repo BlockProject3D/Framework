@@ -1,43 +1,43 @@
 #ifndef LIST_H_
 # define LIST_H_
 
-namespace Framework
+#include <functional>
+
+namespace bpf
 {
     template <typename T>
-    class ENGINE_API FListNode
+    class BPF_API ListNode
     {
     public:
-        FListNode *Next;
-        FListNode *Prev;
+        ListNode *Next;
+        ListNode *Prev;
         T Data;
 
-	FListNode(const T &data)
+	ListNode(const T &data)
             : Next(NULL), Prev(NULL), Data(data)
         {
         }
-        FListNode(T &&data)
+        ListNode(T &&data)
             : Next(NULL), Prev(NULL), Data(std::move(data))
         {
         }
     };
-
-    template <typename T, typename ...Args>
-    class ENGINE_API FDelegateFunction;
 
     /**
      * A simple double chained linked list
      * @tparam T the type of element in that list
      */
     template <typename T>
-    class ENGINE_API FList
+    class BPF_API List
     {
     public:
-        class ENGINE_API Iterator final : public IIterator<typename FList<T>::Iterator, T>
+        class BPF_API Iterator final : public IIterator<typename List<T>::Iterator, T>
         {
         private:
-            FListNode<T> *Cur;
+            ListNode<T> *Cur;
+
         public:
-            inline Iterator(FListNode<T> *cur)
+            inline Iterator(ListNode<T> *cur)
                 : Cur(cur)
             {
             }
@@ -73,16 +73,16 @@ namespace Framework
             }
         };
     private:
-        FListNode<T> *First;
-        FListNode<T> *Last;
+        ListNode<T> *First;
+        ListNode<T> *Last;
         uint32 Count;
 
-        FListNode<T> *Partition(FListNode<T> *start, FListNode<T> *end);
-        void QuickSort(FListNode<T> *start, FListNode<T> *end);
-        void RemoveNode(FListNode<T> *toRM);
+        ListNode<T> *Partition(ListNode<T> *start, ListNode<T> *end);
+        void QuickSort(ListNode<T> *start, ListNode<T> *end);
+        void RemoveNode(ListNode<T> *toRM);
     public:
-        FList<T>();
-        ~FList<T>();
+        List<T>();
+        ~List<T>();
 
         /**
          * Adds an element at the end of the list
@@ -114,7 +114,7 @@ namespace Framework
          * Returns an element (safe), returns Null whenever element could not be found
          * @param id index of the element
          */
-        FListNode<T> *GetNode(uint32 id) const;
+        ListNode<T> *GetNode(uint32 id) const;
 
         T *Get(const uint32 id) const;
 
@@ -136,7 +136,7 @@ namespace Framework
 
         void Clear();
 
-        void ForEach(FDelegateFunction<void, const T &> &fnc) const;
+        void ForEach(const std::function<void(const T &)> &fnc) const;
 
         /**
          * Returns an iterator to the begining of the list

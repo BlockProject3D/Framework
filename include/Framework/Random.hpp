@@ -3,15 +3,16 @@
 
 # include <limits.h>
 
-namespace Framework
+namespace bpf
 {
-    class ENGINE_API FRandom
+    class BPF_API Random
     {
     private:
         int IntBounds(const int min, const int max);
+
     public:
-        FRandom();
-        FRandom(const long seed);
+        Random();
+        Random(const long seed);
         int NextInt(const int max = INT_MAX);
         int NextInt(const int min, const int max);
         uint8 NextByte(const uint8 max = 255);
@@ -28,9 +29,6 @@ namespace Framework
          * Returns random double between 0 and 1
          */
         double NextDouble();
-
-        FVector NextVector(const float mult = 1);
-        FColor NextColor();
     };
 };
 

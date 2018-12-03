@@ -39,11 +39,11 @@ void FByteBuf::Seek(const uint32 newpos)
     DataPtr = newpos;
 }
 
-bool FByteBuf::ReadLine(FString &line)
+bool FByteBuf::ReadLine(bpf::String &line)
 {
     if (DataPtr >= Size)
         return (false);
-    line = FString::Empty;
+    line = bpf::String::Empty;
     while (DataPtr < Size && Data[DataPtr] != '\n')
     {
         line += (char)Data[DataPtr];
@@ -106,7 +106,7 @@ uint32 FByteBuf::Read(uint8 *buffer, uint32 sizebytes)
     return (sizebytes);
 }
 
-void FByteBuf::WriteString(const FString &str)
+void FByteBuf::WriteString(const bpf::String &str)
 {
     for (int i = 0 ; i < str.Len() ; i++)
         WriteByte((uint8)str[i]);
