@@ -1,58 +1,31 @@
 #include "Framework/Framework.hpp"
 
-using namespace Framework;
+using namespace bpf;
 
-bpf::String FPaths::ShaderFolder = "NONE";
-bpf::String FPaths::ModulesFolder = "NULL";
-bpf::String FPaths::GameDataRoot = "";
+String Paths::ModulesFolder = "NULL";
+String Paths::AppDataRoot = "";
 
-bpf::String FPaths::ShadersSrc()
+String Paths::Assets()
 {
-    return (GameDataRoot + bpf::String("Shaders/") + ShaderFolder + "/");
+    return (AppDataRoot + String("Assets/"));
 }
 
-bpf::String FPaths::Shaders()
-{
-    return (GameDataRoot + "Shaders/");
-}
-
-bpf::String FPaths::Assets()
-{
-    return (GameDataRoot + bpf::String("Assets/"));
-}
-
-bpf::String FPaths::Models()
-{
-    return (GameDataRoot + "Assets/Models/");
-}
-
-bpf::String FPaths::Textures()
-{
-    return (GameDataRoot + "Assets/Textures/");
-}
-
-bpf::String FPaths::Modules()
+String Paths::Modules()
 {
     return (ModulesFolder + "/");
 }
 
-bpf::String FPaths::GameRoot()
+String Paths::AppRoot()
 {
-    return (GameDataRoot + "/");
+    return (AppDataRoot + "/");
 }
 
-void FPaths::SetGameRoot(const bpf::String &folder, const bpf::String &suffix)
+void Paths::SetAppRoot(const String &folder)
 {
-    GameDataRoot = folder.Sub(0, folder.LastIndexOf('/') + 1);
-    GameDataRoot += suffix;
+    AppDataRoot = folder;
 }
 
-void FPaths::SetShaderSubfolder(const bpf::String &folder)
+void Paths::SetModuleRoot(const bpf::String &folder)
 {
-    ShaderFolder = folder;
-}
-
-void FPaths::SetModuleRoot(const bpf::String &folder)
-{
-    ModulesFolder = folder.Sub(0, folder.LastIndexOf('/') + 1);
+    ModulesFolder = folder;
 }

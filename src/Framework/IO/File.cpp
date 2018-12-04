@@ -9,10 +9,12 @@ FFile::FFile(const bpf::String &path)
     : Stream(Null), FullPath(path), FileName(path.Sub(path.LastIndexOf('/') + 1)),
     FileExt(path.Sub(path.LastIndexOf('.') + 1))
 {
+#ifndef WINDOWS
     char buf[PATH_MAX];
 
     realpath(*path, buf);
     AbsolutePath = buf;
+#endif
 }
 
 FFile::FFile()

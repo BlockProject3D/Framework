@@ -28,7 +28,7 @@ void FModuleManager::Shutdown()
 
 bool FModuleManager::LoadModule(const char *name)
 {
-    bpf::String moduleFile = FPaths::Modules() + bpf::String(name);
+    bpf::String moduleFile = bpf::Paths::Modules() + bpf::String(name);
     bpf::String vname = bpf::String(name).Sub(0, bpf::String(name).LastIndexOf('.'));
 
     if (ModuleLoaded(name))

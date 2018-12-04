@@ -10,6 +10,7 @@ namespace Framework
     {
     private:
         std::function<T(Args...)> FuncPtr;
+
     public:
         inline FDelegateFunction()
             : FuncPtr(Null)
