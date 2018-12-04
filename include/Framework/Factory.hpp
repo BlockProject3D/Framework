@@ -25,13 +25,13 @@ namespace Framework
     class ENGINE_API FFactory
     {
     private:
-        bpf::Map<FString, IConstructor<T, Args...> *> Registry;
+        bpf::Map<bpf::String, IConstructor<T, Args...> *> Registry;
     public:
-        inline void AddClass(const FString &name, IConstructor<T, Args...> *c)
+        inline void AddClass(const bpf::String &name, IConstructor<T, Args...> *c)
         {
             Registry[name] = c;
         }
-        inline T *New(const FString &name, Args&&... args)
+        inline T *New(const bpf::String &name, Args&&... args)
         {
             if (!Registry.HasKey(name))
                 return (Null);

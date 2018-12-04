@@ -1,5 +1,5 @@
 #include <cstring>
-#include "Framework/Framework.hpp"
+#include "Framework/IO/Stream.hpp"
 
 using namespace Framework;
 

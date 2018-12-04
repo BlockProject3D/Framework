@@ -25,7 +25,7 @@ namespace bpf
         {
             return (*Type);
         }
-        virtual void Log(Framework::FLogger &logger) const override;
+        //virtual void Log(Framework::FLogger &logger) const override;
     };
 }
 

@@ -1,6 +1,8 @@
 #ifndef FILESYSTEM_H_
 # define FILESYSTEM_H_
 
+#include "Framework/IO/Stream.hpp"
+
 /**
  * This is low-level file system abstraction layer
  * Direct usage of IFileSystem is no longer necessary, prefer to use high level API FFile to represent a file.

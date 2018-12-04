@@ -1,6 +1,8 @@
 #ifndef STREAM_H_
 # define STREAM_H_
 
+#include "Framework/System/Platform.hpp"
+
 namespace Framework
 {
     class ENGINE_API IInputStream

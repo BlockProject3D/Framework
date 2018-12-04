@@ -8,7 +8,7 @@ RuntimeException::RuntimeException(const String &type, const String &message) no
 {
 }
 
-void RuntimeException::Log(Framework::FLogger &logger) const
+/*void RuntimeException::Log(Framework::FLogger &logger) const
 {
     logger.Log(Framework::LOG_FATAL, "Exception thrown (%s) : %s", *Type, *Message);
-}
+}*/

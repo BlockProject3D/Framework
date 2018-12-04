@@ -1,6 +1,8 @@
 #ifndef MODULE_H_
 # define MODULE_H_
 
+#include "Framework/Framework.hpp"
+
 namespace Framework
 {
     class ENGINE_API FModuleException : public bpf::RuntimeException
@@ -17,6 +19,7 @@ namespace Framework
     private:
         bpf::String Path;
         void *Handle;
+
     public:
         /**
          * Opens a module binary at a specified path, file extension omitted.

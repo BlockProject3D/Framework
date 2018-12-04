@@ -13,6 +13,6 @@ namespace bpf
             , ID(id)
         {
         }
-        void Log(Framework::FLogger &logger) const;
+        //void Log(Framework::FLogger &logger) const;
     };
 }

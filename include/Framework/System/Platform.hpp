@@ -2,10 +2,25 @@
 # define PLATFORM_H_
 
 # include <initializer_list>
+#include "Framework/Framework.hpp"
 
 namespace bpf
 {
     class String;
+
+    /*struct Properties
+    {
+        int NumCPUCores;
+        int CPUFreq;
+        uint64 MaxRAM;
+        String OSName;
+        String OSVersion;
+        String OSModuleExt;
+        String OSPathSep;
+        String OSNewLine;
+        String EnvName;
+        String EnvVersion;
+    };*/
 } // TODO : Remove
 
 namespace Framework
@@ -55,11 +70,6 @@ namespace Framework
     public:
         static void RequestExit(bool force=false);
         static bool IsExiting();
-        DEPRECATED(static void *OpenDLL(const char *file));
-        DEPRECATED(static void CloseDLL(void *hdl));
-        DEPRECATED(static const char *GetDLLExt());
-        DEPRECATED(static void *GetDLLSymbol(void *hdl, const char *name));
-        DEPRECATED(static const char *GetLastError());
         static IFileSystem *GetFileSystem();
         static ISystemManager *GetBaseSystem();
         static EPlatformEndianess GetPlatformEndianess();

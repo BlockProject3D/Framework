@@ -1,11 +1,6 @@
 #ifndef EXCEPTION_H_
 # define EXCEPTION_H_
 
-namespace Framework
-{
-    class FLogger;
-}
-
 namespace bpf
 {
     class BPF_API Exception
@@ -26,7 +21,7 @@ namespace bpf
         /**
          * Logs the exception to the given logger
          */
-        virtual void Log(Framework::FLogger &logger) const;
+        //virtual void Log(Framework::FLogger &logger) const;
     };
 };
 

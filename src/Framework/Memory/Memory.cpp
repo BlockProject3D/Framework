@@ -1,11 +1,11 @@
 #include "Framework/Framework.hpp"
 
-using namespace Framework;
+using namespace bpf;
 
 #ifdef BUILD_DEBUG
-int FMemory::Allocs = 0;
-size_t FMemory::CurUsedMem = 0;
-std::mutex FMemory::MemMutex;
+int Memory::Allocs = 0;
+size_t Memory::CurUsedMem = 0;
+std::mutex Memory::MemMutex;
 
 struct Metadata
 {
@@ -13,7 +13,7 @@ struct Metadata
 };
 #endif
 
-void *FMemory::Malloc(size_t size)
+void *Memory::Malloc(size_t size)
 {
 #ifdef BUILD_DEBUG
     void *data = malloc(size + sizeof(Metadata));
@@ -22,7 +22,7 @@ void *FMemory::Malloc(size_t size)
 #endif
 
     if (data == Null)
-        throw FMemoryException();
+        throw MemoryException();
 #ifdef BUILD_DEBUG
     MemMutex.lock();
     ++Allocs;
@@ -36,7 +36,7 @@ void *FMemory::Malloc(size_t size)
 #endif
 }
 
-void FMemory::Free(void *addr)
+void Memory::Free(void *addr)
 {
 #ifdef BUILD_DEBUG
     if (addr == Null)
@@ -51,7 +51,7 @@ void FMemory::Free(void *addr)
 #endif
 }
 
-void *FMemory::Realloc(void *addr, size_t newsize)
+void *Memory::Realloc(void *addr, size_t newsize)
 {
 #ifdef BUILD_DEBUG
     void *data;
@@ -68,7 +68,7 @@ void *FMemory::Realloc(void *addr, size_t newsize)
         data = realloc(addr, newsize + sizeof(Metadata));
     }
     if (data == Null)
-        throw FMemoryException();
+        throw MemoryException();
     Metadata *meta = static_cast<Metadata *>(data);
     meta->MemSize = newsize;
     MemMutex.lock();

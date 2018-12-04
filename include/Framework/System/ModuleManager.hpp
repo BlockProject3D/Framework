@@ -2,7 +2,8 @@
 # define MODULEMANAGER_H_
 
 # include <map>
-//# include "engine/version.h"
+#include "Framework/Logging/Logger.hpp"
+#include "Framework/System/Module.hpp"
 
 # ifdef WINDOWS
 #  define IMPLEMENT_MODULE(name, clname) \
@@ -58,7 +59,7 @@ namespace Framework
     class ENGINE_API FModuleManager
     {
     private:
-        static FLogger *Log;
+        static bpf::Logger *Log;
         static bpf::List<FModuleEntry *> ModuleList;
         static bpf::Map<const char *, FModuleEntry *> ModuleMap;
 

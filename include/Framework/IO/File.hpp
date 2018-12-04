@@ -1,6 +1,8 @@
 #ifndef FILE_H_
 # define FILE_H_
 
+#include "Framework/IO/FileSystem.hpp"
+
 namespace Framework
 {
     class ENGINE_API FFile

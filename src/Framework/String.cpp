@@ -53,20 +53,20 @@ String::String(const char *str)
         StrLen += charLen;
         strIndex += charLen;
     }
-    Data = static_cast<char *>(Framework::FMemory::Malloc(sizeof(char) * (StrLen + 1)));
+    Data = static_cast<char *>(Memory::Malloc(sizeof(char) * (StrLen + 1)));
     CopyString(str, Data, StrLen);
 }
 
 String::String(const char c)
-    : Data(NULL), StrLen(1), UnicodeLen(1)
+    : Data(Null), StrLen(1), UnicodeLen(1)
 {
-    Data = static_cast<char *>(Framework::FMemory::Malloc(sizeof(char) * (StrLen + 1)));
+    Data = static_cast<char *>(Memory::Malloc(sizeof(char) * (StrLen + 1)));
     Data[0] = c;
     Data[1] = '\0';
 }
 
 String::String(const String &s)
-    : Data(static_cast<char *>(Framework::FMemory::Malloc(sizeof(char) * (s.StrLen + 1)))),
+    : Data(static_cast<char *>(Memory::Malloc(sizeof(char) * (s.StrLen + 1)))),
     StrLen(s.StrLen), UnicodeLen(s.UnicodeLen)
 {
     CopyString(s.Data, Data, s.StrLen);
@@ -75,7 +75,7 @@ String::String(const String &s)
 String::String(String &&s)
     : Data(s.Data), StrLen(s.StrLen), UnicodeLen(s.UnicodeLen)
 {
-    s.Data = NULL;
+    s.Data = Null;
     s.StrLen = 0;
     s.UnicodeLen = 0;
 }
@@ -90,12 +90,12 @@ fchar String::operator[](const int id) const
 void String::MakeSized(String &str, const uint32 len) const
 {
     str.StrLen = len;
-    str.Data = static_cast<char *>(Framework::FMemory::Malloc(sizeof(char) * (len + 1)));
+    str.Data = static_cast<char *>(Memory::Malloc(sizeof(char) * (len + 1)));
 }
 
 String &String::operator=(String &&other)
 {
-    Framework::FMemory::Free(Data);
+    Memory::Free(Data);
     Data = other.Data;
     StrLen = other.StrLen;
     UnicodeLen = other.UnicodeLen;
@@ -162,7 +162,7 @@ String String::operator+(const char other) const
 
 String &String::operator+=(const String &other)
 {
-    Data = static_cast<char *>(Framework::FMemory::Realloc(Data, sizeof(char) * (StrLen + other.StrLen + 1)));
+    Data = static_cast<char *>(Memory::Realloc(Data, sizeof(char) * (StrLen + other.StrLen + 1)));
     CopyString(other.Data, Data + StrLen, other.StrLen);
     StrLen += other.StrLen;
     UnicodeLen += other.UnicodeLen;
@@ -171,7 +171,7 @@ String &String::operator+=(const String &other)
 
 String &String::operator+=(const char other)
 {
-    Data = static_cast<char *>(Framework::FMemory::Realloc(Data, sizeof(char) * (StrLen + 2)));
+    Data = static_cast<char *>(Memory::Realloc(Data, sizeof(char) * (StrLen + 2)));
     Data[StrLen++] = other;
     Data[StrLen] = '\0';
     ++UnicodeLen;
@@ -180,8 +180,8 @@ String &String::operator+=(const char other)
 
 String &String::operator=(const String &other)
 {
-    Framework::FMemory::Free(Data);
-    Data = static_cast<char *>(Framework::FMemory::Malloc(sizeof(char) * (other.StrLen + 1)));
+    Memory::Free(Data);
+    Data = static_cast<char *>(Memory::Malloc(sizeof(char) * (other.StrLen + 1)));
     StrLen = other.StrLen;
     CopyString(other.Data, Data, StrLen);
     UnicodeLen = other.UnicodeLen;
@@ -195,7 +195,7 @@ void String::Print()
 
 String::~String()
 {
-    Framework::FMemory::Free(Data);
+    Memory::Free(Data);
 }
 
 void String::CopyString(const char *src, char *dest, const uint32 len) const

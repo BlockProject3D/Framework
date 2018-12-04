@@ -1,16 +1,14 @@
-#if defined(LINUX) || defined(MAC)
-# include <dlfcn.h>
-#elif WINDOWS
-# include <windows.h>
-#endif
 #include <stdlib.h>
-#include "Framework/Framework.hpp"
+#include "Framework/System/Platform.hpp"
+#include "Framework/System/ModuleManager.hpp"
+#include "Framework/IO/FileSystem.hpp"
+#include "Framework/System/System.hpp"
 
 using namespace Framework;
 
 bool FPlatform::Exit = false;
-IFileSystem *FPlatform::FileSys = NULL;
-ISystemManager *FPlatform::BaseSys = NULL;
+IFileSystem *FPlatform::FileSys = Null;
+ISystemManager *FPlatform::BaseSys = Null;
 bpf::Map<const char *, bpf::String> FPlatform::PropMap;
 
 void FPlatform::RequestExit(bool force)
@@ -26,58 +24,11 @@ bool FPlatform::IsExiting()
     return (Exit);
 }
 
-void *FPlatform::OpenDLL(const char *file)
-{
-#ifdef WINDOWS
-    return (LoadLibrary(file));
-#else
-    return (dlopen(file, RTLD_NOW | RTLD_LOCAL));
-#endif
-}
-
-void FPlatform::CloseDLL(void *hdl)
-{
-#ifdef WINDOWS
-    FreeLibrary((HMODULE)hdl);
-#else
-    dlclose(hdl);
-#endif
-}
-
-const char *FPlatform::GetDLLExt()
-{
-#ifdef LINUX
-    return ("so");
-#elif MAC
-    return ("dylib");
-#elif WINDOWS
-    return ("dll");
-#endif
-}
-
 IFileSystem *FPlatform::GetFileSystem()
 {
     if (FileSys == NULL)
         FileSys = FModuleManager::GetModule<IFileSystem>("FileSystem");
     return (FileSys);
-}
-
-void *FPlatform::GetDLLSymbol(void *hdl, const char *name)
-{
-#ifdef WINDOWS
-    return ((void *)GetProcAddress((HMODULE)hdl, name));
-#else
-    return (dlsym(hdl, name));
-#endif
-}
-
-const char *FPlatform::GetLastError()
-{
-#ifdef WINDOWS
-    return (NULL); // TODO : Implement windows
-#else
-    return (dlerror());
-#endif
 }
 
 EPlatformEndianess FPlatform::GetPlatformEndianess()

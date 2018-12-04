@@ -1,6 +1,8 @@
 #ifndef SYSTEM_H_
 # define SYSTEM_H_
 
+#include "Framework/System/Platform.hpp"
+
 namespace Framework
 {
     typedef void(*ThreadFunc)(void *);

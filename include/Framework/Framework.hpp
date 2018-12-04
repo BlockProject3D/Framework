@@ -46,34 +46,25 @@ inline type DefaultOf<type>() \
 
 # include "Framework/API.hpp"
 # include "Framework/Exception.hpp"
-# include "Framework/System/Memory.hpp"
+# include "Framework/Memory/Memory.hpp"
 # include "Framework/TreeNode.hpp"
 # include "Framework/Iterator.hpp"
 //# include "framework/class.h"
 # include "Framework/List.hpp"
 # include "Framework/Hash.hpp"
 # include "Framework/Map.hpp"
-# include "Framework/System/Platform.hpp"
 # include "Framework/ObjectPtr.hpp"
 # include "Framework/Object.hpp"
-# include "Framework/Delegate.hpp"
+//# include "Framework/Delegate.hpp"
 # include "Framework/String.hpp"
 # include "Framework/Array.hpp"
 # include "Framework/ArrayList.hpp"
 # include "Framework/Stack.hpp"
 # include "Framework/Factory.hpp"
-# include "Framework/Logger.hpp"
 # include "Framework/RuntimeException.hpp"
 # include "Framework/IndexException.hpp"
 # include "Framework/Path.hpp"
-# include "Framework/System/Module.hpp"
-# include "Framework/System/ModuleManager.hpp"
-# include "Framework/IO/Stream.hpp"
-# include "Framework/IO/FileSystem.hpp"
-# include "Framework/Network/Network.hpp"
-# include "Framework/System/System.hpp"
 # include "Framework/Color.hpp"
-# include "Framework/IO/File.hpp"
 # include "Framework/Profiler.hpp"
 
 #include "Framework/List.impl.hpp"
@@ -87,16 +78,16 @@ inline type DefaultOf<type>() \
  * @tparam T the type to search the name of
  */
 template<typename T>
-const Framework::FString &TypeOf();
+const bpf::String &TypeOf();
 
 /**
  * Defines the type name for a given type
  */
 # define DEFINE_TYPE(compilename, runtimename) \
 template<> \
-const Framework::FString &TypeOf<compilename>() \
+const bpf::String &TypeOf<compilename>() \
 { \
-    static Framework::FString staticname = #runtimename; \
+    static bpf::String staticname = #runtimename; \
     return (staticname); \
 } \
 

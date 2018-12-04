@@ -1,10 +1,12 @@
 #include "Framework/Framework.hpp"
+#include "Framework/Logging/DefaultLogger.hpp"
+#include "Framework/System/ModuleManager.hpp"
 
 #define VERSION_ENGINE_INT 0x0 //TODO : Fix
 
 using namespace Framework;
 
-FLogger *FModuleManager::Log = NULL;
+bpf::Logger *FModuleManager::Log = NULL;
 bpf::Map<const char *, FModuleEntry *> FModuleManager::ModuleMap;
 bpf::List<FModuleEntry *> FModuleManager::ModuleList;
 
@@ -12,15 +14,15 @@ void FModuleManager::Initialize()
 {
     if (Log != NULL)
         return;
-    Log = new FLogger("ModuleManager");
-    Log->AddLogHandler(new FDefaultLogger());
-    Log->Log(LOG_INFO, "Initializing...");
+    Log = new bpf::Logger("ModuleManager");
+    Log->AddHandler(bpf::MakeUnique<bpf::DefaultLogger>());
+    Log->Info("Initializing...");
 }
 
 void FModuleManager::Shutdown()
 {
-    Log->Log(LOG_INFO, "Shutting down...");
-    Log->Log(LOG_INFO, "Closing module handles...");
+    Log->Info("Shutting down...");
+    Log->Info("Closing module handles...");
     for (auto it = ModuleList.End() ; it ; --it)
         UnloadModule(*it);
     delete Log;
@@ -33,7 +35,7 @@ bool FModuleManager::LoadModule(const char *name)
 
     if (ModuleLoaded(name))
     {
-        Log->Log(LOG_WARN, "Not loading module %s : module already loaded", *vname);
+        Log->Warning("Not loading module %s : module already loaded", *vname);
         return (false);
     }
     try
@@ -46,31 +48,31 @@ bool FModuleManager::LoadModule(const char *name)
         int version = sym1();
         if (version > VERSION_ENGINE_INT)
         {
-            Log->Log(LOG_ERR, "Module %s has been built against a newer version of the engine : '%i' > '%i'", *vname, version, VERSION_ENGINE_INT);
+            Log->Error("Module %s has been built against a newer version of the engine : '%i' > '%i'", *vname, version, VERSION_ENGINE_INT);
             delete md;
             return (false);
         }
         else if (version < VERSION_ENGINE_INT)
         {
-            Log->Log(LOG_ERR, "Module %s has been built against an older version of the engine : '%i' < '%i'", *vname, version, VERSION_ENGINE_INT);
+            Log->Error("Module %s has been built against an older version of the engine : '%i' < '%i'", *vname, version, VERSION_ENGINE_INT);
             delete md;
             return (false);
         }
         if ((md->Interface = sym()) == NULL)
         {
-            Log->Log(LOG_FATAL, "ModuleInterface allocation failure for module %s", *vname);
+            Log->Error("ModuleInterface allocation failure for module %s", *vname);
             delete md;
             return (false);
         }
         md->Interface->OnLoadModule();
-        Log->Log(LOG_INFO, "Loaded module %s", *vname);
+        Log->Info("Loaded module %s", *vname);
         ModuleMap.Add(*vname, md);
         ModuleList.Add(md);
         return (true);
     }
     catch (const FModuleException &ex)
     {
-        Log->Log(LOG_ERR, "Unable to load module %s : %s", *vname, *ex.GetMessage());
+        Log->Error("Unable to load module %s : %s", *vname, *ex.GetMessage());
         return (false);
     }
 }

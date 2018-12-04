@@ -1,9 +1,10 @@
 #ifdef WINDOWS
-# include <windows.h>
+    #include <Windows.h>
 #else
-# include <dlfcn.h>
+    #include <dlfcn.h>
 #endif
-#include "Framework/Framework.hpp"
+#include "Framework/System/Module.hpp"
+#include "Framework/System/Platform.hpp"
 
 using namespace Framework;
 

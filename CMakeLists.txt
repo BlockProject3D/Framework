@@ -27,8 +27,21 @@ set(SOURCES
     ./include/Framework/Math/Matrix.hpp
     ./include/Framework/Math/Transform.hpp
     ./include/Framework/Math/BMath.hpp
+	./include/Framework/Logging/Logger.hpp
+	./include/Framework/Logging/ILogHandler.hpp
+	./include/Framework/Logging/ELogLevel.hpp
+	./include/Framework/Logging/DefaultLogger.hpp
+	./include/Framework/Logging/FileLogger.hpp
+    ./include/Framework/Memory/Memory.hpp
+	./include/Framework/Memory/Utility.hpp
+	./include/Framework/Memory/MemoryException.hpp
+    ./include/Framework/Memory/SharedPtr.hpp
+	./include/Framework/Memory/SharedPtr.impl.hpp
+    ./include/Framework/Memory/UniquePtr.hpp
+	./include/Framework/Memory/UniquePtr.impl.hpp
+    ./include/Framework/Memory/WeakPtr.hpp
+	./include/Framework/Memory/WeakPtr.impl.hpp
     ./include/Framework/Network/Network.hpp
-    ./include/Framework/System/Memory.hpp
     ./include/Framework/System/Module.hpp
     ./include/Framework/System/ModuleManager.hpp
     ./include/Framework/System/Platform.hpp
@@ -49,7 +62,6 @@ set(SOURCES
     ./include/Framework/Iterator.hpp
     ./include/Framework/List.hpp
     ./include/Framework/List.impl.hpp
-    ./include/Framework/Logger.hpp
     ./include/Framework/Map.hpp
     ./include/Framework/Map.impl.hpp
     ./include/Framework/Object.hpp
@@ -72,6 +84,8 @@ set(SOURCES
     ./src/Framework/IO/TextReader.cpp
     ./src/Framework/IO/TextWriter.cpp
     ./src/Framework/IO/Stream.cpp
+	./src/Framework/Logging/DefaultLogger.cpp
+	./src/Framework/Logging/FileLogger.cpp
     ./src/Framework/Math/BMath.cpp
     ./src/Framework/Math/Matrix.cpp
     ./src/Framework/Math/Quaternion.cpp
@@ -79,13 +93,12 @@ set(SOURCES
     ./src/Framework/Math/Triangle.cpp
     ./src/Framework/Math/Vector.cpp
     ./src/Framework/Math/Vertex.cpp
+    ./src/Framework/Memory/Memory.cpp
     ./src/Framework/System/Platform.cpp
-    ./src/Framework/System/Memory.cpp
     ./src/Framework/System/Module.cpp
     ./src/Framework/System/ModuleManager.cpp
     ./src/Framework/System/System.cpp
     ./src/Framework/Color.cpp
-    ./src/Framework/Logger.cpp
     ./src/Framework/Object.cpp
     ./src/Framework/Path.cpp
     ./src/Framework/Profiler.cpp
