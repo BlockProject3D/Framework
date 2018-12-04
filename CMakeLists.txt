@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.11)
-project(BlockProject::Framework)
+cmake_minimum_required(VERSION 3.10)
+project(BlockProject.Framework)
 
 include("${CMAKE_SOURCE_DIR}/CMakes/Framework.cmake")
 
