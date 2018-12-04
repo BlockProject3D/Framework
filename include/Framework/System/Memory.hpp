@@ -3,6 +3,8 @@
 
 # define Null nullptr
 
+# include <utility>
+
 #ifdef BUILD_DEBUG
 #   include <mutex>
 #endif
@@ -49,7 +51,7 @@ namespace Framework
             obj->~T();
             Free(obj);
         }
-        
+
 #ifdef BUILD_DEBUG
         inline static int GetAllocCount() noexcept
         {
@@ -61,7 +63,7 @@ namespace Framework
         }
 #endif
     };
-    
+
     template <typename T>
     class ENGINE_API FUniquePtr
     {
@@ -125,11 +127,11 @@ namespace Framework
         {
             return (RawPtr != other.RawPtr);
         }
-        
+
         template <typename T1>
         friend class FUniquePtr;
     };
-    
+
     template<typename T>
     class ENGINE_API FWeakPtr;
 
@@ -140,7 +142,7 @@ namespace Framework
         int *Count;
         int *WCount;
         T *RawPtr;
-        
+
         inline FSharedPtr(int *c, int *w, T *raw)
             : Count(c), WCount(w), RawPtr(raw)
         {
@@ -278,11 +280,11 @@ namespace Framework
         //End
 
         friend class FWeakPtr<T>;
-        
+
         template <typename T1>
         friend class FSharedPtr;
     };
-    
+
     template <typename T>
     class ENGINE_API FWeakPtr
     {
@@ -290,7 +292,7 @@ namespace Framework
         int *Count;
         int *WCount;
         T *RawPtr;
-        
+
         inline FWeakPtr(int *c, T *raw, int *w)
             : Count(c), WCount(w), RawPtr(raw)
         {
@@ -298,7 +300,7 @@ namespace Framework
                 return;
             ++*WCount;
         }
-        
+
     public:
         inline FWeakPtr(const FSharedPtr<T> &other) noexcept
             : Count(other.Count), WCount(other.WCount), RawPtr(other.RawPtr)
@@ -336,7 +338,7 @@ namespace Framework
             ++*res.Count;
             return (res);
         }
-        
+
         //Static casting
         template <typename T1>
         inline FWeakPtr<T1> StaticCast() const noexcept
@@ -348,43 +350,43 @@ namespace Framework
         template <typename T1>
         friend class FWeakPtr;
     };
-    
+
     template <typename T, typename ...Args>
     class ENGINE_API FUnique
     {
     public:
         using type = FUniquePtr<T>;
-        
+
         inline static type New(Args&&... args)
         {
             return (FUniquePtr<T>(FMemory::New<T>(args...)));
         }
     };
-    
+
     template <typename T, typename ...Args>
     class ENGINE_API FShared
     {
     public:
         using type = FSharedPtr<T>;
-        
+
         inline static type New(Args&&... args)
         {
             return (FSharedPtr<T>(FMemory::New<T>(args...)));
         }
     };
-    
+
     template <typename T, typename ...Args>
     class ENGINE_API FRaw
     {
     public:
         using type = T *;
-        
+
         inline static type New(Args&&... args)
         {
             return (FMemory::New<T>(args...));
         }
     };
-    
+
     template <template <typename, typename...> class Manager, typename T, typename ...Args>
     inline typename Manager<T, Args...>::type NewObject(Args&&... args)
     {
