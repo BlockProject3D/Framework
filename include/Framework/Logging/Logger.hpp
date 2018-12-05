@@ -16,13 +16,15 @@ namespace bpf
             return (format);
         }
 
-        template <typename ...Args>
-        String Format(const String &format, Args &&...args)
+        template <typename Arg, typename ...Args>
+        String Format(const String &format, Arg &&arg, Args &&...args)
         {
-            for (size_t i = 0; i < format.size(); ++i)
+            String res = "";
+
+            for (size_t i = 0; i < format.Size(); ++i)
             {
                 if (format[i] == '@' && ((i + 1 == format.Size()) || (i + 1 != format.Size() && format[i + 1] != '@')))
-                    return (res + String::ValueOf(std::forward<Args>(arg))
+                    return (res + String::ValueOf(std::forward<Arg>(arg))
                         + Format(format.Sub(i + 1, format.Size() - i), std::forward<Args>(args)...));
                 else
                     res += format[i];
