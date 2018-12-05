@@ -21,9 +21,9 @@ namespace bpf
         {
             for (size_t i = 0; i < format.size(); ++i)
             {
-                if (format[i] == '@' && ((i + 1 == format.size()) || (i + 1 != format.size() && format[i + 1] != '@')))
-                    return (res + String::ValueOf(std::forward<Arg>(arg))
-                        + Format(format.substr(i + 1, format.size() - i), std::forward<Args>(args)...));
+                if (format[i] == '@' && ((i + 1 == format.Size()) || (i + 1 != format.Size() && format[i + 1] != '@')))
+                    return (res + String::ValueOf(std::forward<Args>(arg))
+                        + Format(format.Sub(i + 1, format.Size() - i), std::forward<Args>(args)...));
                 else
                     res += format[i];
             }
