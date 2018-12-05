@@ -8,20 +8,34 @@ namespace bpf
 {
     class String;
 
-    /*struct Properties
+    /*struct OS
     {
-        int NumCPUCores;
-        int CPUFreq;
-        uint64 MaxRAM;
-        String OSName;
-        String OSVersion;
-        String OSModuleExt;
-        String OSPathSep;
-        String OSNewLine;
-        String EnvName;
-        String EnvVersion;
+        String Name;
+        String Version;
+        String ModuleExt;
+        String PathSep;
+        String NewLine;
+    };
+
+    struct CPU
+    {
+        int NumCores;
+        int Freq;
+    };
+
+    struct RAM
+    {
+        uint64 MaxPhysical;
+        uint64 MaxVirtual;
+    };
+
+    struct Env
+    {
+        String Name;
+        String Version;
     };*/
-} // TODO : Remove
+
+} //TODO : Remove
 
 namespace Framework
 {

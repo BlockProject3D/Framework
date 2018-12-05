@@ -106,6 +106,7 @@ namespace bpf
         }
 
         //Static casting
+        //TODO : Throw class cast exception in debug build
         template <typename T1>
         inline SharedPtr<T1> StaticCast() const noexcept
         {

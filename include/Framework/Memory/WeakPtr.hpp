@@ -37,6 +37,7 @@ namespace bpf
         SharedPtr<T> Lock() noexcept;
 
         //Static casting
+        //TODO : Throw class cast exception in debug build
         template <typename T1>
         inline WeakPtr<T1> StaticCast() const noexcept
         {
