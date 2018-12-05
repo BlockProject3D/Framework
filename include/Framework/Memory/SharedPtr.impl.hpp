@@ -27,11 +27,11 @@ namespace bpf
             --*Count;
             if (*Count <= 0)
             {
-                FMemory::Delete(RawPtr);
+                Memory::Delete(RawPtr);
                 if (*WCount <= 0)
                 {
-                    FMemory::Free(Count);
-                    FMemory::Free(WCount);
+                    Memory::Free(Count);
+                    Memory::Free(WCount);
                 }
             }
         }
