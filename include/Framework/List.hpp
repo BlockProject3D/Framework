@@ -2,6 +2,7 @@
 # define LIST_H_
 
 #include <functional>
+#include "Framework/Iterator.hpp"
 
 namespace bpf
 {

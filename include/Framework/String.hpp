@@ -2,6 +2,9 @@
 # define STRING_H_
 
 # include <type_traits>
+#include "Framework/Types.hpp"
+#include "Framework/List.hpp"
+#include "Framework/Hash.hpp"
 
 namespace bpf
 {

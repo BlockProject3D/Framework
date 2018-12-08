@@ -27,27 +27,31 @@ set(SOURCES
     ./include/Framework/Math/Matrix.hpp
     ./include/Framework/Math/Transform.hpp
     ./include/Framework/Math/BMath.hpp
-	./include/Framework/Logging/Logger.hpp
-	./include/Framework/Logging/ILogHandler.hpp
-	./include/Framework/Logging/ELogLevel.hpp
-	./include/Framework/Logging/DefaultLogger.hpp
-	./include/Framework/Logging/FileLogger.hpp
+    ./include/Framework/Logging/Logger.hpp
+    ./include/Framework/Logging/ILogHandler.hpp
+    ./include/Framework/Logging/ELogLevel.hpp
+    ./include/Framework/Logging/DefaultLogger.hpp
+    ./include/Framework/Logging/FileLogger.hpp
     ./include/Framework/Memory/Memory.hpp
-	./include/Framework/Memory/Utility.hpp
-	./include/Framework/Memory/MemoryException.hpp
+    ./include/Framework/Memory/Utility.hpp
+    ./include/Framework/Memory/MemoryException.hpp
     ./include/Framework/Memory/SharedPtr.hpp
-	./include/Framework/Memory/SharedPtr.impl.hpp
+    ./include/Framework/Memory/SharedPtr.impl.hpp
     ./include/Framework/Memory/UniquePtr.hpp
-	./include/Framework/Memory/UniquePtr.impl.hpp
+    ./include/Framework/Memory/UniquePtr.impl.hpp
     ./include/Framework/Memory/WeakPtr.hpp
-	./include/Framework/Memory/WeakPtr.impl.hpp
+    ./include/Framework/Memory/WeakPtr.impl.hpp
     ./include/Framework/Network/Network.hpp
     ./include/Framework/System/Module.hpp
     ./include/Framework/System/ModuleManager.hpp
     ./include/Framework/System/Platform.hpp
     ./include/Framework/System/System.hpp
+    ./include/Framework/System/TypeExpander.hpp
+    ./include/Framework/System/Time.hpp
+    ./include/Framework/System/Timer.hpp
     ./include/Framework/API.hpp
     ./include/Framework/Types.hpp
+    ./include/Framework/TypeInfo.hpp
     ./include/Framework/Array.hpp
     ./include/Framework/Array.impl.hpp
     ./include/Framework/ArrayList.hpp
@@ -84,8 +88,8 @@ set(SOURCES
     ./src/Framework/IO/TextReader.cpp
     ./src/Framework/IO/TextWriter.cpp
     ./src/Framework/IO/Stream.cpp
-	./src/Framework/Logging/DefaultLogger.cpp
-	./src/Framework/Logging/FileLogger.cpp
+    ./src/Framework/Logging/DefaultLogger.cpp
+    ./src/Framework/Logging/FileLogger.cpp
     ./src/Framework/Math/BMath.cpp
     ./src/Framework/Math/Matrix.cpp
     ./src/Framework/Math/Quaternion.cpp
@@ -98,6 +102,7 @@ set(SOURCES
     ./src/Framework/System/Module.cpp
     ./src/Framework/System/ModuleManager.cpp
     ./src/Framework/System/System.cpp
+    ./src/Framework/System/Time.cpp
     ./src/Framework/Color.cpp
     ./src/Framework/Object.cpp
     ./src/Framework/Path.cpp

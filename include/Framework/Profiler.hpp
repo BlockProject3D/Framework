@@ -1,5 +1,4 @@
-#ifndef PROFILER_H_
-# define PROFILER_H_
+#pragma once
 
 # ifdef BUILD_DEBUG
 #  define PROFILER_PUSH_SECTION(name) Framework::FProfiler::PushSection(name)
@@ -9,43 +8,41 @@
 #  define PROFILER_POP_SECTION()
 # endif
 
-# include <map>
-
-namespace Framework
+namespace bpf
 {
-    struct ENGINE_API FProfilerSection
+    struct BPF_API ProfilerSection
     {
-        bpf::String Name;
+        String Name;
         long long Time; //In micro seconds
         int Pos;
         uint32 CreationID;
     };
 
-    class ENGINE_API FProfiler
+    class BPF_API Profiler
     {
     private:
         uint32 CurCreationID;
-        bpf::Map<bpf::String, FProfilerSection> ProfilerMap;
-        bpf::Stack<FProfilerSection> Stack = bpf::Stack<FProfilerSection>(32);
-        bpf::Array<FProfilerSection> Sections = bpf::Array<FProfilerSection>(0);
+        Map<String, ProfilerSection> _map;
+        Stack<ProfilerSection> _stack = Stack<ProfilerSection>(32);
 
-        void Push(const bpf::String &name);
+        void Push(const String &name);
         void Pop();
-        FProfiler();
+        Profiler();
+
     public:
-        static FProfiler *Instance();
-        bpf::Array<FProfilerSection> &GenDisplayList();
-        inline static void PushSection(const bpf::String &name)
+        static Profiler &Instance();
+        Array<ProfilerSection> GenDisplayList();
+        
+        inline static void PushSection(const String &name)
         {
-            Instance()->Push(name);
+            Instance().Push(name);
         }
+
         inline static void PopSection()
         {
-            Instance()->Pop();
+            Instance().Pop();
         }
     };
 };
 
-DEFINE_DEFAULT(Framework::FProfilerSection, Framework::FProfilerSection());
-
-#endif /* !PROFILER_H_ */
+DEFINE_DEFAULT(bpf::ProfilerSection, bpf::ProfilerSection());

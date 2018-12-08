@@ -1,14 +1,13 @@
-#ifndef PLATFORM_H_
-# define PLATFORM_H_
+#pragma once
 
-# include <initializer_list>
 #include "Framework/Framework.hpp"
+#include "Framework/String.hpp"
 
 namespace bpf
 {
     class String;
 
-    /*struct OS
+    struct OS
     {
         String Name;
         String Version;
@@ -19,6 +18,7 @@ namespace bpf
 
     struct CPU
     {
+        String Name;
         int NumCores;
         int Freq;
     };
@@ -31,11 +31,25 @@ namespace bpf
 
     struct Env
     {
+        String ShortName;
         String Name;
         String Version;
-    };*/
+        int VersionInt;
+    };
 
-} //TODO : Remove
+    class BPF_API Platform
+    {
+    private:
+        static Env InitEnvInfo();
+        static OS InitOSInfo();
+
+    public:
+        static Env &GetEnvInfo();
+        static OS &GetOSInfo();
+        static CPU GetCPUInfo();
+        static RAM GetRAMInfo();
+    };
+}
 
 namespace Framework
 {
@@ -48,30 +62,6 @@ namespace Framework
     {
         PLATFORM_BIGENDIAN,
         PLATFORM_LITTLEENDIAN
-    };
-
-    template <typename T>
-    union FTypeExpander
-    {
-        T		Data;
-        uint8	Bytes[sizeof(T)];
-        inline FTypeExpander(T d)
-            : Data(d)
-	{
-	}
-
-        inline FTypeExpander(std::initializer_list<uint8> d)
-        {
-            int i = 0;
-
-            for (auto it = d.begin() ; it != d.end() ; ++it)
-                Bytes[i++] = *it;
-        }
-
-        inline FTypeExpander()
-            : Data(0)
-	{
-	}
     };
 
     class ENGINE_API FPlatform
@@ -99,5 +89,3 @@ namespace Framework
         static void SetProperty(const char *vname, const bpf::String &prop);
     };
 };
-
-#endif /* !PLATFORM_H_ */

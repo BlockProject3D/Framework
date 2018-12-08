@@ -1,51 +1,52 @@
 #include <chrono>
 #include "Framework/Framework.hpp"
 
-using namespace Framework;
+using namespace bpf;
 
-FProfiler::FProfiler()
+Profiler::Profiler()
     : CurCreationID(0)
 {
 }
 
-void FProfiler::Push(const bpf::String &name)
+void Profiler::Push(const bpf::String &name)
 {
-    FProfilerSection section;
+    ProfilerSection section;
 
     section.Name = name;
-    section.Time = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    section.Pos = Stack.Size();
-    if (!ProfilerMap.HasKey(name))
+    section.Time = std::chrono::duration_cast<std::chrono::microseconds>
+        (std::chrono::system_clock::now().time_since_epoch()).count();
+    section.Pos = _stack.Size();
+    if (!_map.HasKey(name))
     {
         section.CreationID = CurCreationID++;
-        ProfilerMap[name] = section;
+        _map[name] = section;
     }
     else
-        section.CreationID = ProfilerMap[name].CreationID;
-    Stack.Push(section);
+        section.CreationID = _map[name].CreationID;
+    _stack.Push(section);
 }
 
-bpf::Array<FProfilerSection> &FProfiler::GenDisplayList()
+Array<ProfilerSection> Profiler::GenDisplayList()
 {
-    if (Sections.Length() != CurCreationID)
-        Sections = bpf::Array<FProfilerSection>(CurCreationID);
-    for (auto it = ProfilerMap.Begin() ; it ; ++it)
-        Sections[(*it).Value.CreationID] = (*it).Value;
-    return (Sections);
+    Array<ProfilerSection> sections = Array<ProfilerSection>(CurCreationID);
+    for (auto it = _map.Begin() ; it ; ++it)
+        sections[(*it).Value.CreationID] = (*it).Value;
+    return (sections);
 }
 
-void FProfiler::Pop()
+void Profiler::Pop()
 {
-    long long curt = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    FProfilerSection section = Stack.Pop();
+    long long curt = std::chrono::duration_cast<std::chrono::microseconds>
+        (std::chrono::system_clock::now().time_since_epoch()).count();
+    ProfilerSection section = _stack.Pop();
 
     section.Time = curt - section.Time;
-    ProfilerMap[section.Name] = section;
+    _map[section.Name] = section;
 }
 
-FProfiler *FProfiler::Instance()
+Profiler &Profiler::Instance()
 {
-    static FProfiler Inst;
+    static Profiler inst;
 
-    return (&Inst);
+    return (inst);
 }
