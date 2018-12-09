@@ -4,7 +4,7 @@
 namespace Framework
 {
     template <typename T>
-    class ENGINE_API FTreeNode
+    class BP_TPL_API FTreeNode
     {
     private:
         T Value;

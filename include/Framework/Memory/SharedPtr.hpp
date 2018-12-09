@@ -3,10 +3,10 @@
 namespace bpf
 {
     template<typename T>
-    class BPF_API WeakPtr;
+    class BP_TPL_API WeakPtr;
 
     template <typename T>
-    class BPF_API SharedPtr
+    class BP_TPL_API SharedPtr
     {
     private:
         int *Count;

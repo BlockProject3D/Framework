@@ -7,7 +7,7 @@
 namespace bpf
 {
     template <typename T>
-    class BPF_API ListNode
+    class BP_TPL_API ListNode
     {
     public:
         ListNode *Next;
@@ -15,11 +15,11 @@ namespace bpf
         T Data;
 
 	ListNode(const T &data)
-            : Next(NULL), Prev(NULL), Data(data)
+            : Next(Null), Prev(Null), Data(data)
         {
         }
         ListNode(T &&data)
-            : Next(NULL), Prev(NULL), Data(std::move(data))
+            : Next(Null), Prev(Null), Data(std::move(data))
         {
         }
     };
@@ -29,10 +29,10 @@ namespace bpf
      * @tparam T the type of element in that list
      */
     template <typename T>
-    class BPF_API List
+    class BP_TPL_API List
     {
     public:
-        class BPF_API Iterator final : public IIterator<typename List<T>::Iterator, T>
+        class BP_TPL_API Iterator final : public IIterator<typename List<T>::Iterator, T>
         {
         private:
             ListNode<T> *Cur;

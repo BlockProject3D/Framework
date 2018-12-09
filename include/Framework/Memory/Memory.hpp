@@ -1,7 +1,7 @@
 #pragma once
 #include "Framework/Memory/MemoryException.hpp"
 #ifdef BUILD_DEBUG
-    #include <mutex>
+    #include "Framework/System/Mutex.hpp"
 #endif
 
 #define Null nullptr
@@ -14,7 +14,7 @@ namespace bpf
     private:
         static size_t CurUsedMem;
         static int Allocs;
-        static std::mutex MemMutex;
+        static Mutex MemMutex;
 #endif
     public:
         static void *Malloc(size_t size);

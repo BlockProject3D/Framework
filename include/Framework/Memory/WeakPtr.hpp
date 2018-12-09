@@ -3,7 +3,7 @@
 namespace bpf
 {
     template <typename T>
-    class BPF_API WeakPtr
+    class BP_TPL_API WeakPtr
     {
     private:
         int *Count;

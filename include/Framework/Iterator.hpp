@@ -9,7 +9,7 @@ namespace bpf
      * @tparam T the target iterated object
      */
     template <typename C, typename T>
-    class BPF_API IIterator
+    class BP_TPL_API IIterator
     {
     public:
         virtual ~IIterator() {}

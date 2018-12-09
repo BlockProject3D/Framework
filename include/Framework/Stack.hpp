@@ -4,7 +4,7 @@
 namespace bpf
 {
     template <typename T>
-    class BPF_API Stack
+    class BP_TPL_API Stack
     {
     private:
         T *Content;

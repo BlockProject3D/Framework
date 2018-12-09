@@ -3,7 +3,7 @@
 namespace bpf
 {
     template <typename T>
-    class BPF_API ArrayList
+    class BP_TPL_API ArrayList
     {
     private:
         uint32 _curid;

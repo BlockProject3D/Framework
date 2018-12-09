@@ -4,10 +4,10 @@
 namespace bpf
 {
     template <typename T>
-    class BPF_API Array
+    class BP_TPL_API Array
     {
     public:
-        class BPF_API Iterator final : public IIterator<typename Array<T>::Iterator, T>
+        class BP_TPL_API Iterator final : public IIterator<typename Array<T>::Iterator, T>
         {
         private:
             int _curid;

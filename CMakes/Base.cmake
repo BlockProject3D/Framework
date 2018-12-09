@@ -3,7 +3,10 @@ set(BP_BASICS_CMAKE_SELF ${CMAKE_CURRENT_LIST_DIR})
 set(PLATFORM "Auto" CACHE STRING "Platform name")
 option(RELEASE "Enable release build" OFF)
 
-string(TOUPPER ${CMAKE_PROJECT_NAME} BP_API_MACRO)
+string(TOUPPER "${CMAKE_PROJECT_NAME}_API" BP_API_MACRO)
+
+add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
+add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
 set(BP_DEFINITIONS "")
 set(BP_INCLUDES "")

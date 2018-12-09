@@ -14,9 +14,9 @@ const Color Color::Cyan = Color(0, 255, 255);
 
 Color Color::operator+(const Color &other) const
 {
-    uint8 newr = (uint8)Framework::FMath::Clamp(R + other.R, 0, 255);
-    uint8 newg = (uint8)Framework::FMath::Clamp(G + other.G, 0, 255);
-    uint8 newb = (uint8)Framework::FMath::Clamp(B + other.B, 0, 255);
+    uint8 newr = Framework::FMath::Clamp(R + other.R, 0, 255);
+    uint8 newg = Framework::FMath::Clamp(G + other.G, 0, 255);
+    uint8 newb = Framework::FMath::Clamp(B + other.B, 0, 255);
     
     return (Color(newr, newg, newb));
 }
@@ -33,5 +33,7 @@ Color Color::operator*(const Color &other) const
     float newg = g * g1;
     float newb = b * b1;
 
-    return (Color(newr * 255, newg * 255, newb * 255));
+    return (Color(static_cast<uint8>(newr * 255),
+                  static_cast<uint8>(newg * 255),
+                  static_cast<uint8>(newb * 255)));
 }

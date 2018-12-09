@@ -3,7 +3,7 @@
 namespace bpf
 {
     template <typename T>
-    class BPF_API UniquePtr
+    class BP_TPL_API UniquePtr
     {
     private:
         T *RawPtr;

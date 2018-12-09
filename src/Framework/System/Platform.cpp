@@ -133,6 +133,7 @@ namespace bpf
         __cpuid(cpuInfo, 0x80000004);
         memcpy(CPUBrandString + 32, cpuInfo, sizeof(cpuInfo));
         cpi.Name = String(CPUBrandString);
+        return (cpi);
     }
 
     RAM Platform::GetRAMInfo()
@@ -148,6 +149,7 @@ namespace bpf
         rami.MaxPhysical = 0;
         rami.MaxVirtual = 0;
 #endif
+        return (rami);
     }
 }
 
@@ -173,9 +175,10 @@ bool FPlatform::IsExiting()
 
 IFileSystem *FPlatform::GetFileSystem()
 {
-    if (FileSys == NULL)
+    /*if (FileSys == NULL)
         FileSys = FModuleManager::GetModule<IFileSystem>("FileSystem");
-    return (FileSys);
+    return (FileSys);*/
+    return (Null);
 }
 
 EPlatformEndianess FPlatform::GetPlatformEndianess()
@@ -225,9 +228,10 @@ void FPlatform::ReverseBuffer(uint8 *buf, const uint32 groupsize, const uint32 s
 
 ISystemManager *FPlatform::GetBaseSystem()
 {
-    if (BaseSys == NULL)
+    /*if (BaseSys == NULL)
         BaseSys = FModuleManager::GetModule<ISystemManager>("System");
-    return (BaseSys);
+    return (BaseSys);*/
+    return (Null);
 }
 
 void FPlatform::Initialize()
@@ -251,12 +255,12 @@ void FPlatform::Initialize()
         SetProperty("ARCHITECTURE", "x64");
     else
         SetProperty("ARCHITECTURE", "x86");
-    FModuleManager::Initialize();
+    //FModuleManager::Initialize();
 }
 
 void FPlatform::Shutdown()
 {
-    FModuleManager::Shutdown();
+    //FModuleManager::Shutdown();
 }
 
 const bpf::String &FPlatform::GetProperty(const char *vname)

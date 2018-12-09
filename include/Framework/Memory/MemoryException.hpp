@@ -1,4 +1,5 @@
 #pragma once
+#include "Framework/Exception.hpp"
 
 namespace bpf
 {

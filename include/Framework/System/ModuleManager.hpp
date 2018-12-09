@@ -1,9 +1,9 @@
 #ifndef MODULEMANAGER_H_
 # define MODULEMANAGER_H_
 
-# include <map>
-#include "Framework/Logging/Logger.hpp"
+#include <map>
 #include "Framework/System/Module.hpp"
+#include "Framework/System/IModuleInterface.hpp"
 
 # ifdef WINDOWS
 #  define IMPLEMENT_MODULE(name, clname) \
@@ -31,52 +31,52 @@ extern "C" \
 
 # endif
 
-namespace Framework
+namespace bpf
 {
-    class IModuleInterface
-    {
-    public:
-        virtual ~IModuleInterface() {}
-        virtual void OnLoadModule() = 0;
-        virtual void OnUnloadModule() = 0;
-    };
-
     typedef IModuleInterface*(*ModuleLinkFunc)();
     typedef int(*ModuleDescribeFunc)();
 
-    class ENGINE_API FModuleEntry
+    class BPF_API ModuleEntry
     {
     public:
         IModuleInterface *Interface;
         bpf::String Name;
-        FModule Module;
-        inline FModuleEntry(const bpf::String &path, const bpf::String &name)
+        Module Module;
+        inline ModuleEntry(const bpf::String &path, const bpf::String &name)
             : Interface(Null), Name(name), Module(path)
         {
         }
     };
     
-    class ENGINE_API FModuleManager
+    class BPF_API ModuleManager
     {
     private:
-        static bpf::Logger *Log;
-        static bpf::List<FModuleEntry *> ModuleList;
-        static bpf::Map<const char *, FModuleEntry *> ModuleMap;
+        bpf::List<ModuleEntry *> ModuleList;
+        bpf::Map<const char *, ModuleEntry *> ModuleMap;
 
-        static void UnloadModule(FModuleEntry *entry);
+        void UnloadModule(ModuleEntry *entry);
     public:
-        static void Initialize();
-        static void Shutdown();
-        static bool LoadModule(const char *name);
-        static void UnloadModule(const char *name);
+        inline ModuleManager() {}
+        ~ModuleManager();
+        
+        /**
+         * Loads the given module name
+         * @throws ModuleException
+         */
+        void LoadModule(const char *name);
 
-        inline static bool ModuleLoaded(const char *name)
+        /**
+         * Unloads the given module name
+         */
+        void UnloadModule(const char *name);
+
+        inline bool ModuleLoaded(const char *name)
         {
             return (ModuleMap.HasKey(name));
         }
 
-        template<typename T>
-        static inline T	*GetModule(const char *name)
+        template <typename T>
+        inline T *GetModule(const char *name)
         {
             if (ModuleMap.HasKey(name))
                 return (dynamic_cast<T *>(ModuleMap[name]->Interface));

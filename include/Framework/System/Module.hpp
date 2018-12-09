@@ -2,35 +2,32 @@
 # define MODULE_H_
 
 #include "Framework/Framework.hpp"
+#include "Framework/System/ModuleException.hpp"
 
-namespace Framework
+namespace bpf
 {
-    class ENGINE_API FModuleException : public bpf::RuntimeException
-    {
-    public:
-        inline FModuleException(const bpf::String &msg) noexcept
-            : bpf::RuntimeException("Module", msg)
-        {
-        }
-    };
-
-    class ENGINE_API FModule
+    class BPF_API Module
     {
     private:
         bpf::String Path;
         void *Handle;
 
+#ifdef WINDOWS
+        String ObtainErrorString();
+#endif
     public:
         /**
          * Opens a module binary at a specified path, file extension omitted.
          * @param path the path to the binary module without file extension
+         * @throws ModuleException
          */
-        FModule(const bpf::String &path);
-        ~FModule();
+        Module(const bpf::String &path);
+        ~Module();
 
         /**
          * Loads a symbol from the module
          * @param name the symbol name
+         * @throws ModuleException
          */
         void *LoadSymbol(const bpf::String &name);
 

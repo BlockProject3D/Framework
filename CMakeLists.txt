@@ -43,14 +43,20 @@ set(SOURCES
     ./include/Framework/Memory/WeakPtr.impl.hpp
     ./include/Framework/Network/Network.hpp
     ./include/Framework/System/Module.hpp
+	./include/Framework/System/ModuleException.hpp
     ./include/Framework/System/ModuleManager.hpp
     ./include/Framework/System/Platform.hpp
     ./include/Framework/System/System.hpp
     ./include/Framework/System/TypeExpander.hpp
-    ./include/Framework/System/Time.hpp
+    ./include/Framework/System/DateTime.hpp
     ./include/Framework/System/Timer.hpp
+    ./include/Framework/System/Thread.hpp
+    ./include/Framework/System/Mutex.hpp
+    ./include/Framework/System/ThreadManager.hpp
+    ./include/Framework/System/IModuleInterface.hpp
     ./include/Framework/API.hpp
     ./include/Framework/Types.hpp
+    ./include/Framework/Tuple.hpp
     ./include/Framework/TypeInfo.hpp
     ./include/Framework/Array.hpp
     ./include/Framework/Array.impl.hpp
@@ -102,7 +108,10 @@ set(SOURCES
     ./src/Framework/System/Module.cpp
     ./src/Framework/System/ModuleManager.cpp
     ./src/Framework/System/System.cpp
-    ./src/Framework/System/Time.cpp
+    ./src/Framework/System/DateTime.cpp
+    ./src/Framework/System/Thread.cpp
+    ./src/Framework/System/Mutex.cpp
+    ./src/Framework/System/ThreadManager.cpp
     ./src/Framework/Color.cpp
     ./src/Framework/Object.cpp
     ./src/Framework/Path.cpp

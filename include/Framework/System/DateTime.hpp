@@ -5,12 +5,13 @@
 
 namespace bpf
 {
-    class Time
+    class BPF_API DateTime
     {
     private:
         time_t _curtm;
         uint32 _year;
         uint8 _day;
+        uint8 _dayweek;
         uint8 _month;
         uint8 _hour;
         uint8 _minute;
@@ -20,8 +21,8 @@ namespace bpf
         void RecalcUTC();
 
     public:
-        Time(uint64 seconds);
-        Time();
+        DateTime(uint64 seconds);
+        DateTime();
 
         inline uint32 GetYear() const noexcept
         {
@@ -55,15 +56,19 @@ namespace bpf
 
         String GetMonthName() const;
         String GetDayName() const;
-        Time operator+(const Time &other) const;
-        Time operator-(const Time &other) const;
-        void operator+=(const Time &other);
-        void operator-=(const Time &other);
+        DateTime operator+(const DateTime &other) const;
+        DateTime operator-(const DateTime &other) const;
+        bool operator>(const DateTime &other) const;
+        bool operator<(const DateTime &other) const;
+        bool operator==(const DateTime &other) const;
+        bool operator!=(const DateTime &other) const;
+        void operator+=(const DateTime &other);
+        void operator-=(const DateTime &other);
         String ToString() const;
-        Time ToUTCTime() const;
-        Time ToLocalTime() const;
+        DateTime ToUTCTime() const;
+        DateTime ToLocalTime() const;
 
-        static Time UTCTime();
-        static Time LocalTime();
+        static DateTime UTCTime();
+        static DateTime LocalTime();
     };
 }

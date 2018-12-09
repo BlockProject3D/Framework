@@ -7,17 +7,17 @@ namespace bpf
     constexpr float MAP_LIMIT_UNTIL_EXTEND = 0.5f;
 
     template<typename K, typename V>
-    struct MapEntry
+    struct BP_TPL_API MapEntry
     {
         K Key;
         V Value;
     };
 
     template <typename K, typename V>
-    class BPF_API Map
+    class BP_TPL_API Map
     {
     public:
-        class BPF_API Iterator final : public IIterator<typename Map<K, V>::Iterator, MapEntry<K, V>>
+        class BP_TPL_API Iterator final : public IIterator<typename Map<K, V>::Iterator, MapEntry<K, V>>
         {
         private:
             V *Data;

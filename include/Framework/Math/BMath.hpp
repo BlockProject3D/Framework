@@ -67,7 +67,8 @@ namespace Framework
          * @param min the minimum
          * @param max the maximum
          */
-        inline static float Clamp(const float val, const float min, const float max)
+        template <typename T>
+        inline static T Clamp(const T val, const T min, const T max)
         {
             return ((val < min) ? min : (val > max) ? max : val);
         }

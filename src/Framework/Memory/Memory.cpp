@@ -5,7 +5,7 @@ using namespace bpf;
 #ifdef BUILD_DEBUG
 int Memory::Allocs = 0;
 size_t Memory::CurUsedMem = 0;
-std::mutex Memory::MemMutex;
+Mutex Memory::MemMutex;
 
 struct Metadata
 {
@@ -24,10 +24,10 @@ void *Memory::Malloc(size_t size)
     if (data == Null)
         throw MemoryException();
 #ifdef BUILD_DEBUG
-    MemMutex.lock();
+    MemMutex.Lock();
     ++Allocs;
     CurUsedMem += size;
-    MemMutex.unlock();
+    MemMutex.Unlock();
     Metadata *meta = static_cast<Metadata *>(data);
     meta->MemSize = size;
     return (static_cast<char *>(data) + sizeof(Metadata));
@@ -41,10 +41,10 @@ void Memory::Free(void *addr)
 #ifdef BUILD_DEBUG
     if (addr == Null)
         return;
-    MemMutex.lock();
+    MemMutex.Lock();
     --Allocs;
     CurUsedMem -= reinterpret_cast<Metadata *>(static_cast<char *>(addr) - sizeof(Metadata))->MemSize;
-    MemMutex.unlock();
+    MemMutex.Unlock();
     free(static_cast<char *>(addr) - sizeof(Metadata));
 #else
     free(addr);
@@ -57,9 +57,9 @@ void *Memory::Realloc(void *addr, size_t newsize)
     void *data;
     if (addr != Null)
     {
-        MemMutex.lock();
+        MemMutex.Lock();
         CurUsedMem -= reinterpret_cast<Metadata *>(static_cast<char *>(addr) - sizeof(Metadata))->MemSize;
-        MemMutex.unlock();
+        MemMutex.Unlock();
         data = realloc(static_cast<char *>(addr) - sizeof(Metadata), newsize + sizeof(Metadata));
     }
     else
@@ -71,9 +71,9 @@ void *Memory::Realloc(void *addr, size_t newsize)
         throw MemoryException();
     Metadata *meta = static_cast<Metadata *>(data);
     meta->MemSize = newsize;
-    MemMutex.lock();
+    MemMutex.Lock();
     CurUsedMem += newsize;
-    MemMutex.unlock();
+    MemMutex.Unlock();
     return (static_cast<char *>(data) + sizeof(Metadata));
 #else
     void *data = realloc(addr, newsize);
