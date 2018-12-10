@@ -82,7 +82,7 @@ String::String(String &&s)
 
 fchar String::operator[](const int id) const
 {
-    if (id < 0 || id >= Size())
+    if (id < 0 || id > Len())
         throw IndexException(id);
     return (String::UTF32(Data + CalcStartFromUnicode(id)));
 }
@@ -316,6 +316,8 @@ bool String::IsNumeric() const
 {
     bool coma = false;
 
+    if (UnicodeLen <= 0)
+        return (false);
     for (uint32 i = 0 ; i < StrLen ; i++)
     {
         if (Data[i] == '.' && coma)
@@ -344,7 +346,8 @@ void String::Explode(List<String> &l, const char c) const
             cur = String::Empty;
         }
     }
-    l.Add(cur);
+    if (cur != String::Empty)
+        l.Add(cur);
 }
 
 void String::ExplodeIgnoreChar(List<String> &l, const char c, const char ignore) const
@@ -364,7 +367,8 @@ void String::ExplodeIgnoreChar(List<String> &l, const char c, const char ignore)
             cur = String::Empty;
         }
     }
-    l.Add(cur);
+    if (cur != String::Empty)
+        l.Add(cur);
 }
 
 void String::Explode(List<String> &l, const String &str) const
@@ -381,7 +385,8 @@ void String::Explode(List<String> &l, const String &str) const
             cur = String::Empty;
         }
     }
-    l.Add(cur);
+    if (cur != String::Empty)
+        l.Add(cur);
 }
 
 void String::ExplodeIgnoreChar(List<String> &l, const String &str, const String &ignore) const
@@ -401,14 +406,15 @@ void String::ExplodeIgnoreChar(List<String> &l, const String &str, const String 
             cur = String::Empty;
         }
     }
-    l.Add(cur);
+    if (cur != String::Empty)
+        l.Add(cur);
 }
 
 bool String::StartsWith(const String &other) const
 {
-    if (StrLen < (uint32)other.Len())
+    if (StrLen < (uint32)other.Size())
         return (false);
-    for (uint32 i = 0 ; i < (uint32)other.Len() ; i++)
+    for (uint32 i = 0 ; i < (uint32)other.Size() ; i++)
         if (Data[i] != other.Data[i])
             return (false);
     return (true);
@@ -416,10 +422,13 @@ bool String::StartsWith(const String &other) const
 
 bool String::EndsWith(const String &other) const
 {
-    if (StrLen < (uint32)other.Len())
+    if (other.Size() == 0)
+        return (true);
+    if (StrLen < (uint32)other.Size())
         return (false);
-    for (uint32 i = StrLen - 1 ; i > 0 ; i--)
-        if (Data[i] != other.Data[i])
+    uint32 i, j;
+    for (j = StrLen - 1, i = other.Size() - 1 ; i > 0 && j > 0 ; i--, j--)
+        if (Data[j] != other.Data[i])
             return (false);
     return (true);
 }
@@ -431,10 +440,7 @@ String String::Replace(const String &search, const String &repby) const
     for (uint32 i = 0 ; i < StrLen ; i++)
     {
         if (Data[i] == search.ByteAt(0) && my_strstr(Data + i, search.Data))
-        {
             str += repby;
-            i += repby.Len();
-        }
         else
             str += Data[i];
     }

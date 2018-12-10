@@ -61,10 +61,16 @@ namespace bpf
         ~String();
 
         /**
-         * Returns a UTF32 character from a null-terminated UTF8 byte sequence
+         * Returns a UTF32 character from a single UTF8 code
          * @param utf8char the utf8 null-terminated byte sequence to convert to a single UTF32 character
          */
         static fchar UTF32(const char *utf8char);
+
+        /**
+         * Returns a UTF8 high level String from a single UTF32 code
+         * @param utf32char the utf32 character to convert to a UTF8 String
+         */
+        static String UTF8(const fchar utf32char); // TODO : Implement
 
         /**
          * Returns a byte at a given index
@@ -365,14 +371,21 @@ namespace bpf
 
         /**
          * Returns a substring
-         * @param begin the begin index in characters included
-         * @param end the end index in characters included
+         * @param begin the begin index in characters (inclusive)
+         * @param count the amount of characters to read
+         */
+        String SubLen(const int begin, const int count) const;
+
+        /**
+         * Returns a substring
+         * @param begin the begin index in characters (inclusive)
+         * @param end the end index in characters (exclusive)
          */
         String Sub(const int begin, const int end) const;
 
         /**
          * Returns a substring where the end is the end of this string
-         * @param begin the begin index in characters included
+         * @param begin the begin index in characters (inclusive)
          */
         String Sub(const int begin) const;
 
