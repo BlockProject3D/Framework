@@ -1,0 +1,12 @@
+language: cpp
+
+matrix:
+  include:
+    - os: windows
+      compiler: MSVC
+
+script:
+  - mkdir build
+  - cd build
+  - cmake ..
+  - cmake --build .
