@@ -294,11 +294,13 @@ String String::Sub(const int begin) const
     return (s);
 }
 
-static bool my_strstr(const char *pathern, const char *str)
+static bool my_strstr(char *pathern, char *str)
 {
     while (*pathern && *str)
+    {
         if (*pathern++ != *str++)
             return (false);
+    }
     return (true);
 }
 
@@ -350,7 +352,7 @@ void String::Explode(List<String> &l, const char c) const
         l.Add(cur);
 }
 
-void String::ExplodeIgnoreChar(List<String> &l, const char c, const char ignore) const
+void String::ExplodeIgnore(List<String> &l, const char c, const char ignore) const
 {
     String cur;
     bool ign = false;
@@ -389,7 +391,7 @@ void String::Explode(List<String> &l, const String &str) const
         l.Add(cur);
 }
 
-void String::ExplodeIgnoreChar(List<String> &l, const String &str, const String &ignore) const
+void String::ExplodeIgnore(List<String> &l, const String &str, const String &ignore) const
 {
     String cur;
     bool ign = false;

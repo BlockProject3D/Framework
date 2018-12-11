@@ -337,7 +337,7 @@ namespace bpf
          * @param c the seperator char
          * @param ignore character to identify escape sequences (all characters between two of this ignore char will be interpreted as a single token)
          */
-        void ExplodeIgnoreChar(List<String> &l, const char c, const char ignore) const;
+        void ExplodeIgnore(List<String> &l, const char c, const char ignore) const;
 
         /**
          * Splits this string using a delimiter
@@ -352,7 +352,7 @@ namespace bpf
          * @param str the separator string
          * @param ignore string to identify escape sequences (all characters between two of this ignore string will be interpreted as a single token)
          */
-        void ExplodeIgnoreChar(List<String> &l, const String &str, const String &ignore) const;
+        void ExplodeIgnore(List<String> &l, const String &str, const String &ignore) const;
 
         /**
          * Returns true if this string starts with other
