@@ -1,4 +1,4 @@
-# BlockProject Framework
+# BlockProject Framework [![Build Status](https://travis-ci.org/BlockProject3D/Framework.svg?branch=master)](https://travis-ci.org/BlockProject3D/Framework)
 High-level C++ framework, used in BlockProject 3D Engine
 
 ## Building
