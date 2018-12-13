@@ -26,8 +26,7 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Framework/Memory/Memory.hpp"
-#include "Framework/System/Mutex.hpp"
+#include <stdlib.h>
 #ifdef WINDOWS
     #include <Windows.h>
     using MutexType = CRITICAL_SECTION;
@@ -35,6 +34,8 @@
     #include <pthread.h>
     using MutexType = pthread_mutex_t;
 #endif
+#include "Framework/Memory/Memory.hpp"
+#include "Framework/System/Mutex.hpp"
 
 using namespace bpf;
 

@@ -106,7 +106,7 @@ void *Memory::Realloc(void *addr, size_t newsize)
 #else
     void *data = realloc(addr, newsize);
     if (data == Null)
-        throw FMemoryException();
+        throw MemoryException();
     return (data);
 #endif
 }

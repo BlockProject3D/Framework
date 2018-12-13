@@ -29,15 +29,12 @@
 #include <stdlib.h>
 #ifdef WINDOWS
     #include <Windows.h>
+    #include <intrin.h>
+    #undef ERROR
 #elif LINUX
     #include <sys/utsname.h>
     #include <sys/sysinfo.h>
-#elif MAC
-    #include <CoreServices/CoreServices.h>
 #endif
-#include <intrin.h>
-
-#undef ERROR
 
 #include "Framework/System/Platform.hpp"
 #include "Framework/System/ModuleManager.hpp"
@@ -109,12 +106,7 @@ namespace bpf
         os.Name = "Mac";
         os.NewLine = "\n";
         os.PathSep = "/";
-        SInt32 majorVersion, minorVersion, bugFixVersion;
-        Gestalt(gestaltSystemVersionMajor, &majorVersion);
-        Gestalt(gestaltSystemVersionMinor, &minorVersion);
-        Gestalt(gestaltSystemVersionBugFix, &bugFixVersion);
-        os.Version = String::ValueOf(majorVersion) + "." + String::ValueOf(minorVersion)
-            + "." + String::ValueOf(bugFixVersion);
+        os.Version = "Impossible - Ask Apple why they deprecate C++ APIs !";
 #endif
         return (os);
     }
@@ -151,7 +143,7 @@ namespace bpf
         cpi.NumCores = 0;
         cpi.Freq = 0;
 #endif
-        int cpuInfo[4] = { -1 };
+        /*int cpuInfo[4] = { -1 };
         char CPUBrandString[0x40];
         memset(CPUBrandString, 0, sizeof(CPUBrandString));
         __cpuid(cpuInfo, 0x80000002);
@@ -160,7 +152,7 @@ namespace bpf
         memcpy(CPUBrandString + 16, cpuInfo, sizeof(cpuInfo));
         __cpuid(cpuInfo, 0x80000004);
         memcpy(CPUBrandString + 32, cpuInfo, sizeof(cpuInfo));
-        cpi.Name = String(CPUBrandString);
+        cpi.Name = String(CPUBrandString);*/
         return (cpi);
     }
 
