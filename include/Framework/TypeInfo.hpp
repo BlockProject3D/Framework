@@ -72,9 +72,9 @@ namespace bpf
     */
     template<typename T>
     const bpf::String &TypeOf();
-
-    DEFINE_DEFAULT(int, 0);
-    DEFINE_DEFAULT(float, 0);
-    DEFINE_DEFAULT(double, 0);
-    DEFINE_DEFAULT(bool, false);
 }
+
+DEFINE_DEFAULT(int, 0);
+DEFINE_DEFAULT(float, 0);
+DEFINE_DEFAULT(double, 0);
+DEFINE_DEFAULT(bool, false);
