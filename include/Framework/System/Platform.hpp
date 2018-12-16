@@ -70,11 +70,13 @@ namespace bpf
     private:
         static Env InitEnvInfo();
         static OS InitOSInfo();
+        static String IdentifyCPUBranding();
+        static String CPUIDIntToStr(int data);
 
     public:
         static Env &GetEnvInfo();
         static OS &GetOSInfo();
-        static CPU GetCPUInfo();
+        static CPU &GetCPUInfo();
         static RAM GetRAMInfo();
     };
 }

@@ -26,3 +26,86 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include "Framework/Framework.hpp"
+#include "Framework/System/Thread.hpp"
+
+#include <stdlib.h>
+#ifdef WINDOWS
+#include <Windows.h>
+#else
+#include <pthread.h>
+using ThreadType = pthread_t;
+#endif
+
+#ifdef WINDOWS
+DWORD ThreadRoutine(void *ptr)
+{
+    reinterpret_cast<bpf::Thread *>(ptr)->Run();
+    return (0);
+}
+#else
+void *ThreadRoutine(void *ptr)
+{
+    reinterpret_cast<bpf::Thread *>(ptr)->Run();
+    return (Null);
+}
+#endif
+
+using namespace bpf;
+
+Thread::Thread(const String &name)
+    : _handle(Null)
+    , _exit(false)
+    , _name(name)
+{
+}
+
+Thread::~Thread()
+{
+#ifndef WINDOWS
+    free(_handle);
+#endif
+}
+
+void Thread::Start()
+{
+    if (_handle != Null)
+        return;
+#ifdef WINDOWS
+    _handle = CreateThread(Null, 0, &ThreadRoutine, this, 0, Null);
+#else
+    _handle = malloc(sizeof(ThreadType));
+    pthread_create(reinterpret_cast<ThreadType *>(_handle), Null,
+                   &ThreadRoutine, this);
+#endif
+}
+
+void Thread::Join()
+{
+    if (_handle == Null)
+        return;
+#ifdef WINDOWS
+    WaitForSingleObject(_handle, INFINITE);
+#else
+    pthread_join(*reinterpret_cast<ThreadType *>(_handle), Null);
+#endif
+}
+
+void Thread::Kill(const bool force)
+{
+    if (_handle == Null)
+        return;
+    if (!force)
+    {
+        _exit = true;
+        Join();
+    }
+    else
+    {
+#ifdef WINDOWS
+        TerminateThread(_handle, 0);
+#else
+        pthread_kill(*reinterpret_cast<ThreadType *>(_handle));
+#endif
+    }
+}

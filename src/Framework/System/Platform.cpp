@@ -36,6 +36,19 @@
     #include <sys/sysinfo.h>
 #endif
 
+#ifndef WINDOWS //We assume compiler supports GCC style asm
+
+    #define INSTRUCTION_CPUID(val) \
+        asm("movl val, %eax"); \
+        asm("cpuid")
+
+    #define READ_REGISTER(name, val) \
+        asm("movl %%"#name", %0" \
+            : "=r"(val) \
+            :)
+
+#endif
+
 #include "Framework/System/Platform.hpp"
 #include "Framework/System/ModuleManager.hpp"
 #include "Framework/IO/FileSystem.hpp"
@@ -46,7 +59,7 @@ namespace bpf
 {
 #ifdef WINDOWS
     typedef LONG NTSTATUS, *PNTSTATUS;
-#define STATUS_SUCCESS (0x00000000)
+    #define STATUS_SUCCESS (0x00000000)
 
     typedef NTSTATUS(WINAPI* RtlGetVersionPtr)(PRTL_OSVERSIONINFOW);
 
@@ -66,6 +79,68 @@ namespace bpf
         return rovi;
     }
 #endif
+
+    String Platform::CPUIDIntToStr(int data)
+    {
+        String res = "";
+        TypeExpander<int> exp(data);
+        res += static_cast<char>(exp.Bytes[0]);
+        res += static_cast<char>(exp.Bytes[1]);
+        res += static_cast<char>(exp.Bytes[2]);
+        res += static_cast<char>(exp.Bytes[3]);
+        return (res);
+    }
+
+    String Platform::IdentifyCPUBranding()
+    {
+#ifdef WINDOWS
+        int cpuInfo[4] = { -1 };
+        char CPUBrandString[0x40];
+        memset(CPUBrandString, 0, sizeof(CPUBrandString));
+        __cpuid(cpuInfo, 0x80000002);
+        memcpy(CPUBrandString, cpuInfo, sizeof(cpuInfo));
+        __cpuid(cpuInfo, 0x80000003);
+        memcpy(CPUBrandString + 16, cpuInfo, sizeof(cpuInfo));
+        __cpuid(cpuInfo, 0x80000004);
+        memcpy(CPUBrandString + 32, cpuInfo, sizeof(cpuInfo));
+        return (String(CPUBrandString));
+#else
+        String res = "";
+        int reg_eax = 0;
+        int reg_ebx = 0;
+        int reg_ecx = 0;
+        int reg_edx = 0;
+
+        INSTRUCTION_CPUID(0x80000002);
+        READ_REGISTER(eax, reg_eax);
+        READ_REGISTER(ebx, reg_ebx);
+        READ_REGISTER(ecx, reg_ecx);
+        READ_REGISTER(edx, reg_edx);
+        res += CPUIDIntToStr(reg_eax);
+        res += CPUIDIntToStr(reg_ebx);
+        res += CPUIDIntToStr(reg_ecx);
+        res += CPUIDIntToStr(reg_edx);
+        INSTRUCTION_CPUID(0x80000003);
+        READ_REGISTER(eax, reg_eax);
+        READ_REGISTER(ebx, reg_ebx);
+        READ_REGISTER(ecx, reg_ecx);
+        READ_REGISTER(edx, reg_edx);
+        res += CPUIDIntToStr(reg_eax);
+        res += CPUIDIntToStr(reg_ebx);
+        res += CPUIDIntToStr(reg_ecx);
+        res += CPUIDIntToStr(reg_edx);
+        INSTRUCTION_CPUID(0x80000004);
+        READ_REGISTER(eax, reg_eax);
+        READ_REGISTER(ebx, reg_ebx);
+        READ_REGISTER(ecx, reg_ecx);
+        READ_REGISTER(edx, reg_edx);
+        res += CPUIDIntToStr(reg_eax);
+        res += CPUIDIntToStr(reg_ebx);
+        res += CPUIDIntToStr(reg_ecx);
+        res += CPUIDIntToStr(reg_edx);
+        return (res);
+#endif
+    }
 
     Env Platform::InitEnvInfo()
     {
@@ -125,9 +200,9 @@ namespace bpf
         return (os);
     }
 
-    CPU Platform::GetCPUInfo()
+    CPU &Platform::GetCPUInfo()
     {
-        CPU cpi;
+        static CPU cpi = { IdentifyCPUBranding(), 0, 0 };
 
 #ifdef WINDOWS
         SYSTEM_INFO sysInfo;
@@ -143,16 +218,6 @@ namespace bpf
         cpi.NumCores = 0;
         cpi.Freq = 0;
 #endif
-        /*int cpuInfo[4] = { -1 };
-        char CPUBrandString[0x40];
-        memset(CPUBrandString, 0, sizeof(CPUBrandString));
-        __cpuid(cpuInfo, 0x80000002);
-        memcpy(CPUBrandString, cpuInfo, sizeof(cpuInfo));
-        __cpuid(cpuInfo, 0x80000003);
-        memcpy(CPUBrandString + 16, cpuInfo, sizeof(cpuInfo));
-        __cpuid(cpuInfo, 0x80000004);
-        memcpy(CPUBrandString + 32, cpuInfo, sizeof(cpuInfo));
-        cpi.Name = String(CPUBrandString);*/
         return (cpi);
     }
 
