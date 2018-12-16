@@ -35,6 +35,6 @@ namespace bpf
     {
     public:
         virtual ~IInputStream() {}
-        virtual size_t Read(void *buf, size_t bufsize) = 0;
+        virtual fsize Read(void *buf, fsize bufsize) = 0;
     };
 }

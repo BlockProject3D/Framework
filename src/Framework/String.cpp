@@ -223,15 +223,15 @@ String::~String()
 
 void String::CopyString(const char *src, char *dest, const uint32 len) const
 {
-    size_t const *fsrc = reinterpret_cast<size_t const *>(src);
-    size_t *fdest = reinterpret_cast<size_t *>(dest);
-    uint32 flen = len / sizeof(size_t);
+    fsize const *fsrc = reinterpret_cast<fsize const *>(src);
+    fsize *fdest = reinterpret_cast<fsize *>(dest);
+    uint32 flen = len / sizeof(fsize);
 
     for (uint32 i = 0; i < flen; ++i, ++fsrc, ++fdest)
         *fdest = *fsrc;
     dest = reinterpret_cast<char *>(fdest);
     src = reinterpret_cast<char const *>(fsrc);
-    for (uint32 i = flen * sizeof(size_t); i < len; ++i, ++dest, ++src)
+    for (uint32 i = flen * sizeof(fsize); i < len; ++i, ++dest, ++src)
         *dest = *src;
     *dest = '\0';
 }

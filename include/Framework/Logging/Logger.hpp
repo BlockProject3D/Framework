@@ -49,7 +49,7 @@ namespace bpf
         {
             String res = "";
 
-            for (size_t i = 0; i < format.Size(); ++i)
+            for (uint32 i = 0; i < format.Size(); ++i)
             {
                 if (format[i] == '@' && ((i + 1 == format.Size()) || (i + 1 != format.Size() && format[i + 1] != '@')))
                     return (res + String::ValueOf(std::forward<Arg>(arg))

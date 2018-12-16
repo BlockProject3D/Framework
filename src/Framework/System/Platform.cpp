@@ -39,7 +39,7 @@
 #ifndef WINDOWS //We assume compiler supports GCC style asm
 
     #define INSTRUCTION_CPUID(val) \
-        asm("movl val, %eax"); \
+        asm("movl $"#val", %eax"); \
         asm("cpuid")
 
     #define READ_REGISTER(name, val) \

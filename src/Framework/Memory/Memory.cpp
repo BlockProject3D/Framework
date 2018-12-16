@@ -26,6 +26,7 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include <stdlib.h>
 #include "Framework/Memory/Memory.hpp"
 
 using namespace bpf;
@@ -37,11 +38,11 @@ Mutex Memory::MemMutex;
 
 struct Metadata
 {
-    size_t MemSize;
+    fsize MemSize;
 };
 #endif
 
-void *Memory::Malloc(size_t size)
+void *Memory::Malloc(fsize size)
 {
 #ifdef BUILD_DEBUG
     void *data = malloc(size + sizeof(Metadata));
@@ -79,7 +80,7 @@ void Memory::Free(void *addr)
 #endif
 }
 
-void *Memory::Realloc(void *addr, size_t newsize)
+void *Memory::Realloc(void *addr, fsize newsize)
 {
 #ifdef BUILD_DEBUG
     void *data;

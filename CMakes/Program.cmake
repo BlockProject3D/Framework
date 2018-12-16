@@ -14,4 +14,9 @@ macro(bp_setup)
     bp_setup_target(${CMAKE_PROJECT_NAME} include ${SOURCES})
     target_link_libraries(${BP_NAME} PRIVATE debug ${FRAMEWORK_BIN_DEBUG})
     target_link_libraries(${BP_NAME} PRIVATE optimized ${FRAMEWORK_BIN_RELEASE})
+    if (PLATFORM STREQUAL "Mac")
+    	add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+    		COMMAND ${CMAKE_INSTALL_NAME_TOOL}
+    			-add_rpath @executable_path/ $<TARGET_FILE:${CMAKE_PROJECT_NAME}>)
+    endif (PLATFORM STREQUAL "Mac")
 endmacro(bp_setup)

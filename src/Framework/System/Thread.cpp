@@ -105,7 +105,7 @@ void Thread::Kill(const bool force)
 #ifdef WINDOWS
         TerminateThread(_handle, 0);
 #else
-        pthread_kill(*reinterpret_cast<ThreadType *>(_handle));
+        pthread_kill(*reinterpret_cast<ThreadType *>(_handle), 0);
 #endif
     }
 }

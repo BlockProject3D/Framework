@@ -32,19 +32,19 @@ namespace bpf
 {
     namespace __internal_tp
     {
-        template <size_t MaxN, size_t N, typename Search, typename Arg, typename ...Args>
+        template <fsize MaxN, fsize N, typename Search, typename Arg, typename ...Args>
         struct TypeIndexer
         {
             static_assert(N < MaxN - 1, "Type does not exist in Tuple");
             using type = typename TypeIndexer<MaxN, N + 1, Search, Args...>::type;
-            static constexpr size_t ID = N;
+            static constexpr fsize ID = N;
         };
 
-        template <size_t MaxN, size_t N, typename Search, typename ...Args>
+        template <fsize MaxN, fsize N, typename Search, typename ...Args>
         struct TypeIndexer<MaxN, N, Search, Search, Args...>
         {
             using type = TypeIndexer;
-            static constexpr size_t ID = N;
+            static constexpr fsize ID = N;
         };
 
         template <typename T>
@@ -53,10 +53,10 @@ namespace bpf
             using type = T;
         };
 
-        template <size_t N, typename ...Args>
+        template <fsize N, typename ...Args>
         struct Chooser;
 
-        template <size_t N, typename Arg, typename ...Args>
+        template <fsize N, typename Arg, typename ...Args>
         struct Chooser<N, Arg, Args...> : Chooser<N - 1, Args...> {};
 
         template <typename Arg, typename ...Args>
@@ -68,19 +68,19 @@ namespace bpf
             static_assert(sizeof...(Args) > 0, "Tuple index out of range");
         };
 
-        template <size_t ...N>
+        template <fsize ...N>
         struct Sizes : Type<Sizes<N...>> {};
 
-        template <size_t Start, size_t End, typename S>
+        template <fsize Start, fsize End, typename S>
         struct Range;
 
-        template <size_t Start, size_t End, size_t ...N>
+        template <fsize Start, fsize End, fsize ...N>
         struct Range<Start, End, Sizes<N...>> : Range<Start + 1, End, Sizes<N..., Start>> {};
 
-        template <size_t Start, size_t ...N>
+        template <fsize Start, fsize ...N>
         struct Range<Start, Start, Sizes<N...>> : Sizes<N...> {};
 
-        template <size_t N, typename Arg>
+        template <fsize N, typename Arg>
         class Elem
         {
         private:
@@ -101,20 +101,20 @@ namespace bpf
         template <typename N, typename ...Args>
         class Impl;
 
-        template <size_t ...N, typename ...Args>
+        template <fsize ...N, typename ...Args>
         class Impl<Sizes<N...>, Args...> : Elem<N, Args>...
         {
         public:
-            template <size_t I>
+            template <fsize I>
             using ElemType = typename Chooser<I, Args...>::type;
 
-            template <size_t I>
+            template <fsize I>
             inline ElemType<I> &Get()
             {
                 return (Elem<I, ElemType<I>>::Get());
             }
 
-            template <size_t I>
+            template <fsize I>
             inline const ElemType<I> &Get() const
             {
                 return (Elem<I, ElemType<I>>::Get());
@@ -139,7 +139,7 @@ namespace bpf
         typename __internal_tp::Range<0, sizeof...(Args), __internal_tp::Sizes<>>::type, Args...>
     {
     public:
-        constexpr size_t Size() const
+        constexpr fsize Size() const
         {
             return (sizeof...(Args));
         }

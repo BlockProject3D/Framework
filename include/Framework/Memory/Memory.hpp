@@ -27,6 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/Types.hpp"
 #include "Framework/Memory/MemoryException.hpp"
 #ifdef BUILD_DEBUG
     #include "Framework/System/Mutex.hpp"
@@ -40,14 +41,14 @@ namespace bpf
     {
 #ifdef BUILD_DEBUG
     private:
-        static size_t CurUsedMem;
+        static fsize CurUsedMem;
         static int Allocs;
         static Mutex MemMutex;
 #endif
     public:
-        static void *Malloc(size_t size);
+        static void *Malloc(fsize size);
         static void Free(void *addr);
-        static void *Realloc(void *addr, size_t newsize);
+        static void *Realloc(void *addr, fsize newsize);
 
         template <typename T, typename ...Args>
         inline static T *New(Args&&... args)
@@ -72,7 +73,7 @@ namespace bpf
         {
             return (Allocs);
         }
-        inline static size_t GetUsedMem() noexcept
+        inline static fsize GetUsedMem() noexcept
         {
             return (CurUsedMem);
         }
