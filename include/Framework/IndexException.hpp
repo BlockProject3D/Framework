@@ -27,21 +27,32 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/RuntimeException.hpp"
+#include "Framework/Exception.hpp"
 
 namespace bpf
 {
-    class BPF_API IndexException : public RuntimeException
+    class BPF_API IndexException final : public Exception
     {
     private:
         int ID;
 
     public:
         inline IndexException(const int id) noexcept
-            : RuntimeException("Index", "")
+            : Exception()
             , ID(id)
         {
         }
+
+        int GetID() const noexcept
+        {
+            return (ID);
+        }
+
+        const char *GetType() const noexcept
+        {
+            return ("Index");
+        }
+
         //void Log(Framework::FLogger &logger) const;
     };
 }

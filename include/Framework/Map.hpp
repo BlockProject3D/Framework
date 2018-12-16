@@ -28,6 +28,7 @@
 
 #pragma once
 #include "Framework/Iterator.hpp"
+#include "Framework/IndexException.hpp"
 
 namespace bpf
 {

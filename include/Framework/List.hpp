@@ -30,6 +30,7 @@
 #include <functional>
 #include "Framework/Types.hpp"
 #include "Framework/Iterator.hpp"
+#include "Framework/IndexException.hpp"
 
 namespace bpf
 {

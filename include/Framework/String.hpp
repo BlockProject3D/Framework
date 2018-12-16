@@ -26,14 +26,13 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef STRING_H_
-# define STRING_H_
-
-# include <type_traits>
+#pragma once
+#include <type_traits>
 #include "Framework/Types.hpp"
 #include "Framework/TypeInfo.hpp"
 #include "Framework/List.hpp"
 #include "Framework/Hash.hpp"
+#include "Framework/IndexException.hpp"
 
 namespace bpf
 {
@@ -630,5 +629,3 @@ namespace bpf
 }
 
 DEFINE_DEFAULT(bpf::String, bpf::String());
-
-#endif /* !STRING_H_ */
