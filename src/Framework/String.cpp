@@ -110,13 +110,6 @@ String::String(String &&s)
     s.UnicodeLen = 0;
 }
 
-fchar String::operator[](const int id) const
-{
-    if (id < 0 || id > Len())
-        throw IndexException(id);
-    return (String::UTF32(Data + CalcStartFromUnicode(id)));
-}
-
 void String::MakeSized(String &str, const uint32 len) const
 {
     str.StrLen = len;

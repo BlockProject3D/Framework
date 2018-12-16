@@ -93,10 +93,13 @@ namespace bpf
         /**
          * Returns a byte at a given index
          * @param id the index of the byte to return
+         * @throws IndexException
          */
         inline char ByteAt(const uint32 id) const
         {
-            return ((char)((id >= StrLen) ? '\0' : Data[id]));
+            if (id >= StrLen)
+                throw IndexException((int)id);
+            return ((char)(Data[id]));
         }
 
         /**
@@ -246,8 +249,14 @@ namespace bpf
         /**
          * Returns a character of this string at offset id
          * @param id the offset of the character to get
+         * @throws IndexException
          */
-        fchar operator[](const int id) const;
+        inline fchar operator[](const int id) const
+        {
+            if (id < 0 || id > Len())
+                throw IndexException(id);
+            return (String::UTF32(Data + CalcStartFromUnicode(id)));
+        }
 
         /**
          * Prints this string on standard output
