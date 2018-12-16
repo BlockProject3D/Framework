@@ -26,3 +26,28 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#pragma once
+#include "Framework/Types.hpp"
+#include "Framework/IO/IOutputStream.hpp"
+#include "Framework/String.hpp"
+
+namespace bpf
+{
+    class IDataOutputStream : public IOutputStream
+    {
+    public:
+        virtual ~IDataOutputStream() {}
+        virtual IDataOutputStream &operator<<(uint8 u) = 0;
+        virtual IDataOutputStream &operator<<(uint16 u) = 0;
+        virtual IDataOutputStream &operator<<(uint32 u) = 0;
+        virtual IDataOutputStream &operator<<(uint64 u) = 0;
+        virtual IDataOutputStream &operator<<(int8 i) = 0;
+        virtual IDataOutputStream &operator<<(int16 i) = 0;
+        virtual IDataOutputStream &operator<<(int i) = 0;
+        virtual IDataOutputStream &operator<<(int64 i) = 0;
+        virtual IDataOutputStream &operator<<(float f) = 0;
+        virtual IDataOutputStream &operator<<(double d) = 0;
+        virtual IDataOutputStream &operator<<(bool b) = 0;
+        virtual IDataOutputStream &operator<<(const bpf::String &str) = 0;
+    };
+}

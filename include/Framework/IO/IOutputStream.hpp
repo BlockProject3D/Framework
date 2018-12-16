@@ -35,6 +35,6 @@ namespace bpf
     {
     public:
         virtual ~IOutputStream() {}
-        virtual size Write(const void *buf, size bufsize) = 0;
+        virtual size_t Write(const void *buf, size_t bufsize) = 0;
     };
 }

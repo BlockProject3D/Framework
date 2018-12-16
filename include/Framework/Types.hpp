@@ -37,7 +37,6 @@ namespace bpf
     using uint64 = long unsigned int;
     using int8 = signed char;
     using fchar = uint32;
-    using size = size_t;
     using int16 = signed short;
     using uint16 = unsigned short;
 }

@@ -629,7 +629,7 @@ namespace FEvalExpr
             break;
         case EVAL_EXPR_MOD:
             if (right != 0.0)
-                res = ((uint64_t)left) % ((uint64_t)right);
+                res = (double)(((uint64)left) % ((uint64)right));
             else
                 status = EVAL_EXPR_MODULO_ZERO;
             break;
