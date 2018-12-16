@@ -342,6 +342,16 @@ bool String::Contains(const String &other) const
     return (false);
 }
 
+bool String::Contains(const fchar other) const
+{
+    for (uint32 i = 0; i < UnicodeLen; i++)
+    {
+        if (operator[](i) == other)
+            return (true);
+    }
+    return (false);
+}
+
 bool String::IsNumeric() const
 {
     bool coma = false;
@@ -405,11 +415,11 @@ void String::Explode(List<String> &l, const String &str) const
 {
     String cur;
 
-    for (uint32 i = 0 ; i < StrLen ; i++)
+    for (uint32 i = 0 ; i < StrLen ; ++i)
     {
-        if (!my_strstr(str.Data, Data + i))
+        if (Data[i] != str.Data[0])
             cur += Data[i];
-        else if (cur != String::Empty)
+        else if (cur != String::Empty && my_strstr(str.Data, Data + i))
         {
             l.Add(cur);
             cur = String::Empty;
@@ -424,11 +434,29 @@ void String::ExplodeIgnore(List<String> &l, const String &str, const String &ign
     String cur;
     bool ign = false;
 
-    for (uint32 i = 0 ; i < StrLen ; i++)
+    for (uint32 i = 0 ; i < StrLen ; ++i)
     {
         if (my_strstr(ignore.Data, Data + i))
             ign = !ign;
-        if (!my_strstr(str.Data, Data + i) || ign)
+        if (Data[i] != str.Data[0] || ign)
+            cur += Data[i];
+        else if (cur != String::Empty && my_strstr(str.Data, Data + i))
+        {
+            l.Add(cur);
+            cur = String::Empty;
+        }
+    }
+    if (cur != String::Empty)
+        l.Add(cur);
+}
+
+void String::ExplodeOr(List<String> &l, const String &str) const
+{
+    String cur;
+
+    for (uint32 i = 0; i < StrLen; i++)
+    {
+        if (!str.Contains(operator[](i)))
             cur += Data[i];
         else if (cur != String::Empty)
         {

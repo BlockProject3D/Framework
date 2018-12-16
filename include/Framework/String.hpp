@@ -383,6 +383,13 @@ namespace bpf
         void ExplodeIgnore(List<String> &l, const String &str, const String &ignore) const;
 
         /**
+         * Splits this string using multiple delimiters
+         * @param l the list to load of tokens
+         * @param str the delimiters
+         */
+        void ExplodeOr(List<String> &l, const String &str) const;
+
+        /**
          * Returns true if this string starts with other
          */
         bool StartsWith(const String &other) const;
@@ -397,12 +404,19 @@ namespace bpf
          */
         bool Contains(const String &other) const;
 
+        bool Contains(const fchar other) const;
+
         /**
          * Returns a substring
          * @param begin the begin index in characters (inclusive)
          * @param count the amount of characters to read
          */
-        String SubLen(const int begin, const int count) const;
+        inline String SubLen(const int begin, const int count = -1) const
+        {
+            if (count < 0)
+                return (Sub(begin));
+            return (Sub(begin, begin + count));
+        }
 
         /**
          * Returns a substring
