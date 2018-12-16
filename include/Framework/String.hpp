@@ -36,16 +36,6 @@
 
 namespace bpf
 {
-    enum EEvalExprCode
-    {
-        EVAL_EXPR_PARENTHESIS = 0,
-        EVAL_EXPR_DIVIDE_ZERO,
-        EVAL_EXPR_MODULO_ZERO,
-        EVAL_EXPR_SYNTHAX_INCORRECT,
-        EVAL_EXPR_INVALID_NUMBER,
-        EVAL_EXPR_SUCCESS,
-    };
-
     class BPF_API String
     {
     private:
@@ -448,15 +438,17 @@ namespace bpf
 
         /**
          * Evaluate a mathematical expression
+         * @throws EvalException
          */
-        static EEvalExprCode Evaluate(char const *expr, double &res);
+        static double Evaluate(const char *expr);
 
         /**
          * Evaluate a mathematical expression from the contents of the FString
+         * @throws EvalException
          */
-        inline EEvalExprCode Evaluate(double &res)
+        inline double Evaluate()
         {
-            return (String::Evaluate(Data, res));
+            return (String::Evaluate(Data));
         }
 
         /**
@@ -545,11 +537,6 @@ namespace bpf
         {
             return (ValueOf((void *)val));
         }
-
-        /**
-         * Converts an EvalExpr result code in string
-         */
-        static String ValueOf(EEvalExprCode cde);
         
         /**
          * Converts a signed integer 32 bits to it's string representation

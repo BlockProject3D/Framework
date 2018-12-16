@@ -31,6 +31,7 @@
 #include <iostream>
 #include <cstdlib>
 #include "Framework/Framework.hpp"
+#include "Framework/EvalException.hpp"
 
 using namespace bpf;
 
@@ -621,6 +622,16 @@ namespace FEvalExpr
         EVAL_EXPR_NONE,
     };
 
+    enum EEvalExprCode
+    {
+        EVAL_EXPR_PARENTHESIS = 0,
+        EVAL_EXPR_DIVIDE_ZERO,
+        EVAL_EXPR_MODULO_ZERO,
+        EVAL_EXPR_SYNTHAX_INCORRECT,
+        EVAL_EXPR_INVALID_NUMBER,
+        EVAL_EXPR_SUCCESS,
+    };
+
     static EEvalExprCode Operation(char const **expr, double &res, bool const parenthesis);
 
     static unsigned char IsOperator(char const expr)
@@ -796,40 +807,28 @@ namespace FEvalExpr
     }
 }
 
-EEvalExprCode String::Evaluate(char const *expr, double &res)
+double String::Evaluate(const char *expr)
 {
-    res = 0;
-    return FEvalExpr::Operation(&expr, res, false);
+    double res = 0;
+    FEvalExpr::EEvalExprCode code = FEvalExpr::Operation(&expr, res, false);
+
+    switch (code)
+    {
+    case FEvalExpr::EVAL_EXPR_DIVIDE_ZERO:
+        throw EvalException("Division by zero");
+    case FEvalExpr::EVAL_EXPR_INVALID_NUMBER:
+        throw EvalException("Number expected");
+    case FEvalExpr::EVAL_EXPR_MODULO_ZERO:
+        throw EvalException("Modulo by zero");
+    case FEvalExpr::EVAL_EXPR_SYNTHAX_INCORRECT:
+        throw EvalException("Syntax error");
+    case FEvalExpr::EVAL_EXPR_PARENTHESIS:
+        throw EvalException("Missing parenthesis");
+    default:
+        return (res);
+    }
 }
 /* END Eval expr */
-
-String String::ValueOf(EEvalExprCode cde)
-{
-    String res;
-
-    switch (cde)
-    {
-    case EVAL_EXPR_DIVIDE_ZERO:
-        res = "Division by zero";
-        break;
-    case EVAL_EXPR_INVALID_NUMBER:
-        res = "Number expected";
-        break;
-    case EVAL_EXPR_MODULO_ZERO:
-        res = "Modulo by zero";
-        break;
-    case EVAL_EXPR_SYNTHAX_INCORRECT:
-        res = "Syntax error";
-        break;
-    case EVAL_EXPR_PARENTHESIS:
-        res = "Missing parenthesis";
-        break;
-    default:
-        res = "NULL";
-        break;
-    }
-    return (res);
-}
 
 String String::ValueOf(int i)
 {

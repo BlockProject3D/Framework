@@ -82,6 +82,7 @@ set(SOURCES
     ./include/Framework/Exception.hpp
     ./include/Framework/RuntimeException.hpp
     ./include/Framework/IndexException.hpp
+	./include/Framework/EvalException.hpp
     ./include/Framework/Stack.hpp
     ./include/Framework/Stack.impl.hpp
     ./include/Framework/String.hpp
