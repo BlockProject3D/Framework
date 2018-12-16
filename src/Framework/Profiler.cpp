@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <chrono>
-#include "Framework/Framework.hpp"
+#include "Framework/Profiler.hpp"
 
 using namespace bpf;
 

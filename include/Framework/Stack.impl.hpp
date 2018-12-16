@@ -26,8 +26,7 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef STACK_IMPL_H_
-# define STACK_IMPL_H_
+#pragma once
 
 namespace bpf
 {
@@ -91,5 +90,3 @@ namespace bpf
         return (CurSize == 0);
     }
 }
-
-#endif /* !STACK_IMPL_H_ */

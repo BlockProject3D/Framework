@@ -28,6 +28,8 @@
 
 #pragma once
 
+#define Null nullptr
+
 namespace bpf
 {
     using uint32 = unsigned int;

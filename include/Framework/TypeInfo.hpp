@@ -27,8 +27,54 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include <type_traits>
+
+/**
+ * Defines a default for a given type
+ */
+#define DEFINE_DEFAULT(type, ret) \
+    template <> \
+    inline type bpf::DefaultOf<type>() \
+    { \
+        return (ret); \
+    }
+
+/**
+ * Defines the type name for a given type
+ */
+#define DEFINE_TYPE(compilename, runtimename) \
+    template <> \
+    const bpf::String &bpf::TypeOf<compilename>() \
+    { \
+        static bpf::String staticname = #runtimename; \
+        return (staticname); \
+    } \
 
 namespace bpf
 {
-    // TODO : TypeOf and DefaultOf here
+    class String;
+
+    /**
+     * Returns the default of a given type
+     * @tparam T the type to find the default of
+     */
+    template <typename T, typename std::enable_if<!std::is_pointer<T>::value>::type * = nullptr>
+    T DefaultOf();
+    template <class T, typename std::enable_if<std::is_pointer<T>::value>::type * = nullptr>
+    inline T DefaultOf()
+    {
+        return (nullptr);
+    }
+
+    /**
+    * Returns the type name as a string of a given type
+    * @tparam T the type to search the name of
+    */
+    template<typename T>
+    const bpf::String &TypeOf();
+
+    DEFINE_DEFAULT(int, 0);
+    DEFINE_DEFAULT(float, 0);
+    DEFINE_DEFAULT(double, 0);
+    DEFINE_DEFAULT(bool, false);
 }

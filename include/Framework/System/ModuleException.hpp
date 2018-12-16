@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Framework.hpp"
+#include "Framework/RuntimeException.hpp"
 
 namespace bpf
 {

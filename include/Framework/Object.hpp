@@ -26,8 +26,8 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef OBJECT_H_
-#define OBJECT_H_
+#pragma once
+#include "Framework/List.hpp"
 
 namespace bpf
 {
@@ -50,5 +50,3 @@ namespace bpf
         friend class ObjectPtr;
     };
 }
-
-#endif /* !OBJECT_H_ */

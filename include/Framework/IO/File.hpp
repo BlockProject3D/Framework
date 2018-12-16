@@ -33,7 +33,7 @@
 
 namespace Framework
 {
-    class ENGINE_API FFile
+    class BPF_API FFile
     {
     private:
         IFileStream *Stream;

@@ -26,8 +26,9 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef ARRAY_H_
-# define ARRAY_H_
+#pragma once
+#include "Framework/Iterator.hpp"
+#include "Framework/Types.hpp"
 
 namespace bpf
 {
@@ -141,4 +142,4 @@ namespace bpf
     };
 };
 
-#endif /* !ARRAY_H_ */
+#include "Framework/Array.impl.hpp"

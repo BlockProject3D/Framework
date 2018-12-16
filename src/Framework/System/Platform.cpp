@@ -50,9 +50,6 @@
 #endif
 
 #include "Framework/System/Platform.hpp"
-#include "Framework/System/ModuleManager.hpp"
-#include "Framework/IO/FileSystem.hpp"
-#include "Framework/System/System.hpp"
 #include "Framework/System/TypeExpander.hpp"
 
 namespace bpf
@@ -238,7 +235,7 @@ namespace bpf
     }
 }
 
-using namespace Framework;
+/*using namespace Framework;
 
 bool FPlatform::Exit = false;
 IFileSystem *FPlatform::FileSys = Null;
@@ -259,11 +256,11 @@ bool FPlatform::IsExiting()
 }
 
 IFileSystem *FPlatform::GetFileSystem()
-{
+{*/
     /*if (FileSys == NULL)
         FileSys = FModuleManager::GetModule<IFileSystem>("FileSystem");
     return (FileSys);*/
-    return (Null);
+    /*return (Null);
 }
 
 EPlatformEndianess FPlatform::GetPlatformEndianess()
@@ -312,11 +309,11 @@ void FPlatform::ReverseBuffer(uint8 *buf, const uint32 groupsize, const uint32 s
 }
 
 ISystemManager *FPlatform::GetBaseSystem()
-{
+{*/
     /*if (BaseSys == NULL)
         BaseSys = FModuleManager::GetModule<ISystemManager>("System");
     return (BaseSys);*/
-    return (Null);
+    /*return (Null);
 }
 
 void FPlatform::Initialize()
@@ -358,4 +355,4 @@ const bpf::String &FPlatform::GetProperty(const char *vname)
 void FPlatform::SetProperty(const char *vname, const bpf::String &prop)
 {
     PropMap[vname] = prop;
-}
+}*/

@@ -30,8 +30,9 @@
 #include <sstream>
 #include <iostream>
 #include <cstdlib>
-#include "Framework/Framework.hpp"
+#include "Framework/Memory/Memory.hpp"
 #include "Framework/EvalException.hpp"
+#include "Framework/IndexException.hpp"
 
 using namespace bpf;
 

@@ -26,8 +26,8 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef ARRAY_IMPL_H_
-# define ARRAY_IMPL_H_
+#pragma once
+#include "Framework/IndexException.hpp"
 
 namespace bpf
 {
@@ -122,5 +122,3 @@ namespace bpf
         return (_size);
     }
 }
-
-#endif /* !ARRAY_IMPL_H_ */

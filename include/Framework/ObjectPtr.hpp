@@ -27,6 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/Object.hpp"
 
 namespace bpf
 {
@@ -49,7 +50,7 @@ namespace bpf
         
         inline ~ObjectPtr()
         {
-            if (RawPtr != NULL)
+            if (RawPtr != Null)
                 RawPtr->RemoveRef((void **)&RawPtr);
         }
         
@@ -85,20 +86,20 @@ namespace bpf
         
         ObjectPtr<T> &operator=(T *other)
         {
-            if (RawPtr != NULL)
+            if (RawPtr != Null)
                 RawPtr->RemoveRef((void **)&RawPtr);
             RawPtr = other;
-            if (RawPtr != NULL)
+            if (RawPtr != Null)
                 RawPtr->AddRef((void **)&RawPtr);
             return (*this);
         }
         
         ObjectPtr<T> &operator=(const ObjectPtr<T> &other)
         {
-            if (RawPtr != NULL)
+            if (RawPtr != Null)
                 RawPtr->RemoveRef((void **)&RawPtr);
             RawPtr = other.RawPtr;
-            if (RawPtr != NULL)
+            if (RawPtr != Null)
                 RawPtr->AddRef((void **)&RawPtr);
             return (*this);
         }

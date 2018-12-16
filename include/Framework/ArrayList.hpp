@@ -27,6 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/Array.hpp"
 
 namespace bpf
 {
@@ -91,3 +92,5 @@ namespace bpf
         }
     };
 }
+
+#include "Framework/ArrayList.impl.hpp"

@@ -26,8 +26,7 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef EXCEPTION_H_
-# define EXCEPTION_H_
+#pragma once
 
 namespace bpf
 {
@@ -41,7 +40,7 @@ namespace bpf
         /**
          * Returns exception type
          */
-        inline virtual const char *GetType() const
+        inline virtual const char *GetType() const noexcept
         {
             return ("GenericException");
         }
@@ -52,5 +51,3 @@ namespace bpf
         //virtual void Log(Framework::FLogger &logger) const;
     };
 };
-
-#endif /* !EXCEPTION_H_ */

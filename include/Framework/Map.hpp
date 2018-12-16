@@ -26,8 +26,8 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef MAP_H_
-# define MAP_H_
+#pragma once
+#include "Framework/Iterator.hpp"
 
 namespace bpf
 {
@@ -150,4 +150,4 @@ namespace bpf
     };
 };
 
-#endif /* !MAP_H_ */
+#include "Framework/Map.impl.hpp"

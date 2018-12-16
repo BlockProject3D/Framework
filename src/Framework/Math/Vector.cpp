@@ -27,6 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Framework/Framework.hpp"
+#include "Framework/Types.hpp"
 #include "Framework/Math/BMath.hpp"
 
 using namespace Framework;
@@ -232,10 +233,10 @@ FVector4D FVector4D::operator*(const FMatrix &other) const
     float myvec[4] = { X, Y, Z, W };
     float result[4];
 
-    for (uint8 i = 0 ; i < 4 ; i++)
+    for (bpf::uint8 i = 0 ; i < 4 ; i++)
     {
         float res = 0;
-        for (uint8 k = 0 ; k < 4 ; k++)
+        for (bpf::uint8 k = 0 ; k < 4 ; k++)
             res += myvec[k] * data[i * 4 + k];
         result[i] = res;
     }

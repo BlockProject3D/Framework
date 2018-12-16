@@ -35,7 +35,7 @@ namespace bpf
     {
     public:
         inline MemoryException() {}
-        inline const char *GetType() const
+        inline const char *GetType() const noexcept override
         {
             return ("MemoryException");
         }

@@ -31,6 +31,7 @@
 
 # include <type_traits>
 #include "Framework/Types.hpp"
+#include "Framework/TypeInfo.hpp"
 #include "Framework/List.hpp"
 #include "Framework/Hash.hpp"
 

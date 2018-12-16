@@ -26,8 +26,8 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef STACK_H_
-# define STACK_H_
+#pragma once
+#include "Framework/Array.hpp"
 
 namespace bpf
 {
@@ -62,4 +62,4 @@ namespace bpf
     };
 };
 
-#endif /* !STACK_H_ */
+#include "Framework/Stack.impl.hpp"

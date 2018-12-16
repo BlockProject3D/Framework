@@ -26,8 +26,9 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef RUNTIMEEXCEPTION_H_
-#define RUNTIMEEXCEPTION_H_
+#pragma once
+#include "Framework/String.hpp"
+#include "Framework/Exception.hpp"
 
 namespace bpf
 {
@@ -49,12 +50,10 @@ namespace bpf
             return (Message);
         }
 
-        inline const char *GetType() const override
+        inline const char *GetType() const noexcept override
         {
             return (*Type);
         }
         //virtual void Log(Framework::FLogger &logger) const override;
     };
 }
-
-#endif /* !RUNTIMEEXCEPTION_H_ */

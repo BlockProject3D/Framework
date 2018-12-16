@@ -26,10 +26,9 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef LIST_H_
-# define LIST_H_
-
+#pragma once
 #include <functional>
+#include "Framework/Types.hpp"
 #include "Framework/Iterator.hpp"
 
 namespace bpf
@@ -185,4 +184,4 @@ namespace bpf
     };
 };
 
-#endif /* !LIST_H_ */
+#include "Framework/List.impl.hpp"

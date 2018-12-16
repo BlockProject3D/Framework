@@ -6,8 +6,8 @@ include("${CMAKE_SOURCE_DIR}/CMakes/Framework.cmake")
 set(CMAKE_CXX_STANDARD 11)
 
 set(SOURCES
-    ./include/Framework/IO/File.hpp
-    ./include/Framework/IO/FileSystem.hpp
+#    ./include/Framework/IO/File.hpp
+#    ./include/Framework/IO/FileSystem.hpp
     ./include/Framework/IO/IInputStream.hpp
     ./include/Framework/IO/IOutputStream.hpp
     ./include/Framework/IO/IDataInputStream.hpp
@@ -18,7 +18,7 @@ set(SOURCES
     ./include/Framework/IO/BinaryWriter.hpp
     ./include/Framework/IO/TextReader.hpp
     ./include/Framework/IO/TextWriter.hpp
-    ./include/Framework/IO/Stream.hpp
+#    ./include/Framework/IO/Stream.hpp
     ./include/Framework/Math/Triangle.hpp
     ./include/Framework/Math/Vector.hpp
     ./include/Framework/Math/Vertex.hpp
@@ -46,7 +46,7 @@ set(SOURCES
 	./include/Framework/System/ModuleException.hpp
     ./include/Framework/System/ModuleManager.hpp
     ./include/Framework/System/Platform.hpp
-    ./include/Framework/System/System.hpp
+#    ./include/Framework/System/System.hpp
     ./include/Framework/System/TypeExpander.hpp
     ./include/Framework/System/DateTime.hpp
     ./include/Framework/System/Timer.hpp
@@ -87,14 +87,14 @@ set(SOURCES
     ./include/Framework/Stack.impl.hpp
     ./include/Framework/String.hpp
     ./include/Framework/TreeNode.hpp
-    ./src/Framework/IO/File.cpp
+#    ./src/Framework/IO/File.cpp
     ./src/Framework/IO/ByteBuf.cpp
     ./src/Framework/IO/DynamicByteBuf.cpp
     ./src/Framework/IO/BinaryReader.cpp
     ./src/Framework/IO/BinaryWriter.cpp
     ./src/Framework/IO/TextReader.cpp
     ./src/Framework/IO/TextWriter.cpp
-    ./src/Framework/IO/Stream.cpp
+#    ./src/Framework/IO/Stream.cpp
     ./src/Framework/Logging/DefaultLogger.cpp
     ./src/Framework/Logging/FileLogger.cpp
     ./src/Framework/Math/BMath.cpp
@@ -108,7 +108,7 @@ set(SOURCES
     ./src/Framework/System/Platform.cpp
     ./src/Framework/System/Module.cpp
     ./src/Framework/System/ModuleManager.cpp
-    ./src/Framework/System/System.cpp
+#    ./src/Framework/System/System.cpp
     ./src/Framework/System/DateTime.cpp
     ./src/Framework/System/Thread.cpp
     ./src/Framework/System/Mutex.cpp

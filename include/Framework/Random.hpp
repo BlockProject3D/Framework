@@ -26,10 +26,9 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef RANDOM_H_
-# define RANDOM_H_
-
-# include <limits.h>
+#pragma once
+#include <limits.h>
+#include "Framework/Types.hpp"
 
 namespace bpf
 {
@@ -59,5 +58,3 @@ namespace bpf
         double NextDouble();
     };
 };
-
-#endif /* !RANDOM_H_ */

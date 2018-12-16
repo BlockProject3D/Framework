@@ -26,8 +26,8 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef PATH_H_
-# define PATH_H_
+#pragma once
+#include "Framework/String.hpp"
 
 namespace bpf
 {
@@ -44,5 +44,3 @@ namespace bpf
         static void SetModuleRoot(const String &folder);
     };
 };
-
-#endif /* !PATH_H_ */

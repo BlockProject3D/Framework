@@ -26,8 +26,9 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef COLOR_H_
-# define COLOR_H_
+#pragma once
+#include "Framework/Types.hpp"
+#include "Framework/String.hpp"
 
 namespace bpf
 {
@@ -160,5 +161,3 @@ namespace bpf
         static const Color Cyan;
     };
 };
-
-#endif /* !COLOR_H_ */

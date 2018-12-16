@@ -28,7 +28,6 @@
 
 #pragma once
 
-#include "Framework/Framework.hpp"
 #include "Framework/String.hpp"
 
 namespace bpf
@@ -81,7 +80,7 @@ namespace bpf
     };
 }
 
-namespace Framework
+/*namespace Framework
 {
     class IFileSystem;
     class ISystemNetwork;
@@ -94,7 +93,10 @@ namespace Framework
         PLATFORM_LITTLEENDIAN
     };
 
-    class ENGINE_API FPlatform
+
+    //TODO : THIS CLASS IS THE DEVIL !
+    //TODO : DO NOT REACTIVATE IT
+    class BPF_API FPlatform
     {
     private:
         static bool Exit;
@@ -107,15 +109,15 @@ namespace Framework
         static IFileSystem *GetFileSystem();
         static ISystemManager *GetBaseSystem();
         static EPlatformEndianess GetPlatformEndianess();
-        static void ReverseBuffer(uint8 *buf, const uint32 size);
+        static void ReverseBuffer(uint8 *buf, const uint32 size);*/
 
         /**
          * Reverse buffer buf groupsize per groupsize instead of byte per byte
          */
-        static void ReverseBuffer(uint8 *buf, const uint32 groupsize, const uint32 size);
+        /*static void ReverseBuffer(uint8 *buf, const uint32 groupsize, const uint32 size);
         static void Initialize();
         static void Shutdown();
         static const bpf::String &GetProperty(const char *vname);
         static void SetProperty(const char *vname, const bpf::String &prop);
     };
-};
+};*/

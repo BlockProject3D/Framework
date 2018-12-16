@@ -27,6 +27,11 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/Types.hpp"
+#include "Framework/String.hpp"
+#include "Framework/Stack.hpp"
+#include "Framework/Array.hpp"
+#include "Framework/Map.hpp"
 
 # ifdef BUILD_DEBUG
 #  define PROFILER_PUSH_SECTION(name) Framework::FProfiler::PushSection(name)

@@ -27,6 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Framework/Framework.hpp"
+#include "Framework/Types.hpp"
 #include "Framework/Math/BMath.hpp"
 
 using namespace Framework;
@@ -43,7 +44,7 @@ FMatrix	FMatrix::Zero = FMatrix({0, 0, 0, 0,
 
 FMatrix::FMatrix(std::initializer_list<float> lst)
 {
-    uint8 i = 0;
+    bpf::uint8 i = 0;
 
     for (auto it = lst.begin() ; it != lst.end() ; ++it)
         Data[i++] = *it;
@@ -51,25 +52,25 @@ FMatrix::FMatrix(std::initializer_list<float> lst)
 
 FMatrix::FMatrix()
 {
-    for (uint8 i = 0 ; i < 16 ; i++)
+    for (bpf::uint8 i = 0 ; i < 16 ; i++)
         Data[i] = 0;
 }
 
 FMatrix::FMatrix(const float *mat)
 {
-    for (uint8 i = 0 ; i < 16 ; i++)
+    for (bpf::uint8 i = 0 ; i < 16 ; i++)
         Data[i] = mat[i];
 }
 
 FMatrix::FMatrix(const FMatrix &other)
 {
-    for (uint8 i = 0 ; i < 16 ; i++)
+    for (bpf::uint8 i = 0 ; i < 16 ; i++)
         Data[i] = other.Data[i];
 }
 
 FMatrix &FMatrix::operator=(const FMatrix &other)
 {
-    for (uint8 i = 0 ; i < 16 ; i++)
+    for (bpf::uint8 i = 0 ; i < 16 ; i++)
         Data[i] = other.Data[i];
     return (*this);
 }
@@ -78,12 +79,12 @@ FMatrix FMatrix::operator*(const FMatrix &other) const
 {
     FMatrix mat;
 
-    for (uint8 i = 0 ; i < 4 ; ++i)
+    for (bpf::uint8 i = 0 ; i < 4 ; ++i)
     {
-        for (uint8 j = 0 ; j < 4 ; ++j)
+        for (bpf::uint8 j = 0 ; j < 4 ; ++j)
         {
             float res = 0;
-            for (uint8 k = 0 ; k < 4 ; ++k)
+            for (bpf::uint8 k = 0 ; k < 4 ; ++k)
                 res += Data[k * 4 + j] * other.Data[i * 4 + k];
             mat.Data[i * 4 + j] = res;
         }
