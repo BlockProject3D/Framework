@@ -5,6 +5,7 @@ matrix:
     - os: windows
       compiler: MSVC
     - os: linux
+      dist: xenial
       compiler:
         - gcc
         - clang

@@ -33,22 +33,28 @@
  * Defines a default for a given type
  */
 #define DEFINE_DEFAULT(type, ret) \
-    template <> \
-    inline type bpf::DefaultOf<type>() \
+    namespace bpf \
     { \
-        return (ret); \
+        template <> \
+        inline type DefaultOf<type>() \
+        { \
+            return (ret); \
+        } \
     }
 
 /**
  * Defines the type name for a given type
  */
 #define DEFINE_TYPE(compilename, runtimename) \
-    template <> \
-    const bpf::String &bpf::TypeOf<compilename>() \
+    namespace bpf \
     { \
-        static bpf::String staticname = #runtimename; \
-        return (staticname); \
-    } \
+        template <> \
+            const bpf::String &TypeOf<compilename>() \
+        { \
+            static bpf::String staticname = #runtimename; \
+            return (staticname); \
+        } \
+    }
 
 namespace bpf
 {
