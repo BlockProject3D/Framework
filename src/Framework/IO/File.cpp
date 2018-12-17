@@ -89,7 +89,8 @@ File File::GetParentFile() const
 
 void File::Copy(const File &dst)
 {
-    File out = dst;
+    //TODO : Implement
+    //File out = dst;
     /*IFileStream *src = Open(FILEMODE_READ);
 
     if (dst.IsDirectory())
