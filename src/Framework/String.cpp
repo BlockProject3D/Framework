@@ -367,8 +367,9 @@ bool String::IsNumeric() const
     return (true);
 }
 
-void String::Explode(List<String> &l, const char c) const
+List<String> String::Explode(const char c) const
 {
+    List<String> l;
     String cur;
 
     for (uint32 i = 0 ; i < StrLen ; i++)
@@ -383,12 +384,14 @@ void String::Explode(List<String> &l, const char c) const
     }
     if (cur != String::Empty)
         l.Add(cur);
+    return (l);
 }
 
-void String::ExplodeIgnore(List<String> &l, const char c, const char ignore) const
+List<String> String::ExplodeIgnore(const char c, const char ignore) const
 {
     String cur;
     bool ign = false;
+    List<String> l;
 
     for (uint32 i = 0 ; i < StrLen ; i++)
     {
@@ -404,11 +407,13 @@ void String::ExplodeIgnore(List<String> &l, const char c, const char ignore) con
     }
     if (cur != String::Empty)
         l.Add(cur);
+    return (l);
 }
 
-void String::Explode(List<String> &l, const String &str) const
+List<String> String::Explode(const String &str) const
 {
     String cur;
+    List<String> l;
 
     for (uint32 i = 0 ; i < StrLen ; ++i)
     {
@@ -422,12 +427,14 @@ void String::Explode(List<String> &l, const String &str) const
     }
     if (cur != String::Empty)
         l.Add(cur);
+    return (l);
 }
 
-void String::ExplodeIgnore(List<String> &l, const String &str, const String &ignore) const
+List<String> String::ExplodeIgnore(const String &str, const String &ignore) const
 {
     String cur;
     bool ign = false;
+    List<String> l;
 
     for (uint32 i = 0 ; i < StrLen ; ++i)
     {
@@ -443,11 +450,13 @@ void String::ExplodeIgnore(List<String> &l, const String &str, const String &ign
     }
     if (cur != String::Empty)
         l.Add(cur);
+    return (l);
 }
 
-void String::ExplodeOr(List<String> &l, const String &str) const
+List<String> String::ExplodeOr(const String &str) const
 {
     String cur;
+    List<String> l;
 
     for (uint32 i = 0; i < StrLen; i++)
     {
@@ -461,6 +470,7 @@ void String::ExplodeOr(List<String> &l, const String &str) const
     }
     if (cur != String::Empty)
         l.Add(cur);
+    return (l);
 }
 
 bool String::StartsWith(const String &other) const

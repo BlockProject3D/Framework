@@ -353,40 +353,40 @@ namespace bpf
 
         /**
          * Splits this string using a delimiter
-         * @param l the list to load of tokens
          * @param c the sperator char
+         * @return list of tokens
          */
-        void Explode(List<String> &l, const char c) const;
+        List<String> Explode(const char c) const;
 
         /**
          * Splits this string using a delimiter
-         * @param l the list to load of tokens
          * @param c the seperator char
          * @param ignore character to identify escape sequences (all characters between two of this ignore char will be interpreted as a single token)
+         * @return list of tokens
          */
-        void ExplodeIgnore(List<String> &l, const char c, const char ignore) const;
+        List<String> ExplodeIgnore(const char c, const char ignore) const;
 
         /**
          * Splits this string using a delimiter
-         * @param l the list to load of tokens
          * @param str the separator string
+         * @return list of tokens
          */
-        void Explode(List<String> &l, const String &str) const;
+        List<String> Explode(const String &str) const;
 
         /**
          * Splits this string using a delimiter
-         * @param l the list to load of tokens
          * @param str the separator string
          * @param ignore string to identify escape sequences (all characters between two of this ignore string will be interpreted as a single token)
+         * @return list of tokens
          */
-        void ExplodeIgnore(List<String> &l, const String &str, const String &ignore) const;
+        List<String> ExplodeIgnore(const String &str, const String &ignore) const;
 
         /**
          * Splits this string using multiple delimiters
-         * @param l the list to load of tokens
          * @param str the delimiters
+         * @return list of tokens
          */
-        void ExplodeOr(List<String> &l, const String &str) const;
+        List<String> ExplodeOr(const String &str) const;
 
         /**
          * Returns true if this string starts with other
@@ -487,8 +487,7 @@ namespace bpf
             {
                 res += format.Sub(0, i);
                 String pattern = format.Sub(i + 1, j);
-                List<String> tokens;
-                pattern.Explode(tokens, ',');
+                List<String> tokens = pattern.Explode(',');
                 if (tokens.Size() < 3)
                     return (res + ValueOf(t) + Format(format.Sub(j + 1), args...));
                 int maxn = tokens[0].ToInt();
