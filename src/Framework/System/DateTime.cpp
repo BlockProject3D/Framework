@@ -26,6 +26,7 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include <cstring>
 #include <ctime>
 #include "Framework/Framework.hpp"
 #include "Framework/System/DateTime.hpp"
@@ -131,7 +132,7 @@ DateTime DateTime::operator+(const DateTime &other) const
     DateTime res;
     struct tm t;
 
-    memset(&t, 0, sizeof(t));
+    std::memset(&t, 0, sizeof(t));
     t.tm_hour = _hour + other._hour;
     t.tm_min = _minute + other._minute;
     t.tm_sec = _second + other._second;
@@ -148,7 +149,7 @@ DateTime DateTime::operator-(const DateTime &other) const
     DateTime res;
     struct tm t;
 
-    memset(&t, 0, sizeof(t));
+    std::memset(&t, 0, sizeof(t));
     t.tm_hour = _hour - other._hour;
     t.tm_min = _minute - other._minute;
     t.tm_sec = _second - other._second;
@@ -188,7 +189,7 @@ void DateTime::operator+=(const DateTime &other)
 {
     struct tm t;
 
-    memset(&t, 0, sizeof(t));
+    std::memset(&t, 0, sizeof(t));
     t.tm_hour = _hour + other._hour;
     t.tm_min = _minute + other._minute;
     t.tm_sec = _second + other._second;
@@ -203,7 +204,7 @@ void DateTime::operator-=(const DateTime &other)
 {
     struct tm t;
 
-    memset(&t, 0, sizeof(t));
+    std::memset(&t, 0, sizeof(t));
     t.tm_hour = _hour - other._hour;
     t.tm_min = _minute - other._minute;
     t.tm_sec = _second - other._second;
