@@ -4,6 +4,12 @@ matrix:
   include:
     - os: windows
       compiler: MSVC
+    - os: linux
+      compiler:
+        - gcc
+        - clang
+    - os: osx
+      compiler: clang
 
 script:
   - mkdir build

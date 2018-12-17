@@ -33,7 +33,7 @@ using namespace bpf;
 
 #ifdef BUILD_DEBUG
 int Memory::Allocs = 0;
-size_t Memory::CurUsedMem = 0;
+fsize Memory::CurUsedMem = 0;
 Mutex Memory::MemMutex;
 
 struct Metadata

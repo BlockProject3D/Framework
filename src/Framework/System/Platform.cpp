@@ -163,8 +163,8 @@ namespace bpf
         os.NewLine = "\r\n";
         os.PathSep = "\\";
         RTL_OSVERSIONINFOW ver = GetRealOSVersion();
-        os.Version = String::ValueOf(ver.dwMajorVersion)
-            + "." + String::ValueOf(ver.dwMinorVersion);
+        os.Version = String::ValueOf(static_cast<int>(ver.dwMajorVersion))
+            + "." + String::ValueOf(static_cast<int>(ver.dwMinorVersion));
 #elif LINUX
         os.ModuleExt = "so";
         os.Name = "Linux";
