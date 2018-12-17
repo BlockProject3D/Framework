@@ -28,38 +28,69 @@
 
 #include <iostream>
 #include <climits>
-#include "Framework/Framework.hpp"
+#include <cstring>
+#ifdef WINDOWS
+    #include <Windows.h>
+    #define PATH_MAX MAX_PATH
+#else
+    #include <sys/types.h>
+    #include <sys/stat.h>
+    #include <unistd.h>
+    #include <stdlib.h>
+    #include <dirent.h>
+#endif
 #include "Framework/IO/File.hpp"
 
-using namespace Framework;
+using namespace bpf;
 
-FFile::FFile(const bpf::String &path)
-    : Stream(Null), FullPath(path), FileName(path.Sub(path.LastIndexOf('/') + 1)),
-    FileExt(path.Sub(path.LastIndexOf('.') + 1))
+File::File(const bpf::String &path)
+    : FullPath(path)
+    , FileName(path.Sub(path.LastIndexOf('/') + 1))
+    , FileExt(path.Sub(path.LastIndexOf('.') + 1))
 {
-#ifndef WINDOWS
-    char buf[PATH_MAX];
-
-    realpath(*path, buf);
-    AbsolutePath = buf;
+#ifdef WINDOWS
+    FullPath = FullPath.Replace("/", "\\");
+    FileName = path.Sub(path.LastIndexOf('\\') + 1);
+    FileExt = path.Sub(path.LastIndexOf('.') + 1);
 #endif
 }
 
-FFile::FFile()
-    : Stream(Null), FullPath(""), FileName(FullPath.Sub(FullPath.LastIndexOf('/') + 1)),
-    FileExt(FullPath.Sub(FullPath.LastIndexOf('.') + 1))
+File::File()
+    : FullPath("")
+    , FileName(FullPath.Sub(FullPath.LastIndexOf('/') + 1))
+    , FileExt(FullPath.Sub(FullPath.LastIndexOf('.') + 1))
 {
 }
 
-FFile::~FFile()
+File::~File()
 {
-    Close();
 }
 
-void FFile::Copy(const FFile &dst)
+File File::GetAbsolutePath() const
 {
-    FFile out = dst;
-    IFileStream *src = Open(FILEMODE_READ);
+    String str;
+    char buf[PATH_MAX];
+
+    std::memset(buf, 0, PATH_MAX);
+#ifdef WINDOWS
+    GetFullPathNameA(*FullPath, PATH_MAX, buf, Null);
+    str = String(buf);
+#else
+    realpath(*FullPath, buf);
+    str = String(buf);
+#endif
+    return (File(str));
+}
+
+File File::GetParentFile() const
+{
+    return (File());
+}
+
+void File::Copy(const File &dst)
+{
+    File out = dst;
+    /*IFileStream *src = Open(FILEMODE_READ);
 
     if (dst.IsDirectory())
         out = FFile(bpf::String(dst.GetPath()) + bpf::String("/") + GetFileName());
@@ -69,67 +100,100 @@ void FFile::Copy(const FFile &dst)
     while ((len = src->Read(buf, 4096)) > 0)
         dest->Write(buf, len);
     Close();
-    out.Close();
+    out.Close();*/
 }
 
-bool FFile::Exists() const
+bool File::Exists() const
 {
-    return (FPlatform::GetFileSystem()->FileExists(FullPath));
+#ifdef WINDOWS
+    WIN32_FIND_DATA data;
+    HANDLE hdl = FindFirstFile(*FullPath, &data);
+    if (hdl =- INVALID_HANDLE_VALUE)
+    {
+        FindClose(hdl);
+        return (true);
+    }
+    return (false);
+#else
+    if(access(*FullPath, F_OK) != -1)
+        return (true);
+    return (false);
+#endif
 }
 
-bool FFile::IsDirectory() const
+bool File::IsDirectory() const
 {
-    return (FPlatform::GetFileSystem()->IsDirectory(FullPath));
+    if (!Exists())
+        return (false);
+#ifdef WINDOWS
+    return (false); //TODO : code windows part
+#else
+    struct stat st;
+    stat(*FullPath, &st);
+    return (S_ISDIR(st.st_mode));
+#endif
 }
 
-uint64 FFile::GetSizeBytes() const
+uint64 File::GetSizeBytes() const
 {
-    return (FPlatform::GetFileSystem()->GetFileSize(FullPath));
+    if (!Exists())
+        return (0);
+#ifdef WINDOWS
+    return (0); //TODO : code windows part
+#else
+    struct stat st;
+    stat(*FullPath, &st);
+    return (st.st_size);
+#endif
 }
 
-void FFile::Delete()
+void File::Delete()
 {
-    if (Exists() && IsDirectory())
-        FPlatform::GetFileSystem()->DeleteDirectory(FullPath, false);
-    else if (Exists())
-        FPlatform::GetFileSystem()->DeleteFile(FullPath);
+    if (!Exists())
+        return;
+#ifdef WINDOWS
+#else
+    if (IsDirectory())
+        rmdir(*FullPath);
+    else
+        unlink(*FullPath);
+#endif
 }
 
-void FFile::ListFiles(bpf::List<FFile> &files)
+List<File> File::ListFiles()
 {
-    bpf::List<bpf::String> flns;
+    List<File> flns;
 
-    FPlatform::GetFileSystem()->ListFiles(FullPath, flns);
-    for (auto it = flns.Begin() ; it ; ++it)
-        files.Add(FFile(FullPath + '/' + *it));
+    if (!Exists() || !IsDirectory())
+        return (flns);
+#ifdef WINDOWS
+    //TODO : code windows part
+#else
+    DIR *d = opendir(*FullPath);
+    struct dirent *dir;
+
+    if (d)
+    {
+        while ((dir = readdir(d)) != Null)
+            flns.Add(File(String(dir->d_name)));
+    }
+    closedir(d);
+#endif
+    return (flns);
 }
 
-void FFile::CreateDir()
+void File::CreateDir()
 {
     if (Exists())
         return;
-    FPlatform::GetFileSystem()->CreateDirectory(FullPath);
+#ifdef WINDOWS
+    //TODO : code windows part
+#else
+    mkdir(*FullPath, 0755);
+#endif
 }
 
-void FFile::Close()
-{
-    if (Stream == Null)
-        return;
-    FPlatform::GetFileSystem()->CloseFile(Stream);
-    Stream = Null;
-}
-
-IFileStream *FFile::Open(const EFileMode mode)
-{
-    if (mode == FILEMODE_READ && !Exists())
-        return (Null);
-    if (Stream != Null)
-        return (Stream);
-    Stream = FPlatform::GetFileSystem()->OpenFile(FullPath, mode);
-    return (Stream);
-}
-
-bpf::String	FFile::ToString() const
+bpf::String File::ToString() const
 {
     return (bpf::String("File(") + FullPath + ")");
 }

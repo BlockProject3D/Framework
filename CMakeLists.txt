@@ -6,7 +6,7 @@ include("${CMAKE_SOURCE_DIR}/CMakes/Framework.cmake")
 set(CMAKE_CXX_STANDARD 11)
 
 set(SOURCES
-#    ./include/Framework/IO/File.hpp
+    ./include/Framework/IO/File.hpp
 #    ./include/Framework/IO/FileSystem.hpp
     ./include/Framework/IO/IInputStream.hpp
     ./include/Framework/IO/IOutputStream.hpp
@@ -43,7 +43,7 @@ set(SOURCES
     ./include/Framework/Memory/WeakPtr.impl.hpp
     ./include/Framework/Network/Network.hpp
     ./include/Framework/System/Module.hpp
-	./include/Framework/System/ModuleException.hpp
+    ./include/Framework/System/ModuleException.hpp
     ./include/Framework/System/ModuleManager.hpp
     ./include/Framework/System/Platform.hpp
 #    ./include/Framework/System/System.hpp
@@ -82,12 +82,12 @@ set(SOURCES
     ./include/Framework/Exception.hpp
     ./include/Framework/RuntimeException.hpp
     ./include/Framework/IndexException.hpp
-	./include/Framework/EvalException.hpp
+    ./include/Framework/EvalException.hpp
     ./include/Framework/Stack.hpp
     ./include/Framework/Stack.impl.hpp
     ./include/Framework/String.hpp
     ./include/Framework/TreeNode.hpp
-#    ./src/Framework/IO/File.cpp
+    ./src/Framework/IO/File.cpp
     ./src/Framework/IO/ByteBuf.cpp
     ./src/Framework/IO/DynamicByteBuf.cpp
     ./src/Framework/IO/BinaryReader.cpp

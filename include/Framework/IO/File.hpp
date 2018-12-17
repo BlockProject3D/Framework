@@ -26,25 +26,21 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef FILE_H_
-# define FILE_H_
+#pragma once
+#include "Framework/String.hpp"
 
-#include "Framework/IO/FileSystem.hpp"
-
-namespace Framework
+namespace bpf
 {
-    class BPF_API FFile
+    class BPF_API File
     {
     private:
-        IFileStream *Stream;
-        bpf::String FullPath;
-        bpf::String FileName;
-        bpf::String FileExt;
-        bpf::String AbsolutePath;
+        String FullPath;
+        String FileName;
+        String FileExt;
     public:
-        FFile(const bpf::String &path);
-        FFile();
-        ~FFile();
+        File(const String &path);
+        File();
+        ~File();
 
         /**
          * Returns true if the file exists
@@ -68,9 +64,9 @@ namespace Framework
 
         /**
          * Lists all files in that directory (of course if this is a directory)
-         * @param files the output list of files to fill
+         * @return the output list of files
          */
-        void ListFiles(bpf::List<FFile> &files);
+        List<File> ListFiles();
 
         /**
          * Creates the directory if this is a directory
@@ -81,39 +77,38 @@ namespace Framework
          * Copies this file to the destination, in case destination is a directory, copy in that directory under the same name
          * @param dst the destination file or directory
          */
-        void Copy(const FFile &dst);
+        void Copy(const File &dst);
 
         /**
          * Returns the full path to the file (as given in the constructor)
          */
-        inline const bpf::String &GetPath() const
+        inline const String &GetPath() const
         {
             return (FullPath);
         }
-      
+
+        inline File operator+(const File &other) const
+        {
+            return (File(FullPath + "/" + other.FullPath));
+        }
+
+        inline File operator+(const String &other) const
+        {
+            return (File(FullPath + "/" + other));
+        }
+        
+        File GetParentFile() const;
+        
         /**
          * Returns the absolute path constructed from this path,
          * That means a path that starts from system's root folder
          */
-        inline const bpf::String &GetAbsolutePath() const
-        {
-            return (AbsolutePath);
-        }
-      
-        inline FFile operator+(const FFile &other) const
-        {
-            return (FFile(FullPath + "/" + other.FullPath));
-        }
-
-        inline FFile operator+(const bpf::String &other) const
-        {
-            return (FFile(FullPath + "/" + other));
-        }
+        File GetAbsolutePath() const;
 
         /**
          * Returns the file's name
          */
-        inline const bpf::String &GetFileName() const
+        inline const String &GetFileName() const
         {
             return (FileName);
         }
@@ -121,24 +116,11 @@ namespace Framework
         /**
          * Returns the file's extension
          */
-        inline const bpf::String &GetFileExt() const
+        inline const String &GetFileExt() const
         {
             return (FileExt);
         }
 
-        /**
-         * Closes the stream to that file (if opened)
-         */
-        void Close();
-
-        /**
-         * Opens a stream to this file
-         * @param mode the open mode for that file
-         */
-        IFileStream *Open(const EFileMode mode);
-
-        bpf::String ToString() const;
+        String ToString() const;
     };
 };
-
-#endif /* !FILE_H_ */
