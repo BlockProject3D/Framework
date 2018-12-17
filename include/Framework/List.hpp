@@ -111,6 +111,7 @@ namespace bpf
         void RemoveNode(ListNode<T> *toRM);
     public:
         List<T>();
+        List<T>(List<T> &&other);
         ~List<T>();
 
         /**

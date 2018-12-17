@@ -32,8 +32,21 @@ namespace bpf
 {
     template <typename T>
     inline List<T>::List()
-        : First(Null), Last(Null), Count(0)
+        : First(Null)
+        , Last(Null)
+        , Count(0)
     {
+    }
+    
+    template <typename T>
+    inline List<T>::List(List<T> &&other)
+        : First(other.First)
+        , Last(other.Last)
+        , Count(other.Count)
+    {
+        other.First = Null;
+        other.Last = Null;
+        other.Count = 0;
     }
 
     template <typename T>
