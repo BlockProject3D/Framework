@@ -38,7 +38,7 @@ using ThreadType = pthread_t;
 #endif
 
 #ifdef WINDOWS
-DWORD ThreadRoutine(void *ptr)
+DWORD WINAPI ThreadRoutine(void *ptr)
 {
     reinterpret_cast<bpf::Thread *>(ptr)->Run();
     return (0);
