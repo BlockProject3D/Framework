@@ -49,8 +49,8 @@ void ModuleManager::LoadModule(const char *name)
     ModuleEntry *md = Memory::New<ModuleEntry>(moduleFile, vname);
     String moduleLnkSymbol = md->Name + "_Link";
     String moduleDescSymbol = md->Name + "_Describe";
-    ModuleLinkFunc sym = (ModuleLinkFunc)md->Module.LoadSymbol(moduleLnkSymbol);
-    ModuleDescribeFunc sym1 = (ModuleDescribeFunc)md->Module.LoadSymbol(moduleDescSymbol);
+    ModuleLinkFunc sym = (ModuleLinkFunc)md->Handle.LoadSymbol(moduleLnkSymbol);
+    ModuleDescribeFunc sym1 = (ModuleDescribeFunc)md->Handle.LoadSymbol(moduleDescSymbol);
     int version = sym1();
     if (version > Platform::GetEnvInfo().VersionInt)
         throw ModuleException("Module has been built against a new version of the Framework");

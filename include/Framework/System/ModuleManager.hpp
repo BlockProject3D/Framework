@@ -70,9 +70,9 @@ namespace bpf
     public:
         IModuleInterface *Interface;
         bpf::String Name;
-        Module Module;
+        Module Handle;
         inline ModuleEntry(const bpf::String &path, const bpf::String &name)
-            : Interface(Null), Name(name), Module(path)
+            : Interface(Null), Name(name), Handle(path)
         {
         }
     };
