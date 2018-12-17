@@ -77,7 +77,7 @@ namespace bpf
          * Copies this file to the destination, in case destination is a directory, copy in that directory under the same name
          * @param dst the destination file or directory
          */
-        void Copy(const File &dst);
+        void Copy(const File &dst, bool overwrite = false);
 
         /**
          * Returns the full path to the file (as given in the constructor)

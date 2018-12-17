@@ -87,9 +87,13 @@ File File::GetParentFile() const
     return (File());
 }
 
-void File::Copy(const File &dst)
+void File::Copy(const File &dst, bool overwrite)
 {
     //TODO : Implement
+#ifdef WINDOWS
+    CopyFile(*GetAbsolutePath().GetPath(), *dst.GetAbsolutePath().GetPath(), !overwrite);
+#else
+#endif
     //File out = dst;
     /*IFileStream *src = Open(FILEMODE_READ);
 
@@ -109,7 +113,7 @@ bool File::Exists() const
 #ifdef WINDOWS
     WIN32_FIND_DATA data;
     HANDLE hdl = FindFirstFile(*FullPath, &data);
-    if (hdl =- INVALID_HANDLE_VALUE)
+    if (hdl != INVALID_HANDLE_VALUE)
     {
         FindClose(hdl);
         return (true);
@@ -127,10 +131,14 @@ bool File::IsDirectory() const
     if (!Exists())
         return (false);
 #ifdef WINDOWS
-    return (false); //TODO : code windows part
+    DWORD attr = GetFileAttributes(*FullPath);
+    if (attr == INVALID_FILE_ATTRIBUTES)
+        return (false);
+    return (attr & FILE_ATTRIBUTE_DIRECTORY);
 #else
     struct stat st;
-    stat(*FullPath, &st);
+    if (stat(*FullPath, &st) == -1)
+        return (false);
     return (S_ISDIR(st.st_mode));
 #endif
 }
@@ -140,10 +148,19 @@ uint64 File::GetSizeBytes() const
     if (!Exists())
         return (0);
 #ifdef WINDOWS
-    return (0); //TODO : code windows part
+    LARGE_INTEGER l;
+    HANDLE hdl = CreateFile(*FullPath, GENERIC_READ, FILE_SHARE_READ, Null, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, Null);
+    if (hdl == INVALID_HANDLE_VALUE)
+        return (0);
+    GetFileSizeEx(hdl, &l);
+    CloseHandle(hdl);
+    if (l.QuadPart < 0)
+        return (0);
+    return (static_cast<uint64>(l.QuadPart));
 #else
     struct stat st;
-    stat(*FullPath, &st);
+    if (stat(*FullPath, &st))
+        return (0);
     return (st.st_size);
 #endif
 }
@@ -153,6 +170,10 @@ void File::Delete()
     if (!Exists())
         return;
 #ifdef WINDOWS
+    if (IsDirectory())
+        RemoveDirectory(*FullPath);
+    else
+        DeleteFile(*FullPath);
 #else
     if (IsDirectory())
         rmdir(*FullPath);
@@ -168,7 +189,17 @@ List<File> File::ListFiles()
     if (!Exists() || !IsDirectory())
         return (flns);
 #ifdef WINDOWS
-    //TODO : code windows part
+    WIN32_FIND_DATA data;
+    File dir = GetAbsolutePath();
+    String str = dir.GetPath() + "\\*";
+    HANDLE hdl = FindFirstFile(*str, &data);
+    if (hdl != INVALID_HANDLE_VALUE)
+    {
+        flns.Add(File(String(data.cFileName)));
+        while (FindNextFile(hdl, &data))
+            flns.Add(File(String(data.cFileName)));
+        FindClose(hdl);
+    }
 #else
     DIR *d = opendir(*FullPath);
     struct dirent *dir;
@@ -176,7 +207,7 @@ List<File> File::ListFiles()
     if (d)
     {
         while ((dir = readdir(d)) != Null)
-            flns.Add(File(String(dir->d_name)));
+            flns.Add(File(FullPath + "/" + String(dir->d_name)));
     }
     closedir(d);
 #endif
@@ -188,7 +219,7 @@ void File::CreateDir()
     if (Exists())
         return;
 #ifdef WINDOWS
-    //TODO : code windows part
+    CreateDirectory(*FullPath, Null);
 #else
     mkdir(*FullPath, 0755);
 #endif
