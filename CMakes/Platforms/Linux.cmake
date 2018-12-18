@@ -7,8 +7,4 @@ set(BP_EXTENSION_LIB ".so")
 set(BP_LIBRARY_PREFIX "lib")
 
 function(bp_target_created name)
-	set_target_properties(${name} PROPERTIES
-		BUILD_WITH_INSTALL_RPATH 1
-		INSTALL_NAME_DIR "@rpath/"
-	)
 endfunction(bp_target_created)
