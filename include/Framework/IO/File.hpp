@@ -94,7 +94,7 @@ namespace bpf
 
         inline File operator+(const String &other) const
         {
-            return (File(FullPath + "/" + other));
+            return (*this + File(other));
         }
         
         File GetParentFile() const;

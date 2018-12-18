@@ -45,12 +45,41 @@ using namespace bpf;
 
 File::File(const bpf::String &path)
     : FullPath(path)
-    , FileName(path.Sub(path.LastIndexOf('/') + 1))
-    , FileExt(path.Sub(path.LastIndexOf('.') + 1))
+    , FileName("")
+    , FileExt("")
 {
 #ifdef WINDOWS
     FullPath = FullPath.Replace("/", "\\");
+    String result = String::Empty;
+    char old = '\0';
+    for (int i = 0; i < FullPath.Size(); ++i)
+    {
+        if (FullPath.ByteAt(i) == '\\' && old != '\\')
+            result += '\\';
+        else
+            result += FullPath.ByteAt(i);
+        old = FullPath.ByteAt(i);
+    }
+    if (result.ByteAt(result.Size() - 1) == '\\')
+        result = result.Sub(0, result.Len() - 1);
+    FullPath = std::move(result);
     FileName = path.Sub(path.LastIndexOf('\\') + 1);
+    FileExt = path.Sub(path.LastIndexOf('.') + 1);
+#else
+    String result = String::Empty;
+    char old = '\0';
+    for (int i = 0; i < FullPath.Size(); ++i)
+    {
+        if (FullPath.ByteAt(i) == '/' && old != '/')
+            result += '/';
+        else
+            result += FullPath.ByteAt(i);
+        old = FullPath.ByteAt(i);
+    }
+    if (result.ByteAt(result.Size() - 1) == '/')
+        result = result.Sub(0, result.Len() - 1);
+    FullPath = std::move(result);
+    FileName = path.Sub(path.LastIndexOf('/') + 1);
     FileExt = path.Sub(path.LastIndexOf('.') + 1);
 #endif
 }
@@ -190,14 +219,13 @@ List<File> File::ListFiles()
         return (flns);
 #ifdef WINDOWS
     WIN32_FIND_DATA data;
-    File dir = GetAbsolutePath();
-    String str = dir.GetPath() + "\\*";
-    HANDLE hdl = FindFirstFile(*str, &data);
+    File dir = (*this + "/*").GetAbsolutePath();
+    HANDLE hdl = FindFirstFile(*dir.GetPath(), &data);
     if (hdl != INVALID_HANDLE_VALUE)
     {
         flns.Add(File(String(data.cFileName)));
         while (FindNextFile(hdl, &data))
-            flns.Add(File(String(data.cFileName)));
+            flns.Add(File(GetPath() + "/" + String(data.cFileName)));
         FindClose(hdl);
     }
 #else
