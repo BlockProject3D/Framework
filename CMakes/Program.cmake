@@ -14,14 +14,4 @@ macro(bp_setup)
     bp_setup_target(${CMAKE_PROJECT_NAME} include ${SOURCES})
     target_link_libraries(${BP_NAME} PRIVATE debug ${FRAMEWORK_BIN_DEBUG})
     target_link_libraries(${BP_NAME} PRIVATE optimized ${FRAMEWORK_BIN_RELEASE})
-    #if (PLATFORM STREQUAL "Mac")
-    #	add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
-    #		COMMAND ${BP_PROG_CMAKE_SELF}/FixOSXRPath.sh
-    #            "@executable_path/" "$<TARGET_FILE:${CMAKE_PROJECT_NAME}>")
-    #endif (PLATFORM STREQUAL "Mac")
-	set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES
-		BUILD_WITH_INSTALL_RPATH 1
-		INSTALL_NAME_DIR "@executable_path/"
-		INSTALL_RPATH "$ORIGIN"
-	)
 endmacro(bp_setup)
