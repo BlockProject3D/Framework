@@ -37,6 +37,7 @@ namespace bpf
         File _file;
         void *_mem;
         int _mode;
+        void *_memoff;
 #ifdef WINDOWS
         void *_handle;
 #else
@@ -67,7 +68,9 @@ namespace bpf
         /**
          * Map or re-map the file in virtual memory
          * @param pos position in bytes in the file to start mapping
-         * @param size the size in bytes to map
+         * @param size the size in bytes to map,
+         *        if the size is greater than the size of the file,
+         *        this function throws
          * @throws IOException
          */
         void Map(uint64 pos, fsize size);
@@ -79,7 +82,7 @@ namespace bpf
 
         inline void *operator*()
         {
-            return (_mem);
+            return (_memoff);
         }
     };
 }

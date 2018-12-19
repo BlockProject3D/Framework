@@ -44,6 +44,7 @@ MemoryMapper::MemoryMapper(const File &file, int mode)
     : _file(file)
     , _mem(Null)
     , _mode(mode)
+    , _memoff(Null)
 {
 #ifdef WINDOWS
 #else
@@ -68,14 +69,23 @@ MemoryMapper::~MemoryMapper()
 {
 #ifdef WINDOWS
 #else
+    if (_mem != Null)
+        munmap(_mem, _size);
     close(_handle);
 #endif
 }
 
 void MemoryMapper::Map(uint64 pos, fsize size)
 {
+    if ((pos + size) > _file.GetSizeBytes())
+        throw IOException(String("Could not map file '")
+            + _file.GetAbsolutePath().GetPath()
+            + "' : Mapped region is outside file boundarries");
 #ifdef WINDOWS
 #else
+    long psize = sysconf(_SC_PAGE_SIZE);
+    uint64 nearestpsize = (pos / psize) * psize;
+    _memoff = Null;
     if (_mem != Null)
         munmap(_mem, _size);
     int md = 0;
@@ -83,6 +93,14 @@ void MemoryMapper::Map(uint64 pos, fsize size)
         md |= PROT_WRITE;
     if (_mode & FILE_MODE_READ)
         md |= PROT_READ;
-    _mem = mmap(Null, size, md, MAP_SHARED, _handle, pos);
+    _mem = mmap(Null, size, md, MAP_SHARED, _handle, nearestpsize);
+    _size = size;
+    if (_mem == MAP_FAILED)
+        throw IOException(String("Could not map file '")
+            + _file.GetAbsolutePath().GetPath() + "' : "
+            + String(strerror(errno)));
+    uint8 *addr = reinterpret_cast<uint8 *>(_mem);
+    addr += pos - nearestpsize;
+    _memoff = addr;
 #endif
 }
