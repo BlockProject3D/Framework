@@ -26,3 +26,68 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include <cstring>
+#include "Framework/IO/ByteBuf.hpp"
+#include "Framework/Memory/Memory.hpp"
+
+using namespace bpf;
+
+ByteBuf::ByteBuf(const fsize size)
+    : _buf((uint8 *)Memory::Malloc(size))
+    , _cursor(0)
+    , _size(size)
+    , _written(0)
+{
+}
+
+ByteBuf::ByteBuf(ByteBuf &&other)
+    : _buf(other._buf)
+    , _cursor(other._cursor)
+    , _size(other._size)
+    , _written(other._written)
+{
+    other._buf = Null;
+    other._cursor = 0;
+    other._size = 0;
+    other._written = 0;
+}
+
+ByteBuf::~ByteBuf()
+{
+    Memory::Free(_buf);
+}
+
+void ByteBuf::Clear()
+{
+    _written = 0;
+    _cursor = 0;
+    std::memset(_buf, 0, _size);
+}
+
+void ByteBuf::Shift(fsize count)
+{
+    if (_cursor < count)
+        count = _cursor;
+    std::memmove(_buf, _buf + count, _written - count);
+    _cursor -= count;
+    _written -= count;
+}
+
+fsize ByteBuf::Write(const void *buf, fsize bufsize)
+{
+    if (_cursor + bufsize > _size)
+        bufsize = _size - _cursor;
+    std::memcpy(_buf, buf, bufsize);
+    _written += bufsize;
+    _cursor += bufsize;
+    return (bufsize);
+}
+
+fsize ByteBuf::Read(void *buf, fsize bufsize)
+{
+    if (_cursor + bufsize > _size)
+        bufsize = _size - _cursor;
+    std::memcpy(buf, _buf, bufsize);
+    _cursor += bufsize;
+    return (bufsize);
+}
