@@ -58,7 +58,7 @@ namespace bpf
             return (_buf);
         }
         
-        inline fsize GetSize() const noexcept
+        inline fsize Size() const noexcept
         {
             return (_size);
         }
