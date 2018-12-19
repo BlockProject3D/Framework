@@ -7,6 +7,8 @@ set(CMAKE_CXX_STANDARD 11)
 
 set(SOURCES
     ./include/Framework/IO/File.hpp
+    ./include/Framework/IO/FileStream.hpp
+    ./include/Framework/IO/IOException.hpp
 #    ./include/Framework/IO/FileSystem.hpp
     ./include/Framework/IO/IInputStream.hpp
     ./include/Framework/IO/IOutputStream.hpp
@@ -88,6 +90,7 @@ set(SOURCES
     ./include/Framework/String.hpp
     ./include/Framework/TreeNode.hpp
     ./src/Framework/IO/File.cpp
+    ./src/Framework/IO/FileStream.cpp
     ./src/Framework/IO/ByteBuf.cpp
     ./src/Framework/IO/DynamicByteBuf.cpp
     ./src/Framework/IO/BinaryReader.cpp
