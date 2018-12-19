@@ -27,31 +27,33 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef WINDOWS
+    #include <Windows.h>
 #else
     #include <fcntl.h>
     #include <unistd.h>
+    #include <sys/mman.h>
     #include <errno.h>
 #endif
-#include "Framework/IO/FileStream.hpp"
+#include "Framework/IO/MemoryMapper.hpp"
 #include "Framework/IO/IOException.hpp"
+#include "Framework/IO/FileStream.hpp"
 
 using namespace bpf;
 
-FileStream::FileStream(const File &file, int mode)
-    : _mode(mode)
+MemoryMapper::MemoryMapper(const File &file, int mode)
+    : _file(file)
+    , _mem(Null)
+    , _mode(mode)
 {
 #ifdef WINDOWS
 #else
     int md = 0;
-    
     if ((mode & FILE_MODE_READ) && (mode & FILE_MODE_WRITE))
-        md |= O_RDWR | O_CREAT;
-    else if (mode & FILE_MODE_APPEND)
-        md |= O_APPEND | O_CREAT;
+        md = O_RDWR | O_CREAT;
     else if (mode & FILE_MODE_READ)
-        md |= O_RDONLY;
-    else if (mode & FILE_MODE_WRITE)
-        md |= O_WRONLY | O_CREAT;
+        md = O_RDONLY;
+    else
+        md = O_WRONLY | O_CREAT;
     if (mode & FILE_MODE_TRUNCATE)
         md |= O_TRUNC;
     _handle = open(*file.GetAbsolutePath().GetPath(), md, 0644);
@@ -62,66 +64,25 @@ FileStream::FileStream(const File &file, int mode)
 #endif
 }
 
-FileStream::~FileStream()
+MemoryMapper::~MemoryMapper()
 {
-#ifdef WINDOWS
-#else
-    if (_handle != -1)
-        close(_handle);
-#endif
-}
-
-void FileStream::SeekOffset(int64 offset)
-{
-    if (_mode & FILE_MODE_APPEND)
-        throw IOException("Cannot Seek in append mode");
-#ifdef WINDOWS
-#else
-    if (_handle == -1)
-        throw IOException("File is closed");
-    lseek(_handle, offset, SEEK_CUR);
-#endif
-}
-
-void FileStream::Seek(uint64 pos)
-{
-    if (_mode & FILE_MODE_APPEND)
-        throw IOException("Cannot Seek in append mode");
-#ifdef WINDOWS
-#else
-    if (_handle == -1)
-        throw IOException("File is closed");
-    lseek(_handle, pos, SEEK_SET);
-#endif
-}
-
-void FileStream::Close()
-{
-    if (_handle == -1)
-        return;
 #ifdef WINDOWS
 #else
     close(_handle);
-    _handle = -1;
 #endif
 }
 
-fsize FileStream::Read(void *buf, fsize bufsize)
+void MemoryMapper::Map(uint64 pos, fsize size)
 {
-    if (!(_mode & FILE_MODE_READ))
-        throw IOException("File has not been oppened with read mode");
 #ifdef WINDOWS
 #else
-    return (read(_handle, buf, bufsize));
-#endif
-}
-
-fsize FileStream::Write(const void *buf, fsize bufsize)
-{
-    if (!(_mode & FILE_MODE_WRITE))
-        throw IOException("File has not been oppened with write mode");
-#ifdef WINDOWS
-#else
-    return (write(_handle, buf, bufsize));
+    if (_mem != Null)
+        munmap(_mem, _size);
+    int md = 0;
+    if (_mode & FILE_MODE_WRITE)
+        md |= PROT_WRITE;
+    if (_mode & FILE_MODE_READ)
+        md |= PROT_READ;
+    _mem = mmap(Null, size, md, MAP_SHARED, _handle, pos);
 #endif
 }
