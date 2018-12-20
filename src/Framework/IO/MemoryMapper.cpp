@@ -33,6 +33,7 @@
     #include <unistd.h>
     #include <sys/mman.h>
     #include <errno.h>
+    #include <cstring>
 #endif
 #include "Framework/IO/MemoryMapper.hpp"
 #include "Framework/IO/IOException.hpp"
@@ -61,7 +62,7 @@ MemoryMapper::MemoryMapper(const File &file, int mode)
     if (_handle == -1)
         throw IOException(String("Could not open file '")
             + file.GetAbsolutePath().GetPath() + "' : "
-            + String(strerror(errno)));
+            + String(std::strerror(errno)));
 #endif
 }
 
@@ -82,6 +83,8 @@ void MemoryMapper::Map(uint64 pos, fsize size)
             + _file.GetAbsolutePath().GetPath()
             + "' : Mapped region is outside file boundarries");
 #ifdef WINDOWS
+    (void)pos;
+    (void)size;
 #else
     long psize = sysconf(_SC_PAGE_SIZE);
     uint64 nearestpsize = (pos / psize) * psize;
@@ -98,7 +101,7 @@ void MemoryMapper::Map(uint64 pos, fsize size)
     if (_mem == MAP_FAILED)
         throw IOException(String("Could not map file '")
             + _file.GetAbsolutePath().GetPath() + "' : "
-            + String(strerror(errno)));
+            + String(std::strerror(errno)));
     uint8 *addr = reinterpret_cast<uint8 *>(_mem);
     addr += pos - nearestpsize;
     _memoff = addr;

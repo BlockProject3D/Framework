@@ -31,6 +31,7 @@
     #include <fcntl.h>
     #include <unistd.h>
     #include <errno.h>
+    #include <cstring>
 #endif
 #include "Framework/IO/FileStream.hpp"
 #include "Framework/IO/IOException.hpp"
@@ -41,6 +42,7 @@ FileStream::FileStream(const File &file, int mode)
     : _mode(mode)
 {
 #ifdef WINDOWS
+    (void)file;
 #else
     int md = 0;
     
@@ -58,7 +60,7 @@ FileStream::FileStream(const File &file, int mode)
     if (_handle == -1)
         throw IOException(String("Could not open file '")
             + file.GetAbsolutePath().GetPath() + "' : "
-            + String(strerror(errno)));
+            + String(std::strerror(errno)));
 #endif
 }
 
@@ -76,6 +78,7 @@ void FileStream::SeekOffset(int64 offset)
     if (_mode & FILE_MODE_APPEND)
         throw IOException("Cannot Seek in append mode");
 #ifdef WINDOWS
+    (void)offset;
 #else
     if (_handle == -1)
         throw IOException("File is closed");
@@ -88,6 +91,7 @@ void FileStream::Seek(uint64 pos)
     if (_mode & FILE_MODE_APPEND)
         throw IOException("Cannot Seek in append mode");
 #ifdef WINDOWS
+    (void)pos;
 #else
     if (_handle == -1)
         throw IOException("File is closed");
@@ -97,10 +101,10 @@ void FileStream::Seek(uint64 pos)
 
 void FileStream::Close()
 {
-    if (_handle == -1)
-        return;
 #ifdef WINDOWS
 #else
+    if (_handle == -1)
+        return;
     close(_handle);
     _handle = -1;
 #endif
@@ -111,6 +115,8 @@ fsize FileStream::Read(void *buf, fsize bufsize)
     if (!(_mode & FILE_MODE_READ))
         throw IOException("File has not been oppened with read mode");
 #ifdef WINDOWS
+    (void)buf;
+    (void)bufsize;
 #else
     return (read(_handle, buf, bufsize));
 #endif
@@ -121,6 +127,8 @@ fsize FileStream::Write(const void *buf, fsize bufsize)
     if (!(_mode & FILE_MODE_WRITE))
         throw IOException("File has not been oppened with write mode");
 #ifdef WINDOWS
+    (void)buf;
+    (void)bufsize;
 #else
     return (write(_handle, buf, bufsize));
 #endif

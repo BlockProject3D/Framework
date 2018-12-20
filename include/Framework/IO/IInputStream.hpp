@@ -31,7 +31,7 @@
 
 namespace bpf
 {
-    class IInputStream
+    class BPF_API IInputStream
     {
     public:
         virtual ~IInputStream() {}
