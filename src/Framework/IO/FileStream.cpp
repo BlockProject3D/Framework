@@ -27,6 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef WINDOWS
+    #include <Windows.h>
 #else
     #include <fcntl.h>
     #include <unistd.h>
@@ -38,11 +39,57 @@
 
 using namespace bpf;
 
+#ifdef WINDOWS
+String FileStream::ObtainErrorString()
+{
+    String res = "Unknown";
+    LPTSTR errtxt = Null;
+
+    FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER
+        | FORMAT_MESSAGE_FROM_SYSTEM
+        | FORMAT_MESSAGE_IGNORE_INSERTS,
+        Null, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+        reinterpret_cast<LPTSTR>(&errtxt), 0, Null);
+    if (errtxt != Null)
+    {
+        res = errtxt;
+        LocalFree(errtxt);
+    }
+    return (res);
+}
+#endif
+
 FileStream::FileStream(const File &file, int mode)
     : _mode(mode)
 {
 #ifdef WINDOWS
-    (void)file;
+    DWORD md = 0;
+    DWORD md1 = 0;
+
+    if (mode & FILE_MODE_READ)
+    {
+        md |= GENERIC_READ;
+        md1 |= OPEN_EXISTING;
+    }
+    if ((mode & FILE_MODE_WRITE) || (mode & FILE_MODE_APPEND))
+    {
+        md |= GENERIC_WRITE;
+        if (mode & FILE_MODE_TRUNCATE)
+            md1 |= CREATE_ALWAYS;
+        else
+            md1 |= CREATE_NEW;
+    }
+    _handle = CreateFile(*file.GetAbsolutePath().GetPath(), md, FILE_SHARE_READ, Null, md1, FILE_ATTRIBUTE_NORMAL, Null);
+    if (_handle == INVALID_HANDLE_VALUE)
+        throw IOException(String("Could not open file '")
+            + file.GetAbsolutePath().GetPath() + "' : "
+            + ObtainErrorString());
+    if (mode & FILE_MODE_APPEND)
+    {
+        LARGE_INTEGER pos;
+        pos.QuadPart = 0;
+        SetFilePointerEx(_handle, pos, Null, FILE_END);
+    }
 #else
     int md = 0;
     
@@ -67,6 +114,8 @@ FileStream::FileStream(const File &file, int mode)
 FileStream::~FileStream()
 {
 #ifdef WINDOWS
+    if (_handle != INVALID_HANDLE_VALUE)
+        CloseHandle(_handle);
 #else
     if (_handle != -1)
         close(_handle);
@@ -78,7 +127,11 @@ void FileStream::SeekOffset(int64 offset)
     if (_mode & FILE_MODE_APPEND)
         throw IOException("Cannot Seek in append mode");
 #ifdef WINDOWS
-    (void)offset;
+    if (_handle == INVALID_HANDLE_VALUE)
+        throw IOException("File is closed");
+    LARGE_INTEGER pos;
+    pos.QuadPart = offset;
+    SetFilePointerEx(_handle, pos, Null, FILE_CURRENT);
 #else
     if (_handle == -1)
         throw IOException("File is closed");
@@ -91,7 +144,11 @@ void FileStream::Seek(uint64 pos)
     if (_mode & FILE_MODE_APPEND)
         throw IOException("Cannot Seek in append mode");
 #ifdef WINDOWS
-    (void)pos;
+    if (_handle == INVALID_HANDLE_VALUE)
+        throw IOException("File is closed");
+    LARGE_INTEGER pos1;
+    pos1.QuadPart = pos;
+    SetFilePointerEx(_handle, pos1, Null, FILE_BEGIN);
 #else
     if (_handle == -1)
         throw IOException("File is closed");
@@ -102,6 +159,10 @@ void FileStream::Seek(uint64 pos)
 void FileStream::Close()
 {
 #ifdef WINDOWS
+    if (_handle == INVALID_HANDLE_VALUE)
+        return;
+    CloseHandle(_handle);
+    _handle = INVALID_HANDLE_VALUE;
 #else
     if (_handle == -1)
         return;
@@ -115,8 +176,10 @@ fsize FileStream::Read(void *buf, fsize bufsize)
     if (!(_mode & FILE_MODE_READ))
         throw IOException("File has not been oppened with read mode");
 #ifdef WINDOWS
-    (void)buf;
-    (void)bufsize;
+    DWORD readsize;
+    if (ReadFile(_handle, buf, bufsize, &readsize, Null) == FALSE)
+        return (0);
+    return (readsize);
 #else
     return (read(_handle, buf, bufsize));
 #endif
@@ -127,8 +190,10 @@ fsize FileStream::Write(const void *buf, fsize bufsize)
     if (!(_mode & FILE_MODE_WRITE))
         throw IOException("File has not been oppened with write mode");
 #ifdef WINDOWS
-    (void)buf;
-    (void)bufsize;
+    DWORD writesize;
+    if (WriteFile(_handle, buf, bufsize, &writesize, Null) == FALSE)
+        return (0);
+    return (writesize);
 #else
     return (write(_handle, buf, bufsize));
 #endif

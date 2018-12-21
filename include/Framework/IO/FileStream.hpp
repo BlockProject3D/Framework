@@ -48,6 +48,9 @@ namespace bpf
         int _handle;
 #endif
     
+#ifdef WINDOWS
+        String ObtainErrorString();
+#endif
     public:
         /**
          * Creates a new FileStream from the given file and mode

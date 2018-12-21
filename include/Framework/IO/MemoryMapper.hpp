@@ -45,6 +45,9 @@ namespace bpf
         fsize _size;
 #endif
     
+#ifdef WINDOWS
+        String ObtainErrorString();
+#endif
     public:
         /**
          * Creates a new MemoryMapper from the given file and mode

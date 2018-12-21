@@ -28,6 +28,7 @@
 
 #ifdef WINDOWS
     #include <Windows.h>
+    #include <iostream>
 #else
     #include <fcntl.h>
     #include <unistd.h>
@@ -41,6 +42,27 @@
 
 using namespace bpf;
 
+#ifdef WINDOWS
+String MemoryMapper::ObtainErrorString()
+{
+    String res = "Unknown";
+    LPTSTR errtxt = Null;
+
+    std::cout << GetLastError() << std::endl;
+    FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER
+        | FORMAT_MESSAGE_FROM_SYSTEM
+        | FORMAT_MESSAGE_IGNORE_INSERTS,
+        Null, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+        reinterpret_cast<LPTSTR>(&errtxt), 0, Null);
+    if (errtxt != Null)
+    {
+        res = errtxt;
+        LocalFree(errtxt);
+    }
+    return (res);
+}
+#endif
+
 MemoryMapper::MemoryMapper(const File &file, int mode)
     : _file(file)
     , _mem(Null)
@@ -48,6 +70,17 @@ MemoryMapper::MemoryMapper(const File &file, int mode)
     , _memoff(Null)
 {
 #ifdef WINDOWS
+    DWORD md = 0;
+
+    if (mode & FILE_MODE_READ)
+        md |= FILE_MAP_READ;
+    if (mode & FILE_MODE_WRITE)
+        md |= FILE_MAP_WRITE;
+    _handle = OpenFileMapping(md, FALSE, *file.GetAbsolutePath().GetPath());
+    if (_handle == Null)
+        throw IOException(String("Could not open file '")
+            + file.GetAbsolutePath().GetPath() + "' : "
+            + ObtainErrorString());
 #else
     int md = 0;
     if ((mode & FILE_MODE_READ) && (mode & FILE_MODE_WRITE))
@@ -69,12 +102,23 @@ MemoryMapper::MemoryMapper(const File &file, int mode)
 MemoryMapper::~MemoryMapper()
 {
 #ifdef WINDOWS
+    if (_mem != Null)
+        UnmapViewOfFile(_mem);
+    CloseHandle(_handle);
 #else
     if (_mem != Null)
         munmap(_mem, _size);
     close(_handle);
 #endif
 }
+
+#ifdef WINDOWS
+union Unpack64
+{
+    uint64 _data;
+    DWORD _parts[2];
+};
+#endif
 
 void MemoryMapper::Map(uint64 pos, fsize size)
 {
@@ -83,8 +127,32 @@ void MemoryMapper::Map(uint64 pos, fsize size)
             + _file.GetAbsolutePath().GetPath()
             + "' : Mapped region is outside file boundarries");
 #ifdef WINDOWS
-    (void)pos;
-    (void)size;
+    SYSTEM_INFO inf;
+    GetSystemInfo(&inf);
+    DWORD psize = inf.dwAllocationGranularity;
+    uint64 nearestpsize = (pos / psize) * psize;
+    _memoff = Null;
+    if (_mem != Null)
+        UnmapViewOfFile(_mem);
+    DWORD md = 0;
+    if (_mode & FILE_MODE_WRITE)
+        md |= FILE_MAP_WRITE;
+    if (_mode & FILE_MODE_READ)
+        md |= FILE_MAP_READ;
+    DWORD offsetLow;
+    DWORD offsetHeigh;
+    Unpack64 up;
+    up._data = nearestpsize;
+    offsetLow = up._parts[0];
+    offsetHeigh = up._parts[1];
+    _mem = MapViewOfFile(_handle, md, offsetHeigh, offsetLow, size);
+    if (_mem == Null)
+        throw IOException(String("Could not map file '")
+            + _file.GetAbsolutePath().GetPath() + "' : "
+            + ObtainErrorString());
+    uint8 *addr = reinterpret_cast<uint8 *>(_mem);
+    addr += pos - nearestpsize;
+    _memoff = addr;
 #else
     long psize = sysconf(_SC_PAGE_SIZE);
     uint64 nearestpsize = (pos / psize) * psize;
