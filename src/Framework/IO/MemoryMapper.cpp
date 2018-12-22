@@ -71,16 +71,39 @@ MemoryMapper::MemoryMapper(const File &file, int mode)
 {
 #ifdef WINDOWS
     DWORD md = 0;
+    DWORD md1 = 0;
+    DWORD md2 = 0;
 
     if (mode & FILE_MODE_READ)
-        md |= FILE_MAP_READ;
+    {
+        md |= GENERIC_READ;
+        md1 |= OPEN_EXISTING;
+    }
     if (mode & FILE_MODE_WRITE)
-        md |= FILE_MAP_WRITE;
-    _handle = OpenFileMapping(md, FALSE, *file.GetAbsolutePath().GetPath());
-    if (_handle == Null)
+    {
+        md |= GENERIC_WRITE;
+        if (mode & FILE_MODE_TRUNCATE)
+            md1 |= CREATE_ALWAYS;
+        else
+            md1 |= OPEN_EXISTING;
+    }
+    if ((mode & FILE_MODE_READ) && (mode & FILE_MODE_WRITE))
+        md2 = PAGE_READWRITE;
+    else
+        md2 = PAGE_READONLY;
+    _handle = CreateFile(*file.GetAbsolutePath().GetPath(), md, FILE_SHARE_READ, Null, md1, FILE_ATTRIBUTE_NORMAL, Null);
+    if (_handle == INVALID_HANDLE_VALUE)
         throw IOException(String("Could not open file '")
-            + file.GetAbsolutePath().GetPath() + "' : "
-            + ObtainErrorString());
+                          + file.GetAbsolutePath().GetPath() + "' : "
+                          + ObtainErrorString());
+    _mapper = CreateFileMapping(_handle, Null, md2, 0, 0, Null);
+    if (_mapper == Null)
+    {
+        CloseHandle(_handle);
+        throw IOException(String("Could not create mapper for file '")
+                          + file.GetAbsolutePath().GetPath() + "' : "
+                          + ObtainErrorString());
+    }
 #else
     int md = 0;
     if ((mode & FILE_MODE_READ) && (mode & FILE_MODE_WRITE))
@@ -88,7 +111,7 @@ MemoryMapper::MemoryMapper(const File &file, int mode)
     else if (mode & FILE_MODE_READ)
         md = O_RDONLY;
     else
-        md = O_WRONLY | O_CREAT;
+        md = O_WRONLY;
     if (mode & FILE_MODE_TRUNCATE)
         md |= O_TRUNC;
     _handle = open(*file.GetAbsolutePath().GetPath(), md, 0644);
@@ -104,6 +127,7 @@ MemoryMapper::~MemoryMapper()
 #ifdef WINDOWS
     if (_mem != Null)
         UnmapViewOfFile(_mem);
+    CloseHandle(_mapper);
     CloseHandle(_handle);
 #else
     if (_mem != Null)
@@ -145,7 +169,7 @@ void MemoryMapper::Map(uint64 pos, fsize size)
     up._data = nearestpsize;
     offsetLow = up._parts[0];
     offsetHeigh = up._parts[1];
-    _mem = MapViewOfFile(_handle, md, offsetHeigh, offsetLow, size);
+    _mem = MapViewOfFile(_mapper, md, offsetHeigh, offsetLow, size);
     if (_mem == Null)
         throw IOException(String("Could not map file '")
             + _file.GetAbsolutePath().GetPath() + "' : "

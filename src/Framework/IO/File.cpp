@@ -140,14 +140,18 @@ void File::Copy(const File &dst, bool overwrite)
 bool File::Exists() const
 {
 #ifdef WINDOWS
-    WIN32_FIND_DATA data;
+    DWORD attr = GetFileAttributes(*FullPath);
+    if (attr == INVALID_FILE_ATTRIBUTES)
+        return (false);
+    return (true);
+    /*WIN32_FIND_DATA data;
     HANDLE hdl = FindFirstFile(*FullPath, &data);
     if (hdl != INVALID_HANDLE_VALUE)
     {
         FindClose(hdl);
         return (true);
     }
-    return (false);
+    return (false);*/
 #else
     if(access(*FullPath, F_OK) != -1)
         return (true);
@@ -177,7 +181,7 @@ uint64 File::GetSizeBytes() const
     if (!Exists())
         return (0);
 #ifdef WINDOWS
-    LARGE_INTEGER l;
+    /*LARGE_INTEGER l;
     HANDLE hdl = CreateFile(*FullPath, GENERIC_READ, FILE_SHARE_READ, Null, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, Null);
     if (hdl == INVALID_HANDLE_VALUE)
         return (0);
@@ -185,7 +189,13 @@ uint64 File::GetSizeBytes() const
     CloseHandle(hdl);
     if (l.QuadPart < 0)
         return (0);
-    return (static_cast<uint64>(l.QuadPart));
+    return (static_cast<uint64>(l.QuadPart));*/
+    WIN32_FIND_DATA data;
+    HANDLE hdl = FindFirstFile(*FullPath, &data);
+    if (hdl == INVALID_HANDLE_VALUE)
+        return (0);
+    FindClose(hdl);
+    return (data.nFileSizeLow | (uint64)data.nFileSizeHigh << 32);
 #else
     struct stat st;
     if (stat(*FullPath, &st))

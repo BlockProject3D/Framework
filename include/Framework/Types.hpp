@@ -30,6 +30,9 @@
 
 #define Null nullptr
 
+#define READ_BIT(data, id) ((data >> id) & 0x1)
+#define WRITE_BIT(data, id, val) ((val == 1) ? (data |= 1UL << id) : (data &= ~(1Ul << id)))
+
 namespace bpf
 {
     using uint32 = unsigned int;

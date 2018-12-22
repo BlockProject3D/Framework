@@ -40,6 +40,7 @@ namespace bpf
         void *_memoff;
 #ifdef WINDOWS
         void *_handle;
+        void *_mapper;
 #else
         int _handle;
         fsize _size;
