@@ -58,6 +58,7 @@ set(SOURCES
     ./include/Framework/System/ThreadManager.hpp
     ./include/Framework/System/IModuleInterface.hpp
     ./include/Framework/API.hpp
+	./include/Framework/BinUtils.hpp
     ./include/Framework/Types.hpp
     ./include/Framework/Tuple.hpp
     ./include/Framework/TypeInfo.hpp

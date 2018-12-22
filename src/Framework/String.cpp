@@ -33,6 +33,7 @@
 #include "Framework/Memory/Memory.hpp"
 #include "Framework/EvalException.hpp"
 #include "Framework/IndexException.hpp"
+#include "Framework/BinUtils.hpp"
 
 using namespace bpf;
 
@@ -69,6 +70,116 @@ fchar String::UTF32(const char *utf8char)
         break;
     }
     return (res);
+}
+
+String String::UTF8(const fchar utf32char)
+{
+    if (utf32char <= 0x7F)
+        return (String((char)utf32char));
+    else if (utf32char >= 0x80 && utf32char <= 0x7FF)
+    {
+        char b1;
+        char b2;
+
+        SetBit(b2, 0, GetBit(utf32char, 0));
+        SetBit(b2, 1, GetBit(utf32char, 1));
+        SetBit(b2, 2, GetBit(utf32char, 2));
+        SetBit(b2, 3, GetBit(utf32char, 3));
+        SetBit(b2, 4, GetBit(utf32char, 4));
+        SetBit(b2, 5, GetBit(utf32char, 5));
+        SetBit(b2, 6, false);
+        SetBit(b2, 7, true);
+
+        SetBit(b1, 0, GetBit(utf32char, 6));
+        SetBit(b1, 1, GetBit(utf32char, 7));
+        SetBit(b1, 2, GetBit(utf32char, 8));
+        SetBit(b1, 3, GetBit(utf32char, 9));
+        SetBit(b1, 4, GetBit(utf32char, 10));
+        SetBit(b1, 5, false);
+        SetBit(b1, 6, true);
+        SetBit(b1, 7, true);
+        return (String::Empty + b1 + b2);
+    }
+    else if (utf32char >= 0x800 && utf32char <= 0xFFFF)
+    {
+        char b1;
+        char b2;
+        char b3;
+
+        SetBit(b3, 0, GetBit(utf32char, 0));
+        SetBit(b3, 1, GetBit(utf32char, 1));
+        SetBit(b3, 2, GetBit(utf32char, 2));
+        SetBit(b3, 3, GetBit(utf32char, 3));
+        SetBit(b3, 4, GetBit(utf32char, 4));
+        SetBit(b3, 5, GetBit(utf32char, 5));
+        SetBit(b3, 6, false);
+        SetBit(b3, 7, true);
+
+        SetBit(b2, 0, GetBit(utf32char, 6));
+        SetBit(b2, 1, GetBit(utf32char, 7));
+        SetBit(b2, 2, GetBit(utf32char, 8));
+        SetBit(b2, 3, GetBit(utf32char, 9));
+        SetBit(b2, 4, GetBit(utf32char, 10));
+        SetBit(b2, 5, GetBit(utf32char, 11));
+        SetBit(b2, 6, false);
+        SetBit(b2, 7, true);
+
+        SetBit(b1, 0, GetBit(utf32char, 12));
+        SetBit(b1, 1, GetBit(utf32char, 13));
+        SetBit(b1, 2, GetBit(utf32char, 14));
+        SetBit(b1, 3, GetBit(utf32char, 15));
+        SetBit(b1, 4, false);
+        SetBit(b1, 5, true);
+        SetBit(b1, 6, true);
+        SetBit(b1, 7, true);
+        return (String::Empty + b1 + b2 + b3);
+    }
+    else if (utf32char >= 0x10000 && utf32char <= 0x10FFFF)
+    {
+        char b1;
+        char b2;
+        char b3;
+        char b4;
+
+        SetBit(b4, 0, GetBit(utf32char, 0));
+        SetBit(b4, 1, GetBit(utf32char, 1));
+        SetBit(b4, 2, GetBit(utf32char, 2));
+        SetBit(b4, 3, GetBit(utf32char, 3));
+        SetBit(b4, 4, GetBit(utf32char, 4));
+        SetBit(b4, 5, GetBit(utf32char, 5));
+        SetBit(b4, 6, false);
+        SetBit(b4, 7, true);
+
+        SetBit(b3, 0, GetBit(utf32char, 6));
+        SetBit(b3, 1, GetBit(utf32char, 7));
+        SetBit(b3, 2, GetBit(utf32char, 8));
+        SetBit(b3, 2, GetBit(utf32char, 9));
+        SetBit(b3, 4, GetBit(utf32char, 10));
+        SetBit(b3, 5, GetBit(utf32char, 11));
+        SetBit(b3, 6, false);
+        SetBit(b3, 7, true);
+
+        SetBit(b2, 0, GetBit(utf32char, 12));
+        SetBit(b2, 1, GetBit(utf32char, 13));
+        SetBit(b2, 2, GetBit(utf32char, 14));
+        SetBit(b2, 3, GetBit(utf32char, 15));
+        SetBit(b2, 4, GetBit(utf32char, 16));
+        SetBit(b2, 5, GetBit(utf32char, 17));
+        SetBit(b2, 6, false);
+        SetBit(b2, 7, true);
+
+        SetBit(b1, 0, GetBit(utf32char, 18));
+        SetBit(b1, 1, GetBit(utf32char, 19));
+        SetBit(b1, 2, GetBit(utf32char, 20));
+        SetBit(b1, 3, false);
+        SetBit(b1, 4, true);
+        SetBit(b1, 5, true);
+        SetBit(b1, 6, true);
+        SetBit(b1, 7, true);
+        return (String::Empty + b1 + b2 + b3 + b4);
+    }
+    else
+        return (String::Empty);
 }
 
 String::String(const char *str)
