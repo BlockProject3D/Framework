@@ -33,6 +33,8 @@
 
 namespace bpf
 {
+    constexpr fsize WRITE_BUF_SIZE = 128;
+
     class IDataOutputStream : public IOutputStream
     {
     public:

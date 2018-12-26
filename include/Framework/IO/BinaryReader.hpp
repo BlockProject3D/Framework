@@ -26,3 +26,41 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#pragma once
+#include "Framework/IO/IDataInputStream.hpp"
+#include "Framework/IO/ByteBuf.hpp"
+
+namespace bpf
+{
+    class BPF_API BinaryReader final : public IDataInputStream
+    {
+    private:
+        IInputStream &_stream;
+        ByteBuf _buf;
+
+        
+    public:
+        inline BinaryReader(IInputStream &stream, bool buf)
+            : _stream(stream), _buf(READ_BUF_SIZE)
+        {
+        }
+
+        inline fsize Read(void *buf, fsize bufsize)
+        {
+            return (_stream.Read(buf, bufsize));
+        }
+
+        IDataInputStream &operator>>(uint8 &u);
+        IDataInputStream &operator>>(uint16 &u);
+        IDataInputStream &operator>>(uint32 &u);
+        IDataInputStream &operator>>(uint64 &u);
+        IDataInputStream &operator>>(int8 &i);
+        IDataInputStream &operator>>(int16 &i);
+        IDataInputStream &operator>>(int &i);
+        IDataInputStream &operator>>(int64 &i);
+        IDataInputStream &operator>>(float &f);
+        IDataInputStream &operator>>(double &d);
+        IDataInputStream &operator>>(bool &b);
+        IDataInputStream &operator>>(bpf::String &str);
+    };
+}

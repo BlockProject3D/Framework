@@ -33,6 +33,8 @@
 
 namespace bpf
 {
+    constexpr fsize READ_BUF_SIZE = 128;
+
     class IDataInputStream : public IInputStream
     {
     public:
