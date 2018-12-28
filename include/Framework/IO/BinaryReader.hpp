@@ -29,6 +29,7 @@
 #pragma once
 #include "Framework/IO/IDataInputStream.hpp"
 #include "Framework/IO/ByteBuf.hpp"
+#include "Framework/System/Platform.hpp"
 
 namespace bpf
 {
@@ -37,14 +38,16 @@ namespace bpf
     private:
         IInputStream &_stream;
         ByteBuf _buf;
+        EPlatformEndianess _targetorder;
         bool _buffered;
 
         uint8 ReadByte();
         void ReadSubBuf(void *out, const fsize size);
     public:
-        inline BinaryReader(IInputStream &stream, bool buffered = true)
+        inline BinaryReader(IInputStream &stream, EPlatformEndianess order = PLATFORM_LITTLEENDIAN, bool buffered = true)
             : _stream(stream)
             , _buf(READ_BUF_SIZE)
+            , _targetorder(order)
             , _buffered(buffered)
         {
         }

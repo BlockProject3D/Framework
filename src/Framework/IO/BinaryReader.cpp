@@ -56,15 +56,17 @@ void BinaryReader::ReadSubBuf(void *out, const fsize size)
 
     for (fsize i = 0; i != size; ++i)
         res[i] = ReadByte();
+    if (Platform::GetEndianess() != _targetorder)
+        Platform::ReverseBuffer(res, size);
 }
 
 IDataInputStream &BinaryReader::operator>>(bpf::String &str)
 {
-	uint32 size = 0;
-	str = String::Empty;
+    uint32 size = 0;
+    str = String::Empty;
 
-	ReadSubBuf(&size, 4);
-        for (uint32 i = 0; i < size; ++i)
-            str += (char)ReadByte();
-	return (*this);
+    ReadSubBuf(&size, 4);
+    for (uint32 i = 0; i < size; ++i)
+        str += (char)ReadByte();
+    return (*this);
 }
