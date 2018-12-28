@@ -57,10 +57,13 @@ namespace bpf
                 _stream.Write(_buf.GetRawData(), _buf.GetWrittenBytes());
         }
 
-        inline fsize Write(const void *buf, fsize bufsize)
+        inline void Flush()
         {
-            return (_stream.Write(buf, bufsize));
+            if (_buffered)
+                _stream.Write(_buf.GetRawData(), _buf.GetWrittenBytes());
         }
+
+        fsize Write(const void *buf, fsize bufsize);
 
         inline IDataOutputStream &operator<<(uint8 u)
         {

@@ -51,5 +51,6 @@ namespace bpf
         virtual IDataOutputStream &operator<<(double d) = 0;
         virtual IDataOutputStream &operator<<(bool b) = 0;
         virtual IDataOutputStream &operator<<(const bpf::String &str) = 0;
+        virtual void Flush() = 0;
     };
 }

@@ -64,3 +64,16 @@ IDataOutputStream &BinaryWriter::operator<<(const bpf::String &str)
         WriteByte((uint8)str.ByteAt(i));
     return (*this);
 }
+
+fsize BinaryWriter::Write(const void *buf, fsize bufsize)
+{
+    if (_buffered)
+    {
+        const uint8 *data = reinterpret_cast<const uint8 *>(buf);
+        for (fsize i = 0; i != bufsize; ++i)
+            WriteByte(data[i]);
+        return (bufsize);
+    }
+    else
+        return (_stream.Write(buf, bufsize));
+}

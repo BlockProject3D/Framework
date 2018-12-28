@@ -50,6 +50,29 @@ uint8 BinaryReader::ReadByte()
     return (out);
 }
 
+bool BinaryReader::ReadByte2(uint8 &out)
+{
+    out = 0;
+
+    if (!_buffered)
+    {
+        if (_stream.Read(&out, 1) == 1)
+            return (true);
+        return (false);
+    }
+    if (_buf.GetCursor() + 1 > _buf.GetWrittenBytes())
+    {
+        _buf.Clear();
+        uint8 buf[READ_BUF_SIZE];
+        fsize s = _stream.Read(buf, READ_BUF_SIZE);
+        _buf.Write(buf, s);
+    }
+    if (_buf.GetCursor() + 1 > _buf.GetWrittenBytes())
+        return (false);
+    _buf.Read(&out, 1);
+    return (true);
+}
+
 void BinaryReader::ReadSubBuf(void *out, const fsize size)
 {
     uint8 *res = reinterpret_cast<uint8 *>(out);
@@ -69,4 +92,20 @@ IDataInputStream &BinaryReader::operator>>(bpf::String &str)
     for (uint32 i = 0; i < size; ++i)
         str += (char)ReadByte();
     return (*this);
+}
+
+fsize BinaryReader::Read(void *buf, fsize bufsize)
+{
+    if (_buffered)
+    {
+        fsize read = 0;
+        uint8 *data = reinterpret_cast<uint8 *>(buf);
+        for (fsize i = 0; i != bufsize; ++i)
+        {
+            if (ReadByte2(data[i]))
+                ++read;
+        }
+        return (read);
+    }
+    return (_stream.Read(buf, bufsize));
 }
