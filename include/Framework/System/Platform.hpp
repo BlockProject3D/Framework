@@ -84,6 +84,23 @@ namespace bpf
         static CPU &GetCPUInfo();
         static RAM GetRAMInfo();
         static EPlatformEndianess GetEndianess();
+
+        /**
+         * Reverse a buffer byte per byte
+         * WARNING : This function modifies the input buffer
+         * @param buf the buffer to reverse
+         * @param size the size of the buffer to reverse
+         */
+        static void ReverseBuffer(void *buf, const fsize size);
+        
+        /**
+         * Reverse a buffer group per group
+         * WARNING : This function modifies the input buffer
+         * @param buf the buffer to reverse
+         * @param size the size of the buffer to reverse
+         * @param groupsize the amount of bytes per group
+         */
+        static void ReverseBuffer(void *buf, const fsize size, const fsize groupsize);
     };
 }
 

@@ -242,6 +242,44 @@ namespace bpf
             return (PLATFORM_BIGENDIAN);
         return (PLATFORM_LITTLEENDIAN);
     }
+
+    void Platform::ReverseBuffer(void *buf, const fsize size)
+    {
+        uint8 *out = reinterpret_cast<uint8 *>(buf);
+        uint32 i = 0;
+        uint32 j = size;
+        uint8 temp;
+
+        while (i < size / 2)
+        {
+            temp = out[i];
+            out[i++] = out[j];
+            out[j] = temp;
+            j--;
+        }
+    }
+
+    void Platform::ReverseBuffer(void *buf, const fsize size, const fsize groupsize)
+    {
+        uint8 *out = reinterpret_cast<uint8 *>(buf);
+        uint32 i = 0;
+        uint32 j = size;
+        uint8 temp;
+
+        while (i < size / 2)
+        {
+            for (uint32 k = 0; k < groupsize; ++k)
+            {
+                if (i + k >= size || j + k >= size)
+                    continue;
+                temp = out[i + k];
+                out[i + k] = out[j + k];
+                out[j + k] = temp;
+            }
+            i += groupsize;
+            j -= groupsize;
+        }
+    }
 }
 
 /*using namespace Framework;
