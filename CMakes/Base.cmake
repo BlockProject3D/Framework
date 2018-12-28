@@ -1,3 +1,27 @@
+#Utility function used to prepend a list with a prefix
+function(bp_prepend lst prefix)
+    set(listVar "")
+    foreach(f ${ARGN})
+        list(APPEND listVar "${prefix}/${f}")
+    endforeach(f)
+    set(${lst} "${listVar}" PARENT_SCOPE)
+endfunction(bp_prepend)
+
+#Utility function used to fix list of sources
+#Will reject all sources in order to only keep headers and will add missing quotes to paths
+function(bp_fixheaderlist lst)
+    set(listVar "")
+    foreach(f ${ARGN})
+        if (NOT ${f} MATCHES ".cpp$"
+            AND NOT ${f} MATCHES ".cxx$"
+            AND NOT ${f} MATCHES ".cc$"
+            AND NOT ${f} MATCHES ".c$")
+            list(APPEND listVar "\"${f}\"")
+        endif ()
+    endforeach(f)
+    set(${lst} "${listVar}" PARENT_SCOPE)
+endfunction(bp_fixheaderlist)
+
 set(BP_FRAMEWORK_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/../")
 set(BP_BASICS_CMAKE_SELF ${CMAKE_CURRENT_LIST_DIR})
 set(PLATFORM "Auto" CACHE STRING "Platform name")
@@ -48,6 +72,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DBUILD_DEBUG")
 
 include("${BP_BASICS_CMAKE_SELF}/Platforms/${PLATFORM}.cmake")
 
+#Setup the main target name=name of target mainincdir=main include directory
 macro(bp_setup_target name mainincdir)
     set(BP_NAME ${name})
     target_include_directories(${name} PUBLIC ${mainincdir})
@@ -60,3 +85,11 @@ macro(bp_setup_target name mainincdir)
                  PREFIX ""
                  FILES ${SOURCES})
 endmacro(bp_setup_target)
+
+#Setup a secondary readonly dependency target name=target name sources=name of variable containing target sources
+macro(bp_setup_deptarget name root sources)
+    add_custom_target(${name} SOURCES ${sources})
+    source_group(TREE ${root}
+                 PREFIX ""
+                 FILES ${sources})
+endmacro(bp_setup_deptarget)
