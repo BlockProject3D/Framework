@@ -233,6 +233,15 @@ namespace bpf
 #endif
         return (rami);
     }
+
+    EPlatformEndianess Platform::GetEndianess()
+    {
+        TypeExpander<uint32> data = TypeExpander<uint32>(0x1020304);
+
+        if (data.Bytes[0] == 1)
+            return (PLATFORM_BIGENDIAN);
+        return (PLATFORM_LITTLEENDIAN);
+    }
 }
 
 /*using namespace Framework;

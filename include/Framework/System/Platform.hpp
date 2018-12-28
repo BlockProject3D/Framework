@@ -34,6 +34,12 @@ namespace bpf
 {
     class String;
 
+    enum EPlatformEndianess
+    {
+        PLATFORM_BIGENDIAN,
+        PLATFORM_LITTLEENDIAN
+    };
+
     struct OS
     {
         String Name;
@@ -77,6 +83,7 @@ namespace bpf
         static OS &GetOSInfo();
         static CPU &GetCPUInfo();
         static RAM GetRAMInfo();
+        static EPlatformEndianess GetEndianess();
     };
 }
 
