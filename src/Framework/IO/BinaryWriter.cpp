@@ -26,3 +26,41 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include "Framework/IO/BinaryWriter.hpp"
+
+using namespace bpf;
+
+void BinaryWriter::WriteByte(uint8 byte)
+{
+    if (!_buffered)
+    {
+        _stream.Write(&byte, 1);
+        return;
+    }
+    if (_buf.GetWrittenBytes() >= _buf.Size())
+    {
+        _stream.Write(_buf.GetRawData(), WRITE_BUF_SIZE);
+        _buf.Clear();
+    }
+    _buf.Write(&byte, 1);
+}
+
+void BinaryWriter::WriteSubBuf(void *out, const fsize size)
+{
+    uint8 *res = reinterpret_cast<uint8 *>(out);
+
+    if (Platform::GetEndianess() != _targetorder)
+        Platform::ReverseBuffer(res, size);
+    for (fsize i = 0; i != size; ++i)
+        WriteByte(res[i]);
+}
+
+IDataOutputStream &BinaryWriter::operator<<(const bpf::String &str)
+{
+    uint32 size = str.Size();
+
+    WriteSubBuf(&size, 4);
+    for (uint32 i = 0; i < size; ++i)
+        WriteByte((uint8)str.ByteAt(i));
+    return (*this);
+}

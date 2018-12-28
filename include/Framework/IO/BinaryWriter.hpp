@@ -26,3 +26,111 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include "Framework/IO/IDataOutputStream.hpp"
+#include "Framework/IO/ByteBuf.hpp"
+#include "Framework/System/Platform.hpp"
+
+namespace bpf
+{
+    class BPF_API BinaryWriter final : public IDataOutputStream
+    {
+    private:
+        IOutputStream &_stream;
+        ByteBuf _buf;
+        EPlatformEndianess _targetorder;
+        bool _buffered;
+
+        void WriteByte(uint8 byte);
+        void WriteSubBuf(void *in, const fsize size);
+    public:
+        inline BinaryWriter(IOutputStream &stream, EPlatformEndianess order = PLATFORM_LITTLEENDIAN, bool buffered = true)
+            : _stream(stream)
+            , _buf(WRITE_BUF_SIZE)
+            , _targetorder(order)
+            , _buffered(buffered)
+        {
+        }
+
+        inline ~BinaryWriter()
+        {
+            if (_buffered)
+                _stream.Write(_buf.GetRawData(), _buf.GetWrittenBytes());
+        }
+
+        inline fsize Write(const void *buf, fsize bufsize)
+        {
+            return (_stream.Write(buf, bufsize));
+        }
+
+        inline IDataOutputStream &operator<<(uint8 u)
+        {
+            WriteByte(u);
+            return (*this);
+        }
+
+        inline IDataOutputStream &operator<<(uint16 u)
+        {
+            WriteSubBuf(&u, 2);
+            return (*this);
+        }
+
+        inline IDataOutputStream &operator<<(uint32 u)
+        {
+            WriteSubBuf(&u, 4);
+            return (*this);
+        }
+
+        inline IDataOutputStream &operator<<(uint64 u)
+        {
+            WriteSubBuf(&u, 8);
+            return (*this);
+        }
+
+        inline IDataOutputStream &operator<<(int8 i)
+        {
+            WriteByte((uint8)i);
+            return (*this);
+        }
+
+        inline IDataOutputStream &operator<<(int16 i)
+        {
+            WriteSubBuf(&i, 2);
+            return (*this);
+        }
+
+        inline IDataOutputStream &operator<<(int i)
+        {
+            WriteSubBuf(&i, 4);
+            return (*this);
+        }
+
+        inline IDataOutputStream &operator<<(int64 i)
+        {
+            WriteSubBuf(&i, 8);
+            return (*this);
+        }
+
+        inline IDataOutputStream &operator<<(float f)
+        {
+            WriteSubBuf(&f, 4);
+            return (*this);
+        }
+
+        inline IDataOutputStream &operator<<(double d)
+        {
+            WriteSubBuf(&d, 8);
+            return (*this);
+        }
+
+        inline IDataOutputStream &operator<<(bool b)
+        {
+            if (b)
+                WriteByte(1);
+            else
+                WriteByte(0);
+            return (*this);
+        }
+
+        IDataOutputStream &operator<<(const bpf::String &str);
+    };
+}
