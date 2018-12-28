@@ -37,11 +37,15 @@ namespace bpf
     private:
         IInputStream &_stream;
         ByteBuf _buf;
+        bool _buffered;
 
-        
+        uint8 ReadByte();
+        void ReadSubBuf(void *out, const fsize size);
     public:
-        inline BinaryReader(IInputStream &stream, bool buf)
-            : _stream(stream), _buf(READ_BUF_SIZE)
+        inline BinaryReader(IInputStream &stream, bool buffered = true)
+            : _stream(stream)
+            , _buf(READ_BUF_SIZE)
+            , _buffered(buffered)
         {
         }
 
@@ -50,17 +54,73 @@ namespace bpf
             return (_stream.Read(buf, bufsize));
         }
 
-        IDataInputStream &operator>>(uint8 &u);
-        IDataInputStream &operator>>(uint16 &u);
-        IDataInputStream &operator>>(uint32 &u);
-        IDataInputStream &operator>>(uint64 &u);
-        IDataInputStream &operator>>(int8 &i);
-        IDataInputStream &operator>>(int16 &i);
-        IDataInputStream &operator>>(int &i);
-        IDataInputStream &operator>>(int64 &i);
-        IDataInputStream &operator>>(float &f);
-        IDataInputStream &operator>>(double &d);
-        IDataInputStream &operator>>(bool &b);
+        inline IDataInputStream &operator>>(uint8 &u)
+        {
+            u = ReadByte();
+            return (*this);
+        }
+
+        inline IDataInputStream &operator>>(uint16 &u)
+        {
+            ReadSubBuf(&u, 2);
+            return (*this);
+        }
+
+        inline IDataInputStream &operator>>(uint32 &u)
+        {
+            ReadSubBuf(&u, 4);
+            return (*this);
+        }
+
+        inline IDataInputStream &operator>>(uint64 &u)
+        {
+            ReadSubBuf(&u, 8);
+            return (*this);
+        }
+
+        inline IDataInputStream &operator>>(int8 &i)
+        {
+            i = (int8)ReadByte();
+            return (*this);
+        }
+
+        inline IDataInputStream &operator>>(int16 &i)
+        {
+            ReadSubBuf(&i, 2);
+            return (*this);
+        }
+
+        inline IDataInputStream &operator>>(int &i)
+        {
+            ReadSubBuf(&i, 4);
+            return (*this);
+        }
+
+        inline IDataInputStream &operator>>(int64 &i)
+        {
+            ReadSubBuf(&i, 8);
+            return (*this);
+        }
+
+        inline IDataInputStream &operator>>(float &f)
+        {
+            ReadSubBuf(&f, 4);
+            return (*this);
+        }
+
+        inline IDataInputStream &operator>>(double &d)
+        {
+            ReadSubBuf(&d, 8);
+            return (*this);
+        }
+
+        inline IDataInputStream &operator>>(bool &b)
+        {
+            uint8 u = ReadByte();
+            b = (u == 1 ? true : false);
+            return (*this);
+        }
+
         IDataInputStream &operator>>(bpf::String &str);
     };
 }

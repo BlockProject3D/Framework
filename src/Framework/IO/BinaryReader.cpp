@@ -26,3 +26,45 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include "Framework/IO/BinaryReader.hpp"
+
+using namespace bpf;
+
+uint8 BinaryReader::ReadByte()
+{
+    uint8 out = 0;
+
+    if (!_buffered)
+    {
+        _stream.Read(&out, 1);
+        return (out);
+    }
+    if ((_buf.GetCursor() + 1) > _buf.GetWrittenBytes())
+    {
+        _buf.Clear();
+        uint8 buf[READ_BUF_SIZE];
+        fsize s = _stream.Read(buf, READ_BUF_SIZE);
+        _buf.Write(buf, s);
+    }
+    _buf.Read(&out, 1);
+    return (out);
+}
+
+void BinaryReader::ReadSubBuf(void *out, const fsize size)
+{
+    uint8 *res = reinterpret_cast<uint8 *>(out);
+
+    for (fsize i = 0; i != size; ++i)
+        res[i] = ReadByte();
+}
+
+IDataInputStream &BinaryReader::operator>>(bpf::String &str)
+{
+	uint32 size = 0;
+	str = String::Empty;
+
+	ReadSubBuf(&size, 4);
+        for (uint32 i = 0; i < size; ++i)
+            str += (char)ReadByte();
+	return (*this);
+}
