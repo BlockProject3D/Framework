@@ -38,7 +38,7 @@ namespace bpf
         T X;
         T Y;
 
-        Vector2(const T x, const T y)
+        Vector2(const T x, const t y)
             : X(x)
             , Y(y)
         {

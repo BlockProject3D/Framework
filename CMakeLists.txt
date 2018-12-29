@@ -25,10 +25,14 @@ set(SOURCES
 #    ./include/Framework/IO/Stream.hpp
     ./include/Framework/Math/Triangle.hpp
     ./include/Framework/Math/Vector.hpp
+	./include/Framework/Math/Vector2.hpp
+	./include/Framework/Math/Vector3.hpp
+	./include/Framework/Math/Vector4.hpp
     ./include/Framework/Math/Vertex.hpp
     ./include/Framework/Math/Viewport.hpp
     ./include/Framework/Math/Quaternion.hpp
     ./include/Framework/Math/Matrix.hpp
+	./include/Framework/Math/Matrix.impl.hpp
     ./include/Framework/Math/Transform.hpp
     ./include/Framework/Math/BMath.hpp
     ./include/Framework/Logging/Logger.hpp

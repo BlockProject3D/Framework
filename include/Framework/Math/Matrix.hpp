@@ -26,10 +26,140 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef MATRIX_H_
-# define MATRIX_H_
+#pragma once
+#include <cstring>
+#include <initializer_list>
+#include "Framework/Types.hpp"
+#include "Framework/IndexException.hpp"
 
-# include <initializer_list>
+namespace bpf
+{
+    template <fsize M, fsize N, typename T>
+    class BP_TPL_API Matrix
+    {
+    private:
+        T _arr[N * M];
+
+    public:
+        inline Matrix()
+        {
+            std::memset(_arr, 0, N * M * sizeof(T));
+        }
+
+        inline Matrix(const std::initializer_list<T> &lst)
+        {
+            std::memcpy(_arr, lst.begin(), N * M * sizeof(T));
+        }
+
+        inline Matrix(const T *mat)
+        {
+            std::memcpy(_arr, mat, N * M * sizeof(T));
+        }
+
+        inline Matrix(const Matrix<M, N, T> &other)
+        {
+            std::memcpy(_arr, other._arr, N * M * sizeof(T));
+        }
+
+        inline Matrix<M, N, T> &operator=(const Matrix<M, N, T> &other)
+        {
+            std::memcpy(_arr, other._arr, N * M * sizeof(T));
+            return (*this);
+        }
+
+        inline T &operator()(const fsize x, const fsize y)
+        {
+            if (x >= N || y >= M)
+                throw IndexException(x);
+            return (_arr[y * N + x]);
+        }
+
+        inline T operator()(const fsize x, const fsize y) const
+        {
+            if (x >= N || y >= M)
+                throw IndexException(x);
+            return (_arr[y * N + x]);
+        }
+
+        template <fsize P>
+        Matrix<M, P, T> operator*(const Matrix<N, P, T> &other) const;
+        Matrix<N, M, T> Transpose() const;
+        void SwapRows(const fsize rowa, const fsize rowb);
+
+        static const Matrix Zero;
+        
+        template <fsize P, fsize Q, typename T>
+        friend class Matrix;
+    };
+
+    template <fsize N, typename T>
+    class BP_TPL_API Matrix<N, N, T>
+    {
+    private:
+        T _arr[N * N];
+
+        static Matrix<N, N, T> GenIdentity();
+    public:
+        inline Matrix()
+        {
+            std::memset(_arr, 0, N * N * sizeof(T));
+        }
+
+        inline Matrix(const std::initializer_list<T> &lst)
+        {
+            std::memcpy(_arr, lst.begin(), N * N * sizeof(T));
+        }
+
+        inline Matrix(const T *mat)
+        {
+            std::memcpy(_arr, mat, N * N * sizeof(T));
+        }
+
+        inline Matrix(const Matrix<N, N, T> &other)
+        {
+            std::memcpy(_arr, other._arr, N * N * sizeof(T));
+        }
+
+        inline Matrix<N, N, T> &operator=(const Matrix<N, N, T> &other)
+        {
+            std::memcpy(_arr, other._arr, N * N * sizeof(T));
+            return (*this);
+        }
+
+        inline T &operator()(const fsize x, const fsize y)
+        {
+            if (x >= N || y >= N)
+                throw IndexException(x);
+            return (_arr[y * N + x]);
+        }
+
+        inline T operator()(const fsize x, const fsize y) const
+        {
+            if (x >= N || y >= N)
+                throw IndexException(x);
+            return (_arr[y * N + x]);
+        }
+
+        Matrix<N, N, T> Invert() const;
+        Matrix<N, N, T> operator*(const Matrix<N, N, T> &other) const;
+        Matrix<N, N, T> Transpose() const;
+        void SwapRows(const fsize rowa, const fsize rowb);
+
+        static const Matrix Zero;
+        static const Matrix Identity;
+
+        template <fsize P, fsize Q, typename T>
+        friend class Matrix;
+    };
+
+    template <fsize N, fsize M, typename T>
+    const Matrix<N, M, T> Matrix<N, M, T>::Zero = Matrix<N, M, T>();
+
+    template <fsize N, typename T>
+    const Matrix<N, N, T> Matrix<N, N, T>::Identity = Matrix<N, N, T>::GenIdentity();
+}
+
+#include "Framework/Math/Matrix.impl.hpp"
 
 namespace Framework
 {
@@ -68,5 +198,3 @@ namespace Framework
         static FMatrix Zero;
     };
 };
-
-#endif /* !MATRIX_H_ */
