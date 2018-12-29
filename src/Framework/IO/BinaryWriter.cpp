@@ -59,9 +59,60 @@ IDataOutputStream &BinaryWriter::operator<<(const bpf::String &str)
 {
     uint32 size = str.Size();
 
-    WriteSubBuf(&size, 4);
-    for (uint32 i = 0; i < size; ++i)
-        WriteByte((uint8)str.ByteAt(i));
+    switch (_serializer)
+    {
+    case EStringSerializer::VARCHAR_32:
+        WriteSubBuf(&size, 4);
+        for (uint32 i = 0; i < size; ++i)
+            WriteByte((uint8)str.ByteAt(i));
+        break;
+    case EStringSerializer::VARCHAR_16:
+        WriteSubBuf(&size, 2);
+        for (uint32 i = 0; i < (uint16)size; ++i)
+            WriteByte((uint8)str.ByteAt(i));
+        break;
+    case EStringSerializer::VARCHAR_8:
+        WriteSubBuf(&size, 1);
+        for (uint32 i = 0; i < (uint8)size; ++i)
+            WriteByte((uint8)str.ByteAt(i));
+        break;
+    case EStringSerializer::CSTYLE:
+        for (uint32 i = 0; i < size; ++i)
+            WriteByte((uint8)str.ByteAt(i));
+        WriteByte(0);
+        break;
+    }
+    return (*this);
+}
+
+IDataOutputStream &BinaryWriter::operator<<(const char *str)
+{
+    uint32 size = 0;
+
+    for (; str[size]; ++size);
+    switch (_serializer)
+    {
+    case EStringSerializer::VARCHAR_32:
+        WriteSubBuf(&size, 4);
+        for (uint32 i = 0; i < size; ++i)
+            WriteByte((uint8)str[i]);
+        break;
+    case EStringSerializer::VARCHAR_16:
+        WriteSubBuf(&size, 2);
+        for (uint32 i = 0; i < (uint16)size; ++i)
+            WriteByte((uint8)str[i]);
+        break;
+    case EStringSerializer::VARCHAR_8:
+        WriteSubBuf(&size, 1);
+        for (uint32 i = 0; i < (uint8)size; ++i)
+            WriteByte((uint8)str[i]);
+        break;
+    case EStringSerializer::CSTYLE:
+        for (uint32 i = 0; i < size; ++i)
+            WriteByte((uint8)str[i]);
+        WriteByte(0);
+        break;
+    }
     return (*this);
 }
 

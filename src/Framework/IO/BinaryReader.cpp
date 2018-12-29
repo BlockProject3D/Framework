@@ -45,6 +45,7 @@ uint8 BinaryReader::ReadByte()
         uint8 buf[READ_BUF_SIZE];
         fsize s = _stream.Read(buf, READ_BUF_SIZE);
         _buf.Write(buf, s);
+        _buf.Seek(0);
     }
     _buf.Read(&out, 1);
     return (out);
@@ -66,6 +67,7 @@ bool BinaryReader::ReadByte2(uint8 &out)
         uint8 buf[READ_BUF_SIZE];
         fsize s = _stream.Read(buf, READ_BUF_SIZE);
         _buf.Write(buf, s);
+        _buf.Seek(0);
     }
     if (_buf.GetCursor() + 1 > _buf.GetWrittenBytes())
         return (false);
@@ -86,11 +88,33 @@ void BinaryReader::ReadSubBuf(void *out, const fsize size)
 IDataInputStream &BinaryReader::operator>>(bpf::String &str)
 {
     uint32 size = 0;
-    str = String::Empty;
 
-    ReadSubBuf(&size, 4);
-    for (uint32 i = 0; i < size; ++i)
-        str += (char)ReadByte();
+    switch (_serializer)
+    {
+    case EStringSerializer::VARCHAR_32:        
+        str = String::Empty;
+        ReadSubBuf(&size, 4);
+        for (uint32 i = 0; i < size; ++i)
+            str += (char)ReadByte();
+        break;
+    case EStringSerializer::VARCHAR_16:
+        str = String::Empty;
+        ReadSubBuf(&size, 2);
+        for (uint32 i = 0; i < size; ++i)
+            str += (char)ReadByte();
+        break;
+    case EStringSerializer::VARCHAR_8:
+        str = String::Empty;
+        ReadSubBuf(&size, 1);
+        for (uint32 i = 0; i < size; ++i)
+            str += (char)ReadByte();
+        break;
+    case EStringSerializer::CSTYLE:
+        uint8 b = 0;
+        while ((b = ReadByte()) != 0)
+            str += (char)b;
+        break;
+    }
     return (*this);
 }
 

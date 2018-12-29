@@ -77,7 +77,7 @@ FileStream::FileStream(const File &file, int mode)
         if (mode & FILE_MODE_TRUNCATE)
             md1 |= CREATE_ALWAYS;
         else
-            md1 |= CREATE_NEW;
+            md1 |= OPEN_ALWAYS;
     }
     _handle = CreateFile(*file.GetAbsolutePath().GetPath(), md, FILE_SHARE_READ, Null, md1, FILE_ATTRIBUTE_NORMAL, Null);
     if (_handle == INVALID_HANDLE_VALUE)

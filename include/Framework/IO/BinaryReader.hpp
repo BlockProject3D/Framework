@@ -29,6 +29,7 @@
 #pragma once
 #include "Framework/IO/IDataInputStream.hpp"
 #include "Framework/IO/ByteBuf.hpp"
+#include "Framework/IO/EStringSerializer.hpp"
 #include "Framework/System/Platform.hpp"
 
 namespace bpf
@@ -40,6 +41,7 @@ namespace bpf
         ByteBuf _buf;
         EPlatformEndianess _targetorder;
         bool _buffered;
+        EStringSerializer _serializer;
 
         uint8 ReadByte();
         bool ReadByte2(uint8 &out);
@@ -50,7 +52,13 @@ namespace bpf
             , _buf(READ_BUF_SIZE)
             , _targetorder(order)
             , _buffered(buffered)
+            , _serializer(EStringSerializer::VARCHAR_32)
         {
+        }
+
+        inline void SetStringSerializer(EStringSerializer ser)
+        {
+            _serializer = ser;
         }
 
         fsize Read(void *buf, fsize bufsize);

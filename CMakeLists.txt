@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 set(SOURCES
     ./include/Framework/IO/File.hpp
+	./include/Framework/IO/EStringSerializer.hpp
     ./include/Framework/IO/FileStream.hpp
     ./include/Framework/IO/MemoryMapper.hpp
     ./include/Framework/IO/IOException.hpp
