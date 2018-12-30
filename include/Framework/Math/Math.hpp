@@ -155,13 +155,13 @@ namespace bpf
     };
 
     template <>
-    inline static float Math::Sqrt(const float val)
+    inline float Math::Sqrt(const float val)
     {
         return (sqrtf(val));
     }
 
     template <>
-    inline static long double Math::Sqrt(const long double val)
+    inline long double Math::Sqrt(const long double val)
     {
         return (sqrtl(val));
     }
