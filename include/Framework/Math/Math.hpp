@@ -106,7 +106,7 @@ namespace bpf
         template <typename T>
         inline static T Round(const T val, const int prec = 0)
         {
-            return ((T)(std::floor(val * std::pow(10, prec) + 0.5) / std::pow(10, prec)));
+            return ((T)(floor(val * pow(10, prec) + 0.5) / pow(10, prec)));
         }
 
         /**
@@ -143,19 +143,7 @@ namespace bpf
         template <typename T>
         inline static T Sqrt(const T val)
         {
-            return (std::sqrt(val));
-        }
-
-        template <>
-        inline static float Sqrt(const float val)
-        {
-            return (std::sqrtf(val));
-        }
-
-        template <>
-        inline static long double Sqrt(const long double val)
-        {
-            return (std::sqrtl(val));
+            return (sqrt(val));
         }
 
         /**
@@ -165,4 +153,16 @@ namespace bpf
          */
         static float InvSqrt(const float nb);
     };
+
+    template <>
+    inline static float Math::Sqrt(const float val)
+    {
+        return (sqrtf(val));
+    }
+
+    template <>
+    inline static long double Math::Sqrt(const long double val)
+    {
+        return (sqrtl(val));
+    }
 }
