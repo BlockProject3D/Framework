@@ -25,9 +25,15 @@ set(SOURCES
 #    ./include/Framework/IO/Stream.hpp
     ./include/Framework/Math/Triangle.hpp
     ./include/Framework/Math/Vector.hpp
-	./include/Framework/Math/Vector2.hpp
-	./include/Framework/Math/Vector3.hpp
-	./include/Framework/Math/Vector4.hpp
+    ./include/Framework/Math/Vector2.hpp
+    ./include/Framework/Math/Vector3.hpp
+    ./include/Framework/Math/Vector4.hpp
+    ./include/Framework/Math/Matrix2.hpp
+    ./include/Framework/Math/Matrix3.hpp
+    ./include/Framework/Math/Matrix4.hpp
+    ./include/Framework/Math/Matrix2.impl.hpp
+    ./include/Framework/Math/Matrix3.impl.hpp
+    ./include/Framework/Math/Matrix4.impl.hpp
     ./include/Framework/Math/Vertex.hpp
     ./include/Framework/Math/Viewport.hpp
     ./include/Framework/Math/Quaternion.hpp
@@ -35,6 +41,7 @@ set(SOURCES
 	./include/Framework/Math/Matrix.impl.hpp
     ./include/Framework/Math/Transform.hpp
     ./include/Framework/Math/BMath.hpp
+	./include/Framework/Math/Math.hpp
     ./include/Framework/Logging/Logger.hpp
     ./include/Framework/Logging/ILogHandler.hpp
     ./include/Framework/Logging/ELogLevel.hpp
@@ -115,6 +122,7 @@ set(SOURCES
     ./src/Framework/Math/Triangle.cpp
     ./src/Framework/Math/Vector.cpp
     ./src/Framework/Math/Vertex.cpp
+	./src/Framework/Math/Math.cpp
     ./src/Framework/Memory/Memory.cpp
     ./src/Framework/System/Platform.cpp
     ./src/Framework/System/Module.cpp

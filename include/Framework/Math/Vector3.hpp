@@ -27,54 +27,79 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Math/BMath.hpp"
+#include "Framework/Math/Math.hpp"
+#include "Framework/Math/Vector2.hpp"
 
 namespace bpf
 {
     template <typename T>
-    class BP_TPL_API Vector2
+    class BP_TPL_API Vector3
     {
     public:
         T X;
         T Y;
+        T Z;
 
-        Vector2(const T x, const t y)
+        Vector3(const T x, const T y, const T z)
             : X(x)
             , Y(y)
+            , Z(z)
         {
         }
 
-        Vector2(const Vector2<T> &other)
+        Vector3(const Vector3<T> &other)
             : X(other.X)
             , Y(other.Y)
+            , Z(other.Z)
         {
         }
 
-        Vector2()
+        Vector3(const Vector2<T> &other, const T z = 0)
+            : X(other.X)
+            , Y(other.Y)
+            , Z(z)
+        {
+        }
+
+        Vector3()
             : X(0)
             , Y(0)
+            , Z(0)
         {
         }
 
-        inline T Dot(const Vector2<T> &other) const
+        inline T Dot(const Vector3<T> &other) const
         {
-            return (X * other.X + Y * other.Y);
+            return (X * other.X + Y * other.Y + Z * other.Z);
         }
+
+        inline Vector3<T> Cross(const Vector3<T> &other) const
+        {
+            return (FVector(Y * other.Z - Z * other.Y,
+                            Z * other.X - X * other.Z,
+                            X * other.Y - Y * other.X));
+        }
+
+        //TODO : Update viewport
+        //Vector3<T> Project(const Matrix<4, 4, T> &view, const FViewport &viewport);
+
+        //TODO : Update Transform
+        //void ApplyTransform(const FTransform &transform);
 
         inline T Length() const
         {
-            return (sqrt(X * X + Y * Y));
+            return (Math::Sqrt(X * X + Y * Y));
         }
 
-        inline T Distance(const Vector2<T> &other) const
+        inline T Distance(const Vector3<T> &other) const
         {
-            Vector2<T> v(Framework::FMath::Abs(other.X - X), Framework::FMath::Abs(other.Y - Y));
+            Vector3<T> v(Math::Abs(other.X - X), Math::Abs(other.Y - Y), Math::Abs(other.Z - Z));
             return (v.Length());
         }
 
-        inline T DistanceSquared(const Vector2<T> &other) const
+        inline T DistanceSquared(const Vector3<T> &other) const
         {
-            Vector2<T> v(Framework::FMath::Abs(other.X - X), Framework::FMath::Abs(other.Y - Y));
+            Vector3<T> v(Math::Abs(other.X - X), Math::Abs(other.Y - Y), Math::Abs(other.Z - Z));
             return (v.X * v.X + v.Y * v.Y);
         }
 
@@ -82,157 +107,154 @@ namespace bpf
         {
             X = X / Length();
             Y = Y / Length();
+            Z = Z / Length();
         }
-        
-        //TODO : Rotate function
 
-        inline Vector2<T> &operator=(const Vector2<T> &other)
+        inline Vector3<T> &operator=(const Vector3<T> &other)
         {
             X = other.X;
             Y = other.Y;
+            Z = other.Z;
+            return (*this);
         }
 
-        inline Vector2<T> operator+(const Vector2<T> &other) const
+        inline Vector3<T> operator*(const T other) const
         {
-            return (Vector2<T>(X + other.X, Y + other.Y));
+            return (Vector3<T>(X * other, Y * other, Z * other));
         }
 
-        inline Vector2<T> operator-(const Vector2<T> &other) const
+        inline Vector3<T> operator/(const T other) const
         {
-            return (Vector2<T>(X - other.X, Y - other.Y));
+            return (Vector3<T>(X / other, Y / other, Z / other));
         }
 
-        inline Vector2<T> operator*(const Vector2<T> &other) const
+        inline Vector3<T> operator+(const T other) const
         {
-            return (Vector2<T>(X * other.X, Y * other.Y));
+            return (Vector3<T>(X + other, Y + other, Z + other));
         }
 
-        inline Vector2<T> operator/(const Vector2<T> &other) const
+        inline Vector3<T> operator-(const T other) const
         {
-            return (Vector2<T>(X / other.X, Y / other.Y));
+            return (Vector3<T>(X - other, Y - other, Z - other));
         }
 
-        inline void operator+=(const Vector2<T> &other) const
+        inline void operator*=(const T other)
+        {
+            X *= other;
+            Y *= other;
+            Z *= other;
+        }
+
+        inline void operator/=(const T other)
+        {
+            X /= other;
+            Y /= other;
+            Z /= other;
+        }
+
+        inline void operator+=(const T other)
+        {
+            X += other;
+            Y += other;
+            Z += other;
+        }
+
+        inline void operator-=(const T other)
+        {
+            X -= other;
+            Y -= other;
+            Z -= other;
+        }
+
+        inline Vector3<T> operator+(const Vector3<T> &other) const
+        {
+            return (Vector3<T>(X + other.X, Y + other.Y, Z + other.Z));
+        }
+
+        inline Vector3<T> operator-(const Vector3<T> &other) const
+        {
+            return (Vector3<T>(X - other.X, Y - other.Y, Z - other.Z));
+        }
+
+        inline Vector3<T> operator*(const Vector3<T> &other) const
+        {
+            return (Vector3<T>(X * other.X, Y * other.Y, Z * other.Z));
+        }
+
+        inline Vector3<T> operator/(const Vector3<T> &other) const
+        {
+            return (Vector3<T>(X / other.X, Y / other.Y, Z / other.Z));
+        }
+
+        inline void operator+=(const Vector3<T> &other) const
         {
             X += other.X;
             Y += other.Y;
+            Z += other.Z;
         }
 
-        inline void operator-=(const Vector2<T> &other) const
+        inline void operator-=(const Vector3<T> &other) const
         {
             X -= other.X;
             Y -= other.Y;
+            Z -= other.Z;
         }
 
-        inline void operator*=(const Vector2<T> &other) const
+        inline void operator*=(const Vector3<T> &other) const
         {
             X *= other.X;
             Y *= other.Y;
+            Z *= other.Z;
         }
 
-        inline void operator/=(const Vector2<T> &other) const
+        inline void operator/=(const Vector3<T> &other) const
         {
             X /= other.X;
             Y /= other.Y;
+            Z /= other.Z;
         }
 
-        inline Vector2<T> operator-() const
+        inline Vector3<T> operator-() const
         {
-            return (Vector2<T>(-X, -Y));
+            return (Vector3<T>(-X, -Y, -Z));
         }
 
-        inline bool operator==(const Vector2<T> &other) const
+        inline bool operator==(const Vector3<T> &other) const
         {
             return (X == other.X && Y == other.Y && Z == other.Z);
         }
 
-        static Vector2<T> Lerp(const Vector2<T> &v, const Vector2<T> &v1, const T t);
+        inline static Vector3<T> Lerp(const Vector3<T> &v, const Vector3<T> &v1, const T t)
+        {
+            Vector3<T> res(Math::Lerp(v.X, v1.X, t), Math::Lerp(v.Y, v1.Y, t), Math::Lerp(v.Z, v1.Z, t));
 
-        static const Vector2<T> Zero;
-        static const Vector2<T> Unit;
+            return (res);
+        }
+
+        static const Vector3<T> Zero;
+        static const Vector3<T> Unit;
+        static const Vector3<T> Right;
+        static const Vector3<T> Up;
+        static const Vector3<T> Forward;
+        static const Vector3<T> Backward;
+        static const Vector3<T> Left;
+        static const Vector3<T> Down;
     };
+
+    template <typename T>
+    const Vector3<T> Vector3<T>::Zero = Vector3<T>();
+    template <typename T>
+    const Vector3<T> Vector3<T>::Unit = Vector3<T>(1, 1, 1);
+    template <typename T>
+    const Vector3<T> Vector3<T>::Right = Vector3<T>(1, 0, 0);
+    template <typename T>
+    const Vector3<T> Vector3<T>::Up = Vector3<T>(0, 0, 1);
+    template <typename T>
+    const Vector3<T> Vector3<T>::Forward = Vector3<T>(0, -1, 0);
+    template <typename T>
+    const Vector3<T> Vector3<T>::Backward = Vector3<T>(0, 1, 0);
+    template <typename T>
+    const Vector3<T> Vector3<T>::Left = Vector3<T>(-1, 0, 0);
+    template <typename T>
+    const Vector3<T> Vector3<T>::Down = Vector3<T>(0, 0, -1);
 }
-
-namespace Framework
-{
-    class FMatrix;
-    class FViewport;
-    class FTransform;
-    class FQuat;
-
-    class ENGINE_API FVector
-    {
-    public:
-        float X;
-        float Y;
-        float Z;
-
-        FVector(const float x, const float y, const float z);
-        FVector();
-        FVector(const float x, const float y);
-        FVector(const FVector &other);
-        float Length() const;
-        float Distance(const FVector &other) const;
-        float DistanceSquared(const FVector &other) const;
-        inline float Dot(const FVector &other) const
-        {
-            return (X * other.X + Y * other.Y + Z * other.Z);
-        }
-        FVector Cross(const FVector &other) const;
-        FVector Project(const FMatrix &view, const FViewport &viewport);
-        void Normalize();
-        void ApplyTransform(const FTransform &transform);
-        FVector &operator=(const FVector &other);
-        FVector operator+(const FVector &other) const;
-        void operator+=(const FVector &other);
-        FVector operator-(const FVector &other) const;
-        inline FVector operator-() const
-        {
-            return (FVector(-X, -Y, -Z));
-        }
-        FVector operator*(const FQuat &other) const;
-        void operator-=(const FVector &other);
-        FVector operator*(const FVector &other) const;
-        void operator*=(const FVector &other);
-        FVector operator*(const float scale) const;
-        void operator*=(const float scale);
-        inline bool operator==(const FVector &other) const
-        {
-            return (X == other.X && Y == other.Y && Z == other.Z);
-        }
-        static FVector Lerp(const FVector &v, const FVector &v1, const float t);
-        static FVector Slerp(const FVector &v, const FVector &v1, const float t); //Failure implementing Slerp formula uses undefined variable called omega
-      
-        static const FVector	Zero;
-        static const FVector	Unit;
-        static const FVector	Right;
-        static const FVector	Up;
-        static const FVector	Forward;
-        static const FVector	Backward;
-        static const FVector	Left;
-        static const FVector	Down;
-    };
-    
-    /**
-     * Homogeneous coordinates vector (X, Y, Z, W)
-     */
-    class ENGINE_API FVector4D
-    {
-    public:
-        float X;
-        float Y;
-        float Z;
-        float W;
-
-        FVector4D();
-        FVector4D(const FVector &vec, float w);
-        FVector4D(const FVector4D &other);
-        FVector4D(float x, float y, float z, float w);
-        FVector4D operator*(const FMatrix &other) const;
-        FVector4D &operator=(const FVector4D &other);
-        inline FVector PerspectiveDevide() const
-        {
-            return (FVector(X / W, Y / W, Z / W));
-        }
-    };
-};

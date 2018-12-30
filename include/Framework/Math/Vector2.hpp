@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Math/BMath.hpp"
+#include "Framework/Math/Math.hpp"
 
 namespace bpf
 {
@@ -38,7 +38,7 @@ namespace bpf
         T X;
         T Y;
 
-        Vector2(const T x, const t y)
+        Vector2(const T x, const T y)
             : X(x)
             , Y(y)
         {
@@ -63,18 +63,18 @@ namespace bpf
 
         inline T Length() const
         {
-            return (sqrt(X * X + Y * Y));
+            return (Math::Sqrt(X * X + Y * Y));
         }
 
         inline T Distance(const Vector2<T> &other) const
         {
-            Vector2<T> v(Framework::FMath::Abs(other.X - X), Framework::FMath::Abs(other.Y - Y));
+            Vector2<T> v(Math::Abs(other.X - X), Math::Abs(other.Y - Y));
             return (v.Length());
         }
 
         inline T DistanceSquared(const Vector2<T> &other) const
         {
-            Vector2<T> v(Framework::FMath::Abs(other.X - X), Framework::FMath::Abs(other.Y - Y));
+            Vector2<T> v(Math::Abs(other.X - X), Math::Abs(other.Y - Y));
             return (v.X * v.X + v.Y * v.Y);
         }
 
@@ -90,6 +90,51 @@ namespace bpf
         {
             X = other.X;
             Y = other.Y;
+            return (*this);
+        }
+
+        inline Vector2<T> operator*(const T other) const
+        {
+            return (Vector2<T>(X * other, Y * other));
+        }
+
+        inline Vector2<T> operator/(const T other) const
+        {
+            return (Vector2<T>(X / other, Y / other));
+        }
+
+        inline Vector2<T> operator+(const T other) const
+        {
+            return (Vector2<T>(X + other, Y + other));
+        }
+
+        inline Vector2<T> operator-(const T other) const
+        {
+            return (Vector2<T>(X - other, Y - other));
+        }
+
+        inline void operator*=(const T other)
+        {
+            X *= other;
+            Y *= other;
+        }
+
+        inline void operator/=(const T other)
+        {
+            X /= other;
+            Y /= other;
+        }
+
+        inline void operator+=(const T other)
+        {
+            X += other;
+            Y += other;
+        }
+
+        inline void operator-=(const T other)
+        {
+            X -= other;
+            Y -= other;
         }
 
         inline Vector2<T> operator+(const Vector2<T> &other) const
@@ -143,12 +188,22 @@ namespace bpf
 
         inline bool operator==(const Vector2<T> &other) const
         {
-            return (X == other.X && Y == other.Y && Z == other.Z);
+            return (X == other.X && Y == other.Y);
         }
 
-        static Vector2<T> Lerp(const Vector2<T> &v, const Vector2<T> &v1, const T t);
+        inline static Vector2<T> Lerp(const Vector2<T> &v, const Vector2<T> &v1, const T t)
+        {
+            Vector2<T> res(Math::Lerp(v.X, v1.X, t), Math::Lerp(v.Y, v1.Y, t));
+
+            return (res);
+        }
 
         static const Vector2<T> Zero;
         static const Vector2<T> Unit;
     };
+
+    template <typename T>
+    const Vector2<T> Vector2<T>::Zero = Vector2<T>();
+    template <typename T>
+    const Vector2<T> Vector2<T>::Unit = Vector2<T>(1, 1);
 }

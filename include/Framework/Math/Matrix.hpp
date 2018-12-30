@@ -81,6 +81,11 @@ namespace bpf
             return (_arr[y * N + x]);
         }
 
+        inline const T *operator*() const
+        {
+            return (_arr);
+        }
+
         template <fsize P>
         Matrix<M, P, T> operator*(const Matrix<N, P, T> &other) const;
         Matrix<N, M, T> Transpose() const;
@@ -140,6 +145,11 @@ namespace bpf
             return (_arr[y * N + x]);
         }
 
+        inline const T *operator*() const
+        {
+            return (_arr);
+        }
+
         Matrix<N, N, T> Invert() const;
         T GetDeterminant() const;
         template <fsize P>
@@ -156,7 +166,7 @@ namespace bpf
     };
 
     template <typename T>
-    class Matrix<1, 1, T>
+    class BP_TPL_API Matrix<1, 1, T>
     {
     private:
         T _arr;
@@ -206,17 +216,6 @@ namespace bpf
         template <fsize P, fsize Q, typename TT>
         friend class Matrix;
     };
-
-    /*template <typename T>
-    class Matrix3 : public Matrix<3, 3, T>
-    {
-    public:
-        void Translate(const FVector &v);
-        void Rotate(const ERotationAxis axis, const float ang);
-        void RotateYaw(const float ang);
-        void RotatePitch(const float ang);
-        void Scale(const FVector &v);
-    };*/
 
     template <fsize N, fsize M, typename T>
     const Matrix<N, M, T> Matrix<N, M, T>::Zero = Matrix<N, M, T>();
