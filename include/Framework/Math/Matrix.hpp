@@ -88,7 +88,7 @@ namespace bpf
 
         static const Matrix Zero;
         
-        template <fsize P, fsize Q, typename T>
+        template <fsize P, fsize Q, typename TT>
         friend class Matrix;
     };
 
@@ -141,6 +141,9 @@ namespace bpf
         }
 
         Matrix<N, N, T> Invert() const;
+        T GetDeterminant() const;
+        template <fsize P>
+        void GetMinor(Matrix<P, P, T> &dest, fsize row, fsize col) const;
         Matrix<N, N, T> operator*(const Matrix<N, N, T> &other) const;
         Matrix<N, N, T> Transpose() const;
         void SwapRows(const fsize rowa, const fsize rowb);
@@ -148,9 +151,72 @@ namespace bpf
         static const Matrix Zero;
         static const Matrix Identity;
 
-        template <fsize P, fsize Q, typename T>
+        template <fsize P, fsize Q, typename TT>
         friend class Matrix;
     };
+
+    template <typename T>
+    class Matrix<1, 1, T>
+    {
+    private:
+        T _arr;
+
+    public:
+        inline Matrix()
+            : _arr(0)
+        {
+        }
+
+        inline Matrix(const std::initializer_list<T> &lst)
+            : _arr(*lst.begin())
+        {
+        }
+
+        inline Matrix(const T *mat)
+            : _arr(*mat)
+        {
+        }
+
+        inline Matrix(const Matrix<1, 1, T> &other)
+            : _arr(other._arr)
+        {
+        }
+
+        inline Matrix<1, 1, T> &operator=(const Matrix<1, 1, T> &other)
+        {
+            _arr = other._arr;
+            return (*this);
+        }
+
+        inline T &operator()(const fsize x, const fsize y)
+        {
+            return (_arr);
+        }
+
+        inline T operator()(const fsize x, const fsize y) const
+        {
+            return (_arr);
+        }
+
+        inline T GetDeterminant() const
+        {
+            return (_arr);
+        }
+
+        template <fsize P, fsize Q, typename TT>
+        friend class Matrix;
+    };
+
+    /*template <typename T>
+    class Matrix3 : public Matrix<3, 3, T>
+    {
+    public:
+        void Translate(const FVector &v);
+        void Rotate(const ERotationAxis axis, const float ang);
+        void RotateYaw(const float ang);
+        void RotatePitch(const float ang);
+        void Scale(const FVector &v);
+    };*/
 
     template <fsize N, fsize M, typename T>
     const Matrix<N, M, T> Matrix<N, M, T>::Zero = Matrix<N, M, T>();

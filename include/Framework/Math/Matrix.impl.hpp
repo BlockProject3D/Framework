@@ -134,4 +134,68 @@ namespace bpf
             operator()(x, rowb) = copy;
         }
     }
+
+    template <fsize N, typename T>
+    Matrix<N, N, T> Matrix<N, N, T>::Invert() const
+    {
+        T det = GetDeterminant();
+        Matrix<N - 1, N - 1, T> minor;
+        Matrix<N, N, T> res;
+
+        if (det == 0)
+            return (0);
+        det = (T)1 / det;
+        for (fsize j = 0; j != N; ++j)
+        {
+            for (fsize i = 0; i != N; ++i)
+            {
+                GetMinor(minor, j, i);
+                res(j, i) = det * minor.GetDeterminant();
+                if ((i + j) % 2 == 1)
+                    res(j, i) = -res(j, i);
+            }
+        }
+        return (res);
+    }
+
+    template <fsize N, typename T>
+    template <fsize P>
+    void Matrix<N, N, T>::GetMinor(Matrix<P, P, T> &dest, fsize row, fsize col) const
+    {
+        fsize coli = 0;
+        fsize rowi = 0;
+
+        for (fsize i = 0; i != N; ++i)
+        {
+            if (i != row)
+            {
+                coli = 0;
+                for (fsize j = 0; j != N; ++j)
+                {
+                    if (j != col)
+                    {
+                        dest(coli, rowi) = operator()(j, i);
+                        ++coli;
+                    }
+                }
+                ++rowi;
+            }
+        }
+    }
+
+    template <fsize N, typename T>
+    T Matrix<N, N, T>::GetDeterminant() const
+    {
+        if (N == 1)
+            return (operator()(0, 0));
+        T det = 0;
+        Matrix<N - 1, N - 1, T> minor;
+        
+        for (fsize i = 0; i != N; ++i)
+        {
+            GetMinor(minor, 0, i);
+            det += (i % 2 == 1 ? -1 : 1) * operator()(i, 0) * minor.GetDeterminant();
+        }
+        return (det);
+    }
 }
