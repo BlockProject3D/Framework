@@ -164,11 +164,13 @@ namespace bpf
 
         /**
          * Returns the angle in degrees between two quaternions
+         * WARNING : Angle is expressed in radians
          */
         T Angle(const Quat<T> &other) const;
 
         /**
          * Returns the euler angles representation of that quaternion
+         * WARNING : Angles are expressed in radians
          */
         Vector3<T> ToEulerAngles() const;
 

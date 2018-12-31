@@ -33,12 +33,12 @@ namespace bpf
     template <typename T>
     Quat<T>::Quat(const Vector3<T> &euler)
     {
-        T cr = Math::Cos(eulerangles.X / (T)2);
-        T cp = Math::Cos(eulerangles.Y / (T)2);
-        T cy = Math::Cos(eulerangles.Z / (T)2);
-        T sr = Math::Sin(eulerangles.X / (T)2);
-        T sp = Math::Sin(eulerangles.Y / (T)2);
-        T sy = Math::Sin(eulerangles.Z / (T)2);
+        T cr = Math::Cos(euler.X / (T)2);
+        T cp = Math::Cos(euler.Y / (T)2);
+        T cy = Math::Cos(euler.Z / (T)2);
+        T sr = Math::Sin(euler.X / (T)2);
+        T sp = Math::Sin(euler.Y / (T)2);
+        T sy = Math::Sin(euler.Z / (T)2);
 
         W = cr * cp * cy + sr * sp * sy;
         X = sr * cp * cy - cr * sp * sy;
@@ -59,10 +59,10 @@ namespace bpf
 
     template <typename T>
     Quat<T>::Quat(const Vector3<T> &axis, const T ang)
-        : X(axis.X * Math::Sin((rot / (T)2)))
-        , Y(axis.Y * Math::Sin((rot / (T)2)))
-        , Z(axis.Z * Math::Sin((rot / (T)2)))
-        , W(Math::Cos((rot / (T)2)))
+        : X(axis.X * Math::Sin((ang / (T)2)))
+        , Y(axis.Y * Math::Sin((ang / (T)2)))
+        , Z(axis.Z * Math::Sin((ang / (T)2)))
+        , W(Math::Cos((ang / (T)2)))
     {
         Normalize();
     }
@@ -129,6 +129,41 @@ namespace bpf
         T r = Math::Sqrt(X * X + Y * Y + Z * Z);
         T et = r > (T)0.00001 ? Math::ArcTan2(r, W) / r : 0;
 
-        return (Quat<T>((T)0.5 * Math::Ln(W * W + X * X + Y * Y + Z * Z), X * t, Y * t, Z * t));
+        return (Quat<T>((T)0.5 * Math::Ln(W * W + X * X + Y * Y + Z * Z), X * et, Y * et, Z * et));
+    }
+
+    template <typename T>
+    T Quat<T>::Angle(const Quat<T> &other) const
+    {
+        Quat<T> res = other * Invert();
+
+        return (Math::ArcCos(res.W) * 2);
+    }
+
+    template <typename T>
+    Vector3<T> Quat<T>::ToEulerAngles() const
+    {
+        T roll = Math::ArcTan2(2 * Y * W + 2 * X * Z, 1 - 2 * Y * Y - 2 * Z * Z);
+        T pitch = Math::ArcTan2(2 * X * W + 2 * Y * Z, 1 - 2 * X * X - 2 * Z * Z);
+        T yaw = Math::ArcSin(2 * X * Y + 2 * Z * W);
+
+        return (FVector(pitch, yaw, roll));
+    }
+
+    template <typename T>
+    Quat<T> Quat<T>::Lerp(const Quat<T> &q, const Quat<T> &q1, const T t)
+    {
+        Quat<T> res(Math::Lerp(q.W, q1.W, t), Math::Lerp(q.X, q1.X, t),
+                    Math::Lerp(q.Y, q1.Y, t), Math::Lerp(q.Z, q1.Z, t));
+
+        return (res);
+    }
+
+    template <typename T>
+    Quat<T> Quat<T>::Slerp(const Quat<T> &q, const Quat<T> &q1, const T t)
+    {
+        Quat<T> res = ((q1 * q.Invert()).Pow(t)) * q;
+
+        return (res);
     }
 }
