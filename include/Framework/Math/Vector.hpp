@@ -28,6 +28,16 @@
 
 #pragma once
 #include "Framework/Math/BMath.hpp"
+#include "Framework/Math/Vector2.hpp"
+#include "Framework/Math/Vector3.hpp"
+#include "Framework/Math/Vector4.hpp"
+
+namespace bpf
+{
+    using Vector2f = Vector2<float>;
+    using Vector3f = Vector3<float>;
+    using Vector4f = Vector4<float>;
+}
 
 namespace Framework
 {
