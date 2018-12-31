@@ -78,6 +78,10 @@ namespace bpf
         }
 
         void Translate(const Vector2<T> &v);
+
+        /**
+         * WARNING : In radians !
+         */
         void Rotate(const T ang);
         void Scale(const Vector2<T> &v);
         Vector3<T> operator*(const Vector3<T> &other);

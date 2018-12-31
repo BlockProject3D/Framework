@@ -33,31 +33,66 @@ namespace bpf
     template <typename T>
     void Matrix4<T>::Translate(const Vector3<T> &v)
     {
+        Matrix4<T> mat = {
+            1, 0, 0, v.X,
+            0, 1, 0, v.Y,
+            0, 0, 1, v.Z,
+            0, 0, 0, 1
+        };
 
+        *this = *this * mat;
     }
 
     template <typename T>
     void Matrix4<T>::RotateYaw(const T ang)
     {
+        Matrix4<T> mat = {
+            Math::Cos(ang), 0, Math::Sin(ang), 0,
+            0, 1, 0, 0,
+            -Math::Sin(ang), 0, Math::Cos(ang), 0,
+            0, 0, 0, 1
+        };
 
+        *this = *this * mat;
     }
 
     template <typename T>
     void Matrix4<T>::RotatePitch(const T ang)
     {
+        Matrix4<T> mat = {
+            1, 0, 0, 0,
+            0, Math::Cos(ang), -Math::Sin(ang), 0,
+            0, Math::Sin(ang), Math::Cos(ang), 0,
+            0, 0, 0, 1
+        };
 
+        *this = *this * mat;
     }
 
     template <typename T>
     void Matrix4<T>::RotateRoll(const T ang)
     {
+        Matrix4<T> mat = {
+            Math::Cos(ang), -Math::Sin(ang), 0, 0,
+            Math::Sin(ang), Math::Cos(ang), 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1
+        };
 
+        *this = *this * mat;
     }
 
     template <typename T>
     void Matrix4<T>::Scale(const Vector3<T> &v)
     {
+        Matrix4<T> mat = {
+            v.X, 0, 0, 0,
+            0, v.Y, 0, 0,
+            0, 0, v.Z, 0,
+            0, 0, 0, 1
+        };
 
+        *this = *this * mat;
     }
 
     template <typename T>

@@ -78,8 +78,20 @@ namespace bpf
         }
 
         void Translate(const Vector3<T> &v);
+        
+        /**
+         * WARNING : In radians !
+         */
         void RotateYaw(const T ang);
+
+        /**
+         * WARNING : In radians !
+         */
         void RotatePitch(const T ang);
+        
+        /**
+         * WARNING : In radians !
+         */
         void RotateRoll(const T ang);
         void Scale(const Vector3<T> &v);
         Vector4<T> operator*(const Vector4<T> &other);

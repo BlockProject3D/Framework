@@ -152,6 +152,42 @@ namespace bpf
          * @param nb the number to find the inverse square root
          */
         static float InvSqrt(const float nb);
+
+        template <typename T>
+        inline static T Cos(const T val)
+        {
+            return (cos(val));
+        }
+
+        template <typename T>
+        inline static T Sin(const T val)
+        {
+            return (sin(val));
+        }
+
+        template <typename T>
+        inline static T Tan(const T val)
+        {
+            return (tan(val));
+        }
+
+        template <typename T>
+        inline static T ArcCos(const T val)
+        {
+            return (acos(val));
+        }
+
+        template <typename T>
+        inline static T ArcSin(const T val)
+        {
+            return (asin(val));
+        }
+
+        template <typename T>
+        inline static T ArcTan(const T val)
+        {
+            return (atan(val));
+        }
     };
 
     template <>
@@ -164,5 +200,41 @@ namespace bpf
     inline long double Math::Sqrt(const long double val)
     {
         return (sqrtl(val));
+    }
+
+    template <>
+    inline float Math::Cos(const float val)
+    {
+        return (cosf(val));
+    }
+
+    template <>
+    inline float Math::Sin(const float val)
+    {
+        return (sinf(val));
+    }
+
+    template <>
+    inline float Math::Tan(const float val)
+    {
+        return (tanf(val));
+    }
+
+    template <>
+    inline float Math::ArcCos(const float val)
+    {
+        return (acosf(val));
+    }
+
+    template <>
+    inline float Math::ArcSin(const float val)
+    {
+        return (asinf(val));
+    }
+
+    template <>
+    inline float Math::ArcTan(const float val)
+    {
+        return (atanf(val));
     }
 }

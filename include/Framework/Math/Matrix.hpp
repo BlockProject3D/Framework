@@ -225,6 +225,16 @@ namespace bpf
 }
 
 #include "Framework/Math/Matrix.impl.hpp"
+#include "Framework/Math/Matrix2.hpp"
+#include "Framework/Math/Matrix3.hpp"
+#include "Framework/Math/Matrix4.hpp"
+
+namespace bpf
+{
+    using Matrix2f = Matrix2<float>;
+    using Matrix3f = Matrix3<float>;
+    using Matrix4f = Matrix4<float>;
+}
 
 namespace Framework
 {

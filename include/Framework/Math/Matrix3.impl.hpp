@@ -33,19 +33,37 @@ namespace bpf
     template <typename T>
     void Matrix3<T>::Translate(const Vector2<T> &v)
     {
+        Matrix3<T> mat = {
+            1, 0, v.X,
+            0, 1, v.Y,
+            0, 0, 1
+        };
 
+        *this = *this * mat;
     }
 
     template <typename T>
     void Matrix3<T>::Rotate(const T ang)
     {
+        Matrix3<T> mat = {
+            Math::Cos(ang), -Math::Sin(ang), 0,
+            Math::Sin(ang), Math::Cos(ang), 0,
+            0, 0, 1
+        };
 
+        *this = *this * mat;
     }
 
     template <typename T>
     void Matrix3<T>::Scale(const Vector2<T> &v)
     {
+        Matrix3<T> mat = {
+            v.X, 0, 0,
+            0, v.Y, 0,
+            0, 0, 1
+        };
 
+        *this = *this * mat;
     }
 
     template <typename T>
