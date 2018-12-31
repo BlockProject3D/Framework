@@ -147,6 +147,36 @@ namespace bpf
         }
 
         /**
+         * Shortcut to the system's exponential function
+         * @param val number for e power val
+         */
+        template <typename T>
+        inline static T Exp(const T val)
+        {
+            return (exp(val));
+        }
+
+        /**
+         * Shortcut to the system's natural logarithm function
+         * @param val number for Ln(val)
+         */
+        template <typename T>
+        inline static T Ln(const T val)
+        {
+            return (log(val));
+        }
+
+        /**
+         * Shortcut to the system's logarithm base 10 function
+         * @param val number for Log(val)
+         */
+        template <typename T>
+        inline static T Log(const T val)
+        {
+            return (log10(val));
+        }
+
+        /**
          * Returns the inverse square root of a floating point number
          * Uses the Fast Inverse Square Root
          * @param nb the number to find the inverse square root
@@ -188,6 +218,12 @@ namespace bpf
         {
             return (atan(val));
         }
+
+        template <typename T>
+        inline static T ArcTan2(const T y, const T x)
+        {
+            return (atan2(y, x));
+        }
     };
 
     template <>
@@ -203,9 +239,51 @@ namespace bpf
     }
 
     template <>
+    inline float Math::Exp(const float val)
+    {
+        return (expf(val));
+    }
+
+    template <>
+    inline long double Math::Exp(const long double val)
+    {
+        return (expl(val));
+    }
+
+    template <>
+    inline float Math::Ln(const float val)
+    {
+        return (logf(val));
+    }
+
+    template <>
+    inline long double Math::Ln(const long double val)
+    {
+        return (logl(val));
+    }
+
+    template <>
+    inline float Math::Log(const float val)
+    {
+        return (log10f(val));
+    }
+
+    template <>
+    inline long double Math::Log(const long double val)
+    {
+        return (log10l(val));
+    }
+
+    template <>
     inline float Math::Cos(const float val)
     {
         return (cosf(val));
+    }
+
+    template <>
+    inline long double Math::Cos(const long double val)
+    {
+        return (cosl(val));
     }
 
     template <>
@@ -215,9 +293,21 @@ namespace bpf
     }
 
     template <>
+    inline long double Math::Sin(const long double val)
+    {
+        return (sinl(val));
+    }
+
+    template <>
     inline float Math::Tan(const float val)
     {
         return (tanf(val));
+    }
+
+    template <>
+    inline long double Math::Tan(const long double val)
+    {
+        return (tanl(val));
     }
 
     template <>
@@ -227,14 +317,44 @@ namespace bpf
     }
 
     template <>
+    inline long double Math::ArcCos(const long double val)
+    {
+        return (acosl(val));
+    }
+
+    template <>
     inline float Math::ArcSin(const float val)
     {
         return (asinf(val));
     }
 
     template <>
+    inline long double Math::ArcSin(const long double val)
+    {
+        return (asinl(val));
+    }
+
+    template <>
     inline float Math::ArcTan(const float val)
     {
         return (atanf(val));
+    }
+
+    template <>
+    inline long double Math::ArcTan(const long double val)
+    {
+        return (atanl(val));
+    }
+
+    template <>
+    inline float Math::ArcTan2(const float y, const float x)
+    {
+        return (atan2f(y, x));
+    }
+
+    template <>
+    inline long double Math::ArcTan2(const long double y, const long double x)
+    {
+        return (atan2l(y, x));
     }
 }

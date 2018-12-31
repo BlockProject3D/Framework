@@ -37,6 +37,7 @@ set(SOURCES
     ./include/Framework/Math/Vertex.hpp
     ./include/Framework/Math/Viewport.hpp
     ./include/Framework/Math/Quaternion.hpp
+    ./include/Framework/Math/Quaternion.impl.hpp
     ./include/Framework/Math/Matrix.hpp
 	./include/Framework/Math/Matrix.impl.hpp
     ./include/Framework/Math/Transform.hpp
