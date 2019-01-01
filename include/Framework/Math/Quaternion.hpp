@@ -130,12 +130,8 @@ namespace bpf
             W /= mag;
         }
 
-        inline bool operator==(const Quat<T> &other) const
-        {
-            return (X == other.X && Y == other.Y
-                    && Z == other.Z && W == other.W);
-        }
-
+        bool operator==(const Quat<T> &other) const;
+        
         inline Quat<T> &operator=(const Quat<T> &other)
         {
             X = other.X;

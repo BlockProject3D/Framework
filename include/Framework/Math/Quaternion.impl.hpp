@@ -102,6 +102,18 @@ namespace bpf
     }
 
     template <typename T>
+    bool Quat<T>::operator==(const Quat<T> &other) const
+    {
+        T diffx = X - other.X;
+        T diffy = Y - other.Y;
+        T diffz = Z - other.Z;
+        T diffw = W - other.W;
+
+        return (diffx < (T)0.00001 && diffy < (T)0.00001
+                && diffz < (T)0.00001 && diffw < (T)0.00001);
+    }
+
+    template <typename T>
     Quat<T> Quat<T>::Pow(const T n) const
     {
         Quat<T> q = Ln();
@@ -147,7 +159,7 @@ namespace bpf
         T pitch = Math::ArcTan2(2 * X * W + 2 * Y * Z, 1 - 2 * X * X - 2 * Z * Z);
         T yaw = Math::ArcSin(2 * X * Y + 2 * Z * W);
 
-        return (FVector(pitch, yaw, roll));
+        return (Vector3<T>(pitch, yaw, roll));
     }
 
     template <typename T>
