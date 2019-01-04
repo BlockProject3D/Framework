@@ -198,12 +198,12 @@ namespace bpf
             return (*this);
         }
 
-        inline T &operator()(const fsize x, const fsize y)
+        inline T &operator()(const fsize, const fsize)
         {
             return (_arr);
         }
 
-        inline T operator()(const fsize x, const fsize y) const
+        inline T operator()(const fsize, const fsize) const
         {
             return (_arr);
         }
