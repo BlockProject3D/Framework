@@ -214,6 +214,8 @@ namespace bpf
     const Quat<T> Quat<T>::Zero = Quat<T>(0, 0, 0, 0);
     template <typename T>
     const Quat<T> Quat<T>::Identity = Quat<T>(1, 0, 0, 0);
+    
+    using Quatf = Quat<float>;
 }
 
 #include "Framework/Math/Quaternion.impl.hpp"

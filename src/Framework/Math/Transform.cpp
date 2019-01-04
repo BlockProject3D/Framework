@@ -28,6 +28,34 @@
 
 #include "Framework/Math/BMath.hpp"
 
+namespace bpf
+{
+    void Transform::RebuildMatrix()
+    {
+        _mat = Matrix4f::Identity;
+        _mat.Scale(_scale);
+        _mat = _mat * _quat.ToMatrix();
+        _mat.Translate(_pos);
+    }
+    
+    Vector3f Transform::WorldToLocal(const Vector3f &worldpt)
+    {
+        Vector4f v(worldpt, 1.0f);
+        Matrix4f worldinv = _mat.Invert();
+
+        Vector4f res = worldinv * v;
+        return (Vector3f(res.X, res.Y, res.Z));
+    }
+
+    Vector3f Transform::LocalToWorld(const Vector3f &localpt)
+    {
+        Vector4f v(localpt, 1.0f);
+
+        Vector4f res = _mat * v;
+        return (Vector3f(res.X, res.Y, res.Z));
+    }
+}
+
 using namespace Framework;
 
 FTransform::FTransform()

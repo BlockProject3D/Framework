@@ -26,8 +26,105 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef TRANSFORM_H_
-# define TRANSFORM_H_
+#pragma once
+
+namespace bpf
+{
+    class BPF_API Transform
+    {
+    private:
+        Vector3f _pos;
+        Vector3f _scale;
+        Quatf _quat;
+        Matrix4f _mat;
+        
+        void RebuildMatrix();
+
+    public:
+        Transform();
+        Transform(const Transform &other)
+            : _pos(other._pos)
+            , _scale(other._scale)
+            , _quat(other._quat)
+        {
+            RebuildMatrix();
+        }
+        Transform(const Vector3f &pos, const Vector3f &scale = Vector3f::Unit,
+            const Quatf &q = Quatf::Identity)
+            : _pos(pos)
+            , _scale(scale)
+            , _quat(q)
+        {
+        }
+        
+        Vector3f WorldToLocal(const Vector3f &worldpt);
+        Vector3f LocalToWorld(const Vector3f &localpt);
+
+        inline Transform &Move(const Vector3f &vec)
+        {
+            _pos += vec;
+            return (*this);
+        }
+        
+        inline Transform &Scale(const Vector3f &scale)
+        {
+            _scale *= scale;
+            return (*this);
+        }
+        
+        inline Transform &SetPos(const Vector3f &pos)
+        {
+            _pos = pos;
+            return (*this);
+        }
+        
+        inline Transform &SetScale(const Vector3f &scale)
+        {
+            _scale = scale;
+            return (*this);
+        }
+        
+        inline Transform &SetQuat(const Quatf &q)
+        {
+            _quat = q;
+            return (*this);
+        }
+        
+        inline const Vector3f &GetPos() const
+        {
+            return (_pos);
+        }
+
+        inline const Vector3f &GetScale() const
+        {
+            return (_scale);
+        }
+
+        inline const Quatf &GetQuat() const
+        {
+            return (_quat);
+        }
+        
+        inline Transform operator+(const Transform &other) const
+        {
+            return (Transform(_pos + other._pos,
+                              _scale * other._scale,
+                              _quat * other._quat));
+        }
+        
+        inline void operator+=(const Transform &other)
+        {
+            _pos += other._pos;
+            _scale *= other._scale;
+            _quat = _quat * other._quat;
+        }
+
+        inline bool operator==(const Transform &other) const
+        {
+            return (_pos == other._pos && _quat == other._quat && _scale == other._scale);
+        }
+    };
+}
 
 namespace Framework
 {
@@ -121,5 +218,3 @@ namespace Framework
         }
     };
 };
-
-#endif /* !TRANSFORM_H_ */

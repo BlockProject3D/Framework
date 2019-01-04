@@ -186,28 +186,28 @@ namespace bpf
             return (Vector3<T>(X / other.X, Y / other.Y, Z / other.Z));
         }
 
-        inline void operator+=(const Vector3<T> &other) const
+        inline void operator+=(const Vector3<T> &other)
         {
             X += other.X;
             Y += other.Y;
             Z += other.Z;
         }
 
-        inline void operator-=(const Vector3<T> &other) const
+        inline void operator-=(const Vector3<T> &other)
         {
             X -= other.X;
             Y -= other.Y;
             Z -= other.Z;
         }
 
-        inline void operator*=(const Vector3<T> &other) const
+        inline void operator*=(const Vector3<T> &other)
         {
             X *= other.X;
             Y *= other.Y;
             Z *= other.Z;
         }
 
-        inline void operator/=(const Vector3<T> &other) const
+        inline void operator/=(const Vector3<T> &other)
         {
             X /= other.X;
             Y /= other.Y;

@@ -190,7 +190,7 @@ namespace bpf
             return (Vector4<T>(X / other.X, Y / other.Y, Z / other.Z, W / other.W));
         }
 
-        inline void operator+=(const Vector4<T> &other) const
+        inline void operator+=(const Vector4<T> &other)
         {
             X += other.X;
             Y += other.Y;
@@ -198,7 +198,7 @@ namespace bpf
             W += other.W;
         }
 
-        inline void operator-=(const Vector4<T> &other) const
+        inline void operator-=(const Vector4<T> &other)
         {
             X -= other.X;
             Y -= other.Y;
@@ -206,7 +206,7 @@ namespace bpf
             W -= other.W;
         }
 
-        inline void operator*=(const Vector4<T> &other) const
+        inline void operator*=(const Vector4<T> &other)
         {
             X *= other.X;
             Y *= other.Y;
@@ -214,7 +214,7 @@ namespace bpf
             W *= other.W;
         }
 
-        inline void operator/=(const Vector4<T> &other) const
+        inline void operator/=(const Vector4<T> &other)
         {
             X /= other.X;
             Y /= other.Y;

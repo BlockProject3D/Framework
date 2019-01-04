@@ -157,25 +157,25 @@ namespace bpf
             return (Vector2<T>(X / other.X, Y / other.Y));
         }
 
-        inline void operator+=(const Vector2<T> &other) const
+        inline void operator+=(const Vector2<T> &other)
         {
             X += other.X;
             Y += other.Y;
         }
 
-        inline void operator-=(const Vector2<T> &other) const
+        inline void operator-=(const Vector2<T> &other)
         {
             X -= other.X;
             Y -= other.Y;
         }
 
-        inline void operator*=(const Vector2<T> &other) const
+        inline void operator*=(const Vector2<T> &other)
         {
             X *= other.X;
             Y *= other.Y;
         }
 
-        inline void operator/=(const Vector2<T> &other) const
+        inline void operator/=(const Vector2<T> &other)
         {
             X /= other.X;
             Y /= other.Y;
