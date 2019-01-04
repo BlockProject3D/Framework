@@ -186,8 +186,6 @@ namespace bpf
     template <fsize N, typename T>
     T Matrix<N, N, T>::GetDeterminant() const
     {
-        if (N == 1)
-            return (operator()(0, 0));
         T det = 0;
         Matrix<N - 1, N - 1, T> minor;
         
