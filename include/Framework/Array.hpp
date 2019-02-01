@@ -33,8 +33,61 @@
 
 namespace bpf
 {
-    template <typename T>
+    template <typename T, fsize I = 0>
     class BP_TPL_API Array
+    {
+    private:
+        T _arr[I];
+        
+    public:
+        inline Array()
+        {
+            for (fsize i = 0 ; i != I ; ++i)
+                _arr[i] = DefaultOf<T>();
+        }
+        
+        inline Array(const Array<T> &arr)
+        {
+            for (fsize i = 0 ; i != I ; ++i)
+                _arr[i] = arr._arr[i];
+        }
+        
+        inline Array<T> &operator=(const Array<T> &arr)
+        {
+            for (fsize i = 0 ; i != I ; ++i)
+                _arr[i] = arr._arr[i];
+            return (*this);
+        }
+
+        inline fsize Length() const
+        {
+            return (I);
+        }
+
+        String ToString() const;
+
+        inline const T *operator*() const
+        {
+            return (_arr);
+        }
+        
+        inline T &operator[](const uint32 id) const
+        {
+            if (id >= I)
+                throw IndexException(static_cast<int>(id));
+            return (_arr[id]);
+        }
+        
+        inline T &operator[](const uint32 id)
+        {
+            if (id >= I)
+                throw IndexException(static_cast<int>(id));
+            return (_arr[id]);
+        }
+    };
+    
+    template <typename T>
+    class BP_TPL_API Array<T, 0>
     {
     public:
         class BP_TPL_API Iterator final : public IIterator<typename Array<T>::Iterator, T>

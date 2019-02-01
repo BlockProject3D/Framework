@@ -30,6 +30,21 @@
 
 namespace bpf
 {
+    template <typename T, fsize I>
+    String Array<T, I>::ToString() const
+    {
+        String res = "[";
+
+        for (fsize i = 0 ; i != I ; ++i)
+        {
+            res += String::ValueOf(_arr[i]);
+            if (i < I - 1)
+                res += ", ";
+        }
+        res += "]";
+        return (res);
+    }
+
     template <typename T>
     inline Array<T>::Array()
         : _size(0)
