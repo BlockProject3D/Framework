@@ -173,7 +173,7 @@ void File::Hide(const bool flag)
         attr &= ~FILE_ATTRIBUTE_HIDDEN;
     SetFileAttributes(*FullPath, attr);
 #else
-    File f = GetParent().Path() + "/" + "." + Name();
+    File f = File(GetParent().Path() + "/" + "." + Name());
     rename(*FullPath, *f.Path());
     FileName = f.Name();
     FullPath = f.Path();

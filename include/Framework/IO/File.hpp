@@ -38,7 +38,7 @@ namespace bpf
         String FileName;
         String FileExt;
     public:
-        File(const String &path);
+        explicit File(const String &path);
         File();
         ~File();
 
