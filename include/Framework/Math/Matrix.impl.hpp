@@ -27,6 +27,8 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#undef minor //FUCK YOU LINUX
+#undef major //FUCK YOU LINUX
 
 namespace bpf
 {
