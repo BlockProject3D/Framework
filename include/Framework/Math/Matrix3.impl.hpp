@@ -69,7 +69,7 @@ namespace bpf
     template <typename T>
     Vector3<T> Matrix3<T>::operator*(const Vector3<T> &other)
     {
-        const T *data = Matrix<3, 3, T>::operator*();
+        const T *data = Matrix<T, 3, 3>::operator*();
         T myvec[3] = { other.X, other.Y, other.Z };
         T result[3];
 

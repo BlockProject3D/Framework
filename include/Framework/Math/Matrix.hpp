@@ -34,7 +34,16 @@
 
 namespace bpf
 {
-    template <fsize M, fsize N, typename T>
+    class BPF_API MatrixException : public Exception
+    {
+    public:
+        inline virtual const char *GetType() const noexcept
+        {
+            return ("MatrixException");
+        }
+    };
+
+    template <typename T, fsize M = 0, fsize N = 0>
     class BP_TPL_API Matrix
     {
     private:
@@ -56,12 +65,12 @@ namespace bpf
             std::memcpy(_arr, mat, N * M * sizeof(T));
         }
 
-        inline Matrix(const Matrix<M, N, T> &other)
+        inline Matrix(const Matrix<T, M, N> &other)
         {
             std::memcpy(_arr, other._arr, N * M * sizeof(T));
         }
 
-        inline Matrix<M, N, T> &operator=(const Matrix<M, N, T> &other)
+        inline Matrix<T, M, N> &operator=(const Matrix<T, M, N> &other)
         {
             std::memcpy(_arr, other._arr, N * M * sizeof(T));
             return (*this);
@@ -87,23 +96,24 @@ namespace bpf
         }
 
         template <fsize P>
-        Matrix<M, P, T> operator*(const Matrix<N, P, T> &other) const;
-        Matrix<N, M, T> Transpose() const;
+        Matrix<T, M, P> operator*(const Matrix<T, N, P> &other) const;
+        Matrix<T, N, M> Transpose() const;
         void SwapRows(const fsize rowa, const fsize rowb);
+        void SwapColumns(const fsize cola, const fsize colb);
 
         static const Matrix Zero;
         
-        template <fsize P, fsize Q, typename TT>
+        template <typename TT, fsize P, fsize Q>
         friend class Matrix;
     };
 
-    template <fsize N, typename T>
-    class BP_TPL_API Matrix<N, N, T>
+    template <typename T, fsize N>
+    class BP_TPL_API Matrix<T, N, N>
     {
     private:
         T _arr[N * N];
 
-        static Matrix<N, N, T> GenIdentity();
+        static Matrix<T, N, N> GenIdentity();
     public:
         inline Matrix()
         {
@@ -120,12 +130,12 @@ namespace bpf
             std::memcpy(_arr, mat, N * N * sizeof(T));
         }
 
-        inline Matrix(const Matrix<N, N, T> &other)
+        inline Matrix(const Matrix<T, N, N> &other)
         {
             std::memcpy(_arr, other._arr, N * N * sizeof(T));
         }
 
-        inline Matrix<N, N, T> &operator=(const Matrix<N, N, T> &other)
+        inline Matrix<T, N, N> &operator=(const Matrix<T, N, N> &other)
         {
             std::memcpy(_arr, other._arr, N * N * sizeof(T));
             return (*this);
@@ -150,23 +160,29 @@ namespace bpf
             return (_arr);
         }
 
-        Matrix<N, N, T> Invert() const;
+        /**
+         * Inverts this matrix
+         * @throws MatrixException if the matrix is not invertible (ie determinant is null)
+         * @return the inverse of this matrix
+         */
+        Matrix<T, N, N> Invert() const;
         T GetDeterminant() const;
         template <fsize P>
-        void GetMinor(Matrix<P, P, T> &dest, fsize row, fsize col) const;
-        Matrix<N, N, T> operator*(const Matrix<N, N, T> &other) const;
-        Matrix<N, N, T> Transpose() const;
+        void GetMinor(Matrix<T, P, P> &dest, fsize row, fsize col) const;
+        Matrix<T, N, N> operator*(const Matrix<T, N, N> &other) const;
+        Matrix<T, N, N> Transpose() const;
         void SwapRows(const fsize rowa, const fsize rowb);
+        void SwapColumns(const fsize cola, const fsize colb);
 
         static const Matrix Zero;
         static const Matrix Identity;
 
-        template <fsize P, fsize Q, typename TT>
+        template <typename TT, fsize P, fsize Q>
         friend class Matrix;
     };
 
     template <typename T>
-    class BP_TPL_API Matrix<1, 1, T>
+    class BP_TPL_API Matrix<T, 1, 1>
     {
     private:
         T _arr;
@@ -187,12 +203,12 @@ namespace bpf
         {
         }
 
-        inline Matrix(const Matrix<1, 1, T> &other)
+        inline Matrix(const Matrix<T, 1, 1> &other)
             : _arr(other._arr)
         {
         }
 
-        inline Matrix<1, 1, T> &operator=(const Matrix<1, 1, T> &other)
+        inline Matrix<T, 1, 1> &operator=(const Matrix<T, 1, 1> &other)
         {
             _arr = other._arr;
             return (*this);
@@ -213,15 +229,100 @@ namespace bpf
             return (_arr);
         }
 
-        template <fsize P, fsize Q, typename TT>
+        template <typename TT, fsize P, fsize Q>
         friend class Matrix;
     };
+    
+    template <typename T>
+    class BP_TPL_API Matrix<T, 0, 0>
+    {
+    private:
+        T *_arr;
+        fsize _m;
+        fsize _n;
+    
+    public:
+        Matrix(const fsize m, const fsize n);
+        Matrix(const fsize m, const fsize n, const std::initializer_list<T> &lst);
+        Matrix(const fsize m, const fsize n, const T *mat);
+        Matrix(const Matrix<T> &other);
+        Matrix(Matrix<T> &&other);
+        ~Matrix();
+        Matrix<T> &operator=(const Matrix<T> &other);
+        Matrix<T> &operator=(Matrix<T> &&other);
+        
+        fsize Rows() const noexcept
+        {
+            return (_m);
+        }
 
-    template <fsize N, fsize M, typename T>
-    const Matrix<N, M, T> Matrix<N, M, T>::Zero = Matrix<N, M, T>();
+        fsize Columns() const noexcept
+        {
+            return (_n);
+        }
 
-    template <fsize N, typename T>
-    const Matrix<N, N, T> Matrix<N, N, T>::Identity = Matrix<N, N, T>::GenIdentity();
+        /**
+         * Sets this matrix to identity
+         * @throws MatrixException in case this is not a square matrix
+         */
+        void SetIdentity();
+        
+        inline T &operator()(const fsize x, const fsize y)
+        {
+            if (x >= _n || y >= _m)
+                throw IndexException(x);
+            return (_arr[y * _n + x]);
+        }
+
+        inline T operator()(const fsize x, const fsize y) const
+        {
+            if (x >= _n || y >= _m)
+                throw IndexException(x);
+            return (_arr[y * _n + x]);
+        }
+
+        inline const T *operator*() const
+        {
+            return (_arr);
+        }
+
+        /**
+         * Inverts this matrix
+         * @throws MatrixException if the matrix is not invertible (ie determinant is null) or if it is not a square matrix
+         * @return the inverse of this matrix
+         */
+        Matrix<T> Invert() const;
+        
+        /**
+         * Calculates the determinant of this matrix
+         * @throws MatrixException if the matrix is not squared
+         * @return the determinant of this matrix
+         */
+        T GetDeterminant() const;
+        
+        /**
+         * Calculates a minor matrix of a square matrix
+         * @throws MatrixException if the matrix is not squared
+         * @return the minor matrix
+         */
+        void GetMinor(Matrix<T> &dest, fsize row, fsize col) const;
+        
+        /**
+         * Multiplies two matrices
+         * @throws MatrixException if the multiplication is impossible
+         * @return the product of this by other
+         */
+        Matrix<T> operator*(const Matrix<T> &other) const;
+        Matrix<T> Transpose() const;
+        void SwapRows(const fsize rowa, const fsize rowb);
+        void SwapColumns(const fsize cola, const fsize colb);
+    };
+
+    template <typename T, fsize N, fsize M>
+    const Matrix<T, N, M> Matrix<T, N, M>::Zero = Matrix<T, N, M>();
+
+    template <typename T, fsize N>
+    const Matrix<T, N, N> Matrix<T, N, N>::Identity = Matrix<T, N, N>::GenIdentity();
 }
 
 #include "Framework/Math/Matrix.impl.hpp"

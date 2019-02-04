@@ -33,7 +33,7 @@ namespace bpf
     template <typename T>
     Vector2<T> Matrix2<T>::operator*(const Vector2<T> &other)
     {
-        const T *data = Matrix<2, 2, T>::operator*();
+        const T *data = Matrix<T, 2, 2>::operator*();
         T myvec[2] = { other.X, other.Y };
         T result[2];
 

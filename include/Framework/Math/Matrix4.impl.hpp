@@ -98,7 +98,7 @@ namespace bpf
     template <typename T>
     Vector4<T> Matrix4<T>::operator*(const Vector4<T> &other)
     {
-        const T *data = Matrix<4, 4, T>::operator*();
+        const T *data = Matrix<T, 4, 4>::operator*();
         T myvec[4] = { other.X, other.Y, other.Z, other.W };
         T result[4];
 

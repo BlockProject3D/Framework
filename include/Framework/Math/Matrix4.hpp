@@ -34,47 +34,47 @@
 namespace bpf
 {
     template <typename T>
-    class BP_TPL_API Matrix4 : public Matrix<4, 4, T>
+    class BP_TPL_API Matrix4 : public Matrix<T, 4, 4>
     {
     public:
         inline Matrix4()
-            : Matrix<4, 4, T>()
+            : Matrix<T, 4, 4>()
         {
         }
 
         inline Matrix4(const std::initializer_list<T> &lst)
-            : Matrix<4, 4, T>(lst)
+            : Matrix<T, 4, 4>(lst)
         {
         }
 
         inline Matrix4(const T *mat)
-            : Matrix<4, 4, T>(mat)
+            : Matrix<T, 4, 4>(mat)
         {
         }
 
         inline Matrix4(const Matrix4<T> &other)
-            : Matrix<4, 4, T>(other)
+            : Matrix<T, 4, 4>(other)
         {
         }
 
-        inline Matrix4(const Matrix<4, 4, T> &other)
-            : Matrix<4, 4, T>(other)
+        inline Matrix4(const Matrix<T, 4, 4> &other)
+            : Matrix<T, 4, 4>(other)
         {
         }
 
         inline Matrix4<T> Invert() const
         {
-            return (Matrix<4, 4, T>::Invert());
+            return (Matrix<T, 4, 4>::Invert());
         }
 
         inline Matrix4<T> operator*(const Matrix4<T> &other) const
         {
-            return (Matrix<4, 4, T>::operator*(other));
+            return (Matrix<T, 4, 4>::operator*(other));
         }
 
         inline Matrix4<T> Transpose() const
         {
-            return (Matrix<4, 4, T>::Transpose());
+            return (Matrix<T, 4, 4>::Transpose());
         }
 
         void Translate(const Vector3<T> &v);

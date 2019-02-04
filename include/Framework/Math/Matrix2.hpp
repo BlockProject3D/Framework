@@ -33,47 +33,47 @@
 namespace bpf
 {
     template <typename T>
-    class BP_TPL_API Matrix2 : public Matrix<2, 2, T>
+    class BP_TPL_API Matrix2 : public Matrix<T, 2, 2>
     {
     public:
         inline Matrix2()
-            : Matrix<2, 2, T>()
+            : Matrix<T, 2, 2>()
         {
         }
 
         inline Matrix2(const std::initializer_list<T> &lst)
-            : Matrix<2, 2, T>(lst)
+            : Matrix<T, 2, 2>(lst)
         {
         }
 
         inline Matrix2(const T *mat)
-            : Matrix<2, 2, T>(mat)
+            : Matrix<T, 2, 2>(mat)
         {
         }
 
         inline Matrix2(const Matrix2<T> &other)
-            : Matrix<2, 2, T>(other)
+            : Matrix<T, 2, 2>(other)
         {
         }
 
-        inline Matrix2(const Matrix<2, 2, T> &other)
-            : Matrix<2, 2, T>(other)
+        inline Matrix2(const Matrix<T, 2, 2> &other)
+            : Matrix<T, 2, 2>(other)
         {
         }
 
         inline Matrix2<T> Invert() const
         {
-            return (Matrix<2, 2, T>::Invert());
+            return (Matrix<T, 2, 2>::Invert());
         }
 
         inline Matrix2<T> operator*(const Matrix2<T> &other) const
         {
-            return (Matrix<2, 2, T>::operator*(other));
+            return (Matrix<T, 2, 2>::operator*(other));
         }
 
         inline Matrix2<T> Transpose() const
         {
-            return (Matrix<2, 2, T>::Transpose());
+            return (Matrix<T, 2, 2>::Transpose());
         }
 
         Vector2<T> operator*(const Vector2<T> &other);
