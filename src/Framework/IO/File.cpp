@@ -119,7 +119,7 @@ File File::GetParent() const
 void File::Copy(const File &dst, bool overwrite)
 {
 #ifdef WINDOWS
-    CopyFile(*GetAbsolutePath().GetPath(), *dst.GetAbsolutePath().GetPath(), !overwrite);
+    CopyFile(*GetAbsolutePath().Path(), *dst.GetAbsolutePath().Path(), !overwrite);
 #else
 #endif
     //TODO : Implement
