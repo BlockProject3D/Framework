@@ -65,9 +65,9 @@ TEST(File, AutoBackSlash)
 {
     bpf::File f("./");
 
-    EXPECT_STREQ(*f.GetPath(), ".");
+    EXPECT_STREQ(*f.Path(), ".");
     bpf::File f1 = f + "../";
-    EXPECT_STREQ(*f1.GetPath(), ".\\..");
+    EXPECT_STREQ(*f1.Path(), ".\\..");
 }
 #else
 TEST(File, AutoSlash)
