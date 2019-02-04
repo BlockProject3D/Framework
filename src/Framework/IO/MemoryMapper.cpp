@@ -91,17 +91,17 @@ MemoryMapper::MemoryMapper(const File &file, int mode)
         md2 = PAGE_READWRITE;
     else
         md2 = PAGE_READONLY;
-    _handle = CreateFile(*file.GetAbsolutePath().GetPath(), md, FILE_SHARE_READ, Null, md1, FILE_ATTRIBUTE_NORMAL, Null);
+    _handle = CreateFile(*file.GetAbsolutePath().Path(), md, FILE_SHARE_READ, Null, md1, FILE_ATTRIBUTE_NORMAL, Null);
     if (_handle == INVALID_HANDLE_VALUE)
         throw IOException(String("Could not open file '")
-                          + file.GetAbsolutePath().GetPath() + "' : "
+                          + file.GetAbsolutePath().Path() + "' : "
                           + ObtainErrorString());
     _mapper = CreateFileMapping(_handle, Null, md2, 0, 0, Null);
     if (_mapper == Null)
     {
         CloseHandle(_handle);
         throw IOException(String("Could not create mapper for file '")
-                          + file.GetAbsolutePath().GetPath() + "' : "
+                          + file.GetAbsolutePath().Path() + "' : "
                           + ObtainErrorString());
     }
 #else
@@ -114,10 +114,10 @@ MemoryMapper::MemoryMapper(const File &file, int mode)
         md = O_WRONLY;
     if (mode & FILE_MODE_TRUNCATE)
         md |= O_TRUNC;
-    _handle = open(*file.GetAbsolutePath().GetPath(), md, 0644);
+    _handle = open(*file.GetAbsolutePath().Path(), md, 0644);
     if (_handle == -1)
         throw IOException(String("Could not open file '")
-            + file.GetAbsolutePath().GetPath() + "' : "
+            + file.GetAbsolutePath().Path() + "' : "
             + String(std::strerror(errno)));
 #endif
 }
@@ -148,7 +148,7 @@ void MemoryMapper::Map(uint64 pos, fsize size)
 {
     if ((pos + size) > _file.GetSizeBytes())
         throw IOException(String("Could not map file '")
-            + _file.GetAbsolutePath().GetPath()
+            + _file.GetAbsolutePath().Path()
             + "' : Mapped region is outside file boundarries");
 #ifdef WINDOWS
     SYSTEM_INFO inf;
@@ -172,7 +172,7 @@ void MemoryMapper::Map(uint64 pos, fsize size)
     _mem = MapViewOfFile(_mapper, md, offsetHeigh, offsetLow, size);
     if (_mem == Null)
         throw IOException(String("Could not map file '")
-            + _file.GetAbsolutePath().GetPath() + "' : "
+            + _file.GetAbsolutePath().Path() + "' : "
             + ObtainErrorString());
     uint8 *addr = reinterpret_cast<uint8 *>(_mem);
     addr += pos - nearestpsize;
@@ -192,7 +192,7 @@ void MemoryMapper::Map(uint64 pos, fsize size)
     _size = size;
     if (_mem == MAP_FAILED)
         throw IOException(String("Could not map file '")
-            + _file.GetAbsolutePath().GetPath() + "' : "
+            + _file.GetAbsolutePath().Path() + "' : "
             + String(std::strerror(errno)));
     uint8 *addr = reinterpret_cast<uint8 *>(_mem);
     addr += pos - nearestpsize;

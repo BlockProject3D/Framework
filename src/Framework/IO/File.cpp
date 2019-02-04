@@ -111,18 +111,18 @@ File File::GetAbsolutePath() const
     return (File(str));
 }
 
-File File::GetParentFile() const
+File File::GetParent() const
 {
-    return (File());
+    return (File(FullPath.Sub(0, FullPath.LastIndexOf('/'))));
 }
 
 void File::Copy(const File &dst, bool overwrite)
 {
-    //TODO : Implement
 #ifdef WINDOWS
     CopyFile(*GetAbsolutePath().GetPath(), *dst.GetAbsolutePath().GetPath(), !overwrite);
 #else
 #endif
+    //TODO : Implement
     //File out = dst;
     /*IFileStream *src = Open(FILEMODE_READ);
 
@@ -144,18 +144,40 @@ bool File::Exists() const
     if (attr == INVALID_FILE_ATTRIBUTES)
         return (false);
     return (true);
-    /*WIN32_FIND_DATA data;
-    HANDLE hdl = FindFirstFile(*FullPath, &data);
-    if (hdl != INVALID_HANDLE_VALUE)
-    {
-        FindClose(hdl);
-        return (true);
-    }
-    return (false);*/
 #else
     if(access(*FullPath, F_OK) != -1)
         return (true);
     return (false);
+#endif
+}
+
+bool File::IsHidden() const
+{
+#ifdef WINDOWS
+    DWORD attr = GetFileAttributes(*FullPath);
+    if (attr == INVALID_FILE_ATTRIBUTES)
+        return (false);
+    return (attr & FILE_ATTRIBUTE_HIDDEN);
+#else
+    return (FileName[0] == '.');
+#endif
+}
+
+void File::Hide(const bool flag)
+{
+#ifdef WINDOWS
+    DWORD attr = GetFileAttributes(*FullPath);
+    if (flag)
+        attr |= FILE_ATTRIBUTE_HIDDEN;
+    else
+        attr &= ~FILE_ATTRIBUTE_HIDDEN;
+    SetFileAttributes(*FullPath, attr);
+#else
+    File f = GetParent().Path() + "/" + "." + Name();
+    rename(*FullPath, *f.Path());
+    FileName = f.Name();
+    FullPath = f.Path();
+    FileExt = f.Extension();
 #endif
 }
 
@@ -181,15 +203,6 @@ uint64 File::GetSizeBytes() const
     if (!Exists())
         return (0);
 #ifdef WINDOWS
-    /*LARGE_INTEGER l;
-    HANDLE hdl = CreateFile(*FullPath, GENERIC_READ, FILE_SHARE_READ, Null, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, Null);
-    if (hdl == INVALID_HANDLE_VALUE)
-        return (0);
-    GetFileSizeEx(hdl, &l);
-    CloseHandle(hdl);
-    if (l.QuadPart < 0)
-        return (0);
-    return (static_cast<uint64>(l.QuadPart));*/
     WIN32_FIND_DATA data;
     HANDLE hdl = FindFirstFile(*FullPath, &data);
     if (hdl == INVALID_HANDLE_VALUE)
@@ -230,12 +243,12 @@ List<File> File::ListFiles()
 #ifdef WINDOWS
     WIN32_FIND_DATA data;
     File dir = (*this + "/*").GetAbsolutePath();
-    HANDLE hdl = FindFirstFile(*dir.GetPath(), &data);
+    HANDLE hdl = FindFirstFile(*dir.Path(), &data);
     if (hdl != INVALID_HANDLE_VALUE)
     {
         flns.Add(File(String(data.cFileName)));
         while (FindNextFile(hdl, &data))
-            flns.Add(File(GetPath() + "/" + String(data.cFileName)));
+            flns.Add(File(Path() + "/" + String(data.cFileName)));
         FindClose(hdl);
     }
 #else

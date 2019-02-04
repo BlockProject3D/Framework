@@ -46,6 +46,11 @@ namespace bpf
          * Returns true if the file exists
          */
         bool Exists() const;
+        
+        /**
+         * Returns true if the file is hidden
+         */
+        bool IsHidden() const;
 
         /**
          * Returns true if this file is a directory
@@ -61,6 +66,11 @@ namespace bpf
          * Deletes this file from the file system
          */
         void Delete();
+        
+        /**
+         * Hides or shows the file in the file explorer.
+         */
+        void Hide(const bool flag);
 
         /**
          * Lists all files in that directory (of course if this is a directory)
@@ -82,7 +92,7 @@ namespace bpf
         /**
          * Returns the full path to the file (as given in the constructor)
          */
-        inline const String &GetPath() const
+        inline const String &Path() const
         {
             return (FullPath);
         }
@@ -97,7 +107,7 @@ namespace bpf
             return (*this + File(other));
         }
         
-        File GetParentFile() const;
+        File GetParent() const;
         
         /**
          * Returns the absolute path constructed from this path,
@@ -108,7 +118,7 @@ namespace bpf
         /**
          * Returns the file's name
          */
-        inline const String &GetFileName() const
+        inline const String &Name() const
         {
             return (FileName);
         }
@@ -116,7 +126,7 @@ namespace bpf
         /**
          * Returns the file's extension
          */
-        inline const String &GetFileExt() const
+        inline const String &Extension() const
         {
             return (FileExt);
         }
