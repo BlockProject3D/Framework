@@ -1,19 +1,61 @@
 language: cpp
 
-matrix:
+builddbgscript: &builddbgscript
+  script:
+    - mkdir build && cd build
+    - cmake ..
+    - cmake --build .
+    - cd ../Tests && mkdir build && cd build
+    - cmake ..
+    - cmake --build . --target TestProgFramework
+    - cd ../..
+    - echo $BP_CP_CMD && eval $BP_CP_CMD
+    - cd Tests/build
+    - echo $BP_TEST_RUN_CMD && eval $BP_TEST_RUN_CMD
+
+jobs:
   include:
-    - os: windows
+    - stage: debug-test
+      os: windows
       compiler: MSVC
-    - os: linux
+      env:
+        - BP_CP_CMD="cp build/Debug/BPFramework.dll Tests/build/Debug/"
+        - BP_TEST_RUN_CMD="./Debug/TestProgFramework"
+      <<: *builddbgscript
+    - stage: debug-test
+      os: linux
       dist: xenial
       compiler:
         - gcc
         - clang
-    - os: osx
+      env:
+        - BP_CP_CMD="cp build/Debug/libBPFramework.so Tests/build/Debug/"
+        - BP_TEST_RUN_CMD="./Debug/TestProgFramework"
+      <<: *builddbgscript
+    - stage: debug-test
+      os: osx
       compiler: clang
-
-script:
-  - mkdir build
-  - cd build
-  - cmake ..
-  - cmake --build .
+      env:
+        - BP_CP_CMD="cp build/Debug/libBPFramework.dylib Tests/build/Debug/"
+        - BP_TEST_RUN_CMD="./Debug/TestProgFramework"
+      <<: *builddbgscript
+    
+    - stage: coverage
+      os: linux
+      dist: xenial
+      compiler: gcc
+      env:
+        - BP_CP_CMD="cp build/Debug/libBPFramework.so Tests/build/Debug/"
+        - BP_TEST_RUN_CMD="./Debug/TestProgFramework"
+      before_install:
+        - sudo apt-get install -y gcovr
+      script:
+        - mkdir build && cd build
+        - cmake .. -DCOVERAGE=1 > /dev/null
+        - cmake --build . > /dev/null
+        - cd ../Tests && mkdir build && cd build
+        - cmake .. -DCOVERAGE=1 > /dev/null
+        - cmake --build . --target TestProgFramework > /dev/null
+        - cd ../../ && eval $BP_CP_CMD && cd Tests/build
+        - eval $BP_TEST_RUN_CMD > /dev/null && cd ../../
+        - gcovr -r .
