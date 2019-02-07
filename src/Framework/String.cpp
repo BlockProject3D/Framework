@@ -153,7 +153,7 @@ String String::UTF8(const fchar utf32char)
         SetBit(b3, 0, GetBit(utf32char, 6));
         SetBit(b3, 1, GetBit(utf32char, 7));
         SetBit(b3, 2, GetBit(utf32char, 8));
-        SetBit(b3, 2, GetBit(utf32char, 9));
+        SetBit(b3, 3, GetBit(utf32char, 9));
         SetBit(b3, 4, GetBit(utf32char, 10));
         SetBit(b3, 5, GetBit(utf32char, 11));
         SetBit(b3, 6, false);
