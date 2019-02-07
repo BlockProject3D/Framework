@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(TestProgFramework)
 
-include("${CMAKE_SOURCE_DIR}/../CMakes/Program.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/../CMakes/Framework.cmake")
 
 configure_file(CMakeLists.in.txt googletest-download/CMakeLists.txt)
 execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
@@ -40,5 +40,5 @@ set(SOURCES
     src/Quaternion.cpp
 )
 
-bp_setup()
-target_link_libraries(${BP_NAME} PRIVATE debug gtest_main)
+bp_setup_program(${PROJECT_NAME} include)
+target_link_libraries(${PROJECT_NAME} PRIVATE debug gtest_main)

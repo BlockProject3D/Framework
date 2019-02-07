@@ -30,12 +30,16 @@ option(COVERAGE "Enable coverage" OFF)
 
 string(TOUPPER "${CMAKE_PROJECT_NAME}_API" BP_API_MACRO)
 
+if (CMAKE_COMPILER_IS_GNUCC)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
+endif (CMAKE_COMPILER_IS_GNUCC)
+
+if (MSVC)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+endif (MSVC)
+
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
-
-set(BP_DEFINITIONS "")
-set(BP_INCLUDES "")
-set(BP_MODULES "")
 
 if (PLATFORM STREQUAL "Auto")
     if (WIN32)
@@ -48,14 +52,6 @@ if (PLATFORM STREQUAL "Auto")
         endif (APPLE)
     endif (WIN32)
 endif (PLATFORM STREQUAL "Auto")
-
-macro(bp_add_definition name)
-    list(APPEND BP_DEFINITIONS ${name})
-endmacro(bp_add_definition)
-
-macro(bp_add_include_dir name)
-    list(APPEND BP_INCLUDES ${name})
-endmacro(bp_add_include_dir)
 
 if (RELEASE)
     set(CMAKE_BUILD_TYPE Release)
@@ -75,26 +71,18 @@ include("${BP_BASICS_CMAKE_SELF}/Platforms/${PLATFORM}.cmake")
 
 #Setup the main target name=name of target mainincdir=main include directory
 macro(bp_setup_target name mainincdir)
-    set(BP_NAME ${name})
-    target_include_directories(${name} PUBLIC ${mainincdir})
-    target_include_directories(${name} PRIVATE ${BP_INCLUDES})
-    target_compile_definitions(${name} PUBLIC ${BP_DEFINITIONS})
+    #set(BP_NAME ${name})
+    target_include_directories(${name} PRIVATE ${mainincdir})
+    #target_include_directories(${name} PRIVATE ${BP_INCLUDES})
+    target_compile_definitions(${name} PRIVATE ${BP_PLATFORM_DEF})
     if (COVERAGE)
-        target_compile_options(${name} PUBLIC -g -O0 --coverage)
-        target_link_libraries(${name} PUBLIC gcov)
+        target_compile_options(${name} PRIVATE -g -O0 --coverage)
+        target_link_libraries(${name} PRIVATE gcov)
     endif (COVERAGE)
-    target_link_libraries(${name} PUBLIC ${BP_MODULES})
+    #target_link_libraries(${name} PRIVATE ${BP_MODULES})
     set_property(TARGET ${name} PROPERTY CXX_STANDARD 11)
     bp_target_created(${name})
-    source_group(TREE "${CMAKE_SOURCE_DIR}"
+    source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}"
                  PREFIX ""
                  FILES ${SOURCES})
 endmacro(bp_setup_target)
-
-#Setup a secondary readonly dependency target name=target name sources=name of variable containing target sources
-macro(bp_setup_deptarget name root sources)
-    add_custom_target(${name} SOURCES ${sources})
-    source_group(TREE ${root}
-                 PREFIX ""
-                 FILES ${sources})
-endmacro(bp_setup_deptarget)

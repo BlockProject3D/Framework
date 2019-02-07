@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.10)
 project(BlockProject.Framework)
 
-include("${CMAKE_SOURCE_DIR}/CMakes/Framework.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/CMakes/Framework.cmake")
 
 set(CMAKE_CXX_STANDARD 11)
 
 set(SOURCES
     ./include/Framework/IO/File.hpp
-	./include/Framework/IO/EStringSerializer.hpp
+    ./include/Framework/IO/EStringSerializer.hpp
     ./include/Framework/IO/FileStream.hpp
     ./include/Framework/IO/MemoryMapper.hpp
     ./include/Framework/IO/IOException.hpp
@@ -39,10 +39,10 @@ set(SOURCES
     ./include/Framework/Math/Quaternion.hpp
     ./include/Framework/Math/Quaternion.impl.hpp
     ./include/Framework/Math/Matrix.hpp
-	./include/Framework/Math/Matrix.impl.hpp
+    ./include/Framework/Math/Matrix.impl.hpp
     ./include/Framework/Math/Transform.hpp
     ./include/Framework/Math/BMath.hpp
-	./include/Framework/Math/Math.hpp
+    ./include/Framework/Math/Math.hpp
     ./include/Framework/Logging/Logger.hpp
     ./include/Framework/Logging/ILogHandler.hpp
     ./include/Framework/Logging/ELogLevel.hpp
@@ -71,7 +71,7 @@ set(SOURCES
     ./include/Framework/System/ThreadManager.hpp
     ./include/Framework/System/IModuleInterface.hpp
     ./include/Framework/API.hpp
-	./include/Framework/BinUtils.hpp
+    ./include/Framework/BinUtils.hpp
     ./include/Framework/Types.hpp
     ./include/Framework/Tuple.hpp
     ./include/Framework/TypeInfo.hpp
@@ -123,7 +123,7 @@ set(SOURCES
     ./src/Framework/Math/Triangle.cpp
     ./src/Framework/Math/Vector.cpp
     ./src/Framework/Math/Vertex.cpp
-	./src/Framework/Math/Math.cpp
+    ./src/Framework/Math/Math.cpp
     ./src/Framework/Memory/Memory.cpp
     ./src/Framework/System/Platform.cpp
     ./src/Framework/System/Module.cpp
@@ -144,16 +144,8 @@ set(SOURCES
     ./src/Framework/String.cpp
 )
 
-bp_setup()
+bp_setup_framework()
 if (NOT WIN32)
-	target_link_libraries(${BP_NAME} PRIVATE pthread)
-	target_link_libraries(${BP_NAME} PRIVATE ${CMAKE_DL_LIBS})
+	target_link_libraries(BPFramework PRIVATE pthread)
+	target_link_libraries(BPFramework PRIVATE ${CMAKE_DL_LIBS})
 endif (NOT WIN32)
-
-if (CMAKE_COMPILER_IS_GNUCC)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
-endif (CMAKE_COMPILER_IS_GNUCC)
-
-if (MSVC)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
-endif (MSVC)

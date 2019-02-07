@@ -1,4 +1,4 @@
-bp_add_definition("LINUX")
+set(BP_PLATFORM_DEF "LINUX")
 set(BP_SYMBOL_IMPORT_MACRO "__attribute__((visibility(\"default\")))")
 set(BP_SYMBOL_EXPORT_MACRO ${BP_SYMBOL_IMPORT_MACRO})
 set(BP_EXTENSION_DYNAMIC ".so")
