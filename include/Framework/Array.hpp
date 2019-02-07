@@ -59,7 +59,7 @@ namespace bpf
             return (*this);
         }
 
-        inline fsize Length() const
+        inline fsize Size() const
         {
             return (I);
         }
@@ -67,6 +67,11 @@ namespace bpf
         String ToString() const;
 
         inline const T *operator*() const
+        {
+            return (_arr);
+        }
+
+        inline T *operator*()
         {
             return (_arr);
         }
@@ -169,11 +174,19 @@ namespace bpf
         /**
          * Returns the length of the array
          */
-        uint32 Length() const;
+        inline uint32 Size() const
+        {
+            return (_size);
+        }
 
         String ToString() const;
 
-        inline T *operator*() const
+        inline const T *operator*() const
+        {
+            return (_arr);
+        }
+
+        inline T *operator*()
         {
             return (_arr);
         }

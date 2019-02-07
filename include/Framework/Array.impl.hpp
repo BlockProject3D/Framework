@@ -129,10 +129,4 @@ namespace bpf
         }
         return (_arr[id]);
     }
-
-    template <typename T>
-    uint32 Array<T>::Length() const
-    {
-        return (_size);
-    }
 }

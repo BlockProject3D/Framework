@@ -36,6 +36,8 @@
 TEST(String, Create)
 {
     bpf::String str = "This is a test !";
+    bpf::String str1;
+    bpf::String str2 = Null;
 }
 
 TEST(String, CreateUnicode)
@@ -54,15 +56,16 @@ TEST(String, Copy)
 
 TEST(String, UTF8)
 {
-    bpf::String str = " é è à ù € This is a test !";
+    bpf::String str = " é è à ù € This is a test !\U0001F4E0";
 
-    EXPECT_TRUE(str[0] == bpf::String::UTF32(" "));
-    EXPECT_TRUE(str[1] == bpf::String::UTF32("é"));
-    EXPECT_TRUE(str[3] == bpf::String::UTF32("è"));
-    EXPECT_TRUE(str[5] == bpf::String::UTF32("à"));
-    EXPECT_TRUE(str[7] == bpf::String::UTF32("ù"));
-    EXPECT_TRUE(str[9] == bpf::String::UTF32("€"));
-    EXPECT_TRUE(str[11] == bpf::String::UTF32("T"));
+    EXPECT_EQ(str[0], bpf::String::UTF32(" "));
+    EXPECT_EQ(str[1], bpf::String::UTF32("é"));
+    EXPECT_EQ(str[3], bpf::String::UTF32("è"));
+    EXPECT_EQ(str[5], bpf::String::UTF32("à"));
+    EXPECT_EQ(str[7], bpf::String::UTF32("ù"));
+    EXPECT_EQ(str[9], bpf::String::UTF32("€"));
+    EXPECT_EQ(str[11], bpf::String::UTF32("T"));
+    EXPECT_EQ(str[str.Len() - 1], bpf::String::UTF32("\U0001F4E0"));
 }
 
 TEST(String, Compare)
@@ -99,6 +102,7 @@ TEST(String, UTF8CharToUTF32)
     EXPECT_EQ(bpf::String::UTF32("¥"), 165);
     EXPECT_EQ(bpf::String::UTF32("▦"), 9638);
     EXPECT_EQ(bpf::String::UTF32("a"), 'a');
+    EXPECT_EQ(bpf::String::UTF32("\U0001F4E0"), 128224);
 }
 
 TEST(String, UTF32CharToUTF8)
@@ -110,6 +114,7 @@ TEST(String, UTF32CharToUTF8)
     EXPECT_TRUE(bpf::String::UTF8(165) == "¥");
     EXPECT_TRUE(bpf::String::UTF8(9638) == "▦");
     EXPECT_TRUE(bpf::String::UTF8('a') == "a");
+    EXPECT_TRUE(bpf::String::UTF8(128224) == "\U0001F4E0");
 }
 
 TEST(String, ByteAt)
@@ -196,9 +201,9 @@ TEST(String, GetUTF32CodePoint)
 
 TEST(String, LenAndSize)
 {
-    bpf::String s = "testÉé€test¥▦test";
-    EXPECT_TRUE(s.Len() == 17);
-    EXPECT_TRUE(s.Size() == strlen("testÉé€test¥▦test"));
+    bpf::String s = "testÉé€test¥▦test\U0001F4E0";
+    EXPECT_TRUE(s.Len() == 18);
+    EXPECT_TRUE(s.Size() == strlen("testÉé€test¥▦test\U0001F4E0"));
 }
 
 TEST(String, IsNumeric)
@@ -213,6 +218,8 @@ TEST(String, IsNumeric)
     bpf::String s7 = "";    
     bpf::String s8 = "\n";
     bpf::String s9 = "éèù";
+    bpf::String s10 = "42.42.42";
+    bpf::String s11 = "42.-42.42";
     EXPECT_TRUE(s.IsNumeric());
     EXPECT_TRUE(s1.IsNumeric());
     EXPECT_TRUE(s2.IsNumeric());
@@ -223,6 +230,8 @@ TEST(String, IsNumeric)
     EXPECT_TRUE(!s7.IsNumeric());
     EXPECT_TRUE(!s8.IsNumeric());
     EXPECT_TRUE(!s9.IsNumeric());
+    EXPECT_TRUE(!s10.IsNumeric());
+    EXPECT_TRUE(!s11.IsNumeric());
 }
 
 TEST(String, ToUpper)
@@ -231,6 +240,10 @@ TEST(String, ToUpper)
     EXPECT_STREQ(*s, "test");
     s = s.ToUpper();
     EXPECT_STREQ(*s, "TEST");
+    s = "test.1";
+    EXPECT_STREQ(*s, "test.1");
+    s = s.ToUpper();
+    EXPECT_STREQ(*s, "TEST.1");
 }
 
 TEST(String, ToLower)
@@ -239,6 +252,10 @@ TEST(String, ToLower)
     EXPECT_STREQ(*s, "TEST");
     s = s.ToLower();
     EXPECT_STREQ(*s, "test");
+    s = "TEST.1";
+    EXPECT_STREQ(*s, "TEST.1");
+    s = s.ToLower();
+    EXPECT_STREQ(*s, "test.1");
 }
 
 TEST(String, IndexOfSingleChar)
@@ -437,6 +454,7 @@ TEST(String, StartsWith)
     EXPECT_TRUE(s.StartsWith("this"));
     EXPECT_TRUE(!s.StartsWith("is a"));
     EXPECT_TRUE(s.StartsWith(""));
+    EXPECT_TRUE(!s.StartsWith("this is a test "));
 }
 
 TEST(String, EndsWith)
@@ -445,6 +463,7 @@ TEST(String, EndsWith)
     EXPECT_TRUE(s.EndsWith("test"));
     EXPECT_TRUE(!s.EndsWith("a tes"));
     EXPECT_TRUE(s.EndsWith(""));
+    EXPECT_TRUE(!s.EndsWith("this is a test "));
 }
 
 TEST(String, StartsWithUTF8)
@@ -573,6 +592,20 @@ TEST(String, Evaluate)
     EXPECT_EQ(res, 0);
     res = bpf::String("-(1 + 1) * (4 - 1)").Evaluate();
     EXPECT_EQ(res, -6);
+    res = bpf::String("8 % 2").Evaluate();
+    EXPECT_EQ(res, 0);
+    //TODO : Fix 8%2 throws C++ exception
+    //res = bpf::String("8%2").Evaluate();
+    //EXPECT_EQ(res, 0);
+    try
+    {
+        res = bpf::String("8 ff 2").Evaluate();
+    }
+    catch(const bpf::EvalException &)
+    {
+        return;
+    }
+    ASSERT_TRUE(false);
 }
 
 TEST(String, EvaluateErr)
