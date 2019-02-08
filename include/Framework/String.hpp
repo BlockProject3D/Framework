@@ -31,6 +31,7 @@
 #include "Framework/Types.hpp"
 #include "Framework/TypeInfo.hpp"
 #include "Framework/List.hpp"
+#include "Framework/Array.hpp"
 #include "Framework/Hash.hpp"
 #include "Framework/IndexException.hpp"
 
@@ -49,6 +50,16 @@ namespace bpf
         static uint8 CalcCharIncrement(const char c);
         void MakeSized(String &str, const uint32 len) const;
     public:
+        template <typename T>
+        class Stringifier
+        {
+        public:
+            inline static String Stringify(const T &obj)
+            {
+                return (obj.ToString());
+            }
+        };
+
         /**
          * Constructs a new empty string
          */
@@ -110,47 +121,7 @@ namespace bpf
         /**
          * Returns a new string from concatenation of this + other
          */
-        String operator+(const char other) const;
-        
-        /**
-         * Returns a new string from concatenation of this + other
-         */
-        inline String operator+(const int other) const
-        {
-            return (operator+(ValueOf(other)));
-        }
-
-        /**
-         * Returns a new string from concatenation of this + other
-         */
-        inline String operator+(const float other) const
-        {
-            return (operator+(ValueOf(other)));
-        }
-
-        /**
-         * Returns a new string from concatenation of this + other
-         */
-        inline String operator+(const double other) const
-        {
-            return (operator+(ValueOf(other)));
-        }
-
-        /**
-         * Returns a new string from concatenation of this + other
-         */
-        inline String operator+(const uint32 other) const
-        {
-            return (operator+(ValueOf(other)));
-        }
-
-        /**
-         * Returns a new string from concatenation of this + other
-         */
-        inline String operator+(const uint64 other) const
-        {
-            return (operator+(ValueOf(other)));
-        }
+        String operator+(const fchar other) const;
         
         /**
          * Appends a string at the end of this string
@@ -158,49 +129,9 @@ namespace bpf
         String &operator+=(const String &other);
 
         /**
-         * Appends a single byte at the end of this string
+         * Appends a UTF32 code at the end of this string
          */
-        String &operator+=(const char other);
-
-        /**
-         * Appends an int at the end of this string
-         */
-        inline String &operator+=(const int other)
-        {
-            return (operator+=(ValueOf(other)));
-        }
-
-        /**
-         * Appends a float at the end of this string
-         */
-        inline String &operator+=(const float other)
-        {
-            return (operator+=(ValueOf(other)));
-        }
-
-        /**
-         * Appends a double at the end of this string
-         */
-        inline String &operator+=(const double other)
-        {
-            return (operator+=(ValueOf(other)));
-        }
-
-        /**
-         * Appends a uint32 number at the end of this string
-         */
-        inline String &operator+=(const uint32 other)
-        {
-            return (operator+=(ValueOf(other)));
-        }
-
-        /**
-         * Appends a uint64 number at the end of this string
-         */
-        inline String &operator+=(const uint64 other)
-        {
-            return (operator+=(ValueOf(other)));
-        }
+        String &operator+=(const fchar other);
 
         /**
          * Copy assignment operator
@@ -259,11 +190,6 @@ namespace bpf
         }
 
         /**
-         * Prints this string on standard output
-         */
-        void Print();
-
-        /**
          * Returns the data of this string ready for printing
          */
         inline const char *operator*() const
@@ -271,18 +197,7 @@ namespace bpf
             return (Data);
         }
 
-        /**
-         * Same as operator*
-         */
-        inline const char *GetData() const
-	{
-	    return (Data);
-	}
-
-        /**
-         * Duplicates this string and returns a low level c array
-         */
-        char *Duplicate() const;
+        Array<char> ToArray() const;
 
         /**
          * Returns the number of characters in this string
@@ -316,20 +231,6 @@ namespace bpf
          * Not working with non ascii characters
          */
         String ToLower() const;
-
-        /**
-         * Appends a string to this string
-         * @param other the other string to copy characters from
-         * @param n how many characters should be copied
-         */
-        String &Append(const String &other, const uint32 n);
-
-        /**
-         * Appends a string to this string
-         * @param data an arry of characetrs to copy from
-         * @param n how many characters should be copied
-         */
-        String &Append(const char *data, const uint32 n);
 
         /**
          * Returns the index of the first occurence of str in this
@@ -534,7 +435,7 @@ namespace bpf
         template <typename T, typename std::enable_if<std::is_class<T>::value>::type * = nullptr>
         inline static String ValueOf(const T &val)
         {
-            return (val.ToString());
+            return (Stringifier<T>::Stringify(val));
         }
 
         /**
@@ -637,3 +538,5 @@ namespace bpf
 }
 
 DEFINE_DEFAULT(bpf::String, bpf::String());
+
+#include "Framework/Stringifier.hpp"

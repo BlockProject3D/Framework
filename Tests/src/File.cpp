@@ -115,7 +115,7 @@ TEST(File, List_Test4)
 static void SetupTestFile(bpf::File &f)
 {
     bpf::FileStream stream(f, bpf::FILE_MODE_WRITE | bpf::FILE_MODE_TRUNCATE);
-    EXPECT_EQ(stream.Write("This is a test", 14), 14);
+    EXPECT_EQ(stream.Write("This is a test", 14), (bpf::fsize)14);
 }
 
 TEST(File, GetSizeBytes)

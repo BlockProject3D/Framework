@@ -84,3 +84,4 @@ DEFINE_DEFAULT(int, 0);
 DEFINE_DEFAULT(float, 0);
 DEFINE_DEFAULT(double, 0);
 DEFINE_DEFAULT(bool, false);
+DEFINE_DEFAULT(char, 0);

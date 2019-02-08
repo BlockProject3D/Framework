@@ -140,7 +140,7 @@ namespace bpf
         };
 
     private:
-        uint32 _size;
+        fsize _size;
         T *_arr;
 
     public:
@@ -153,7 +153,7 @@ namespace bpf
          * Constructs an array of given size
          * @param size the size of the new array
          */
-        Array(const uint32 size);
+        Array(const fsize size);
 
         Array(Array<T> &&arr);
         ~Array();
@@ -163,18 +163,18 @@ namespace bpf
          * Returns an element const mode
          * @param id the index of the element, in case of out of bounds, throws
          */
-        T &operator[](const uint32 id) const;
+        T &operator[](const fsize id) const;
 
         /**
          * Returns an element non-const mode
          * @param id the index of the element, in case of out of bounds, re-sizes the array
          */
-        T &operator[](const uint32 id);
+        T &operator[](const fsize id);
 
         /**
          * Returns the length of the array
          */
-        inline uint32 Size() const
+        inline fsize Size() const
         {
             return (_size);
         }
@@ -189,6 +189,17 @@ namespace bpf
         inline T *operator*()
         {
             return (_arr);
+        }
+
+        /**
+         * Terminates management of the raw pointer and returns it
+         */
+        inline T *Release()
+        {
+            T *tmp = _arr;
+            _arr = Null;
+            _size = 0;
+            return (tmp);
         }
 
         /**

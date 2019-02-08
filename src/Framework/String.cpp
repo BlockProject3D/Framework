@@ -28,7 +28,6 @@
 
 #include <locale>
 #include <sstream>
-#include <iostream>
 #include <cstdlib>
 #include "Framework/Memory/Memory.hpp"
 #include "Framework/EvalException.hpp"
@@ -78,105 +77,99 @@ String String::UTF8(const fchar utf32char)
         return (String((char)utf32char));
     else if (utf32char >= 0x80 && utf32char <= 0x7FF)
     {
-        char b1;
-        char b2;
+        char b[3] = { 0 };
 
-        SetBit(b2, 0, GetBit(utf32char, 0));
-        SetBit(b2, 1, GetBit(utf32char, 1));
-        SetBit(b2, 2, GetBit(utf32char, 2));
-        SetBit(b2, 3, GetBit(utf32char, 3));
-        SetBit(b2, 4, GetBit(utf32char, 4));
-        SetBit(b2, 5, GetBit(utf32char, 5));
-        SetBit(b2, 6, false);
-        SetBit(b2, 7, true);
+        SetBit(b[1], 0, GetBit(utf32char, 0));
+        SetBit(b[1], 1, GetBit(utf32char, 1));
+        SetBit(b[1], 2, GetBit(utf32char, 2));
+        SetBit(b[1], 3, GetBit(utf32char, 3));
+        SetBit(b[1], 4, GetBit(utf32char, 4));
+        SetBit(b[1], 5, GetBit(utf32char, 5));
+        SetBit(b[1], 6, false);
+        SetBit(b[1], 7, true);
 
-        SetBit(b1, 0, GetBit(utf32char, 6));
-        SetBit(b1, 1, GetBit(utf32char, 7));
-        SetBit(b1, 2, GetBit(utf32char, 8));
-        SetBit(b1, 3, GetBit(utf32char, 9));
-        SetBit(b1, 4, GetBit(utf32char, 10));
-        SetBit(b1, 5, false);
-        SetBit(b1, 6, true);
-        SetBit(b1, 7, true);
-        return (String::Empty + b1 + b2);
+        SetBit(b[0], 0, GetBit(utf32char, 6));
+        SetBit(b[0], 1, GetBit(utf32char, 7));
+        SetBit(b[0], 2, GetBit(utf32char, 8));
+        SetBit(b[0], 3, GetBit(utf32char, 9));
+        SetBit(b[0], 4, GetBit(utf32char, 10));
+        SetBit(b[0], 5, false);
+        SetBit(b[0], 6, true);
+        SetBit(b[0], 7, true);
+        return (String(b));
     }
     else if (utf32char >= 0x800 && utf32char <= 0xFFFF)
     {
-        char b1;
-        char b2;
-        char b3;
+        char b[4] = { 0 };
 
-        SetBit(b3, 0, GetBit(utf32char, 0));
-        SetBit(b3, 1, GetBit(utf32char, 1));
-        SetBit(b3, 2, GetBit(utf32char, 2));
-        SetBit(b3, 3, GetBit(utf32char, 3));
-        SetBit(b3, 4, GetBit(utf32char, 4));
-        SetBit(b3, 5, GetBit(utf32char, 5));
-        SetBit(b3, 6, false);
-        SetBit(b3, 7, true);
+        SetBit(b[2], 0, GetBit(utf32char, 0));
+        SetBit(b[2], 1, GetBit(utf32char, 1));
+        SetBit(b[2], 2, GetBit(utf32char, 2));
+        SetBit(b[2], 3, GetBit(utf32char, 3));
+        SetBit(b[2], 4, GetBit(utf32char, 4));
+        SetBit(b[2], 5, GetBit(utf32char, 5));
+        SetBit(b[2], 6, false);
+        SetBit(b[2], 7, true);
 
-        SetBit(b2, 0, GetBit(utf32char, 6));
-        SetBit(b2, 1, GetBit(utf32char, 7));
-        SetBit(b2, 2, GetBit(utf32char, 8));
-        SetBit(b2, 3, GetBit(utf32char, 9));
-        SetBit(b2, 4, GetBit(utf32char, 10));
-        SetBit(b2, 5, GetBit(utf32char, 11));
-        SetBit(b2, 6, false);
-        SetBit(b2, 7, true);
+        SetBit(b[1], 0, GetBit(utf32char, 6));
+        SetBit(b[1], 1, GetBit(utf32char, 7));
+        SetBit(b[1], 2, GetBit(utf32char, 8));
+        SetBit(b[1], 3, GetBit(utf32char, 9));
+        SetBit(b[1], 4, GetBit(utf32char, 10));
+        SetBit(b[1], 5, GetBit(utf32char, 11));
+        SetBit(b[1], 6, false);
+        SetBit(b[1], 7, true);
 
-        SetBit(b1, 0, GetBit(utf32char, 12));
-        SetBit(b1, 1, GetBit(utf32char, 13));
-        SetBit(b1, 2, GetBit(utf32char, 14));
-        SetBit(b1, 3, GetBit(utf32char, 15));
-        SetBit(b1, 4, false);
-        SetBit(b1, 5, true);
-        SetBit(b1, 6, true);
-        SetBit(b1, 7, true);
-        return (String::Empty + b1 + b2 + b3);
+        SetBit(b[0], 0, GetBit(utf32char, 12));
+        SetBit(b[0], 1, GetBit(utf32char, 13));
+        SetBit(b[0], 2, GetBit(utf32char, 14));
+        SetBit(b[0], 3, GetBit(utf32char, 15));
+        SetBit(b[0], 4, false);
+        SetBit(b[0], 5, true);
+        SetBit(b[0], 6, true);
+        SetBit(b[0], 7, true);
+        return (String(b));
     }
     else if (utf32char >= 0x10000 && utf32char <= 0x10FFFF)
     {
-        char b1;
-        char b2;
-        char b3;
-        char b4;
+        char b[5] = { 0 };
 
-        SetBit(b4, 0, GetBit(utf32char, 0));
-        SetBit(b4, 1, GetBit(utf32char, 1));
-        SetBit(b4, 2, GetBit(utf32char, 2));
-        SetBit(b4, 3, GetBit(utf32char, 3));
-        SetBit(b4, 4, GetBit(utf32char, 4));
-        SetBit(b4, 5, GetBit(utf32char, 5));
-        SetBit(b4, 6, false);
-        SetBit(b4, 7, true);
+        SetBit(b[3], 0, GetBit(utf32char, 0));
+        SetBit(b[3], 1, GetBit(utf32char, 1));
+        SetBit(b[3], 2, GetBit(utf32char, 2));
+        SetBit(b[3], 3, GetBit(utf32char, 3));
+        SetBit(b[3], 4, GetBit(utf32char, 4));
+        SetBit(b[3], 5, GetBit(utf32char, 5));
+        SetBit(b[3], 6, false);
+        SetBit(b[3], 7, true);
 
-        SetBit(b3, 0, GetBit(utf32char, 6));
-        SetBit(b3, 1, GetBit(utf32char, 7));
-        SetBit(b3, 2, GetBit(utf32char, 8));
-        SetBit(b3, 3, GetBit(utf32char, 9));
-        SetBit(b3, 4, GetBit(utf32char, 10));
-        SetBit(b3, 5, GetBit(utf32char, 11));
-        SetBit(b3, 6, false);
-        SetBit(b3, 7, true);
+        SetBit(b[2], 0, GetBit(utf32char, 6));
+        SetBit(b[2], 1, GetBit(utf32char, 7));
+        SetBit(b[2], 2, GetBit(utf32char, 8));
+        SetBit(b[2], 3, GetBit(utf32char, 9));
+        SetBit(b[2], 4, GetBit(utf32char, 10));
+        SetBit(b[2], 5, GetBit(utf32char, 11));
+        SetBit(b[2], 6, false);
+        SetBit(b[2], 7, true);
 
-        SetBit(b2, 0, GetBit(utf32char, 12));
-        SetBit(b2, 1, GetBit(utf32char, 13));
-        SetBit(b2, 2, GetBit(utf32char, 14));
-        SetBit(b2, 3, GetBit(utf32char, 15));
-        SetBit(b2, 4, GetBit(utf32char, 16));
-        SetBit(b2, 5, GetBit(utf32char, 17));
-        SetBit(b2, 6, false);
-        SetBit(b2, 7, true);
+        SetBit(b[1], 0, GetBit(utf32char, 12));
+        SetBit(b[1], 1, GetBit(utf32char, 13));
+        SetBit(b[1], 2, GetBit(utf32char, 14));
+        SetBit(b[1], 3, GetBit(utf32char, 15));
+        SetBit(b[1], 4, GetBit(utf32char, 16));
+        SetBit(b[1], 5, GetBit(utf32char, 17));
+        SetBit(b[1], 6, false);
+        SetBit(b[1], 7, true);
 
-        SetBit(b1, 0, GetBit(utf32char, 18));
-        SetBit(b1, 1, GetBit(utf32char, 19));
-        SetBit(b1, 2, GetBit(utf32char, 20));
-        SetBit(b1, 3, false);
-        SetBit(b1, 4, true);
-        SetBit(b1, 5, true);
-        SetBit(b1, 6, true);
-        SetBit(b1, 7, true);
-        return (String::Empty + b1 + b2 + b3 + b4);
+        SetBit(b[0], 0, GetBit(utf32char, 18));
+        SetBit(b[0], 1, GetBit(utf32char, 19));
+        SetBit(b[0], 2, GetBit(utf32char, 20));
+        SetBit(b[0], 3, false);
+        SetBit(b[0], 4, true);
+        SetBit(b[0], 5, true);
+        SetBit(b[0], 6, true);
+        SetBit(b[0], 7, true);
+        return (String(b));
     }
     else
         return (String::Empty);
@@ -282,16 +275,21 @@ String String::operator+(const String &other) const
     return (str);
 }
 
-String String::operator+(const char other) const
+String String::operator+(const fchar other) const
 {
-  String str;
+    if (other <= 0x7F)
+    {
+        String str;
 
-  MakeSized(str, StrLen + 1);
-  CopyString(Data, str.Data, StrLen);
-  str.Data[str.StrLen - 1] = other;
-  str.UnicodeLen = UnicodeLen + 1;
-  str.Data[str.StrLen] = '\0';
-  return (str);
+        MakeSized(str, StrLen + 1);
+        CopyString(Data, str.Data, StrLen);
+        str.Data[str.StrLen - 1] = (char)other;
+        str.UnicodeLen = UnicodeLen + 1;
+        str.Data[str.StrLen] = '\0';
+        return (str);
+    }
+    else
+        return (operator+(UTF8(other)));
 }
 
 String &String::operator+=(const String &other)
@@ -303,13 +301,18 @@ String &String::operator+=(const String &other)
     return (*this);
 }
 
-String &String::operator+=(const char other)
+String &String::operator+=(const fchar other)
 {
-    Data = static_cast<char *>(Memory::Realloc(Data, sizeof(char) * (StrLen + 2)));
-    Data[StrLen++] = other;
-    Data[StrLen] = '\0';
-    ++UnicodeLen;
-    return (*this);
+    if (other <= 0x7F)
+    {
+        Data = static_cast<char *>(Memory::Realloc(Data, sizeof(char) * (StrLen + 2)));
+        Data[StrLen++] = (char)other;
+        Data[StrLen] = '\0';
+        ++UnicodeLen;
+        return (*this);
+    }
+    else
+        return (operator+=(UTF8(other)));
 }
 
 String &String::operator=(const String &other)
@@ -320,11 +323,6 @@ String &String::operator=(const String &other)
     CopyString(other.Data, Data, StrLen);
     UnicodeLen = other.UnicodeLen;
     return (*this);
-}
-
-void String::Print()
-{
-    std::cout << Data;
 }
 
 String::~String()
@@ -374,13 +372,13 @@ uint32 String::CalcUnicodeLen(const char *str, const uint32 len) const
     return (ulen);
 }
 
-char *String::Duplicate() const
+Array<char> String::ToArray() const
 {
-    char *res = new char[StrLen + 1];
+    Array<char> arr(StrLen + 1);
 
-    CopyString(Data, res, StrLen);
-    res[StrLen] = '\0';
-    return (res);
+    CopyString(Data, *arr, StrLen);
+    arr[StrLen] = '\0';
+    return (arr);
 }
 
 uint32 String::CalcStartFromUnicode(const uint32 start) const

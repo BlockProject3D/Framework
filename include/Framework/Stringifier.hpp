@@ -27,76 +27,47 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/String.hpp"
+#include "Framework/Array.hpp"
+#include "Framework/List.hpp"
 
 namespace bpf
 {
-    template <typename T>
-    inline Array<T>::Array()
-        : _size(0)
-        , _arr(Null)
+    template <typename T, fsize I>
+    class String::Stringifier<Array<T, I>>
     {
-    }
-
-    template <typename T>
-    inline Array<T>::Array(Array<T> &&arr)
-        : _size(arr._size)
-        , _arr(arr._arr)
-    {
-        arr._arr = Null;
-        arr._size = 0;
-    }
-
-    template <typename T>
-    Array<T>::Array(const fsize size)
-        : _size(size)
-        , _arr(Null)
-    {
-        if (size > 0)
+    public:
+        inline static String Stringify(const Array<T, I> &arr)
         {
-            _arr = new T[_size];
-            for (uint32 i = 0 ; i < _size ; ++i)
-                _arr[i] = DefaultOf<T>();
+            String res = "[";
+
+            for (uint32 i = 0; i < arr.Size(); ++i)
+            {
+                res += String::ValueOf(arr[i]);
+                if (i < arr.Size() - 1)
+                    res += ", ";
+            }
+            res += "]";
+            return (res);
         }
-    }
-
+    };
+    
     template <typename T>
-    Array<T> &Array<T>::operator=(Array<T> &&arr)
+    class String::Stringifier<List<T>>
     {
-        _size = arr._size;
-        _arr = arr._arr;
-        arr._arr = Null;
-        arr._size = 0;
-        return (*this);
-    }
-
-    template <typename T>
-    inline Array<T>::~Array()
-    {
-        delete[] _arr;
-    }
-
-    template <typename T>
-    inline T &Array<T>::operator[](const fsize id) const
-    {
-        if (id >= _size)
-            throw IndexException(static_cast<int>(id));
-        return (_arr[id]);
-    }
-
-    template <typename T>
-    T &Array<T>::operator[](const fsize id)
-    {
-        if (id >= _size)
+    public:
+        inline static String Stringify(const List<T> &lst)
         {
-            T *tmp = _arr;
-            _arr = new T[id + 1];
-            for (uint32 i = 0 ; i < _size ; ++i)
-                _arr[i] = tmp[i];
-            for (uint32 i = _size ; i < id + 1 ; ++i)
-                _arr[i] = DefaultOf<T>();
-            _size = id + 1;
-            delete[] tmp;
+            String res = "[";
+
+            for (uint32 i = 0; i < lst.Size(); ++i)
+            {
+                res += String::ValueOf(lst[i]);
+                if (i < lst.Size() - 1)
+                    res += ", ";
+            }
+            res += "]";
+            return (res);
         }
-        return (_arr[id]);
-    }
+    };
 }

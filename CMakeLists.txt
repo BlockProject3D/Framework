@@ -103,6 +103,7 @@ set(SOURCES
     ./include/Framework/Stack.hpp
     ./include/Framework/Stack.impl.hpp
     ./include/Framework/String.hpp
+    ./include/Framework/Stringifier.hpp
     ./include/Framework/TreeNode.hpp
     ./src/Framework/IO/File.cpp
     ./src/Framework/IO/FileStream.cpp

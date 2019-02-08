@@ -96,13 +96,13 @@ TEST(String, Basic)
 TEST(String, UTF8CharToUTF32)
 {
     //Source : FileFormat.info
-    EXPECT_EQ(bpf::String::UTF32("É"), 201);
-    EXPECT_EQ(bpf::String::UTF32("é"), 233);
-    EXPECT_EQ(bpf::String::UTF32("€"), 8364);
-    EXPECT_EQ(bpf::String::UTF32("¥"), 165);
-    EXPECT_EQ(bpf::String::UTF32("▦"), 9638);
-    EXPECT_EQ(bpf::String::UTF32("a"), 'a');
-    EXPECT_EQ(bpf::String::UTF32("\U0001F4E0"), 128224);
+    EXPECT_TRUE(bpf::String::UTF32("É") == 201);
+    EXPECT_TRUE(bpf::String::UTF32("é") == 233);
+    EXPECT_TRUE(bpf::String::UTF32("€") == 8364);
+    EXPECT_TRUE(bpf::String::UTF32("¥") == 165);
+    EXPECT_TRUE(bpf::String::UTF32("▦") == 9638);
+    EXPECT_TRUE(bpf::String::UTF32("a") == 'a');
+    EXPECT_TRUE(bpf::String::UTF32("\U0001F4E0") == 128224);
 }
 
 TEST(String, UTF32CharToUTF8)
@@ -121,14 +121,14 @@ TEST(String, ByteAt)
 {
     bpf::String s = "testÉé€test¥▦test";
     EXPECT_TRUE(s.ByteAt(3) == 't');
-    EXPECT_TRUE(s.ByteAt(4) == (char)0xC3);
+    EXPECT_TRUE((bpf::uint8)s.ByteAt(4) == 0xC3);
     EXPECT_TRUE(s.ByteAt(s.Size() - 1) == 't');
 }
 
 TEST(String, OperatorPlus)
 {
     bpf::String s("init");
-    s = s + ' ' + 42 + ',' + " the test, " + 42.42f;
+    s = s + ' ' + bpf::String::ValueOf(42) + ',' + " the test, " + bpf::String::ValueOf(42.42f);
     EXPECT_STREQ(*s, "init 42, the test, 42.42");
 }
 
@@ -136,10 +136,10 @@ TEST(String, OperatorPlusEqual)
 {
     bpf::String s("init");
     s += ' ';
-    s += 42;
+    s += bpf::String::ValueOf(42);
     s += ',';
     s += " the test, ";
-    s += 42.42f;
+    s += bpf::String::ValueOf(42.42f);
     EXPECT_STREQ(*s, "init 42, the test, 42.42");
 }
 
@@ -147,12 +147,12 @@ TEST(String, OperatorEquall)
 {
     bpf::String s("init");
     s += ' ';
-    s += 42;
+    s += bpf::String::ValueOf(42);
     s += ',';
     s += " the test, ";
-    s += 42.42f;
+    s += bpf::String::ValueOf(42.42f);
     bpf::String s1("init");
-    s1 = s1 + ' ' + 42 + ',' + " the test, " + 42.42f;
+    s1 = s1 + ' ' + bpf::String::ValueOf(42) + ',' + " the test, " + bpf::String::ValueOf(42.42f);
     EXPECT_STREQ(*s, "init 42, the test, 42.42");
     EXPECT_STREQ(*s1, "init 42, the test, 42.42");
     EXPECT_TRUE(s == s1);
@@ -163,12 +163,12 @@ TEST(String, OperatorGreaterLess)
 {
     bpf::String s("init");
     s += ' ';
-    s += 42;
+    s += bpf::String::ValueOf(42);
     s += ',';
     s += " the test, ";
-    s += 42.42f;
+    s += bpf::String::ValueOf(42.42f);
     bpf::String s1("init");
-    s1 = s1 + ' ' + 42 + ',' + " the test, " + 42.42f;
+    s1 = s1 + ' ' + bpf::String::ValueOf(42) + ',' + " the test, " + bpf::String::ValueOf(42.42f);
     EXPECT_STREQ(*s, "init 42, the test, 42.42");
     EXPECT_STREQ(*s1, "init 42, the test, 42.42");
     EXPECT_TRUE(!(s > s1));
@@ -203,7 +203,7 @@ TEST(String, LenAndSize)
 {
     bpf::String s = "testÉé€test¥▦test\U0001F4E0";
     EXPECT_TRUE(s.Len() == 18);
-    EXPECT_TRUE(s.Size() == strlen("testÉé€test¥▦test\U0001F4E0"));
+    EXPECT_TRUE(s.Size() == (int)strlen("testÉé€test¥▦test\U0001F4E0"));
 }
 
 TEST(String, IsNumeric)
@@ -642,6 +642,11 @@ TEST(String, ValueOf)
     arr[0] = "this is a test";
     arr[1] = "yay";
     EXPECT_STREQ(*bpf::String::ValueOf(arr), "[this is a test, yay]");
+    bpf::List<int> lst;
+    lst.Add(0);
+    lst.Add(2);
+    lst.Add(5);
+    EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 2, 5]");
 }
 
 TEST(String, Safety)
@@ -679,7 +684,7 @@ TEST(String, Iterate)
 {
     bpf::String str = "this is a test";
 
-    for (bpf::uint32 i = 0; i != str.Len(); ++i)
+    for (int i = 0; i != str.Len(); ++i)
     {
         std::cout << str[i];
     }
@@ -696,7 +701,7 @@ TEST(String, IterateUTF8)
     bpf::String str = "thïs ïs à tést€ducultdbdc";
     bpf::String str1;
 
-    for (bpf::uint32 i = 0; i != str.Len(); ++i)
+    for (int i = 0; i != str.Len(); ++i)
     {
         std::cout << str[i];
     }
@@ -706,4 +711,13 @@ TEST(String, IterateUTF8)
         std::cout << str[i];
     }
     std::cout << std::endl;
+}
+
+
+TEST(String, ToArray)
+{
+    bpf::String str = "this is a test";
+    bpf::Array<char> arr = str.ToArray();
+
+    EXPECT_STREQ(*str, *arr);
 }

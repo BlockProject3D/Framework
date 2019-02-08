@@ -49,11 +49,11 @@ TEST(FileStream, Open)
 {
     bpf::File f("./doesnotexist.txt");
     bpf::FileStream stream(f, bpf::FILE_MODE_WRITE | bpf::FILE_MODE_TRUNCATE);
-    EXPECT_EQ(stream.Write("This is a test", 14), 14);
+    EXPECT_EQ(stream.Write("This is a test", 14), (bpf::fsize)14);
     stream.Close();
     bpf::FileStream stream1(f, bpf::FILE_MODE_READ);
     char buf[15];
-    EXPECT_EQ(stream1.Read(buf, 14), 14);
+    EXPECT_EQ(stream1.Read(buf, 14), (bpf::fsize)14);
     buf[14] = '\0';
     EXPECT_STREQ(buf, "This is a test");
     stream1.Close();
