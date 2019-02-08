@@ -130,6 +130,9 @@ TEST(String, OperatorPlus)
     bpf::String s("init");
     s = s + ' ' + bpf::String::ValueOf(42) + ',' + " the test, " + bpf::String::ValueOf(42.42f);
     EXPECT_STREQ(*s, "init 42, the test, 42.42");
+    bpf::String s1("");
+    s1 = s1 + 'T' + ' ' + bpf::String::UTF32("¥") + ' ' + 128224;
+    EXPECT_STREQ(*s1, "T ¥ \U0001F4E0");
 }
 
 TEST(String, OperatorPlusEqual)
@@ -141,6 +144,13 @@ TEST(String, OperatorPlusEqual)
     s += " the test, ";
     s += bpf::String::ValueOf(42.42f);
     EXPECT_STREQ(*s, "init 42, the test, 42.42");
+    bpf::String s1("");
+    s1 += 'T';
+    s1 += ' ';
+    s1 += bpf::String::UTF32("¥");
+    s1 += ' ';
+    s1 += 128224;
+    EXPECT_STREQ(*s1, "T ¥ \U0001F4E0");
 }
 
 TEST(String, OperatorEquall)
@@ -510,6 +520,7 @@ TEST(String, Sub)
     EXPECT_STREQ(*s.Sub(0, 4), "test");
     EXPECT_STREQ(*s.Sub(9, 11), "st");
     EXPECT_STREQ(*s.Sub(12), " testabc");
+    EXPECT_STREQ(*s.Sub(s.Len() + 1), *s);
 }
 
 TEST(String, SubUTF8)
@@ -518,6 +529,7 @@ TEST(String, SubUTF8)
     EXPECT_STREQ(*s.Sub(0, 4), "test");
     EXPECT_STREQ(*s.Sub(11, 13), "¥▦");
     EXPECT_STREQ(*s.Sub(12), "▦testabc");
+    EXPECT_STREQ(*s.Sub(s.Len() + 1), *s);
 }
 
 TEST(String, SubLen)
@@ -610,10 +622,9 @@ TEST(String, Evaluate)
 
 TEST(String, EvaluateErr)
 {
-    double res;
     try
     {
-        res = bpf::String(" 0 / 0 ").Evaluate();
+        bpf::String(" 0 / 0 ").Evaluate();
     }
     catch (const bpf::EvalException &)
     {
@@ -638,6 +649,10 @@ TEST(String, ValueOf)
 {
     EXPECT_STREQ(*bpf::String::ValueOf(42), "42");
     EXPECT_STREQ(*bpf::String::ValueOf(42.42f), "42.42");
+    EXPECT_STREQ(*bpf::String::ValueOf(42.42), "42.42");
+    EXPECT_STREQ(*bpf::String::ValueOf((bpf::uint64)999999999), "999999999");
+    EXPECT_STREQ(*bpf::String::ValueOf((bpf::int64)-999999999), "-999999999");
+    EXPECT_STREQ(*bpf::String::ValueOf((bpf::uint32)4000000000), "4000000000");
     bpf::Array<bpf::String> arr;
     arr[0] = "this is a test";
     arr[1] = "yay";
@@ -683,34 +698,29 @@ TEST(String, Safety)
 TEST(String, Iterate)
 {
     bpf::String str = "this is a test";
+    bpf::String res;
 
     for (int i = 0; i != str.Len(); ++i)
-    {
-        std::cout << str[i];
-    }
-    std::cout << std::endl;
+        res += str[i];
+    EXPECT_STREQ(*str, *res);
+    res = "";
     for (bpf::uint32 i = 0; str[i]; ++i)
-    {
-        std::cout << str[i];
-    }
-    std::cout << std::endl;
+        res += str[i];
+    EXPECT_STREQ(*str, *res);
 }
 
 TEST(String, IterateUTF8)
 {
     bpf::String str = "thïs ïs à tést€ducultdbdc";
-    bpf::String str1;
+    bpf::String res;
 
     for (int i = 0; i != str.Len(); ++i)
-    {
-        std::cout << str[i];
-    }
-    std::cout << std::endl;
+        res += str[i];
+    EXPECT_STREQ(*str, *res);
+    res = "";
     for (bpf::uint32 i = 0; str[i]; ++i)
-    {
-        std::cout << str[i];
-    }
-    std::cout << std::endl;
+        res += str[i];
+    EXPECT_STREQ(*str, *res);
 }
 
 
