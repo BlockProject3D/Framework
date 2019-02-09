@@ -634,7 +634,7 @@ TEST(String, EvaluateErr)
     ASSERT_TRUE(false);
 }
 
-TEST(String, Format)
+TEST(String, Format_Test1)
 {
     bpf::Array<bpf::String> arr;
     arr[0] = "this is a test";
@@ -643,6 +643,18 @@ TEST(String, Format)
     const char *expected = "             -42\t           42.42\t42000\t[this is a test, yay]";
     EXPECT_STREQ(*formatted, expected);
     EXPECT_TRUE(strlen(expected) == (size_t)formatted.Size());
+}
+
+TEST(String, Format_Test2)
+{
+    bpf::String res = bpf::String::Format("[8,left, ] | [4,right, ] | [5,right, ]", "Name", "GPA", "TOEIC");
+    std::cout << *res << std::endl;
+    res = bpf::String::Format("[8,left,-]---[4,right,-]---[5,right,-]", "", "", "");
+    std::cout << *res << std::endl;
+    res = bpf::String::Format("[8,left, ] | [4,right, ] | [5,right, ]", "Tsinghua", 3.5, -1);
+    std::cout << *res << std::endl;
+    res = bpf::String::Format("[8,left, ] | [4,right, ] | [5,right, ]", "UC Berkley", 3.0, 800);
+    std::cout << *res << std::endl;
 }
 
 TEST(String, ValueOf)
@@ -662,6 +674,8 @@ TEST(String, ValueOf)
     lst.Add(2);
     lst.Add(5);
     EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 2, 5]");
+    bpf::fsize s = 0x456789F;
+    EXPECT_STREQ(*bpf::String::ValueOf((void *)s), "456789F");
 }
 
 TEST(String, Safety)

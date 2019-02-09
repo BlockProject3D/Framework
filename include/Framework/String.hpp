@@ -372,8 +372,11 @@ namespace bpf
             return (format);
       	}
 
+        //TODO : Add precision support
+        //TODO : Add support for center alignment
         /**
-         * Builds a string using the following formating syntax : '[]' for no format and [<num chars padding>,<allignment (left / right)>,<characters to serve as padding>]
+         * Builds a string using the following formating syntax :
+         * '[]' for no format and [<num chars padding>,<allignment (left / right)>,<characters to serve as padding>]
          * @tparam Args objects / scalar types to format
          * @param format the given format
          */

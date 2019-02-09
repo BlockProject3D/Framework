@@ -130,7 +130,7 @@ String String::UTF8(const fchar utf32char)
         SetBit(b[0], 7, true);
         return (String(b));
     }
-    else if (utf32char >= 0x10000 && utf32char <= 0x10FFFF)
+    else
     {
         char b[5] = { 0 };
 
@@ -171,8 +171,6 @@ String String::UTF8(const fchar utf32char)
         SetBit(b[0], 7, true);
         return (String(b));
     }
-    else
-        return (String::Empty);
 }
 
 String::String(const char *str)
