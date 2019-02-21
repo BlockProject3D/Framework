@@ -34,7 +34,7 @@ namespace bpf
     class BPF_API IOException : public RuntimeException
     {
     public:
-        inline IOException(const String &msg) noexcept
+        explicit inline IOException(const String &msg) noexcept
             : RuntimeException("IO", msg)
         {
         }

@@ -72,7 +72,7 @@ namespace bpf
          * WARNING : Angles are expressed in radians
          * @param euler euler angles X = Pitch, Y = Yaw, Z = Roll
          */
-        Quat(const Vector3<T> &euler);
+        explicit Quat(const Vector3<T> &euler);
 
         /**
          * Constructs a quaternion from the rotation between two vectors

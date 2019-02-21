@@ -42,11 +42,11 @@ namespace bpf
         ListNode *Prev;
         T Data;
 
-	ListNode(const T &data)
+	explicit ListNode(const T &data)
             : Next(Null), Prev(Null), Data(data)
         {
         }
-        ListNode(T &&data)
+        explicit ListNode(T &&data)
             : Next(Null), Prev(Null), Data(std::move(data))
         {
         }
@@ -66,7 +66,7 @@ namespace bpf
             ListNode<T> *Cur;
 
         public:
-            inline Iterator(ListNode<T> *cur)
+            explicit inline Iterator(ListNode<T> *cur)
                 : Cur(cur)
             {
             }

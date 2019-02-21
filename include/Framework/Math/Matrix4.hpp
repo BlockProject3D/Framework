@@ -47,7 +47,7 @@ namespace bpf
         {
         }
 
-        inline Matrix4(const T *mat)
+        explicit inline Matrix4(const T *mat)
             : Matrix<T, 4, 4>(mat)
         {
         }

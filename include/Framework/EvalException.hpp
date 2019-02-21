@@ -34,7 +34,7 @@ namespace bpf
     class BPF_API EvalException : public RuntimeException
     {
     public:
-        inline EvalException(const String &msg) noexcept
+        explicit inline EvalException(const String &msg) noexcept
             : RuntimeException("Eval", msg)
         {
         }

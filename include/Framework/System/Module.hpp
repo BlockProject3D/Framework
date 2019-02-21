@@ -49,7 +49,7 @@ namespace bpf
          * @param path the path to the binary module without file extension
          * @throws ModuleException
          */
-        Module(const bpf::String &path);
+        explicit Module(const bpf::String &path);
         ~Module();
 
         /**

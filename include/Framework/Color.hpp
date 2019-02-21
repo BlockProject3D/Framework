@@ -89,7 +89,7 @@ namespace bpf
          * Initializes a FColor from a grey scale value
          * @param grey the grey scale value
          */
-        inline Color(const uint8 grey)
+        explicit inline Color(const uint8 grey)
             : R(grey), G(grey), B(grey), A(255)
         {
         }
@@ -98,7 +98,7 @@ namespace bpf
          * Initializes a FColor from a packed rgb int
          * @param rgb the packed rgb integer
          */
-        Color(const int rgb); //TODO : Implement
+        explicit Color(const int rgb); //TODO : Implement
 
         /**
          * Blends two colors by addition

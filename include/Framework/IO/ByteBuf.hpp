@@ -42,7 +42,7 @@ namespace bpf
         fsize _written;
         
     public:
-        ByteBuf(const fsize size);
+        explicit ByteBuf(const fsize size);
         ByteBuf(ByteBuf &&other);
         ~ByteBuf();
     

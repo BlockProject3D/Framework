@@ -189,12 +189,25 @@ String::String(const char *str)
     CopyString(str, Data, StrLen);
 }
 
-String::String(const char c)
+String::String(const fchar c)
     : Data(Null), StrLen(1), UnicodeLen(1)
 {
-    Data = static_cast<char *>(Memory::Malloc(sizeof(char) * (StrLen + 1)));
-    Data[0] = c;
-    Data[1] = '\0';
+    if (c < 0x7F)
+    {
+        Data = static_cast<char *>(Memory::Malloc(sizeof(char) * (StrLen + 1)));
+        Data[0] = (char)c;
+        Data[1] = '\0';
+    }
+    else
+    {
+        String str = UTF8(c);
+        Data = str.Data;
+        StrLen = str.StrLen;
+        UnicodeLen = str.UnicodeLen;
+        str.Data = Null;
+        str.StrLen = 0;
+        str.UnicodeLen = 0;
+    }
 }
 
 String::String(const String &s)
@@ -993,6 +1006,6 @@ String String::ValueOf(void *ptr)
 {
     std::stringstream    strs;
 
-    strs << std::hex << ptr;
+    strs << std::hex << (uintptr)ptr;
     return (strs.str().c_str());
 }

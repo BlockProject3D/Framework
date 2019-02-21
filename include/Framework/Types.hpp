@@ -30,6 +30,21 @@
 
 #define Null nullptr
 
+// Check windows
+#ifdef WINDOWS
+    #if _WIN64
+        #define X86_64
+    #else
+        #define X86
+    #endif
+#else
+    #if __x86_64__ || __ppc64__
+        #define X86_64
+    #else
+        #define X86
+    #endif
+#endif
+
 namespace bpf
 {
     using uint32 = unsigned int;
@@ -42,4 +57,12 @@ namespace bpf
     using fsize = long unsigned int;
     using int16 = signed short;
     using uint16 = unsigned short;
+
+#ifdef X86_64
+    using uintptr = uint64;
+    using intptr = int64;
+#else
+    using uintptr = uint32;
+    using intptr = int32;
+#endif
 }

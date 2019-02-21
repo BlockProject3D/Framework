@@ -75,7 +75,7 @@ namespace bpf
          * Constructs a new string from a single character
          * @param c the character to copy in the string
          */
-        String(const char c);
+        String(const fchar c);
 
         /**
          * Copy constructor

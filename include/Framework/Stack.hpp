@@ -41,7 +41,7 @@ namespace bpf
         int CurPtr;
         
     public:
-        Stack(int maxsize);
+        explicit Stack(int maxsize);
         ~Stack();
         void Push(const T &element);
         const T &Pop();

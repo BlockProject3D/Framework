@@ -37,7 +37,7 @@ namespace bpf
         int ID;
 
     public:
-        inline IndexException(const int id) noexcept
+        explicit inline IndexException(const int id) noexcept
             : Exception()
             , ID(id)
         {

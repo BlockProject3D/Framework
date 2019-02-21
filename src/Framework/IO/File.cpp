@@ -253,10 +253,10 @@ List<File> File::ListFiles()
     }
 #else
     DIR *d = opendir(*FullPath);
-    struct dirent *dir;
 
     if (d)
     {
+        struct dirent *dir;
         while ((dir = readdir(d)) != Null)
             flns.Add(File(FullPath + "/" + String(dir->d_name)));
     }

@@ -46,7 +46,7 @@ namespace bpf
         {
         }
 
-        inline Matrix2(const T *mat)
+        explicit inline Matrix2(const T *mat)
             : Matrix<T, 2, 2>(mat)
         {
         }

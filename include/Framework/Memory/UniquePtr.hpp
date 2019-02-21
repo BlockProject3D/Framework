@@ -42,7 +42,7 @@ namespace bpf
         {
         }
 
-        inline UniquePtr(T *raw) noexcept
+        explicit inline UniquePtr(T *raw) noexcept
             : RawPtr(raw)
         {
         }

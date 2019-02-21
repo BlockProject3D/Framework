@@ -39,7 +39,7 @@ namespace bpf
 
     public:
         Random();
-        Random(const long seed);
+        explicit Random(const long seed);
         int NextInt(const int max = INT_MAX);
         int NextInt(const int min, const int max);
         uint8 NextByte(const uint8 max = 255);

@@ -79,14 +79,14 @@ namespace bpf
         inline T &operator()(const fsize x, const fsize y)
         {
             if (x >= N || y >= M)
-                throw IndexException(x);
+                throw IndexException(y * N + x);
             return (_arr[y * N + x]);
         }
 
         inline T operator()(const fsize x, const fsize y) const
         {
             if (x >= N || y >= M)
-                throw IndexException(x);
+                throw IndexException(y * N + x);
             return (_arr[y * N + x]);
         }
 
@@ -144,14 +144,14 @@ namespace bpf
         inline T &operator()(const fsize x, const fsize y)
         {
             if (x >= N || y >= N)
-                throw IndexException(x);
+                throw IndexException(y * N + x);
             return (_arr[y * N + x]);
         }
 
         inline T operator()(const fsize x, const fsize y) const
         {
             if (x >= N || y >= N)
-                throw IndexException(x);
+                throw IndexException(y * N + x);
             return (_arr[y * N + x]);
         }
 
@@ -270,14 +270,14 @@ namespace bpf
         inline T &operator()(const fsize x, const fsize y)
         {
             if (x >= _n || y >= _m)
-                throw IndexException(x);
+                throw IndexException(y * _n + x);
             return (_arr[y * _n + x]);
         }
 
         inline T operator()(const fsize x, const fsize y) const
         {
             if (x >= _n || y >= _m)
-                throw IndexException(x);
+                throw IndexException(y * _n + x);
             return (_arr[y * _n + x]);
         }
 

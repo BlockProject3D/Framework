@@ -49,7 +49,7 @@ namespace bpf
         void RecalcUTC();
 
     public:
-        DateTime(uint64 seconds);
+        explicit DateTime(uint64 seconds);
         DateTime();
 
         inline uint32 GetYear() const noexcept

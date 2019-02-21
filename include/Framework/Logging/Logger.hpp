@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Framework.hpp"
+#include "Framework/Memory/Memory.hpp"
 #include "Framework/Logging/ILogHandler.hpp"
 #include "Framework/Logging/ELogLevel.hpp"
 
@@ -60,7 +60,7 @@ namespace bpf
             return (res);
         }
     public:
-        inline Logger(const String &name)
+        explicit inline Logger(const String &name)
             : _name(name)
         {
         }

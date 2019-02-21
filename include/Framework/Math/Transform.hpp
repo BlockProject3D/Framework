@@ -41,16 +41,22 @@ namespace bpf
         void RebuildMatrix();
 
     public:
-        Transform();
-        Transform(const Transform &other)
+        inline Transform()
+            : _pos(Vector3f::Zero)
+            , _scale(Vector3f::Unit)
+            , _quat(Quatf::Identity)
+            , _mat(Matrix4f::Identity)
+        {
+        }
+        inline Transform(const Transform &other)
             : _pos(other._pos)
             , _scale(other._scale)
             , _quat(other._quat)
         {
             RebuildMatrix();
         }
-        Transform(const Vector3f &pos, const Vector3f &scale = Vector3f::Unit,
-            const Quatf &q = Quatf::Identity)
+        explicit inline Transform(const Vector3f &pos, const Vector3f &scale = Vector3f::Unit,
+                         const Quatf &q = Quatf::Identity)
             : _pos(pos)
             , _scale(scale)
             , _quat(q)
