@@ -86,7 +86,6 @@ macro(bp_setup_target name mainincdir)
             -fprofile-arcs
             -ftest-coverage
             -fkeep-inline-functions
-            -fkeep-static-functions
             -Wno-unused)
         target_link_libraries(${name}
             PRIVATE
@@ -98,7 +97,6 @@ macro(bp_setup_target name mainincdir)
             -fprofile-arcs
             -ftest-coverage
             -fkeep-inline-functions
-            -fkeep-static-functions
             -Wno-unused)
         target_link_libraries(${name} PRIVATE gcov supc++)
     endif (COVERAGE)
