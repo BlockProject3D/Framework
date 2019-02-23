@@ -47,6 +47,7 @@ jobs:
       env:
         - BP_CP_CMD="cp build/Debug/libBPFramework.so Tests/build/Debug/"
         - BP_TEST_RUN_CMD="./Debug/TestProgFramework"
+        - secure: "rCtaFMlu/gCpq8wdzSHmsDk0j6tu/vuBtnlR4pAX0CT9GGT/0Vy9ucATTAkrwIkdWe6gIavwMbOw/In190ABwDdnccKfnZZGVjowq4CWYn+nPdTm6N5AZl4K22HDaEF8SPZ3eVfztLvPGuqXvqfRjEjWIjo7cHpkI5T9dW27UnmHOUJOGI+RR13xPswrCmxeP10aAUJVLrl6vUPJEzyV6Cgibsr+hVOwDWOHk849ofGdIRgrMJfhpwMTuu28IDMNwQvMfIGGa4YD7pD8JNqZUd8M7XxCu6zR3q0PfQRuOxoDYC+UIJzZzDQwT1RMHwxdy29j1sfL4ZW7Q0fUtnOGXdTCLxX0SAm2VdX+MwxKPdIn9hVf9ECKur/bqpo2zube2qteD0P4nlQQFGhBmIctrKGVyQIf0Y62KlvJbZ5/CkcLXvlXbdzwmB0CoFrE04X584JxPWvogTtqlr3QxdIHqylQ4X0HIkIArR2IEDQnYlWQQxS+vVEGiK9Nxi9t/ITdS5WVOgiQh56r06eRYxf3FHSOs5XGDpM8sPSoNbv/jfk58dwT19jbOSPV3wdscqLfFvwFMo6xac99oyragB5Hlk4DnPm2/r5Svpci78EyDKSJIR03azNhGADez6YBDd0j30sIEEhGgt4njb3qpBN0TNR6+t9jGhLQuNCZ8rli5yc="
       before_install:
         - sudo apt-get install -y gcovr
       script:
