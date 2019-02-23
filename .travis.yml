@@ -59,3 +59,8 @@ jobs:
         - cd ../../ && eval $BP_CP_CMD && cd Tests/build
         - eval $BP_TEST_RUN_CMD > /dev/null && cd ../../
         - gcovr -r .
+        - mkdir cout
+        - gcovr -r . --html --html-details -o cout/index.html
+        - gcovr -r . -o cout/main.txt
+        - git clone https://github.com/BlockProject3D/GCovrToCodacy.git
+        - python3 GCovrToCodacy/coverage_parser.py cout $CODACY_PROJECT_TOKEN $TRAVIS_COMMIT

@@ -76,8 +76,31 @@ macro(bp_setup_target name mainincdir)
     #target_include_directories(${name} PRIVATE ${BP_INCLUDES})
     target_compile_definitions(${name} PRIVATE ${BP_PLATFORM_DEF})
     if (COVERAGE)
-        target_compile_options(${name} PRIVATE -g -O0 --coverage)
-        target_link_libraries(${name} PRIVATE gcov)
+        target_compile_options(${name}
+            PRIVATE
+            -g -O0
+            --coverage
+            -fno-inline
+            -fno-inline-small-functions
+            -fno-default-inline
+            -fprofile-arcs
+            -ftest-coverage
+            -fkeep-inline-functions
+            -fkeep-static-functions
+            -Wno-unused)
+        target_link_libraries(${name}
+            PRIVATE
+            -g -O0
+            --coverage
+            -fno-inline
+            -fno-inline-small-functions
+            -fno-default-inline
+            -fprofile-arcs
+            -ftest-coverage
+            -fkeep-inline-functions
+            -fkeep-static-functions
+            -Wno-unused)
+        target_link_libraries(${name} PRIVATE gcov supc++)
     endif (COVERAGE)
     #target_link_libraries(${name} PRIVATE ${BP_MODULES})
     set_property(TARGET ${name} PROPERTY CXX_STANDARD 11)
