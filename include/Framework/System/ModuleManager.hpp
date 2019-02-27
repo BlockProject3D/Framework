@@ -60,6 +60,7 @@ extern "C" \
 
 # endif
 
+//TODO : improve genericity of module manager
 namespace bpf
 {
     typedef IModuleInterface*(*ModuleLinkFunc)();

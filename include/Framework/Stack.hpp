@@ -29,6 +29,7 @@
 #pragma once
 #include "Framework/Array.hpp"
 
+//TODO : Use bpf::fsize for sizes
 namespace bpf
 {
     template <typename T>

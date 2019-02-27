@@ -31,6 +31,7 @@
 #include "Framework/Types.hpp"
 #include "Framework/IndexException.hpp"
 
+//TODO : Use bpf::fsize for sizes
 namespace bpf
 {
     template <typename T, fsize I = 0>

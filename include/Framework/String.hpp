@@ -35,6 +35,13 @@
 #include "Framework/Hash.hpp"
 #include "Framework/IndexException.hpp"
 
+//TODO : Remove usage of List go for Array
+//TODO : Implement Scalar type classes
+//TODO : Create BaseConvert class to convert between multiple bases
+//TODO : Create MathParser class to evaluate math expression in strings (in order to seperate string math eval from main string class)
+//TODO : Search for better alternative to Stringifier
+//TODO : Remove ToString replace by Stringifier as it's more extendable
+
 namespace bpf
 {
     class BPF_API String

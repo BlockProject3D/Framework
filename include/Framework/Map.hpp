@@ -30,6 +30,7 @@
 #include "Framework/Iterator.hpp"
 #include "Framework/IndexException.hpp"
 
+//TODO : Use bpf::fsize for sizes
 namespace bpf
 {
     constexpr int MAP_INIT_BUF_SIZE = 2;

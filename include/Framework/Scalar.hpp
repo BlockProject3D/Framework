@@ -27,71 +27,67 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Array.hpp"
+#include "Framework/String.hpp"
 
-//TODO : Use bpf::fsize for sizes
 namespace bpf
 {
-    template <typename T>
-    class BP_TPL_API ArrayList
+    class Int
     {
-    private:
-        uint32 _curid;
-        Array<T> _arr;
-
     public:
-        inline ArrayList()
-            : _curid(0), _arr(16)
-        {
-        }
+        static const int MaxValue;
+        static const int MinValue;
+        static int Parse(const String &str);
+    };
 
-        inline void Add(const T &elem)
-        {
-            _arr[_curid++] = elem;
-        }
+    class UInt
+    {
+    public:
+        static const uint32 MaxValue;
+        static const uint32 MinValue;
+        static int Parse(const String &str);
+    };
 
-        void RemoveAt(const uint32 id);
-        
-        void Remove(const T &elem);
-        
-        inline T *GetLast() const
-        {
-            if (_curid == 0)
-                return (Null);
-            return (&_arr[_curid]);
-        }
-        
-        inline void RemoveLast()
-        {
-            Remove(_curid);
-        }
-        
-        inline uint32 Size() const
-        {
-            return (_curid);
-        }
-        
-        inline String ToString() const
-        {
-            return (_arr.ToString());
-        }
-        
-        /**
-         * Returns an iterator to the begining of the array
-         */
-        inline typename Array<T>::Iterator Begin() const
-        {
-            return (typename Array<T>::Iterator(*_arr, _curid, 0));
-        }
+    class Short
+    {
+    public:
+        static const int MaxValue;
+        static const int MinValue;
+        static int Parse(const String &str);
+    };
 
-        /**
-         * Returns an iterator to the end of the array
-         */
-        inline typename Array<T>::Iterator End() const
-        {
-            return (typename Array<T>::Iterator(*_arr, _curid, _curid));
-        }
+    class UShort
+    {
+    public:
+        static const uint32 MaxValue;
+        static const uint32 MinValue;
+        static int Parse(const String &str);
+    };
+
+    class Int64
+    {
+    public:
+        static const int64 MaxValue;
+        static const int64 MinValue;
+        static int64 Parse(const String &str);
+    };
+
+    class UInt64
+    {
+    public:
+        static const uint64 MaxValue;
+        static const uint64 MinValue;
+        static uint64 Parse(const String &str);
+    };
+
+    class Float
+    {
+    public:
+        static float Parse(const String &str);
+    };
+
+    class Double
+    {
+    public:
+        static double Parse(const String &str);
     };
 }
-
-#include "Framework/ArrayList.impl.hpp"
