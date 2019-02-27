@@ -27,6 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/Types.hpp"
 #include "Framework/Iterator.hpp"
 #include "Framework/IndexException.hpp"
 
@@ -53,12 +54,12 @@ namespace bpf
             V *Data;
             K *KeyData;
             bool *EmptyKeys;
-            uint32 MaxSize;
-            uint32 CurID;
+            fsize MaxSize;
+            fsize CurID;
             MapEntry<K, V> Entry;
 
         public:
-            inline Iterator(V *data, K *keydata, bool *empty, uint32 start, uint32 size)
+            inline Iterator(V *data, K *keydata, bool *empty, fsize start, fsize size)
                 : Data(data), KeyData(keydata), EmptyKeys(empty), MaxSize(size), CurID(start)
             {
                 if (start == 0)
@@ -93,14 +94,14 @@ namespace bpf
     private:
         V *Data;
         K *KeyData;
-        uint32 *HashTable;
+        fsize *HashTable;
         bool *EmptyKeys;
-        uint32 CurSize;
-        uint32 ElemCount;
+        fsize CurSize;
+        fsize ElemCount;
 
         void TryExtend(); //Checks and extends the hash table by the multiplier
-        int QuadraticSearch(uint32 hkey) const;
-        int QuadraticInsert(uint32 hkey);
+        fsize QuadraticSearch(fsize hkey) const;
+        fsize QuadraticInsert(fsize hkey);
 
     public:
         Map();
@@ -136,7 +137,7 @@ namespace bpf
         /**
          * Returns the size of this hash table, that means the element count
          */
-        inline uint32 Size() const
+        inline fsize Size() const
         {
             return (ElemCount);
         }
@@ -146,6 +147,15 @@ namespace bpf
             return (Iterator(Data, KeyData, EmptyKeys, 0, CurSize));
         }
         inline Iterator End() const
+        {
+            return (Iterator(Data, KeyData, EmptyKeys, CurSize - 1, CurSize));
+        }
+
+        inline Iterator begin() const
+        {
+            return (Iterator(Data, KeyData, EmptyKeys, 0, CurSize));
+        }
+        inline Iterator end() const
         {
             return (Iterator(Data, KeyData, EmptyKeys, CurSize - 1, CurSize));
         }

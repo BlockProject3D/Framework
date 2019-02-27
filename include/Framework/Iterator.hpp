@@ -45,7 +45,6 @@ namespace bpf
         virtual void operator--() = 0;
         virtual const T &operator*() const = 0;
         virtual const T &operator->() const = 0;
-        virtual operator bool() const = 0;
         virtual bool operator==(const C &other) const = 0;
         virtual bool operator!=(const C &other) const = 0;
     };

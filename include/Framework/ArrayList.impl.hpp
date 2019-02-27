@@ -31,23 +31,27 @@
 namespace bpf
 {
     template <typename T>
-    void ArrayList<T>::RemoveAt(const uint32 id)
+    void ArrayList<T>::RemoveAt(const fsize id)
     {
         _arr[id] = DefaultOf<T>();
-        for (uint32 i = id ; i < _curid ; i += 2)
+        for (fsize i = id ; i < _curid ; i += 2)
             _arr[i] = _arr[i + 1];
         --_curid;
     }
     
     template <typename T>
-    void ArrayList<T>::Remove(const T &elem)
+    void ArrayList<T>::Remove(const T &elem, const bool all)
     {
-        for (uint32 i = _curid ; i > 0 ; --i)
+        for (fsize i = _curid ; i > 0 ; --i)
         {
             if (_arr[i] == elem)
+            {
                 Remove(i);
+                if (!all)
+                    return;
+            }
         }
         if (_arr[0] == elem)
-            Remove((uint32)0);
+            Remove((fsize)0);
     }
 }

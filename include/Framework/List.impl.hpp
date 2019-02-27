@@ -56,7 +56,7 @@ namespace bpf
     }
 
     template <typename T>
-    void List<T>::Insert(const T &elem, uint32 pos)
+    void List<T>::Insert(const T &elem, fsize pos)
     {
         ListNode<T> *nd = GetNode(pos);
         ListNode<T> *newi = new ListNode<T>(elem);
@@ -99,7 +99,7 @@ namespace bpf
     }
 
     template <typename T>
-    void List<T>::Insert(T &&elem, uint32 pos)
+    void List<T>::Insert(T &&elem, fsize pos)
     {
         ListNode<T> *nd = GetNode(pos);
         ListNode<T> *newi = new ListNode<T>(std::move(elem));
@@ -214,7 +214,7 @@ void    FList<T>::Sort(void)
     }
 
     template <typename T>
-    ListNode<T> *List<T>::GetNode(uint32 id) const
+    ListNode<T> *List<T>::GetNode(fsize id) const
     {
         if (id < Count)
         {
@@ -237,7 +237,7 @@ void    FList<T>::Sort(void)
     }
 
     template <typename T>
-    inline T *List<T>::Get(uint32 const id) const
+    inline T *List<T>::Get(fsize const id) const
     {
         ListNode<T> *cur = this->GetNode(id);
 
@@ -257,7 +257,7 @@ void    FList<T>::Sort(void)
     }
 
     template <typename T>
-    void List<T>::RemoveAt(uint32 const id)
+    void List<T>::RemoveAt(fsize const id)
     {
         ListNode<T> *toRM = GetNode(id);
 
@@ -322,25 +322,18 @@ void    FList<T>::Sort(void)
     }
 
     template <typename T>
-    inline uint32 List<T>::Size() const
+    inline fsize List<T>::Size() const
     {
         return (Count);
     }
 
     template <typename T>
-    inline T List<T>::operator[](uint32 const id) const
+    inline T List<T>::operator[](fsize const id) const
     {
         T *elem = Get(id);
 
         if (elem == Null)
             throw IndexException(id);
         return (*elem);
-    }
-
-    template <typename T>
-    inline void List<T>::ForEach(const std::function<void(const T &)> &fnc) const
-    {
-        for (auto it = Begin(); it; ++it)
-            fnc(*it);
     }
 }

@@ -32,7 +32,6 @@
 #include "Framework/Iterator.hpp"
 #include "Framework/IndexException.hpp"
 
-//TODO : Use bpf::fsize for sizes
 namespace bpf
 {
     template <typename T>
@@ -105,7 +104,7 @@ namespace bpf
     private:
         ListNode<T> *First;
         ListNode<T> *Last;
-        uint32 Count;
+        fsize Count;
 
         ListNode<T> *Partition(ListNode<T> *start, ListNode<T> *end);
         void QuickSort(ListNode<T> *start, ListNode<T> *end);
@@ -126,7 +125,7 @@ namespace bpf
          * @param elem element to insert
          * @param pos position
          */
-        void Insert(const T &elem, uint32 pos);
+        void Insert(const T &elem, fsize pos);
 
         /**
          * Adds an element at the end of the list
@@ -139,19 +138,19 @@ namespace bpf
          * @param elem element to insert
          * @param pos position
          */
-        void Insert(T &&elem, uint32 pos);
+        void Insert(T &&elem, fsize pos);
 
         /**
          * Returns an element (safe), returns Null whenever element could not be found
          * @param id index of the element
          */
-        ListNode<T> *GetNode(uint32 id) const;
+        ListNode<T> *GetNode(fsize id) const;
 
-        T *Get(const uint32 id) const;
+        T *Get(const fsize id) const;
 
-        T operator[](const uint32 id) const;
+        T operator[](const fsize id) const;
 
-        void RemoveAt(const uint32 id);
+        void RemoveAt(const fsize id);
 
         void Remove(const T &elem, const bool all = true);
 
@@ -163,11 +162,9 @@ namespace bpf
 
         T *GetLast() const;
 
-        uint32 Size() const;
+        fsize Size() const;
 
         void Clear();
-
-        void ForEach(const std::function<void(const T &)> &fnc) const;
 
         /**
          * Returns an iterator to the begining of the list
@@ -181,6 +178,22 @@ namespace bpf
          * Returns an iterator to the end of the list
          */
         inline Iterator End() const
+        {
+            return (Iterator(Last));
+        }
+
+        /**
+         * Returns an iterator to the begining of the list
+         */
+        inline Iterator begin() const
+        {
+            return (Iterator(First));
+        }
+
+        /**
+         * Returns an iterator to the end of the list
+         */
+        inline Iterator end() const
         {
             return (Iterator(Last));
         }

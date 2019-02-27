@@ -31,7 +31,6 @@
 #include "Framework/Types.hpp"
 #include "Framework/IndexException.hpp"
 
-//TODO : Use bpf::fsize for sizes
 namespace bpf
 {
     template <typename T, fsize I = 0>
@@ -77,14 +76,14 @@ namespace bpf
             return (_arr);
         }
         
-        inline T &operator[](const uint32 id) const
+        inline T &operator[](const fsize id) const
         {
             if (id >= I)
                 throw IndexException(static_cast<int>(id));
             return (_arr[id]);
         }
         
-        inline T &operator[](const uint32 id)
+        inline T &operator[](const fsize id)
         {
             if (id >= I)
                 throw IndexException(static_cast<int>(id));
@@ -99,12 +98,12 @@ namespace bpf
         class BP_TPL_API Iterator final : public IIterator<typename Array<T>::Iterator, T>
         {
         private:
-            int _curid;
-            int _max;
+            fsize _curid;
+            fsize _max;
             T *_arr;
 
         public:
-            inline Iterator(T *lowlevel, const int size, const int start)
+            inline Iterator(T *lowlevel, const fsize size, const fsize start)
                 : _curid(start), _max(size), _arr(lowlevel)
             {
             }
@@ -115,7 +114,7 @@ namespace bpf
             }
             inline void operator--()
             {
-                if (_curid > -1)
+                if (_curid > 0)
                     _curid--;
             }
             inline const T &operator*() const

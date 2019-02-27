@@ -29,14 +29,13 @@
 #pragma once
 #include "Framework/Array.hpp"
 
-//TODO : Use bpf::fsize for sizes
 namespace bpf
 {
     template <typename T>
     class BP_TPL_API ArrayList
     {
     private:
-        uint32 _curid;
+        fsize _curid;
         Array<T> _arr;
 
     public:
@@ -50,23 +49,26 @@ namespace bpf
             _arr[_curid++] = elem;
         }
 
-        void RemoveAt(const uint32 id);
+        void RemoveAt(const fsize id);
         
-        void Remove(const T &elem);
+        void Remove(const T &elem, const bool all = true);
         
         inline T *GetLast() const
         {
-            if (_curid == 0)
-                return (Null);
-            return (&_arr[_curid]);
+            return (_curid == 0 ? Null : &_arr[_curid]);
         }
-        
+
+        inline T *GetFirst() const
+        {
+            return (_curid == 0 ? Null : &_arr[0]);
+        }
+
         inline void RemoveLast()
         {
             Remove(_curid);
         }
         
-        inline uint32 Size() const
+        inline fsize Size() const
         {
             return (_curid);
         }

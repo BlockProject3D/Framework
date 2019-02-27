@@ -62,7 +62,7 @@ namespace bpf
     Map<K, V>::Map()
         : Data(new V[MAP_INIT_BUF_SIZE])
         , KeyData(new K[MAP_INIT_BUF_SIZE])
-        , HashTable(new uint32[MAP_INIT_BUF_SIZE])
+        , HashTable(new fsize[MAP_INIT_BUF_SIZE])
         , EmptyKeys(new bool[MAP_INIT_BUF_SIZE])
         , CurSize(MAP_INIT_BUF_SIZE), ElemCount(0)
     {
@@ -86,16 +86,16 @@ namespace bpf
         {
             V *olddata = Data;
             K *oldkeydata = KeyData;
-            uint32 *oldhash = HashTable;
+            fsize *oldhash = HashTable;
             bool *oldempty = EmptyKeys;
             CurSize <<= 1;
             EmptyKeys = new bool[CurSize];
-            for (uint32 i = 0 ; i < CurSize; ++i)
+            for (fsize i = 0 ; i < CurSize; ++i)
                 EmptyKeys[i] = true;
             Data = new V[CurSize];
             KeyData = new K[CurSize];
-            HashTable = new uint32[CurSize];
-            for (uint32 i = 0 ; i < CurSize >> 1 ; ++i)
+            HashTable = new fsize[CurSize];
+            for (fsize i = 0 ; i < CurSize >> 1 ; ++i)
             {
                 if (!oldempty[i])
                 {
@@ -115,23 +115,23 @@ namespace bpf
     }
 
     template <typename K, typename V>
-    int Map<K, V>::QuadraticSearch(uint32 hkey) const
+    fsize Map<K, V>::QuadraticSearch(fsize hkey) const
     {
-        for (uint32 i = 0 ; i < CurSize ; ++i)
+        for (fsize i = 0 ; i < CurSize ; ++i)
         {
-            uint32 index = (hkey + ((i * i + i) / 2)) % CurSize;
+            fsize index = (hkey + ((i * i + i) / 2)) % CurSize;
             if (!EmptyKeys[index] && HashTable[index] == hkey)
-                return ((int)index);
+                return (index);
         }
-        return (-1);
+        return ((fsize)-1);
     }
 
     template <typename K, typename V>
-    int Map<K, V>::QuadraticInsert(uint32 hkey)
+    fsize Map<K, V>::QuadraticInsert(fsize hkey)
     {
-        for (uint32 i = 0 ; i < CurSize ; ++i)
+        for (fsize i = 0 ; i < CurSize ; ++i)
         {
-            uint32 index = (hkey + ((i * i + i) / 2)) % CurSize;
+            fsize index = (hkey + ((i * i + i) / 2)) % CurSize;
             if (EmptyKeys[index])
             {
                 HashTable[index] = hkey;
@@ -140,19 +140,19 @@ namespace bpf
                 return ((int)index);
             }
         }
-        return (-1);
+        return ((fsize)-1);
     }
 
     template <typename K, typename V>
     void Map<K, V>::Add(const K &key, const V &value)
     {
-        uint32 hkey = Hash(key);
+        fsize hkey = Hash(key);
 
         TryExtend();
         if (QuadraticSearch(hkey) != -1)
             Remove(key);
-        int idx = QuadraticInsert(hkey);
-        if (idx != -1)
+        fsize idx = QuadraticInsert(hkey);
+        if (idx != (fsize)-1)
         {
             Data[idx] = value;
             KeyData[idx] = key;
@@ -162,9 +162,9 @@ namespace bpf
     template <typename K, typename V>
     void Map<K, V>::Remove(const K &key)
     {
-        int idx = QuadraticSearch(Hash(key));
+        fsize idx = QuadraticSearch(Hash(key));
 
-        if (idx != -1)
+        if (idx != (fsize)-1)
         {
             --ElemCount;
             EmptyKeys[idx] = true;
@@ -174,9 +174,9 @@ namespace bpf
     template <typename K, typename V>
     const V &Map<K, V>::operator[](const K &key) const
     {
-        int idx = QuadraticSearch(Hash(key));
+        fsize idx = QuadraticSearch(Hash(key));
 
-        if (idx == -1)
+        if (idx == (fsize)-1)
             throw bpf::IndexException(idx);
         return (Data[idx]);
     }
@@ -184,13 +184,13 @@ namespace bpf
     template <typename K, typename V>
     V &Map<K, V>::operator[](const K &key)
     {
-        int idx = QuadraticSearch(Hash(key));
+        fsize idx = QuadraticSearch(Hash(key));
 
-        if (idx == -1)
+        if (idx == (fsize)-1)
         {
             TryExtend();
             idx = QuadraticInsert(Hash(key));
-            if (idx == -1)
+            if (idx == (fsize)-1)
                 throw bpf::IndexException(idx);
             KeyData[idx] = key;
         }
