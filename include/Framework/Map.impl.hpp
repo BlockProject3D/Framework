@@ -99,8 +99,8 @@ namespace bpf
             {
                 if (!oldempty[i])
                 {
-                    int id = QuadraticInsert(oldhash[i]);
-                    if (id != -1)
+                    fsize id = QuadraticInsert(oldhash[i]);
+                    if (id != (fsize)-1)
                     {
 		        Data[id] = std::move(olddata[i]);
 		        KeyData[id] = std::move(oldkeydata[i]);
@@ -149,7 +149,7 @@ namespace bpf
         fsize hkey = Hash(key);
 
         TryExtend();
-        if (QuadraticSearch(hkey) != -1)
+        if (QuadraticSearch(hkey) != (fsize)-1)
             Remove(key);
         fsize idx = QuadraticInsert(hkey);
         if (idx != (fsize)-1)
@@ -200,6 +200,6 @@ namespace bpf
     template <typename K, typename V>
     inline bool Map<K, V>::HasKey(const K &key) const
     {
-        return (QuadraticSearch(Hash(key)) != -1);
+        return (QuadraticSearch(Hash(key)) != (fsize)-1);
     }
 }
