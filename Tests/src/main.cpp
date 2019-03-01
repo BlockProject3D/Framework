@@ -76,10 +76,8 @@ int main(int ac, char **av)
     map["Test"] = 0;
     map["Test1"] = 4;
     map["Test2"] = 7;
-    //for (auto &a : map)
-    //    std::cout << *a.Key << " : " << a.Value << std::endl;
-    for (auto a = map.begin() ; a ; ++a)
-        std::cout << *(*a).Key << " : " << (*a).Value << std::endl;
+    for (auto &a : map)
+        std::cout << *a.Key << " : " << a.Value << std::endl;
     ::testing::InitGoogleTest(&ac, av);
     return (RUN_ALL_TESTS());
 }

@@ -60,7 +60,11 @@ namespace bpf
 
         public:
             inline Iterator(V *data, K *keydata, bool *empty, fsize start, fsize size)
-                : Data(data), KeyData(keydata), EmptyKeys(empty), MaxSize(size), CurID(start)
+                : Data(data)
+                , KeyData(keydata)
+                , EmptyKeys(empty)
+                , MaxSize(size)
+                , CurID(start)
             {
                 if (start == 0)
                     operator++();
@@ -73,13 +77,9 @@ namespace bpf
             {
                 return (Entry);
             }
-            inline const MapEntry<K, V> &operator->() const
+            inline const MapEntry<K, V> *operator->() const
             {
-                return (Entry);
-            }
-            inline operator bool() const
-            {
-                return (CurID != 0 && CurID != MaxSize);
+                return (&Entry);
             }
             inline bool operator==(const Iterator &other) const
             {
@@ -142,22 +142,13 @@ namespace bpf
             return (ElemCount);
         }
         
-        inline Iterator Begin() const
-        {
-            return (Iterator(Data, KeyData, EmptyKeys, 0, CurSize));
-        }
-        inline Iterator End() const
-        {
-            return (Iterator(Data, KeyData, EmptyKeys, CurSize - 1, CurSize));
-        }
-
         inline Iterator begin() const
         {
             return (Iterator(Data, KeyData, EmptyKeys, 0, CurSize));
         }
         inline Iterator end() const
         {
-            return (Iterator(Data, KeyData, EmptyKeys, CurSize - 1, CurSize));
+            return (Iterator(Data, KeyData, EmptyKeys, CurSize, CurSize));
         }
     };
 };

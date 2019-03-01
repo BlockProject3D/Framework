@@ -64,10 +64,14 @@ namespace bpf
         {
         private:
             ListNode<T> *Cur;
+            ListNode<T> *Last;
+            bool CanRunBack;
 
         public:
-            explicit inline Iterator(ListNode<T> *cur)
-                : Cur(cur)
+            inline Iterator(ListNode<T> *last, ListNode<T> *start)
+                : Cur(start)
+                , Last(last)
+                , CanRunBack(start == Null)
             {
             }
             inline void operator++()
@@ -75,18 +79,14 @@ namespace bpf
                 if (Cur)
                     Cur = Cur->Next;
             }
-            inline void operator--()
+            void operator--();
+            inline const T *operator->() const
             {
-                if (Cur)
-                    Cur = Cur->Prev;
-            }
-            inline const T &operator->() const
-            {
-                return Cur->Data;
+                return (&Cur->Data);
             }
             inline const T &operator*() const
             {
-                return Cur->Data;
+                return (Cur->Data);
             }
             inline bool operator==(const Iterator &it) const
             {
@@ -95,10 +95,6 @@ namespace bpf
             inline bool operator!=(const Iterator &it) const
             {
                 return (Cur != it.Cur);
-            }
-            inline operator bool() const
-            {
-                return (Cur != Null);
             }
         };
     private:
@@ -169,25 +165,9 @@ namespace bpf
         /**
          * Returns an iterator to the begining of the list
          */
-        inline Iterator Begin() const
-        {
-            return (Iterator(First));
-        }
-
-        /**
-         * Returns an iterator to the end of the list
-         */
-        inline Iterator End() const
-        {
-            return (Iterator(Last));
-        }
-
-        /**
-         * Returns an iterator to the begining of the list
-         */
         inline Iterator begin() const
         {
-            return (Iterator(First));
+            return (Iterator(Last, First));
         }
 
         /**
@@ -195,7 +175,7 @@ namespace bpf
          */
         inline Iterator end() const
         {
-            return (Iterator(Last));
+            return (Iterator(Last, Null));
         }
     };
 };

@@ -35,8 +35,8 @@ using namespace bpf;
 
 ModuleManager::~ModuleManager()
 {
-    for (auto it = ModuleList.End() ; it ; --it)
-        UnloadModule(*it);
+    for (auto &it : ModuleList)
+        UnloadModule(*it->Name);
 }
 
 void ModuleManager::LoadModule(const char *name)

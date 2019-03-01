@@ -57,8 +57,8 @@ void Profiler::Push(const bpf::String &name)
 Array<ProfilerSection> Profiler::GenDisplayList()
 {
     Array<ProfilerSection> sections = Array<ProfilerSection>(CurCreationID);
-    for (auto it = _map.Begin() ; it ; ++it)
-        sections[(*it).Value.CreationID] = (*it).Value;
+    for (auto &it : _map)
+        sections[it.Value.CreationID] = it.Value;
     return (sections);
 }
 

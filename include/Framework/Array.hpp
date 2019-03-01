@@ -121,13 +121,9 @@ namespace bpf
             {
                 return (_arr[_curid]);
             }
-            inline const T &operator->() const
+            inline const T *operator->() const
             {
-                return (_arr[_curid]);
-            }
-            inline operator bool() const
-            {
-                return (_curid != _max && _curid != -1);
+                return (&_arr[_curid]);
             }
             inline bool operator==(const Iterator &other) const
             {
@@ -179,8 +175,6 @@ namespace bpf
             return (_size);
         }
 
-        String ToString() const;
-
         inline const T *operator*() const
         {
             return (_arr);
@@ -205,7 +199,7 @@ namespace bpf
         /**
          * Returns an iterator to the begining of the array
          */
-        inline Iterator Begin() const
+        inline Iterator begin() const
         {
             return (Iterator(_arr, _size, 0));
         }
@@ -213,9 +207,9 @@ namespace bpf
         /**
          * Returns an iterator to the end of the array
          */
-        inline Iterator End() const
+        inline Iterator end() const
         {
-            return (Iterator(_arr, _size, _size - 1));
+            return (Iterator(_arr, _size, _size));
         }
     };
 };

@@ -31,6 +31,18 @@
 namespace bpf
 {
     template <typename T>
+    void List<T>::Iterator::operator--()
+    {
+        if (Cur)
+            Cur = Cur->Prev;
+        if (CanRunBack)
+        {
+            Cur = Last;
+            CanRunBack = false;
+        }
+    }
+
+    template <typename T>
     inline List<T>::List()
         : First(Null)
         , Last(Null)
