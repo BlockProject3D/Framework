@@ -31,18 +31,6 @@
 namespace bpf
 {
     template <typename T>
-    void List<T>::Iterator::operator--()
-    {
-        if (Cur)
-            Cur = Cur->Prev;
-        if (CanRunBack)
-        {
-            Cur = Last;
-            CanRunBack = false;
-        }
-    }
-
-    template <typename T>
     inline List<T>::List()
         : First(Null)
         , Last(Null)
@@ -345,7 +333,7 @@ void    FList<T>::Sort(void)
         T *elem = Get(id);
 
         if (elem == Null)
-            throw IndexException(id);
+            throw IndexException((fint)id);
         return (*elem);
     }
 }

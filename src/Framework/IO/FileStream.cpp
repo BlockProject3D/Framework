@@ -177,7 +177,7 @@ fsize FileStream::Read(void *buf, fsize bufsize)
         throw IOException("File has not been oppened with read mode");
 #ifdef WINDOWS
     DWORD readsize;
-    if (ReadFile(_handle, buf, bufsize, &readsize, Null) == FALSE)
+    if (ReadFile(_handle, buf, (DWORD)bufsize, &readsize, Null) == FALSE)
         return (0);
     return (readsize);
 #else
@@ -191,7 +191,7 @@ fsize FileStream::Write(const void *buf, fsize bufsize)
         throw IOException("File has not been oppened with write mode");
 #ifdef WINDOWS
     DWORD writesize;
-    if (WriteFile(_handle, buf, bufsize, &writesize, Null) == FALSE)
+    if (WriteFile(_handle, buf, (DWORD)bufsize, &writesize, Null) == FALSE)
         return (0);
     return (writesize);
 #else

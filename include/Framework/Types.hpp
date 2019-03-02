@@ -53,10 +53,15 @@ namespace bpf
     using int64 = long long signed int;
     using uint64 = long long unsigned int;
     using int8 = signed char;
-    using fchar = uint32;
-    using fsize = long unsigned int;
     using int16 = signed short;
     using uint16 = unsigned short;
+
+    using fchar = uint32;
+
+    /**
+     * Custom int type guarenteed to be ALWAYS 32bits no matter the platform
+     */
+    using fint = int32;
 
 #ifdef X86_64
     using uintptr = uint64;
@@ -65,4 +70,6 @@ namespace bpf
     using uintptr = uint32;
     using intptr = int32;
 #endif
+
+    using fsize = uintptr;
 }

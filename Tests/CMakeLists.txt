@@ -38,6 +38,9 @@ set(SOURCES
     src/MatrixDynamic.cpp
     src/MatrixStatic.cpp
     src/Quaternion.cpp
+    src/List.cpp
+    src/ArrayList.cpp
+    src/Map.cpp
 )
 
 bp_setup_program(${PROJECT_NAME} include)

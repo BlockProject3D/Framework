@@ -29,45 +29,40 @@
 #include <cassert>
 #include <iostream>
 #include <gtest/gtest.h>
+#include <Framework/Map.hpp>
+#include <Framework/String.hpp>
 
-/*int main()
+TEST(Map, Creation)
 {
-    bpf::String str = "é This is a test !";
-    bpf::Tuple<int, float, double> tp;
-    bpf::List<bpf::ModuleEntry *> testlst;
+    bpf::Map<bpf::String, int> map;
 
-    tp.Get<0>() = 42;
-    tp.Get<1>() = 42.42f;
-    tp.Get<2>() = 423.423;
+    map["test1"] = 0;
+    map["test2"] = 3;
+    map["test3"] = 7;
+}
 
-    std::cout << "--------------" << std::endl;
-    std::cout << tp.Size() << std::endl;
-    std::cout << tp.Get<int>() << std::endl;
-    std::cout << tp.Get<float>() << std::endl;
-    std::cout << tp.Get<double>() << std::endl;
-    std::cout << "--------------" << std::endl;
-
-    std::cout << str.Size() << std::endl;
-    std::cout << str.Len() << std::endl;
-    std::cout << (str[0] == bpf::String::UTF32("é")) << std::endl;
-
-    bpf::DateTime dt = bpf::DateTime::LocalTime();
-    std::cout << *dt.ToString() << std::endl;
-    bpf::DateTime dt1 = dt + bpf::DateTime(3600) + bpf::DateTime(61);
-    std::cout << *dt1.ToString() << std::endl;
-
-    assert(dt < dt1);
-    assert(dt1 > dt);
-    assert(dt == dt);
-    assert(dt1 == dt1);
-    assert(dt != dt1);
-    assert(dt1 != dt);
-
-    system("PAUSE");
-}*/
-
-int main(int ac, char **av)
+TEST(Map, IterateForward)
 {
-    ::testing::InitGoogleTest(&ac, av);
-    return (RUN_ALL_TESTS());
+    bpf::String res = bpf::String::Empty;
+    bpf::Map<bpf::String, int> map;
+
+    map["test1"] = 0;
+    map["test2"] = 3;
+    map["test3"] = 7;
+    for (auto &i : map)
+        res += i.Key + bpf::String::ValueOf(i.Value) + ";";
+    EXPECT_STREQ(*res, "test37;test10;test23;");
+}
+
+TEST(Map, IterateBackward)
+{
+    bpf::String res = bpf::String::Empty;
+    bpf::Map<bpf::String, int> map;
+
+    map["test1"] = 0;
+    map["test2"] = 3;
+    map["test3"] = 7;
+    for (auto &i : bpf::Reverse(map))
+        res += i.Key + bpf::String::ValueOf(i.Value) + ";";
+    EXPECT_STREQ(*res, "test37;test23;test10;");
 }

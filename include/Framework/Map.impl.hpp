@@ -31,10 +31,8 @@
 namespace bpf
 {
     template <typename K, typename V>
-    void Map<K, V>::Iterator::operator++()
+    void Map<K, V>::Iterator::SearchNextEntry()
     {
-        if (CurID < MaxSize)
-            ++CurID;
         while (CurID < MaxSize && EmptyKeys[CurID])
             ++CurID;
         if (CurID < MaxSize && !EmptyKeys[CurID])
@@ -43,12 +41,10 @@ namespace bpf
             Entry.Value = Data[CurID];
         }
     }
-    
+
     template <typename K, typename V>
-    void Map<K, V>::Iterator::operator--()
+    void Map<K, V>::Iterator::SearchPrevEntry()
     {
-        if (CurID > 0)
-            --CurID;
         while (CurID > 0 && EmptyKeys[CurID])
             --CurID;
         if (CurID > 0 && !EmptyKeys[CurID])
@@ -56,6 +52,38 @@ namespace bpf
             Entry.Key = KeyData[CurID];
             Entry.Value = Data[CurID];
         }
+    }
+
+    template <typename K, typename V>
+    void Map<K, V>::ReverseIterator::operator++()
+    {
+        if (CurID > 0)
+            --CurID;
+        SearchPrevEntry();
+    }
+
+    template <typename K, typename V>
+    void Map<K, V>::ReverseIterator::operator--()
+    {
+        if (CurID < MaxSize)
+            ++CurID;
+        SearchNextEntry();
+    }
+
+    template <typename K, typename V>
+    void Map<K, V>::Iterator::operator++()
+    {
+        if (CurID < MaxSize)
+            ++CurID;
+        SearchNextEntry();
+    }
+    
+    template <typename K, typename V>
+    void Map<K, V>::Iterator::operator--()
+    {
+        if (CurID > 0)
+            --CurID;
+        SearchPrevEntry();
     }
 
     template <typename K, typename V>
@@ -177,7 +205,7 @@ namespace bpf
         fsize idx = QuadraticSearch(Hash(key));
 
         if (idx == (fsize)-1)
-            throw bpf::IndexException(idx);
+            throw bpf::IndexException((fint)idx);
         return (Data[idx]);
     }
 
@@ -191,7 +219,7 @@ namespace bpf
             TryExtend();
             idx = QuadraticInsert(Hash(key));
             if (idx == (fsize)-1)
-                throw bpf::IndexException(idx);
+                throw bpf::IndexException((fint)idx);
             KeyData[idx] = key;
         }
         return (Data[idx]);

@@ -189,7 +189,7 @@ namespace bpf
          * @param id the offset of the character to get
          * @throws IndexException
          */
-        inline fchar operator[](const int id) const
+        inline fchar operator[](const fint id) const
         {
             if (id < 0 || id > Len())
                 throw IndexException(id);
@@ -209,7 +209,7 @@ namespace bpf
         /**
          * Returns the number of characters in this string
          */
-        inline int Len() const
+        inline fint Len() const
 	{
 	    return (UnicodeLen);
 	}
@@ -217,7 +217,7 @@ namespace bpf
         /**
          * Returns the size in bytes of this string
          */
-        inline int Size() const
+        inline fint Size() const
         {
             return (StrLen);
         }
@@ -242,22 +242,22 @@ namespace bpf
         /**
          * Returns the index of the first occurence of str in this
          */
-        int IndexOf(const String &str) const;
+        fint IndexOf(const String &str) const;
 
         /**
          * Returns the index of the last occurence of str in this
          */
-        int LastIndexOf(const String &str) const;
+        fint LastIndexOf(const String &str) const;
 
         /**
          * Returns the index of the first occurence of c in this
          */
-        int IndexOf(const char c) const;
+        fint IndexOf(const char c) const;
 
         /**
          * Returns the index of the last occurence of c in this
          */
-        int LastIndexOf(const char c) const;
+        fint LastIndexOf(const char c) const;
 
         /**
          * Splits this string using a delimiter
@@ -318,7 +318,7 @@ namespace bpf
          * @param begin the begin index in characters (inclusive)
          * @param count the amount of characters to read
          */
-        inline String SubLen(const int begin, const int count = -1) const
+        inline String SubLen(const fint begin, const fint count = -1) const
         {
             if (count < 0)
                 return (Sub(begin));
@@ -330,13 +330,13 @@ namespace bpf
          * @param begin the begin index in characters (inclusive)
          * @param end the end index in characters (exclusive)
          */
-        String Sub(const int begin, const int end) const;
+        String Sub(const fint begin, const fint end) const;
 
         /**
          * Returns a substring where the end is the end of this string
          * @param begin the begin index in characters (inclusive)
          */
-        String Sub(const int begin) const;
+        String Sub(const fint begin) const;
 
         /**
          * Converts this string to an integer
@@ -392,8 +392,8 @@ namespace bpf
         {
             String res;
 
-            int i = format.IndexOf('[');
-            int j = format.IndexOf(']');
+            fint i = format.IndexOf('[');
+            fint j = format.IndexOf(']');
             if (i > -1 && j > -1 && format.Sub(i - 1, i) != "\\")
             {
                 res += format.Sub(0, i);
@@ -401,7 +401,7 @@ namespace bpf
                 List<String> tokens = pattern.Explode(',');
                 if (tokens.Size() < 3)
                     return (res + ValueOf(t) + Format(format.Sub(j + 1), args...));
-                int maxn = tokens[0].ToInt();
+                fint maxn = tokens[0].ToInt();
                 bool left = tokens[1] == "left";
                 String leading = tokens[2];
                 String data = ValueOf(t);
@@ -409,7 +409,7 @@ namespace bpf
                     data = data.Sub(0, maxn);
                 else if (data.Len() < maxn)
                 {
-                    int remain = maxn - data.Len();
+                    fint remain = maxn - data.Len();
                     for (int k = 0 ; k < remain ; ++k)
                     {
                         if (left)
@@ -434,7 +434,7 @@ namespace bpf
             return (*this);
         }
 
-        inline uint32 Hash() const
+        inline fsize Hash() const
         {
             return (bpf::Hash<const char *>(Data));
         }
@@ -460,7 +460,7 @@ namespace bpf
         /**
          * Converts a signed integer 32 bits to it's string representation
          */
-        static String ValueOf(int i);
+        static String ValueOf(fint i);
         
         /**
          * Converts an unsigned integer 32 bits to it's string representation

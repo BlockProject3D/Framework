@@ -401,7 +401,7 @@ uint32 String::CalcStartFromUnicode(const uint32 start) const
     return (i);
 }
 
-String String::Sub(const int begin, const int end) const
+String String::Sub(const fint begin, const fint end) const
 {
     String s;
     uint32 min;
@@ -420,7 +420,7 @@ String String::Sub(const int begin, const int end) const
     return (s);
 }
 
-String String::Sub(const int begin) const
+String String::Sub(const fint begin) const
 {
     String s;
     uint32 min;
@@ -630,7 +630,7 @@ String String::Replace(const String &search, const String &repby) const
     return (str);
 }
 
-int String::IndexOf(const String &str) const
+fint String::IndexOf(const String &str) const
 {
     uint32 i;
     uint32 charid = 0;
@@ -645,7 +645,7 @@ int String::IndexOf(const String &str) const
     return (-1);
 }
 
-int String::LastIndexOf(const String &str) const
+fint String::LastIndexOf(const String &str) const
 {
     int i;
     int charid = UnicodeLen - 1;
@@ -660,7 +660,7 @@ int String::LastIndexOf(const String &str) const
     return (-1);
 }
 
-int String::IndexOf(const char c) const
+fint String::IndexOf(const char c) const
 {
     uint32 i;
     uint32 charid = 0;
@@ -675,7 +675,7 @@ int String::IndexOf(const char c) const
     return (-1);
 }
 
-int String::LastIndexOf(const char c) const
+fint String::LastIndexOf(const char c) const
 {
     int i;
     int charid = UnicodeLen - 1;
@@ -690,7 +690,7 @@ int String::LastIndexOf(const char c) const
     return (-1);
 }
 
-int String::ToInt() const
+fint String::ToInt() const
 {
     return (atoi(Data));
 }
@@ -954,7 +954,7 @@ double String::Evaluate(const char *expr)
 }
 /* END Eval expr */
 
-String String::ValueOf(int i)
+String String::ValueOf(fint i)
 {
     std::stringstream    strs;
 

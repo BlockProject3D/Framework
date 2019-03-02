@@ -135,6 +135,46 @@ namespace bpf
             }
         };
 
+        class BP_TPL_API ReverseIterator final : public IIterator<typename Array<T>::Iterator, T>
+        {
+        private:
+            fsize _curid;
+            fsize _max;
+            T *_arr;
+
+        public:
+            inline ReverseIterator(T *lowlevel, const fsize size, const fsize start)
+                : _curid(start), _max(size), _arr(lowlevel)
+            {
+            }
+            inline void operator++()
+            {
+                if (_curid > (fsize)-1)
+                    _curid--;
+            }
+            inline void operator--()
+            {
+                if (_curid < _max)
+                    _curid++;
+            }
+            inline const T &operator*() const
+            {
+                return (_arr[_curid]);
+            }
+            inline const T *operator->() const
+            {
+                return (&_arr[_curid]);
+            }
+            inline bool operator==(const Iterator &other) const
+            {
+                return (_curid == other._curid);
+            }
+            inline bool operator!=(const Iterator &other) const
+            {
+                return (_curid != other._curid);
+            }
+        };
+
     private:
         fsize _size;
         T *_arr;
@@ -210,6 +250,22 @@ namespace bpf
         inline Iterator end() const
         {
             return (Iterator(_arr, _size, _size));
+        }
+
+        /**
+         * Returns a reverse iterator to the begining of the array
+         */
+        inline ReverseIterator rbegin() const
+        {
+            return (ReverseIterator(_arr, _size, _size - 1));
+        }
+
+        /**
+         * Returns a reverse iterator to the end of the array
+         */
+        inline ReverseIterator rend() const
+        {
+            return (ReverseIterator(_arr, _size, (fsize)-1));
         }
     };
 };

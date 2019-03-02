@@ -246,8 +246,8 @@ namespace bpf
     void Platform::ReverseBuffer(void *buf, const fsize size)
     {
         uint8 *out = reinterpret_cast<uint8 *>(buf);
-        uint32 i = 0;
-        uint32 j = size;
+        fsize i = 0;
+        fsize j = size;
         uint8 temp;
 
         while (i < size / 2)
@@ -262,13 +262,13 @@ namespace bpf
     void Platform::ReverseBuffer(void *buf, const fsize size, const fsize groupsize)
     {
         uint8 *out = reinterpret_cast<uint8 *>(buf);
-        uint32 i = 0;
-        uint32 j = size;
+        fsize i = 0;
+        fsize j = size;
         uint8 temp;
 
         while (i < size / 2)
         {
-            for (uint32 k = 0; k < groupsize; ++k)
+            for (fsize k = 0; k < groupsize; ++k)
             {
                 if (i + k >= size || j + k >= size)
                     continue;

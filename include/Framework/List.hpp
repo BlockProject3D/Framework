@@ -64,22 +64,24 @@ namespace bpf
         {
         private:
             ListNode<T> *Cur;
-            ListNode<T> *Last;
             bool CanRunBack;
 
         public:
-            inline Iterator(ListNode<T> *last, ListNode<T> *start)
+            inline Iterator(ListNode<T> *start, bool reverse)
                 : Cur(start)
-                , Last(last)
-                , CanRunBack(start == Null)
+                , CanRunBack(reverse)
             {
             }
             inline void operator++()
             {
                 if (Cur)
-                    Cur = Cur->Next;
+                    Cur = CanRunBack ? Cur->Prev : Cur->Next;
             }
-            void operator--();
+            inline void operator--()
+            {
+                if (Cur)
+                    Cur = CanRunBack ? Cur->Next : Cur->Prev;
+            }
             inline const T *operator->() const
             {
                 return (&Cur->Data);
@@ -97,6 +99,7 @@ namespace bpf
                 return (Cur != it.Cur);
             }
         };
+        using ReverseIterator = Iterator;
     private:
         ListNode<T> *First;
         ListNode<T> *Last;
@@ -167,7 +170,7 @@ namespace bpf
          */
         inline Iterator begin() const
         {
-            return (Iterator(Last, First));
+            return (Iterator(First, false));
         }
 
         /**
@@ -175,7 +178,23 @@ namespace bpf
          */
         inline Iterator end() const
         {
-            return (Iterator(Last, Null));
+            return (Iterator(Null, false));
+        }
+
+        /**
+         * Returns a reverse iterator to the begining of the list
+         */
+        inline ReverseIterator rbegin() const
+        {
+            return (ReverseIterator(Last, true));
+        }
+
+        /**
+         * Returns a reverse iterator to the end of the list
+         */
+        inline ReverseIterator rend() const
+        {
+            return (ReverseIterator(Null, true));
         }
     };
 };

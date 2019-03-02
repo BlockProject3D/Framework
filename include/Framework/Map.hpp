@@ -48,28 +48,30 @@ namespace bpf
     class BP_TPL_API Map
     {
     public:
-        class BP_TPL_API Iterator final : public IIterator<typename Map<K, V>::Iterator, MapEntry<K, V>>
+        class BP_TPL_API Iterator : public IIterator<typename Map<K, V>::Iterator, MapEntry<K, V>>
         {
-        private:
+        protected:
             V *Data;
             K *KeyData;
             bool *EmptyKeys;
             fsize MaxSize;
             fsize CurID;
             MapEntry<K, V> Entry;
+            void SearchNextEntry();
+            void SearchPrevEntry();
 
         public:
-            inline Iterator(V *data, K *keydata, bool *empty, fsize start, fsize size)
+            inline Iterator(V *data, K *keydata, bool *empty, fsize start, fsize size, const bool reverse = false)
                 : Data(data)
                 , KeyData(keydata)
                 , EmptyKeys(empty)
                 , MaxSize(size)
                 , CurID(start)
             {
-                if (start == 0)
-                    operator++();
+                if (reverse)
+                    SearchPrevEntry();
                 else
-                    operator--();
+                    SearchNextEntry();
             }
             void operator++();
             void operator--();
@@ -89,6 +91,17 @@ namespace bpf
             {
                 return (CurID != other.CurID);
             }
+        };
+
+        class ReverseIterator final : public Iterator
+        {
+        public:
+            inline ReverseIterator(V *data, K *keydata, bool *empty, fsize start, fsize size)
+                : Iterator(data, keydata, empty, start, size, true)
+            {
+            }
+            void operator++();
+            void operator--();
         };
 
     private:
@@ -149,6 +162,15 @@ namespace bpf
         inline Iterator end() const
         {
             return (Iterator(Data, KeyData, EmptyKeys, CurSize, CurSize));
+        }
+
+        inline ReverseIterator rbegin() const
+        {
+            return (ReverseIterator(Data, KeyData, EmptyKeys, CurSize - 1, CurSize));
+        }
+        inline ReverseIterator rend() const
+        {
+            return (ReverseIterator(Data, KeyData, EmptyKeys, (fsize)-1, CurSize));
         }
     };
 };
