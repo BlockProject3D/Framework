@@ -64,5 +64,5 @@ TEST(Map, IterateBackward)
     map["test3"] = 7;
     for (auto &i : bpf::Reverse(map))
         res += i.Key + bpf::String::ValueOf(i.Value) + ";";
-    EXPECT_STREQ(*res, "test37;test23;test10;");
+    EXPECT_STREQ(*res, "test23;test10;test37;");
 }

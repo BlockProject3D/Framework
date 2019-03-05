@@ -45,9 +45,9 @@ namespace bpf
     template <typename K, typename V>
     void Map<K, V>::Iterator::SearchPrevEntry()
     {
-        while (CurID > 0 && EmptyKeys[CurID])
+        while (CurID != (fsize)-1 && EmptyKeys[CurID])
             --CurID;
-        if (CurID > 0 && !EmptyKeys[CurID])
+        if (CurID != (fsize)-1 && !EmptyKeys[CurID])
         {
             Entry.Key = KeyData[CurID];
             Entry.Value = Data[CurID];
@@ -57,7 +57,7 @@ namespace bpf
     template <typename K, typename V>
     void Map<K, V>::ReverseIterator::operator++()
     {
-        if (CurID > 0)
+        if (CurID != (fsize)-1)
             --CurID;
         SearchPrevEntry();
     }
