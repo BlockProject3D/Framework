@@ -58,7 +58,7 @@ namespace bpf
         {
         }
 
-        explicit inline SharedPtr(T *raw)
+        inline SharedPtr(T *raw)
             : Count(static_cast<int *>(Memory::Malloc(sizeof(int))))
             , WCount(static_cast<int *>(Memory::Malloc(sizeof(int))))
             , RawPtr(raw)
