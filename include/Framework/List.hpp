@@ -113,7 +113,11 @@ namespace bpf
     public:
         List<T>();
         List<T>(List<T> &&other);
+        List<T>(const List<T> &other);
         ~List<T>();
+
+        List<T> &operator=(const List<T> &other);
+        List<T> &operator=(List<T> &&other);
 
         /**
          * Adds an element at the end of the list

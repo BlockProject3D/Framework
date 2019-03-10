@@ -50,6 +50,35 @@ namespace bpf
     }
 
     template <typename T>
+    List<T>::List(const List<T> &other)
+    {
+        for (auto it = other.Begin(); it; ++it)
+            Add(*it);
+    }
+
+    template <typename T>
+    List<T> &List<T>::operator=(const List<T> &other)
+    {
+        Clear();
+        for (auto it = other.Begin(); it; ++it)
+            Add(*it);
+        return (*this);
+    }
+
+    template <typename T>
+    List<T> &List<T>::operator=(List<T> &&other)
+    {
+        Clear();
+        First = other.First;
+        Last = other.Last;
+        Count = other.Count;
+        other.First = Null;
+        other.Last = Null;
+        other.Count = 0;
+        return (*this);
+    }
+
+    template <typename T>
     inline List<T>::~List()
     {
         this->Clear();

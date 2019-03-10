@@ -104,8 +104,12 @@ namespace bpf
 
     public:
         Map();
+        Map(const Map &other);
+        Map(Map &&other);
         ~Map();
       
+        Map &operator=(const Map &other);
+        Map &operator=(Map &&other);
         /**
          * Adds a new element in this hash map, replaces if key already exists
          * @param key the key of the element

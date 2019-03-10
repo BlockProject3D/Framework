@@ -27,6 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include <string.h>
 
 namespace bpf
 {
@@ -64,10 +65,85 @@ namespace bpf
         , KeyData(new K[MAP_INIT_BUF_SIZE])
         , HashTable(new uint32[MAP_INIT_BUF_SIZE])
         , EmptyKeys(new bool[MAP_INIT_BUF_SIZE])
-        , CurSize(MAP_INIT_BUF_SIZE), ElemCount(0)
+        , CurSize(MAP_INIT_BUF_SIZE)
+        , ElemCount(0)
     {
         EmptyKeys[0] = true;
         EmptyKeys[1] = true;
+    }
+
+    template <typename K, typename V>
+    Map<K, V>::Map(const Map<K, V> &other)
+        : Data(new V[other.CurSize])
+        , KeyData(new K[other.CurSize])
+        , HashTable(new uint32[other.CurSize])
+        , EmptyKeys(new bool[other.CurSize])
+        , CurSize(other.CurSize)
+        , ElemCount(other.ElemCount)
+    {
+        memcpy(Data, other.Data, sizeof(V) * other.CurSize);
+        memcpy(KeyData, other.KeyData, sizeof(K) * other.CurSize);
+        memcpy(HashTable, other.HashTable, sizeof(uint32) * other.CurSize);
+        memcpy(EmptyKeys, other.EmptyKeys, sizeof(bool) * other.CurSize);
+    }
+
+    template <typename K, typename V>
+    Map<K, V>::Map(Map<K, V> &&other)
+        : Data(other.Data)
+        , KeyData(other.KeyData)
+        , HashTable(other.HashTable)
+        , EmptyKeys(other.EmptyKeys)
+        , CurSize(other.CurSize)
+        , ElemCount(other.ElemCount)
+    {
+        other.Data = Null;
+        other.KeyData = Null;
+        other.HashTable = Null;
+        other.EmptyKeys = Null;
+        other.CurSize = 0;
+        other.ElemCount = 0;
+    }
+
+    template <typename K, typename V>
+    Map<K, V> &Map<K, V>::operator=(const Map &other)
+    {
+        delete[] Data;
+        delete[] KeyData;
+        delete[] HashTable;
+        delete[] EmptyKeys;
+        Data = new V[other.CurSize];
+        KeyData = new K[other.CurSize];
+        HashTable = new uint32[other.CurSize];
+        EmptyKeys = new bool[other.CurSize];
+        CurSize = other.CurSize;
+        ElemCount = other.ElemCount;
+        memcpy(Data, other.Data, sizeof(V) * other.CurSize);
+        memcpy(KeyData, other.KeyData, sizeof(K) * other.CurSize);
+        memcpy(HashTable, other.HashTable, sizeof(uint32) * other.CurSize);
+        memcpy(EmptyKeys, other.EmptyKeys, sizeof(bool) * other.CurSize);
+        return (*this);
+    }
+
+    template <typename K, typename V>
+    Map<K, V> &Map<K, V>::operator=(Map &&other)
+    {
+        delete[] Data;
+        delete[] KeyData;
+        delete[] HashTable;
+        delete[] EmptyKeys;
+        Data = other.Data;
+        KeyData = other.KeyData;
+        HashTable = other.HashTable;
+        EmptyKeys = other.EmptyKeys;
+        CurSize = other.CurSize;
+        ElemCount = other.ElemCount;
+        other.Data = Null;
+        other.KeyData = Null;
+        other.HashTable = Null;
+        other.EmptyKeys = Null;
+        other.CurSize = 0;
+        other.ElemCount = 0;
+        return (*this);
     }
 
     template <typename K, typename V>
