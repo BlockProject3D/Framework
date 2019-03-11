@@ -60,7 +60,11 @@ namespace bpf
 
         public:
             inline Iterator(V *data, K *keydata, bool *empty, uint32 start, uint32 size)
-                : Data(data), KeyData(keydata), EmptyKeys(empty), MaxSize(size), CurID(start)
+                : Data(data)
+                , KeyData(keydata)
+                , EmptyKeys(empty)
+                , MaxSize(size)
+                , CurID(start)
             {
                 if (start == 0)
                     operator++();

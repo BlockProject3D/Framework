@@ -51,6 +51,9 @@ namespace bpf
 
     template <typename T>
     List<T>::List(const List<T> &other)
+        : First(Null)
+        , Last(Null)
+        , Count(0)
     {
         for (auto it = other.Begin(); it; ++it)
             Add(*it);
