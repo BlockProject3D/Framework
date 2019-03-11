@@ -149,11 +149,13 @@ namespace bpf
          * Returns an element (safe), returns Null whenever element could not be found
          * @param id index of the element
          */
-        ListNode<T> *GetNode(uint32 id) const;
+        ListNode<T> *GetNode(uint32 id) const noexcept;
 
-        T *Get(const uint32 id) const;
+        T *Get(const uint32 id) const noexcept;
 
-        T operator[](const uint32 id) const;
+        const T &operator[](const uint32 id) const;
+
+        T &operator[](const uint32 id);
 
         void RemoveAt(const uint32 id);
 
@@ -163,9 +165,9 @@ namespace bpf
 
         void Sort();
 
-        T *GetFirst() const;
+        T *GetFirst() const noexcept;
 
-        T *GetLast() const;
+        T *GetLast() const noexcept;
 
         uint32 Size() const;
 

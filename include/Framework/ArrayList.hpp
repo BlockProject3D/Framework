@@ -53,8 +53,18 @@ namespace bpf
         void RemoveAt(const uint32 id);
         
         void Remove(const T &elem);
+
+        ListNode<T> *GetNode(uint32 id) const noexcept;
+
+        T *Get(const uint32 id) const noexcept;
+
+        const T &operator[](const uint32 id) const;
+
+        T &operator[](const uint32 id);
+
+        T *GetFirst() const noexcept
         
-        inline T *GetLast() const
+        inline T *GetLast() const noexcept
         {
             if (_curid == 0)
                 return (Null);

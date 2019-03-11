@@ -243,7 +243,7 @@ void    FList<T>::Sort(void)
     }
 
     template <typename T>
-    ListNode<T> *List<T>::GetNode(uint32 id) const
+    ListNode<T> *List<T>::GetNode(uint32 id) const noexcept
     {
         if (id < Count)
         {
@@ -266,7 +266,7 @@ void    FList<T>::Sort(void)
     }
 
     template <typename T>
-    inline T *List<T>::Get(uint32 const id) const
+    inline T *List<T>::Get(uint32 const id) const noexcept
     {
         ListNode<T> *cur = this->GetNode(id);
 
@@ -274,13 +274,13 @@ void    FList<T>::Sort(void)
     }
 
     template <typename T>
-    inline T *List<T>::GetFirst() const
+    inline T *List<T>::GetFirst() const noexcept
     {
         return ((First) ? &First->Data : Null);
     }
 
     template <typename T>
-    inline T *List<T>::GetLast() const
+    inline T *List<T>::GetLast() const noexcept
     {
         return ((Last) ? &Last->Data : Null);
     }
@@ -357,7 +357,17 @@ void    FList<T>::Sort(void)
     }
 
     template <typename T>
-    inline T List<T>::operator[](uint32 const id) const
+    const T &List<T>::operator[](uint32 const id) const
+    {
+        T *elem = Get(id);
+
+        if (elem == Null)
+            throw IndexException(id);
+        return (*elem);
+    }
+
+    template <typename T>
+    T &List<T>::operator[](const uint32 id)
     {
         T *elem = Get(id);
 
