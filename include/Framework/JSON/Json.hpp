@@ -38,7 +38,7 @@ namespace bpf
     class BPF_API Json
     {
     public:
-        enum class BPF_API EType
+        enum class EType
         {
             NUMBER,
             BOOLEAN,
@@ -222,6 +222,14 @@ namespace bpf
         {
         }
 
+        inline Json(String &&val)
+            : _type(EType::STRING)
+            , _number(0.0)
+            , _bool(false)
+            , _string(std::move(val))
+        {
+        }
+
         inline Json(const Object &val)
             : _type(EType::OBJECT)
             , _number(0.0)
@@ -231,13 +239,32 @@ namespace bpf
         {
         }
 
-        inline Json(const Array &arr)
+        inline Json(Object &&val)
             : _type(EType::OBJECT)
+            , _number(0.0)
+            , _bool(false)
+            , _string(String::Empty)
+            , _object(MakeUnique<Object>(std::move(val)))
+        {
+        }
+
+        inline Json(const Array &arr)
+            : _type(EType::ARRAY)
             , _number(0.0)
             , _bool(false)
             , _string(String::Empty)
             , _object(Null)
             , _array(MakeUnique<Array>(arr))
+        {
+        }
+
+        inline Json(Array &&arr)
+            : _type(EType::ARRAY)
+            , _number(0.0)
+            , _bool(false)
+            , _string(String::Empty)
+            , _object(Null)
+            , _array(MakeUnique<Array>(std::move(arr)))
         {
         }
 

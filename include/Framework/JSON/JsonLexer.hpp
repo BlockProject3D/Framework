@@ -34,7 +34,7 @@ namespace bpf
     class BPF_API JsonLexer
     {
     public:
-        enum class BPF_API ETokenType
+        enum class ETokenType
         {
             STRING,
             NUMBER,

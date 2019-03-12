@@ -67,7 +67,7 @@ fchar JsonLexer::ProcessUnicode(const String &str, int &pos)
     String nbr = String::Empty;
     int i = pos + 2;
 
-    for (i; i != str.Len(); ++i)
+    for (; i != str.Len(); ++i)
     {
         if (str[i] >= 48 && str[i] <= 57)
             nbr += str[i];

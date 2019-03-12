@@ -40,7 +40,7 @@ TEST(Json, API_1)
         {"TestArray", bpf::Json::Array {"A", "B", "TrouDuCul"}},
         {"TestObject", bpf::Json::Object
             {
-                {"a", 0},
+                {"a", 0.0},
                 {"b", 0.1},
                 {"c", true}
             }
@@ -48,6 +48,8 @@ TEST(Json, API_1)
     };
     EXPECT_EQ(obj["Test"], 0.0);
     EXPECT_EQ(obj["Test1"], true);
+    const bpf::Json::Array &arr = obj["TestArray"];
+    EXPECT_EQ(arr[0], "A");
 }
 
 TEST(Json, API_2)
