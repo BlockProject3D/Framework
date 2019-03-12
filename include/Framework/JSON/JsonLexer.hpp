@@ -26,12 +26,47 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <cassert>
-#include <iostream>
-#include <gtest/gtest.h>
+#pragma once
+#include "Framework/String.hpp"
 
-int main(int ac, char **av)
+namespace bpf
 {
-    ::testing::InitGoogleTest(&ac, av);
-    return (RUN_ALL_TESTS());
+    class BPF_API JsonLexer
+    {
+    public:
+        enum class BPF_API ETokenType
+        {
+            STRING,
+            NUMBER,
+            BASIC
+        };
+
+        struct BPF_API Token
+        {
+            String data;
+            int line;
+            ETokenType type;
+        };
+
+    private:
+        bool _string;
+        int _cursor;
+        int _line;
+        String _curNbr;
+        String _curExponent;
+        List<Token> _tokens;
+
+        bool CheckString(const String &token);
+        bool CheckNumber(const String &token, const fchar next);
+        bool CheckBasic(const String &token);
+        String ReProcessString(const String &str);
+        fchar ProcessUnicode(const String &str, int &pos);
+        fchar ProcessStandard(const String &str, int &pos);
+
+    public:
+        JsonLexer();
+        void Push(const String &input);
+        List<Token> Finish();
+        void Dump();
+    };
 }

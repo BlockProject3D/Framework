@@ -70,6 +70,10 @@ set(SOURCES
     ./include/Framework/System/Mutex.hpp
     ./include/Framework/System/ThreadManager.hpp
     ./include/Framework/System/IModuleInterface.hpp
+    ./include/Framework/JSON/Json.hpp
+    ./include/Framework/JSON/JsonException.hpp
+    ./include/Framework/JSON/JsonLexer.hpp
+    ./include/Framework/JSON/JsonParser.hpp
     ./include/Framework/API.hpp
     ./include/Framework/BinUtils.hpp
     ./include/Framework/Types.hpp
@@ -135,6 +139,9 @@ set(SOURCES
     ./src/Framework/System/Thread.cpp
     ./src/Framework/System/Mutex.cpp
     ./src/Framework/System/ThreadManager.cpp
+    ./src/Framework/JSON/Json.cpp
+    ./src/Framework/JSON/JsonLexer.cpp
+    ./src/Framework/JSON/JsonParser.cpp
     ./src/Framework/Color.cpp
     ./src/Framework/Object.cpp
     ./src/Framework/Path.cpp

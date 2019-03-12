@@ -26,12 +26,62 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <cassert>
-#include <iostream>
-#include <gtest/gtest.h>
+#include "Framework/JSON/Json.hpp"
 
-int main(int ac, char **av)
+using namespace bpf;
+
+bool Json::operator==(const Json &other) const
 {
-    ::testing::InitGoogleTest(&ac, av);
-    return (RUN_ALL_TESTS());
+    if (_type != other._type)
+        return (false);
+    switch (_type)
+    {
+    case EType::NONE:
+        return (true);
+    case EType::NUMBER:
+        return (_number == other._number);
+    case EType::BOOLEAN:
+        return (_bool == other._bool);
+    case EType::STRING:
+        return (_string == other._string);
+    case EType::ARRAY:
+        return (false);
+    case EType::OBJECT:
+        return (false);
+    }
+    return (false);
+}
+
+Json::Array::Array(const std::initializer_list<Json> &vals)
+{
+    for (auto &it : vals)
+        _data.Add(it);
+}
+
+Json::Object::Object(const std::initializer_list<std::pair<String, Json>> &lst)
+{
+    for (auto &it : lst)
+        _data[it.first] = it.second;
+}
+
+Json &Json::operator=(const Json &other)
+{
+    _type = other._type;
+    _number = other._number;
+    _bool = other._bool;
+    _string = other._string;
+    _array = other._array != Null ? MakeUnique<Array>(**other._array) : Null;
+    _object = other._object != Null ? MakeUnique<Object>(**other._object) : Null;
+    return (*this);
+}
+
+Json &Json::operator=(Json &&other)
+{
+    _type = other._type;
+    _number = other._number;
+    _bool = other._bool;
+    _string = std::move(other._string);
+    _array = std::move(other._array);
+    _object = std::move(other._object);
+    return (*this);
 }

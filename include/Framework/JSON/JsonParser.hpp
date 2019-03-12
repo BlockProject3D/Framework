@@ -26,12 +26,31 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <cassert>
-#include <iostream>
-#include <gtest/gtest.h>
+#pragma once
+#include "Framework/JSON/Json.hpp"
+#include "Framework/JSON/JsonLexer.hpp"
 
-int main(int ac, char **av)
+namespace bpf
 {
-    ::testing::InitGoogleTest(&ac, av);
-    return (RUN_ALL_TESTS());
+    class BPF_API JsonParser
+    {
+    private:
+        List<JsonLexer::Token> _tokens;
+
+        bool CheckObject(Json &j);
+        bool CheckArray(Json &j);
+        bool CheckNumber(Json &j);
+        bool CheckString(Json &j);
+        bool CheckBasic(Json &j);
+        void CheckColon();
+        void CheckComa();
+        Json CheckJson();
+    public:
+        inline JsonParser(JsonLexer &&lexer)
+            : _tokens(std::move(lexer.Finish()))
+        {
+        }
+
+        Json Parse();
+    };
 }

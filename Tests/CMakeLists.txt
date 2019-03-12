@@ -31,6 +31,7 @@ set(SOURCES
     src/main.cpp
     src/String.cpp
     src/File.cpp
+    src/JSON.cpp
     src/MemoryMapper.cpp
     src/FileStream.cpp
     src/ByteBuf.cpp

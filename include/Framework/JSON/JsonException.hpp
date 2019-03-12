@@ -26,12 +26,17 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <cassert>
-#include <iostream>
-#include <gtest/gtest.h>
+#pragma once
+#include "Framework/RuntimeException.hpp"
 
-int main(int ac, char **av)
+namespace bpf
 {
-    ::testing::InitGoogleTest(&ac, av);
-    return (RUN_ALL_TESTS());
+    class BPF_API JsonException : public RuntimeException
+    {
+    public:
+        JsonException(const String &msg)
+            : RuntimeException("Json", msg)
+        {
+        }
+    };
 }

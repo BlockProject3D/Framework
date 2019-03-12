@@ -74,17 +74,17 @@ namespace bpf
 
     template <typename K, typename V>
     Map<K, V>::Map(const Map<K, V> &other)
-        : Data(new V[other.CurSize])
-        , KeyData(new K[other.CurSize])
-        , HashTable(new uint32[other.CurSize])
-        , EmptyKeys(new bool[other.CurSize])
-        , CurSize(other.CurSize)
-        , ElemCount(other.ElemCount)
+        : Data(new V[MAP_INIT_BUF_SIZE])
+        , KeyData(new K[MAP_INIT_BUF_SIZE])
+        , HashTable(new uint32[MAP_INIT_BUF_SIZE])
+        , EmptyKeys(new bool[MAP_INIT_BUF_SIZE])
+        , CurSize(MAP_INIT_BUF_SIZE)
+        , ElemCount(0)
     {
-        memcpy(Data, other.Data, sizeof(V) * other.CurSize);
-        memcpy(KeyData, other.KeyData, sizeof(K) * other.CurSize);
-        memcpy(HashTable, other.HashTable, sizeof(uint32) * other.CurSize);
-        memcpy(EmptyKeys, other.EmptyKeys, sizeof(bool) * other.CurSize);
+        EmptyKeys[0] = true;
+        EmptyKeys[1] = true;
+        for (auto it = other.Begin(); it; ++it)
+            operator[]((*it).Key) = (*it).Value;
     }
 
     template <typename K, typename V>
@@ -111,16 +111,16 @@ namespace bpf
         delete[] KeyData;
         delete[] HashTable;
         delete[] EmptyKeys;
-        Data = new V[other.CurSize];
-        KeyData = new K[other.CurSize];
-        HashTable = new uint32[other.CurSize];
-        EmptyKeys = new bool[other.CurSize];
-        CurSize = other.CurSize;
-        ElemCount = other.ElemCount;
-        memcpy(Data, other.Data, sizeof(V) * other.CurSize);
-        memcpy(KeyData, other.KeyData, sizeof(K) * other.CurSize);
-        memcpy(HashTable, other.HashTable, sizeof(uint32) * other.CurSize);
-        memcpy(EmptyKeys, other.EmptyKeys, sizeof(bool) * other.CurSize);
+        Data = new V[MAP_INIT_BUF_SIZE];
+        KeyData = new K[MAP_INIT_BUF_SIZE];
+        HashTable = new uint32[MAP_INIT_BUF_SIZE];
+        EmptyKeys = new bool[MAP_INIT_BUF_SIZE];
+        CurSize = MAP_INIT_BUF_SIZE;
+        ElemCount = 0;
+        EmptyKeys[0] = true;
+        EmptyKeys[1] = true;
+        for (auto it = other.Begin(); it; ++it)
+            operator[]((*it).Key) = (*it).Value;
         return (*this);
     }
 
