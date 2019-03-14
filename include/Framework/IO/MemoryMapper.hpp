@@ -36,7 +36,7 @@ namespace bpf
     private:
         File _file;
         void *_mem;
-        int _mode;
+        fint _mode;
         void *_memoff;
 #ifdef WINDOWS
         void *_handle;
@@ -56,7 +56,7 @@ namespace bpf
          * @param mode file mode
          * @throws IOException
          */
-        MemoryMapper(const File &file, int mode);
+        MemoryMapper(const File &file, fint mode);
         ~MemoryMapper();
         
         /**

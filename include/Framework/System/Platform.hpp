@@ -52,8 +52,8 @@ namespace bpf
     struct CPU
     {
         String Name;
-        int NumCores;
-        int Freq;
+        fint NumCores;
+        fint Freq;
     };
 
     struct RAM
@@ -67,7 +67,7 @@ namespace bpf
         String ShortName;
         String Name;
         String Version;
-        int VersionInt;
+        fint VersionInt;
     };
 
     class BPF_API Platform
@@ -76,7 +76,7 @@ namespace bpf
         static Env InitEnvInfo();
         static OS InitOSInfo();
         static String IdentifyCPUBranding();
-        static String CPUIDIntToStr(int data);
+        static String CPUIDIntToStr(fint data);
 
     public:
         static Env &GetEnvInfo();

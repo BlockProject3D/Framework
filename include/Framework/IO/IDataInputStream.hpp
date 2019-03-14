@@ -45,7 +45,7 @@ namespace bpf
         virtual IDataInputStream &operator>>(uint64 &u) = 0;
         virtual IDataInputStream &operator>>(int8 &i) = 0;
         virtual IDataInputStream &operator>>(int16 &i) = 0;
-        virtual IDataInputStream &operator>>(int &i) = 0;
+        virtual IDataInputStream &operator>>(fint &i) = 0;
         virtual IDataInputStream &operator>>(int64 &i) = 0;
         virtual IDataInputStream &operator>>(float &f) = 0;
         virtual IDataInputStream &operator>>(double &d) = 0;

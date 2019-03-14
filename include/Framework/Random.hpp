@@ -35,13 +35,13 @@ namespace bpf
     class BPF_API Random
     {
     private:
-        int IntBounds(const int min, const int max);
+        fint IntBounds(const fint min, const fint max);
 
     public:
         Random();
         explicit Random(const long seed);
-        int NextInt(const int max = INT_MAX);
-        int NextInt(const int min, const int max);
+        fint NextInt(const fint max = INT_MAX);
+        fint NextInt(const fint min, const fint max);
         uint8 NextByte(const uint8 max = 255);
         uint8 NextByte(const uint8 min, const uint8 max);
         uint16 NextShort(const uint16 max = 65535);

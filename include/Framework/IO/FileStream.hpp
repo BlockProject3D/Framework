@@ -33,15 +33,15 @@
 
 namespace bpf
 {
-    constexpr int FILE_MODE_READ = 0x10;
-    constexpr int FILE_MODE_WRITE = 0x20;
-    constexpr int FILE_MODE_APPEND = 0x40;
-    constexpr int FILE_MODE_TRUNCATE = 0x80;
+    constexpr fint FILE_MODE_READ = 0x10;
+    constexpr fint FILE_MODE_WRITE = 0x20;
+    constexpr fint FILE_MODE_APPEND = 0x40;
+    constexpr fint FILE_MODE_TRUNCATE = 0x80;
 
     class BPF_API FileStream : public IInputStream, public IOutputStream
     {
     private:
-        int _mode;
+        fint _mode;
 #ifdef WINDOWS
         void *_handle;
 #else
@@ -58,7 +58,7 @@ namespace bpf
          * @param mode file mode ored (ex : FILE_MODE_READ | FILE_MODE_WRITE)
          * @throws IOException
          */
-        FileStream(const File &file, int mode);
+        FileStream(const File &file, fint mode);
         ~FileStream();
         
         /**

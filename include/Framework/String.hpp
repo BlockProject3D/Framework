@@ -341,7 +341,7 @@ namespace bpf
         /**
          * Converts this string to an integer
          */
-        int ToInt() const;
+        fint ToInt() const;
 
         /**
          * Converts this string to a float

@@ -47,7 +47,7 @@ namespace bpf
     {
         String Name;
         long long Time; //In micro seconds
-        int Pos;
+        fint Pos;
         uint32 CreationID;
     };
 

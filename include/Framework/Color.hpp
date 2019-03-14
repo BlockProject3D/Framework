@@ -98,7 +98,7 @@ namespace bpf
          * Initializes a FColor from a packed rgb int
          * @param rgb the packed rgb integer
          */
-        explicit Color(const int rgb); //TODO : Implement
+        explicit Color(const fint rgb); //TODO : Implement
 
         /**
          * Blends two colors by addition

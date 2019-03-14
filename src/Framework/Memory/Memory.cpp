@@ -32,7 +32,7 @@
 using namespace bpf;
 
 #ifdef BUILD_DEBUG
-int Memory::Allocs = 0;
+fsize Memory::Allocs = 0;
 fsize Memory::CurUsedMem = 0;
 Mutex Memory::MemMutex;
 

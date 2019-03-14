@@ -59,7 +59,7 @@ String FileStream::ObtainErrorString()
 }
 #endif
 
-FileStream::FileStream(const File &file, int mode)
+FileStream::FileStream(const File &file, fint mode)
     : _mode(mode)
 {
 #ifdef WINDOWS

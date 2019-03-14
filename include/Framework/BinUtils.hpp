@@ -31,13 +31,13 @@
 namespace bpf
 {
     template <typename T>
-    inline void SetBit(T &data, int id, bool flag)
+    inline void SetBit(T &data, fint id, bool flag)
     {
         flag ? (data |= 1UL << id) : (data &= ~(1UL << id));
     }
 
     template <typename T>
-    inline bool GetBit(T data, int id)
+    inline bool GetBit(T data, fint id)
     {
         return ((data >> id) & 0x1);
     }

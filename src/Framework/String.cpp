@@ -247,7 +247,7 @@ bool String::operator==(const String &other) const
 {
     if (StrLen != other.StrLen)
         return (false);
-    for (unsigned int i = 0; i < StrLen; i++)
+    for (uint32 i = 0; i < StrLen; i++)
     {
         if (other.Data[i] != Data[i])
             return (false);
@@ -257,7 +257,7 @@ bool String::operator==(const String &other) const
 
 bool String::operator<(const String &other) const
 {
-    for (unsigned int i = 0 ; i < StrLen ; i++)
+    for (uint32 i = 0 ; i < StrLen ; i++)
     {
         if (Data[i] != other.Data[i])
             return (Data[i] < other.Data[i]);
@@ -267,7 +267,7 @@ bool String::operator<(const String &other) const
 
 bool String::operator>(const String &other) const
 {
-    for (unsigned int i = 0 ; i < StrLen ; i++)
+    for (uint32 i = 0 ; i < StrLen ; i++)
     {
         if (Data[i] != other.Data[i])
             return (Data[i] > other.Data[i]);
@@ -647,8 +647,8 @@ fint String::IndexOf(const String &str) const
 
 fint String::LastIndexOf(const String &str) const
 {
-    int i;
-    int charid = UnicodeLen - 1;
+    fint i;
+    fint charid = UnicodeLen - 1;
 
     for (i = StrLen - 1 ; i >= 0 ; --i)
     {
@@ -677,9 +677,9 @@ fint String::IndexOf(const char c) const
 
 fint String::LastIndexOf(const char c) const
 {
-    int i;
-    int charid = UnicodeLen - 1;
-
+    fint i;
+    fint charid = UnicodeLen - 1;
+    
     for (i = StrLen - 1 ; i >= 0 ; --i)
     {
         if (Data[i] == c)

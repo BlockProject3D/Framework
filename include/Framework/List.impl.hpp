@@ -153,9 +153,9 @@ void    FList<T>::Sort(void)
 {
     T        *tmp = Null;
 
-    for (int i = 0 ; i < Count ; i++)
+    for (fsize i = 0 ; i < Count ; i++)
     {
-        for (int j = 0 ; j < (Count - i) ; j++)
+        for (fsize j = 0 ; j < (Count - i) ; j++)
         {
             if (Get(j) != Null && Get(j + 1) != Null
                 && *Get(j) > *Get(j + 1))
