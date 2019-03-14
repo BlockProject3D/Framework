@@ -65,7 +65,7 @@ namespace bpf
         {
             if (Size() <= 0)
                 return (nullptr);
-            return (Content[0]);
+            return (&Content[0]);
         }
 
         inline fsize Size() const
