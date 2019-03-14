@@ -178,7 +178,14 @@ namespace bpf
         {
         }
 
-        inline Json(const intptr val)
+        inline Json(const int val)
+            : _type(EType::NUMBER)
+            , _number((double)val)
+            , _bool(false)
+        {
+        }
+
+        inline Json(const uint32 val)
             : _type(EType::NUMBER)
             , _number((double)val)
             , _bool(false)
@@ -272,7 +279,14 @@ namespace bpf
 
         Json &operator=(Json &&other);
 
-        inline Json &operator=(const intptr val)
+        inline Json &operator=(const int val)
+        {
+            _type = EType::NUMBER;
+            _number = (double)val;
+            return (*this);
+        }
+
+        inline Json &operator=(const uint32 val)
         {
             _type = EType::NUMBER;
             _number = (double)val;
@@ -340,11 +354,18 @@ namespace bpf
             return (!operator==(other));
         }
 
-        inline explicit operator intptr() const
+        inline explicit operator int() const
         {
             if (_type != EType::NUMBER)
                 throw bpf::JsonException("Incompatible value type");
-            return ((intptr)_number);
+            return ((int)_number);
+        }
+
+        inline explicit operator uint32() const
+        {
+            if (_type != EType::NUMBER)
+                throw bpf::JsonException("Incompatible value type");
+            return ((uint32)_number);
         }
 
         inline explicit operator double() const
@@ -383,6 +404,62 @@ namespace bpf
         }
 
         inline operator const Object &() const
+        {
+            if (_type != EType::OBJECT)
+                throw bpf::JsonException("Incompatible value type");
+            return (**_object);
+        }
+
+        inline int GetInt() const
+        {
+            if (_type != EType::NUMBER)
+                throw bpf::JsonException("Incompatible value type");
+            return ((int)_number);
+        }
+
+        inline uint32 GetUInt() const
+        {
+            if (_type != EType::NUMBER)
+                throw bpf::JsonException("Incompatible value type");
+            return ((uint32)_number);
+        }
+
+        inline double GetDouble() const
+        {
+            if (_type != EType::NUMBER)
+                throw bpf::JsonException("Incompatible value type");
+            return (_number);
+        }
+
+        inline float GetFloat() const
+        {
+            if (_type != EType::NUMBER)
+                throw bpf::JsonException("Incompatible value type");
+            return ((float)_number);
+        }
+
+        inline bool GetBool() const
+        {
+            if (_type != EType::BOOLEAN)
+                throw bpf::JsonException("Incompatible value type");
+            return (_bool);
+        }
+
+        inline const String &GetString() const
+        {
+            if (_type != EType::STRING)
+                throw bpf::JsonException("Incompatible value type");
+            return (_string);
+        }
+
+        inline const Array &GetArray() const
+        {
+            if (_type != EType::ARRAY)
+                throw bpf::JsonException("Incompatible value type");
+            return (**_array);
+        }
+
+        inline const Object &GetObject() const
         {
             if (_type != EType::OBJECT)
                 throw bpf::JsonException("Incompatible value type");

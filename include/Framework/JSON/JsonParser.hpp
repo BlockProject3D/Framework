@@ -46,7 +46,7 @@ namespace bpf
         void CheckComa();
         Json CheckJson();
     public:
-        inline JsonParser(JsonLexer &&lexer)
+        inline explicit JsonParser(JsonLexer &&lexer)
             : _tokens(std::move(lexer.Finish()))
         {
         }

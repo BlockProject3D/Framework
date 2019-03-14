@@ -40,16 +40,17 @@ TEST(Json, API_1)
         {"TestArray", bpf::Json::Array {"A", "B", "TrouDuCul"}},
         {"TestObject", bpf::Json::Object
             {
-                {"a", 0.0},
+                {"a", 0},
                 {"b", 0.1},
                 {"c", true}
             }
         }
     };
-    EXPECT_EQ(obj["Test"], 0.0);
+    EXPECT_EQ(obj["Test"], 0);
     EXPECT_EQ(obj["Test1"], true);
     const bpf::Json::Array &arr = obj["TestArray"];
     EXPECT_EQ(arr[0], "A");
+    EXPECT_STREQ(*arr[0].GetString(), "A");
 }
 
 TEST(Json, API_2)
@@ -71,6 +72,13 @@ TEST(Json, API_2)
             {"Test1", "b"}
         }
     };
+    const bpf::Json::Object &obj = arr[0];
+    EXPECT_EQ(obj["Test"], "a");
+    EXPECT_EQ(obj["Test1"], "b");
+    EXPECT_STREQ(*arr[0].GetObject()["Test"].GetString(), "a");
+    EXPECT_STREQ(*arr[1].GetObject()["Test"].GetString(), "a");
+    EXPECT_STREQ(*arr[2].GetObject()["Test"].GetString(), "a");
+    EXPECT_STREQ(*arr[0].GetObject()["Test1"].GetString(), "b");
 }
 
 TEST(Json, LexerParser)
@@ -95,6 +103,6 @@ TEST(Json, LexerParser)
     EXPECT_EQ(testObject["TheNull"], bpf::Json());
     EXPECT_EQ(testObject["TheNull"], bpf::Json());
     bpf::String str1 = testObject["MyString"];
-    EXPECT_EQ(str1, "This is a true test of false and null containing 0.1 42.42 numbers and even \"strings\"");
-    EXPECT_EQ(testObject["MyString"], "This is a true test of false and null containing 0.1 42.42 numbers and even \"strings\"");
+    EXPECT_STREQ(*str1, "This is a true test of false and null containing 0.1 42.42 numbers and even \"strings\"");
+    EXPECT_STREQ(*testObject["MyString"].GetString(), "This is a true test of false and null containing 0.1 42.42 numbers and even \"strings\"");
 }

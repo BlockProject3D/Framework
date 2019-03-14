@@ -34,7 +34,7 @@ namespace bpf
     class BPF_API JsonException : public RuntimeException
     {
     public:
-        JsonException(const String &msg)
+        inline explicit JsonException(const String &msg)
             : RuntimeException("Json", msg)
         {
         }
