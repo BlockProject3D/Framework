@@ -57,17 +57,17 @@ namespace bpf
     template <typename K, typename V>
     void Map<K, V>::ReverseIterator::operator++()
     {
-        if (CurID != (fsize)-1)
-            --CurID;
-        SearchPrevEntry();
+        if (Iterator::CurID != (fsize)-1)
+            --Iterator::CurID;
+        Iterator::SearchPrevEntry();
     }
 
     template <typename K, typename V>
     void Map<K, V>::ReverseIterator::operator--()
     {
-        if (CurID < MaxSize)
-            ++CurID;
-        SearchNextEntry();
+        if (Iterator::CurID < Iterator::MaxSize)
+            ++Iterator::CurID;
+        Iterator::SearchNextEntry();
     }
 
     template <typename K, typename V>
