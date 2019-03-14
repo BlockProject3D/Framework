@@ -56,7 +56,7 @@ namespace bpf
         const C &_ref;
 
     public:
-        inline ReverseAdapter(const C &ref)
+        inline explicit ReverseAdapter(const C &ref)
             : _ref(ref)
         {
         }
