@@ -37,19 +37,41 @@ namespace bpf
     {
     private:
         T *Content;
-        int MaxSize;
-        int CurSize;
-        int CurPtr;
+        fsize MaxSize;
+        fsize CurSize;
+        fsize CurPtr;
         
     public:
-        explicit Stack(int maxsize);
+        explicit Stack(fsize maxsize);
         ~Stack();
         void Push(const T &element);
         const T &Pop();
-        const T &Get(const int id) const;
-        const T &GetLast() const;
-        bool IsEmpty() const;
-        int Size() const;
+
+        inline const T &operator[](const fsize id) const
+        {
+            if (id >= MaxSize)
+                throw IndexException((fint)id);
+            return (Content[CurPtr + 1 + id]);
+        }
+
+        inline T *GetLast() const
+        {
+            if (Size() <= 0)
+                return (nullptr);
+            return (&Content[CurPtr + 1]);
+        }
+
+        inline T *GetFirst() const
+        {
+            if (Size() <= 0)
+                return (nullptr);
+            return (&Content[0]);
+        }
+
+        inline fsize Size() const
+        {
+            return (CurSize);
+        }
 
         inline typename Array<T>::Iterator Begin() const
         {

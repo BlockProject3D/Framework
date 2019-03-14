@@ -38,12 +38,12 @@ namespace bpf
     private:
         time_t _curtm;
         uint32 _year;
-        int _day;
-        int _dayweek;
-        int _month;
-        int _hour;
-        int _minute;
-        int _second;
+        fint _day;
+        fint _dayweek;
+        fint _month;
+        fint _hour;
+        fint _minute;
+        fint _second;
 
         void RecalcLocal();
         void RecalcUTC();
@@ -57,27 +57,27 @@ namespace bpf
             return (_year + 1900);
         }
 
-        inline int GetDay() const noexcept
+        inline fint GetDay() const noexcept
         {
             return (_day);
         }
 
-        inline int GetMonth() const noexcept
+        inline fint GetMonth() const noexcept
         {
             return (_month + 1);
         }
 
-        inline int GetHours() const noexcept
+        inline fint GetHours() const noexcept
         {
             return (_hour);
         }
 
-        inline int GetMinutes() const noexcept
+        inline fint GetMinutes() const noexcept
         {
             return (_minute);
         }
 
-        inline int GetSeconds() const noexcept
+        inline fint GetSeconds() const noexcept
         {
             return (_second);
         }

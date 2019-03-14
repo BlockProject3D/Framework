@@ -37,11 +37,11 @@ namespace bpf
     class BP_TPL_API SharedPtr
     {
     private:
-        int *Count;
-        int *WCount;
+        fint *Count;
+        fint *WCount;
         T *RawPtr;
 
-        inline SharedPtr(int *c, int *w, T *raw)
+        inline SharedPtr(fint *c, fint *w, T *raw)
             : Count(c)
             , WCount(w)
             , RawPtr(raw)
@@ -59,8 +59,8 @@ namespace bpf
         }
 
         explicit inline SharedPtr(T *raw)
-            : Count(static_cast<int *>(Memory::Malloc(sizeof(int))))
-            , WCount(static_cast<int *>(Memory::Malloc(sizeof(int))))
+            : Count(static_cast<fint *>(Memory::Malloc(sizeof(int))))
+            , WCount(static_cast<fint *>(Memory::Malloc(sizeof(int))))
             , RawPtr(raw)
         {
             *Count = 1;

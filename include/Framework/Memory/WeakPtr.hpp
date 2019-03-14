@@ -34,11 +34,11 @@ namespace bpf
     class BP_TPL_API WeakPtr
     {
     private:
-        int *Count;
-        int *WCount;
+        fint *Count;
+        fint *WCount;
         T *RawPtr;
 
-        inline WeakPtr(int *c, T *raw, int *w)
+        inline WeakPtr(fint *c, T *raw, fint *w)
             : Count(c), WCount(w), RawPtr(raw)
         {
             if (Count != Null)

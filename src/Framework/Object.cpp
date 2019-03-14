@@ -33,9 +33,6 @@ using namespace bpf;
 
 Object::~Object()
 {
-    for (auto it = Refs.Begin() ; it ; ++it)
-    {
-        void **ref = *it;
+    for (void **ref : Refs)
         *ref = NULL;
-    }
 }

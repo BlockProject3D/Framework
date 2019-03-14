@@ -76,14 +76,14 @@ namespace bpf
         inline void Seek(const fsize pos)
         {
             if (pos >= _size)
-                throw IndexException(pos);
+                throw IndexException((fint)pos);
             _cursor = pos;
         }
     
         inline uint8 operator[](const fsize id) const
         {
             if (id >= _size)
-                throw IndexException(id);
+                throw IndexException((fint)id);
             return (_buf[id]);
         }
     };

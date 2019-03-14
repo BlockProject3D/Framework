@@ -99,7 +99,7 @@ namespace bpf
             return (*this);
         }
 
-        inline IDataInputStream &operator>>(int &i)
+        inline IDataInputStream &operator>>(fint &i)
         {
             ReadSubBuf(&i, 4);
             return (*this);

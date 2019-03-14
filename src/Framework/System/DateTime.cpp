@@ -43,13 +43,13 @@ DateTime::DateTime(uint64 seconds)
     , _minute(0)
     , _second(0)
 {
-    _day = (int)(seconds / (3600 * 24));
+    _day = (fint)(seconds / (3600 * 24));
     seconds -= _day * 3600 * 24;
-    _hour = (int)(seconds / 3600);
+    _hour = (fint)(seconds / 3600);
     seconds -= _hour * 3600;
-    _minute = (int)(seconds / 60);
+    _minute = (fint)(seconds / 60);
     seconds -= _minute * 60;
-    _second = (int)seconds;
+    _second = (fint)seconds;
 }
 
 DateTime::DateTime()

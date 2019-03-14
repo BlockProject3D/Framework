@@ -90,9 +90,9 @@ namespace bpf
         {
             T *tmp = _arr;
             _arr = new T[id + 1];
-            for (uint32 i = 0 ; i < _size ; ++i)
+            for (fsize i = 0 ; i < _size ; ++i)
                 _arr[i] = tmp[i];
-            for (uint32 i = _size ; i < id + 1 ; ++i)
+            for (fsize i = _size ; i < id + 1 ; ++i)
                 _arr[i] = DefaultOf<T>();
             _size = id + 1;
             delete[] tmp;

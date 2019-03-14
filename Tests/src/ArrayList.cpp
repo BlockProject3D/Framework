@@ -26,30 +26,6 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-#include "Framework/Types.hpp"
-#include "Framework/IO/IInputStream.hpp"
-#include "Framework/String.hpp"
-
-namespace bpf
-{
-    constexpr fsize READ_BUF_SIZE = 128;
-
-    class BPF_API IDataInputStream : public IInputStream
-    {
-    public:
-        virtual ~IDataInputStream() {}
-        virtual IDataInputStream &operator>>(uint8 &u) = 0;
-        virtual IDataInputStream &operator>>(uint16 &u) = 0;
-        virtual IDataInputStream &operator>>(uint32 &u) = 0;
-        virtual IDataInputStream &operator>>(uint64 &u) = 0;
-        virtual IDataInputStream &operator>>(int8 &i) = 0;
-        virtual IDataInputStream &operator>>(int16 &i) = 0;
-        virtual IDataInputStream &operator>>(fint &i) = 0;
-        virtual IDataInputStream &operator>>(int64 &i) = 0;
-        virtual IDataInputStream &operator>>(float &f) = 0;
-        virtual IDataInputStream &operator>>(double &d) = 0;
-        virtual IDataInputStream &operator>>(bool &b) = 0;
-        virtual IDataInputStream &operator>>(bpf::String &str) = 0;
-    };
-}
+#include <cassert>
+#include <iostream>
+#include <gtest/gtest.h>

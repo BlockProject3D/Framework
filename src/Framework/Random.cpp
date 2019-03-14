@@ -29,13 +29,13 @@
 #include <time.h>
 #include "Framework/Framework.hpp"
 #include "Framework/Random.hpp"
-#include "Framework/Math/BMath.hpp"
+#include "Framework/Math/Math.hpp"
 
 using namespace bpf;
 
-int Random::IntBounds(const int min, const int max)
+fint Random::IntBounds(const fint min, const fint max)
 {
-    int rd = rand() % max;
+    fint rd = rand() % max;
 
     while (rd < min || rd > max)
         rd = rand() % max;
@@ -52,12 +52,12 @@ Random::Random()
     srand((unsigned int)time(NULL));
 }
 
-int Random::NextInt(const int max)
+fint Random::NextInt(const fint max)
 {
     return (rand() % max);
 }
 
-int Random::NextInt(const int min, const int max)
+fint Random::NextInt(const fint min, const fint max)
 {
     return (IntBounds(min, max));
 }
@@ -84,14 +84,14 @@ uint16 Random::NextShort(const uint16 min, const uint16 max)
 
 float Random::NextFloat(const float min)
 {
-    int start = Framework::FMath::Abs(rand() % 256);
+    fint start = Math::Abs(rand() % 256);
 
     return (((float)start / 256.0f) + min);
 }
 
 double Random::NextDouble()
 {
-    int start = Framework::FMath::Abs(rand() % 256);
+    fint start = Math::Abs(rand() % 256);
 
     return ((double)start / 256.0f);
 }

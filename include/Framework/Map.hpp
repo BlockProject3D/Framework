@@ -27,13 +27,14 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/Types.hpp"
 #include "Framework/Iterator.hpp"
 #include "Framework/IndexException.hpp"
 
 //TODO : Use bpf::fsize for sizes
 namespace bpf
 {
-    constexpr int MAP_INIT_BUF_SIZE = 2;
+    constexpr fint MAP_INIT_BUF_SIZE = 2;
     constexpr float MAP_LIMIT_UNTIL_EXTEND = 0.5f;
 
     template<typename K, typename V>
@@ -47,24 +48,30 @@ namespace bpf
     class BP_TPL_API Map
     {
     public:
-        class BP_TPL_API Iterator final : public IIterator<typename Map<K, V>::Iterator, MapEntry<K, V>>
+        class BP_TPL_API Iterator : public IIterator<typename Map<K, V>::Iterator, MapEntry<K, V>>
         {
-        private:
+        protected:
             V *Data;
             K *KeyData;
             bool *EmptyKeys;
-            uint32 MaxSize;
-            uint32 CurID;
+            fsize MaxSize;
+            fsize CurID;
             MapEntry<K, V> Entry;
+            void SearchNextEntry();
+            void SearchPrevEntry();
 
         public:
-            inline Iterator(V *data, K *keydata, bool *empty, uint32 start, uint32 size)
-                : Data(data), KeyData(keydata), EmptyKeys(empty), MaxSize(size), CurID(start)
+            inline Iterator(V *data, K *keydata, bool *empty, fsize start, fsize size, const bool reverse = false)
+                : Data(data)
+                , KeyData(keydata)
+                , EmptyKeys(empty)
+                , MaxSize(size)
+                , CurID(start)
             {
-                if (start == 0)
-                    operator++();
+                if (reverse)
+                    SearchPrevEntry();
                 else
-                    operator--();
+                    SearchNextEntry();
             }
             void operator++();
             void operator--();
@@ -72,13 +79,9 @@ namespace bpf
             {
                 return (Entry);
             }
-            inline const MapEntry<K, V> &operator->() const
+            inline const MapEntry<K, V> *operator->() const
             {
-                return (Entry);
-            }
-            inline operator bool() const
-            {
-                return (CurID != 0 && CurID != MaxSize);
+                return (&Entry);
             }
             inline bool operator==(const Iterator &other) const
             {
@@ -90,17 +93,28 @@ namespace bpf
             }
         };
 
+        class ReverseIterator final : public Iterator
+        {
+        public:
+            inline ReverseIterator(V *data, K *keydata, bool *empty, fsize start, fsize size)
+                : Iterator(data, keydata, empty, start, size, true)
+            {
+            }
+            void operator++();
+            void operator--();
+        };
+
     private:
         V *Data;
         K *KeyData;
-        uint32 *HashTable;
+        fsize *HashTable;
         bool *EmptyKeys;
-        uint32 CurSize;
-        uint32 ElemCount;
+        fsize CurSize;
+        fsize ElemCount;
 
         void TryExtend(); //Checks and extends the hash table by the multiplier
-        int QuadraticSearch(uint32 hkey) const;
-        int QuadraticInsert(uint32 hkey);
+        fsize QuadraticSearch(fsize hkey) const;
+        fsize QuadraticInsert(fsize hkey);
 
     public:
         Map();
@@ -136,18 +150,27 @@ namespace bpf
         /**
          * Returns the size of this hash table, that means the element count
          */
-        inline uint32 Size() const
+        inline fsize Size() const
         {
             return (ElemCount);
         }
         
-        inline Iterator Begin() const
+        inline Iterator begin() const
         {
             return (Iterator(Data, KeyData, EmptyKeys, 0, CurSize));
         }
-        inline Iterator End() const
+        inline Iterator end() const
         {
-            return (Iterator(Data, KeyData, EmptyKeys, CurSize - 1, CurSize));
+            return (Iterator(Data, KeyData, EmptyKeys, CurSize, CurSize));
+        }
+
+        inline ReverseIterator rbegin() const
+        {
+            return (ReverseIterator(Data, KeyData, EmptyKeys, CurSize - 1, CurSize));
+        }
+        inline ReverseIterator rend() const
+        {
+            return (ReverseIterator(Data, KeyData, EmptyKeys, (fsize)-1, CurSize));
         }
     };
 };

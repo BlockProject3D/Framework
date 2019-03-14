@@ -26,30 +26,43 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-#include "Framework/Types.hpp"
-#include "Framework/IO/IInputStream.hpp"
-#include "Framework/String.hpp"
+#include <cassert>
+#include <iostream>
+#include <gtest/gtest.h>
+#include <Framework/Map.hpp>
+#include <Framework/String.hpp>
 
-namespace bpf
+TEST(Map, Creation)
 {
-    constexpr fsize READ_BUF_SIZE = 128;
+    bpf::Map<bpf::String, int> map;
 
-    class BPF_API IDataInputStream : public IInputStream
-    {
-    public:
-        virtual ~IDataInputStream() {}
-        virtual IDataInputStream &operator>>(uint8 &u) = 0;
-        virtual IDataInputStream &operator>>(uint16 &u) = 0;
-        virtual IDataInputStream &operator>>(uint32 &u) = 0;
-        virtual IDataInputStream &operator>>(uint64 &u) = 0;
-        virtual IDataInputStream &operator>>(int8 &i) = 0;
-        virtual IDataInputStream &operator>>(int16 &i) = 0;
-        virtual IDataInputStream &operator>>(fint &i) = 0;
-        virtual IDataInputStream &operator>>(int64 &i) = 0;
-        virtual IDataInputStream &operator>>(float &f) = 0;
-        virtual IDataInputStream &operator>>(double &d) = 0;
-        virtual IDataInputStream &operator>>(bool &b) = 0;
-        virtual IDataInputStream &operator>>(bpf::String &str) = 0;
-    };
+    map["test1"] = 0;
+    map["test2"] = 3;
+    map["test3"] = 7;
+}
+
+TEST(Map, IterateForward)
+{
+    bpf::String res = bpf::String::Empty;
+    bpf::Map<bpf::String, int> map;
+
+    map["test1"] = 0;
+    map["test2"] = 3;
+    map["test3"] = 7;
+    for (auto &i : map)
+        res += i.Key + bpf::String::ValueOf(i.Value) + ";";
+    EXPECT_STREQ(*res, "test37;test10;test23;");
+}
+
+TEST(Map, IterateBackward)
+{
+    bpf::String res = bpf::String::Empty;
+    bpf::Map<bpf::String, int> map;
+
+    map["test1"] = 0;
+    map["test2"] = 3;
+    map["test3"] = 7;
+    for (auto &i : bpf::Reverse(map))
+        res += i.Key + bpf::String::ValueOf(i.Value) + ";";
+    EXPECT_STREQ(*res, "test23;test10;test37;");
 }

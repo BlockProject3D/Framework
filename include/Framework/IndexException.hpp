@@ -27,6 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/Types.hpp"
 #include "Framework/Exception.hpp"
 
 namespace bpf
@@ -34,16 +35,16 @@ namespace bpf
     class BPF_API IndexException final : public Exception
     {
     private:
-        int ID;
+        fint ID;
 
     public:
-        explicit inline IndexException(const int id) noexcept
+        explicit inline IndexException(const fint id) noexcept
             : Exception()
             , ID(id)
         {
         }
 
-        int GetID() const noexcept
+        fint GetID() const noexcept
         {
             return (ID);
         }

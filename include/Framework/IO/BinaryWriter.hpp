@@ -109,7 +109,7 @@ namespace bpf
             return (*this);
         }
 
-        inline IDataOutputStream &operator<<(int i)
+        inline IDataOutputStream &operator<<(fint i)
         {
             WriteSubBuf(&i, 4);
             return (*this);

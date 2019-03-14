@@ -63,7 +63,7 @@ String MemoryMapper::ObtainErrorString()
 }
 #endif
 
-MemoryMapper::MemoryMapper(const File &file, int mode)
+MemoryMapper::MemoryMapper(const File &file, fint mode)
     : _file(file)
     , _mem(Null)
     , _mode(mode)

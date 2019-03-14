@@ -26,30 +26,73 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-#include "Framework/Types.hpp"
-#include "Framework/IO/IInputStream.hpp"
-#include "Framework/String.hpp"
+#include <cassert>
+#include <iostream>
+#include <gtest/gtest.h>
+#include <Framework/List.hpp>
+#include <Framework/String.hpp>
 
-namespace bpf
+TEST(List, Creation)
 {
-    constexpr fsize READ_BUF_SIZE = 128;
+    bpf::List<int> lst;
 
-    class BPF_API IDataInputStream : public IInputStream
-    {
-    public:
-        virtual ~IDataInputStream() {}
-        virtual IDataInputStream &operator>>(uint8 &u) = 0;
-        virtual IDataInputStream &operator>>(uint16 &u) = 0;
-        virtual IDataInputStream &operator>>(uint32 &u) = 0;
-        virtual IDataInputStream &operator>>(uint64 &u) = 0;
-        virtual IDataInputStream &operator>>(int8 &i) = 0;
-        virtual IDataInputStream &operator>>(int16 &i) = 0;
-        virtual IDataInputStream &operator>>(fint &i) = 0;
-        virtual IDataInputStream &operator>>(int64 &i) = 0;
-        virtual IDataInputStream &operator>>(float &f) = 0;
-        virtual IDataInputStream &operator>>(double &d) = 0;
-        virtual IDataInputStream &operator>>(bool &b) = 0;
-        virtual IDataInputStream &operator>>(bpf::String &str) = 0;
-    };
+    lst.Add(0);
+    lst.Add(3);
+    lst.Add(7);
+}
+
+TEST(List, IterateForward_Test1)
+{
+    int res = 0;
+    bpf::List<int> lst;
+
+    lst.Add(0);
+    lst.Add(3);
+    lst.Add(7);
+    for (auto &i : lst)
+        res += i;
+    EXPECT_EQ(res, 10);
+}
+
+TEST(List, IterateForward_Test2)
+{
+    bpf::String res = bpf::String::Empty;
+    bpf::List<bpf::String> lst;
+
+    lst.Add("a");
+    lst.Add("b");
+    lst.Add("c");
+    lst.Add("d");
+    lst.Add("e");
+    for (auto &i : lst)
+        res += i;
+    EXPECT_STREQ(*res, "abcde");
+}
+
+TEST(List, IterateBackward_Test1)
+{
+    int res = 0;
+    bpf::List<int> lst;
+
+    lst.Add(0);
+    lst.Add(3);
+    lst.Add(7);
+    for (auto &i : bpf::Reverse(lst))
+        res += i;
+    EXPECT_EQ(res, 10);
+}
+
+TEST(List, IterateBackward_Test2)
+{
+    bpf::String res = bpf::String::Empty;
+    bpf::List<bpf::String> lst;
+
+    lst.Add("a");
+    lst.Add("b");
+    lst.Add("c");
+    lst.Add("d");
+    lst.Add("e");
+    for (auto &i : bpf::Reverse(lst))
+        res += i;
+    EXPECT_STREQ(*res, "edcba");
 }

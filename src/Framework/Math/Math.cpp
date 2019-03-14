@@ -32,9 +32,9 @@
 
 using namespace bpf;
 
-bool Math::IsPrime(const int n)
+bool Math::IsPrime(const fint n)
 {
-    int a = 2;
+    fint a = 2;
 
     while (a < n)
     {
@@ -45,9 +45,9 @@ bool Math::IsPrime(const int n)
     return (true);
 }
 
-int Math::FindNextPrime(const int n)
+fint Math::FindNextPrime(const fint n)
 {
-    int a = n + 1;
+    fint a = n + 1;
 
     while (!IsPrime(a))
         ++a;

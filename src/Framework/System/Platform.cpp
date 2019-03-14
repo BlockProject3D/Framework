@@ -77,7 +77,7 @@ namespace bpf
     }
 #endif
 
-    String Platform::CPUIDIntToStr(int data)
+    String Platform::CPUIDIntToStr(fint data)
     {
         String res = "";
         TypeExpander<int> exp(data);
@@ -91,7 +91,7 @@ namespace bpf
     String Platform::IdentifyCPUBranding()
     {
 #ifdef WINDOWS
-        int cpuInfo[4] = { -1 };
+        fint cpuInfo[4] = { -1 };
         char CPUBrandString[0x40];
         memset(CPUBrandString, 0, sizeof(CPUBrandString));
         __cpuid(cpuInfo, 0x80000002);
@@ -103,10 +103,10 @@ namespace bpf
         return (String(CPUBrandString));
 #else
         String res = "";
-        int reg_eax = 0;
-        int reg_ebx = 0;
-        int reg_ecx = 0;
-        int reg_edx = 0;
+        fint reg_eax = 0;
+        fint reg_ebx = 0;
+        fint reg_ecx = 0;
+        fint reg_edx = 0;
 
         INSTRUCTION_CPUID(0x80000002);
         READ_REGISTER(eax, reg_eax);
@@ -246,8 +246,8 @@ namespace bpf
     void Platform::ReverseBuffer(void *buf, const fsize size)
     {
         uint8 *out = reinterpret_cast<uint8 *>(buf);
-        uint32 i = 0;
-        uint32 j = size;
+        fsize i = 0;
+        fsize j = size;
         uint8 temp;
 
         while (i < size / 2)
@@ -262,13 +262,13 @@ namespace bpf
     void Platform::ReverseBuffer(void *buf, const fsize size, const fsize groupsize)
     {
         uint8 *out = reinterpret_cast<uint8 *>(buf);
-        uint32 i = 0;
-        uint32 j = size;
+        fsize i = 0;
+        fsize j = size;
         uint8 temp;
 
         while (i < size / 2)
         {
-            for (uint32 k = 0; k < groupsize; ++k)
+            for (fsize k = 0; k < groupsize; ++k)
             {
                 if (i + k >= size || j + k >= size)
                     continue;

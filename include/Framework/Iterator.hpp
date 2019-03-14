@@ -44,11 +44,37 @@ namespace bpf
         virtual void operator++() = 0;
         virtual void operator--() = 0;
         virtual const T &operator*() const = 0;
-        virtual const T &operator->() const = 0;
-        virtual operator bool() const = 0;
+        virtual const T *operator->() const = 0;
         virtual bool operator==(const C &other) const = 0;
         virtual bool operator!=(const C &other) const = 0;
     };
+
+    template <typename C>
+    class BP_TPL_API ReverseAdapter
+    {
+    private:
+        const C &_ref;
+
+    public:
+        inline ReverseAdapter(const C &ref)
+            : _ref(ref)
+        {
+        }
+        inline typename C::ReverseIterator begin() const
+        {
+            return (_ref.rbegin());
+        }
+        inline typename C::ReverseIterator end() const
+        {
+            return (_ref.rend());
+        }
+    };
+
+    template <typename C>
+    BP_TPL_API ReverseAdapter<C> Reverse(const C &container)
+    {
+        return (ReverseAdapter<C>(container));
+    }
 };
 
 #endif /* !ITERATOR_H_ */

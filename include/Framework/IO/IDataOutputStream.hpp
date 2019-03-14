@@ -45,7 +45,7 @@ namespace bpf
         virtual IDataOutputStream &operator<<(uint64 u) = 0;
         virtual IDataOutputStream &operator<<(int8 i) = 0;
         virtual IDataOutputStream &operator<<(int16 i) = 0;
-        virtual IDataOutputStream &operator<<(int i) = 0;
+        virtual IDataOutputStream &operator<<(fint i) = 0;
         virtual IDataOutputStream &operator<<(int64 i) = 0;
         virtual IDataOutputStream &operator<<(float f) = 0;
         virtual IDataOutputStream &operator<<(double d) = 0;

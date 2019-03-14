@@ -104,7 +104,7 @@ namespace bpf
          * @param prec the number of decimals
          */
         template <typename T>
-        inline static T Round(const T val, const int prec = 0)
+        inline static T Round(const T val, const fint prec = 0)
         {
             return ((T)(floor(val * pow(10, prec) + 0.5) / pow(10, prec)));
         }
@@ -128,13 +128,13 @@ namespace bpf
          * Returns true if a given number is prime
          * @param nb the number to check
          */
-        static bool IsPrime(const int nb);
+        static bool IsPrime(const fint nb);
 
         /**
          * Finds the next prime number starting at nb + 1
          * @param nb the number to find the next prime
          */
-        static int FindNextPrime(const int nb);
+        static fint FindNextPrime(const fint nb);
 
         /**
          * Shortcut to the system's square root function

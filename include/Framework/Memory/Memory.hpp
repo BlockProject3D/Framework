@@ -42,7 +42,7 @@ namespace bpf
 #ifdef BUILD_DEBUG
     private:
         static fsize CurUsedMem;
-        static int Allocs;
+        static fsize Allocs;
         static Mutex MemMutex;
 #endif
     public:
@@ -69,7 +69,7 @@ namespace bpf
         }
 
 #ifdef BUILD_DEBUG
-        inline static int GetAllocCount() noexcept
+        inline static fsize GetAllocCount() noexcept
         {
             return (Allocs);
         }

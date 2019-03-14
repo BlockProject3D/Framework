@@ -45,7 +45,7 @@ namespace bpf
 
         inline TypeExpander(std::initializer_list<uint8> d)
         {
-            int i = 0;
+            fsize i = 0;
 
             for (auto it = d.begin(); it != d.end(); ++it)
                 Bytes[i++] = *it;

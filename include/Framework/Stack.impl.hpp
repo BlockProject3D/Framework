@@ -31,7 +31,7 @@
 namespace bpf
 {
     template <typename T>
-    inline Stack<T>::Stack(int maxsize)
+    inline Stack<T>::Stack(fsize maxsize)
         : Content(new T[maxsize])
         , MaxSize(maxsize)
         , CurSize(0)
@@ -60,33 +60,9 @@ namespace bpf
     {
         if (CurSize > 0)
         {
-            CurSize--;
-            CurPtr++;
+            --CurSize;
+            ++CurPtr;
         }
         return (Content[CurPtr]);
-    }
-
-    template <typename T>
-    inline const T &Stack<T>::Get(const int id) const
-    {
-        return (Content[CurPtr + 1 + id]);
-    }
-
-    template <typename T>
-    inline const T &Stack<T>::GetLast() const
-    {
-        return (Content[CurPtr + 1]);
-    }
-
-    template <typename T>
-    inline int Stack<T>::Size() const
-    {
-        return (CurSize);
-    }
-
-    template <typename T>
-    inline bool Stack<T>::IsEmpty() const
-    {
-        return (CurSize == 0);
     }
 }

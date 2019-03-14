@@ -32,7 +32,6 @@
 #include "Framework/Iterator.hpp"
 #include "Framework/IndexException.hpp"
 
-//TODO : Use bpf::fsize for sizes
 namespace bpf
 {
     template <typename T>
@@ -65,29 +64,31 @@ namespace bpf
         {
         private:
             ListNode<T> *Cur;
+            bool CanRunBack;
 
         public:
-            explicit inline Iterator(ListNode<T> *cur)
-                : Cur(cur)
+            inline Iterator(ListNode<T> *start, bool reverse)
+                : Cur(start)
+                , CanRunBack(reverse)
             {
             }
             inline void operator++()
             {
                 if (Cur)
-                    Cur = Cur->Next;
+                    Cur = CanRunBack ? Cur->Prev : Cur->Next;
             }
             inline void operator--()
             {
                 if (Cur)
-                    Cur = Cur->Prev;
+                    Cur = CanRunBack ? Cur->Next : Cur->Prev;
             }
-            inline const T &operator->() const
+            inline const T *operator->() const
             {
-                return Cur->Data;
+                return (&Cur->Data);
             }
             inline const T &operator*() const
             {
-                return Cur->Data;
+                return (Cur->Data);
             }
             inline bool operator==(const Iterator &it) const
             {
@@ -97,15 +98,12 @@ namespace bpf
             {
                 return (Cur != it.Cur);
             }
-            inline operator bool() const
-            {
-                return (Cur != Null);
-            }
         };
+        using ReverseIterator = Iterator;
     private:
         ListNode<T> *First;
         ListNode<T> *Last;
-        uint32 Count;
+        fsize Count;
 
         ListNode<T> *Partition(ListNode<T> *start, ListNode<T> *end);
         void QuickSort(ListNode<T> *start, ListNode<T> *end);
@@ -126,7 +124,7 @@ namespace bpf
          * @param elem element to insert
          * @param pos position
          */
-        void Insert(const T &elem, uint32 pos);
+        void Insert(const T &elem, fsize pos);
 
         /**
          * Adds an element at the end of the list
@@ -139,19 +137,19 @@ namespace bpf
          * @param elem element to insert
          * @param pos position
          */
-        void Insert(T &&elem, uint32 pos);
+        void Insert(T &&elem, fsize pos);
 
         /**
          * Returns an element (safe), returns Null whenever element could not be found
          * @param id index of the element
          */
-        ListNode<T> *GetNode(uint32 id) const;
+        ListNode<T> *GetNode(fsize id) const;
 
-        T *Get(const uint32 id) const;
+        T *Get(const fsize id) const;
 
-        T operator[](const uint32 id) const;
+        T operator[](const fsize id) const;
 
-        void RemoveAt(const uint32 id);
+        void RemoveAt(const fsize id);
 
         void Remove(const T &elem, const bool all = true);
 
@@ -163,26 +161,40 @@ namespace bpf
 
         T *GetLast() const;
 
-        uint32 Size() const;
+        fsize Size() const;
 
         void Clear();
-
-        void ForEach(const std::function<void(const T &)> &fnc) const;
 
         /**
          * Returns an iterator to the begining of the list
          */
-        inline Iterator Begin() const
+        inline Iterator begin() const
         {
-            return (Iterator(First));
+            return (Iterator(First, false));
         }
 
         /**
          * Returns an iterator to the end of the list
          */
-        inline Iterator End() const
+        inline Iterator end() const
         {
-            return (Iterator(Last));
+            return (Iterator(Null, false));
+        }
+
+        /**
+         * Returns a reverse iterator to the begining of the list
+         */
+        inline ReverseIterator rbegin() const
+        {
+            return (ReverseIterator(Last, true));
+        }
+
+        /**
+         * Returns a reverse iterator to the end of the list
+         */
+        inline ReverseIterator rend() const
+        {
+            return (ReverseIterator(Null, true));
         }
     };
 };
