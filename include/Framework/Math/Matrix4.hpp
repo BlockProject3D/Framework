@@ -94,7 +94,7 @@ namespace bpf
          */
         void RotateRoll(const T ang);
         void Scale(const Vector3<T> &v);
-        Vector4<T> operator*(const Vector4<T> &other);
+        Vector4<T> operator*(const Vector4<T> &other) const;
     };
 }
 

@@ -75,9 +75,9 @@ namespace bpf
 
         inline Vector3<T> Cross(const Vector3<T> &other) const
         {
-            return (FVector(Y * other.Z - Z * other.Y,
-                            Z * other.X - X * other.Z,
-                            X * other.Y - Y * other.X));
+            return (Vector3<T>(Y * other.Z - Z * other.Y,
+                               Z * other.X - X * other.Z,
+                               X * other.Y - Y * other.X));
         }
 
         //TODO : Update viewport

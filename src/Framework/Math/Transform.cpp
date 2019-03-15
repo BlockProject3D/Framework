@@ -26,7 +26,7 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Framework/Math/BMath.hpp"
+#include "Framework/Math/Transform.hpp"
 
 namespace bpf
 {
@@ -38,7 +38,7 @@ namespace bpf
         _mat.Translate(_pos);
     }
     
-    Vector3f Transform::WorldToLocal(const Vector3f &worldpt)
+    Vector3f Transform::WorldToLocal(const Vector3f &worldpt) const
     {
         Vector4f v(worldpt, 1.0f);
         Matrix4f worldinv = _mat.Invert();
@@ -47,83 +47,21 @@ namespace bpf
         return (Vector3f(res.X, res.Y, res.Z));
     }
 
-    Vector3f Transform::LocalToWorld(const Vector3f &localpt)
+    Vector3f Transform::LocalToWorld(const Vector3f &localpt) const
     {
         Vector4f v(localpt, 1.0f);
 
         Vector4f res = _mat * v;
         return (Vector3f(res.X, res.Y, res.Z));
     }
-}
 
-using namespace Framework;
+    Vector3f Transform::TransformPoint(const Vector3f &pt) const
+    {
+        Vector3f res = pt;
 
-FTransform::FTransform()
-    : PosVec(FVector::Zero), ScaleVec(FVector::Unit), Rot(FQuat::Identity)
-{
-    RebuildMatrix();
-}
-
-FTransform::FTransform(const FTransform &other)
-    : PosVec(other.PosVec), ScaleVec(other.ScaleVec), Rot(other.Rot)
-{
-    RebuildMatrix();
-}
-
-FTransform::FTransform(const FVector &pos, const FVector &scale, const FQuat &rot)
-    : PosVec(pos), ScaleVec(scale), Rot(rot)
-{
-    RebuildMatrix();
-}
-
-FTransform::FTransform(const FVector &pos, const FVector &scale)
-    : PosVec(pos), ScaleVec(scale), Rot(FQuat::Identity)
-{
-    RebuildMatrix();
-}
-
-FTransform::FTransform(const FVector &pos)
-    : PosVec(pos), ScaleVec(FVector::Unit), Rot(FQuat::Identity)
-{
-    RebuildMatrix();
-}
-
-FVector FTransform::WorldToLocal(const FVector &vec)
-{
-    FVector4D v(vec, 1.0f);
-    FMatrix worldinv = Matrix;
-
-    worldinv.Invert();
-    FVector4D res = v * worldinv;
-    return (FVector(res.X, res.Y, res.Z));
-}
-
-FVector FTransform::LocalToWorld(const FVector &vec)
-{
-    FVector4D v(vec, 1.0f);
-    FMatrix world = Matrix;
-
-    FVector4D res = v * world;
-    return (FVector(res.X, res.Y, res.Z));
-}
-
-void FTransform::RebuildMatrix()
-{
-    FMatrix mat = Rot.ToMatrix();
-
-    Matrix = FMatrix::Identity;
-    Matrix.Scale(ScaleVec);
-    Matrix = Matrix * mat;
-    Matrix.Translate(PosVec);
-}
-
-FTransform FTransform::operator+(const FTransform &other) const
-{
-    FTransform res;
-
-    res.PosVec = (PosVec * ScaleVec) + (other.PosVec * other.ScaleVec);
-    res.ScaleVec = ScaleVec * other.ScaleVec;
-    res.Rot = Rot * other.Rot;
-    res.RebuildMatrix();
-    return (res);
+        res *= _scale;
+        res = _quat.Rotate(res);
+        res += _pos;
+        return (res);
+    }
 }

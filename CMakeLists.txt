@@ -11,7 +11,6 @@ set(SOURCES
     ./include/Framework/IO/FileStream.hpp
     ./include/Framework/IO/MemoryMapper.hpp
     ./include/Framework/IO/IOException.hpp
-#    ./include/Framework/IO/FileSystem.hpp
     ./include/Framework/IO/IInputStream.hpp
     ./include/Framework/IO/IOutputStream.hpp
     ./include/Framework/IO/IDataInputStream.hpp
@@ -22,7 +21,6 @@ set(SOURCES
     ./include/Framework/IO/BinaryWriter.hpp
     ./include/Framework/IO/TextReader.hpp
     ./include/Framework/IO/TextWriter.hpp
-#    ./include/Framework/IO/Stream.hpp
     ./include/Framework/Math/Triangle.hpp
     ./include/Framework/Math/Vector.hpp
     ./include/Framework/Math/Vector2.hpp
@@ -34,14 +32,13 @@ set(SOURCES
     ./include/Framework/Math/Matrix2.impl.hpp
     ./include/Framework/Math/Matrix3.impl.hpp
     ./include/Framework/Math/Matrix4.impl.hpp
-    ./include/Framework/Math/Vertex.hpp
     ./include/Framework/Math/Viewport.hpp
     ./include/Framework/Math/Quaternion.hpp
     ./include/Framework/Math/Quaternion.impl.hpp
     ./include/Framework/Math/Matrix.hpp
     ./include/Framework/Math/Matrix.impl.hpp
     ./include/Framework/Math/Transform.hpp
-    ./include/Framework/Math/BMath.hpp
+    ./include/Framework/Math/Triangle.hpp
     ./include/Framework/Math/Math.hpp
     ./include/Framework/Logging/Logger.hpp
     ./include/Framework/Logging/ILogHandler.hpp
@@ -62,7 +59,6 @@ set(SOURCES
     ./include/Framework/System/ModuleException.hpp
     ./include/Framework/System/ModuleManager.hpp
     ./include/Framework/System/Platform.hpp
-#    ./include/Framework/System/System.hpp
     ./include/Framework/System/TypeExpander.hpp
     ./include/Framework/System/DateTime.hpp
     ./include/Framework/System/Timer.hpp
@@ -84,7 +80,6 @@ set(SOURCES
     ./include/Framework/Delegate.hpp
     ./include/Framework/EntryPoint.hpp
     ./include/Framework/Factory.hpp
-    ./include/Framework/Framework.hpp
     ./include/Framework/Hash.hpp
     ./include/Framework/Iterator.hpp
     ./include/Framework/List.hpp
@@ -115,22 +110,16 @@ set(SOURCES
     ./src/Framework/IO/BinaryWriter.cpp
     ./src/Framework/IO/TextReader.cpp
     ./src/Framework/IO/TextWriter.cpp
-#    ./src/Framework/IO/Stream.cpp
     ./src/Framework/Logging/DefaultLogger.cpp
     ./src/Framework/Logging/FileLogger.cpp
-    ./src/Framework/Math/BMath.cpp
-    ./src/Framework/Math/Matrix.cpp
-    ./src/Framework/Math/Quaternion.cpp
     ./src/Framework/Math/Transform.cpp
     ./src/Framework/Math/Triangle.cpp
-    ./src/Framework/Math/Vector.cpp
-    ./src/Framework/Math/Vertex.cpp
     ./src/Framework/Math/Math.cpp
+    ./src/Framework/Math/Viewport.cpp
     ./src/Framework/Memory/Memory.cpp
     ./src/Framework/System/Platform.cpp
     ./src/Framework/System/Module.cpp
     ./src/Framework/System/ModuleManager.cpp
-#    ./src/Framework/System/System.cpp
     ./src/Framework/System/DateTime.cpp
     ./src/Framework/System/Thread.cpp
     ./src/Framework/System/Mutex.cpp
