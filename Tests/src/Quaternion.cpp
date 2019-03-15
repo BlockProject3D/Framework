@@ -29,7 +29,6 @@
 #include <cassert>
 #include <iostream>
 #include <gtest/gtest.h>
-#include <Framework/Math/BMath.hpp>
 #include <Framework/Math/Quaternion.hpp>
 
 namespace bpf

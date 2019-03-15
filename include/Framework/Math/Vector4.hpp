@@ -80,7 +80,7 @@ namespace bpf
 
         inline T Length() const
         {
-            return (Math::Sqrt(X * X + Y * Y));
+            return (Math::Sqrt(X * X + Y * Y + Z * Z + W * W));
         }
 
         inline T Distance(const Vector4<T> &other) const
