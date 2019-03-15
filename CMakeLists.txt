@@ -75,11 +75,9 @@ set(SOURCES
     ./include/Framework/Array.impl.hpp
     ./include/Framework/ArrayList.hpp
     ./include/Framework/ArrayList.impl.hpp
-    ./include/Framework/Class.hpp
     ./include/Framework/Color.hpp
     ./include/Framework/Delegate.hpp
     ./include/Framework/EntryPoint.hpp
-    ./include/Framework/Factory.hpp
     ./include/Framework/Hash.hpp
     ./include/Framework/Iterator.hpp
     ./include/Framework/List.hpp
@@ -87,6 +85,8 @@ set(SOURCES
     ./include/Framework/Map.hpp
     ./include/Framework/Map.impl.hpp
     ./include/Framework/Object.hpp
+    ./include/Framework/ObjectFactory.hpp
+    ./include/Framework/IObjectConstructor.hpp
     ./include/Framework/ObjectPtr.hpp
     ./include/Framework/Path.hpp
     ./include/Framework/Profiler.hpp

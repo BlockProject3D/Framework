@@ -26,46 +26,54 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef FACTORY_H_
-# define FACTORY_H_
+#pragma once
+#include "Framework/String.hpp"
+#include "Framework/Memory/Memory.hpp"
 
-namespace Framework
+namespace bpf
 {
     /**
      * Constructor abstraction
      * @tparam T the type of parent to generate
-     * @tparam Args the arguments to the constructor
+     * @tparam Args the arguments to pass to the constructor
      */
     template <class /* ? extends */ T, typename ...Args>
-    class ENGINE_API IConstructor
+    class BPF_API IObjectConstructor
     {
     public:
-        virtual ~IConstructor() {}
+        virtual ~IObjectConstructor() {}
 
-        /**
-         * Creates a new instance of the given type
-         * @param args arguments to the constructor
-         */
-        virtual T *NewInstance(Args... args) = 0;
+        virtual const String &GetName() const noexcept = 0;
+        virtual UniquePtr<T> MakeUnique(Args &&... args) const = 0;
+        virtual SharedPtr<T> MakeShared(Args &&... args) const = 0;
     };
-    
-    template <class /* ? extends */ T, typename ...Args>
-    class ENGINE_API FFactory
+
+    template <class Class, class Parent, typename ...Args>
+    class BPF_API SimpleObjectConstructor : public IObjectConstructor<Parent, Args...>
     {
-    private:
-        bpf::Map<bpf::String, IConstructor<T, Args...> *> Registry;
     public:
-        inline void AddClass(const bpf::String &name, IConstructor<T, Args...> *c)
+        virtual const String &GetName() const noexcept = 0;
+
+        inline UniquePtr<Parent> MakeUnique(Args &&... args) const
         {
-            Registry[name] = c;
+            return (bpf::MakeUnique<Class>(std::forward<Args>(args)...));
         }
-        inline T *New(const bpf::String &name, Args&&... args)
+        inline SharedPtr<Parent> MakeShared(Args &&... args) const
         {
-            if (!Registry.HasKey(name))
-                return (Null);
-            return (Registry[name]->NewInstance(std::forward<Args>(args)...));
+            return (bpf::MakeShared<Class>(std::forward<Args>(args)...));
         }
     };
-};
+}
 
-#endif /* !FACTORY_H_ */
+#define MAP_CONSTRUCTOR(Name, Parent, Class, ...) \
+    class Name final : public bpf::SimpleObjectConstructor<Class, Parent, ##__VA_ARGS__> \
+    { \
+    private: \
+        bpf::String _name; \
+    public:\
+        Name() : _name(#Class"::"#Name) {} \
+        const bpf::String &GetName() const noexcept \
+        { \
+            return (_name); \
+        } \
+    }; \

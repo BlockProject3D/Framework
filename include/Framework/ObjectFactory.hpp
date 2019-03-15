@@ -26,49 +26,45 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef CLASS_H
-# define CLASS_H
+#pragma once
+#include "Framework/String.hpp"
+#include "Framework/IObjectConstructor.hpp"
+#include "Framework/Map.hpp"
 
-# include "framework/factory.h"
-
-namespace Framework
+namespace bpf
 {
     /**
-     * Provides a template to an abstract factory for type T
-     * @tparam T the parent type
-     * @tparam Args the constructor arguments
+     * Factory, creates object instances from object constructor names
+     * @tparam T the type of parent to generate
+     * @tparam Args the arguments to the constructor
      */
     template <class /* ? extends */ T, typename ...Args>
-    class FClass
+    class BPF_API ObjectFactory
     {
     private:
-        IFactory<T, Args...> *Factory;
+        Map<String, IObjectConstructor<T, Args...> *> Registry;
+
     public:
-        inline FClass()
-            : Factory(Null)
+        template <class ObjConstructor>
+        inline void AddClass()
         {
+            IObjectConstructor<T, Args...> *raw = Memory::New<ObjConstructor>(); // TODO : Update when Map will accept UniquePtr as a value
+            //WARNING : MemLeak to fix here
+            Registry[raw->GetName()] = raw;
         }
-
-        /**
-         * Initializes a FClass using a given concrete type factory
-         * @param factory the factory to store
-         */
-        inline FClass(IFactory<T, Args...> *factory)
-            : Factory(factory)
+        
+        inline UniquePtr<T> MakeUnique(const String &name, Args&&... args)
         {
+            if (!Registry.HasKey(name))
+                return (Null);
+            return (Registry[name]->MakeUnique(std::forward<Args>(args)...));
         }
-
-        /**
-         * Returns a new instance of a T using the stored factory, Null if failed
-         * @param args arguments to pass to the constructor
-         */
-        inline T *NewInstance(Args... args)
+        
+        inline SharedPtr<T> MakeShared(const String &name, Args&&... args)
         {
-            if (Factory == NULL)
-                return (NULL);
-            return (Factory->Create(args...));
+            if (!Registry.HasKey(name))
+                return (Null);
+            return (Registry[name]->MakeShared(std::forward<Args>(args)...));
         }
     };
-};
-
-#endif /* !CLASS_H */
+}
