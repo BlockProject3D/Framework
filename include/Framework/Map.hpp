@@ -37,34 +37,35 @@ namespace bpf
     constexpr fint MAP_INIT_BUF_SIZE = 2;
     constexpr float MAP_LIMIT_UNTIL_EXTEND = 0.5f;
 
-    template<typename K, typename V>
-    struct BP_TPL_API MapEntry
-    {
-        K Key;
-        V Value;
-    };
-
     template <typename K, typename V>
     class BP_TPL_API Map
     {
     public:
-        class BP_TPL_API Iterator : public IIterator<typename Map<K, V>::Iterator, MapEntry<K, V>>
+        struct BP_TPL_API Entry
+        {
+            K Key;
+            V Value;
+        };
+
+        struct BP_TPL_API Data
+        {
+            fsize Hash;
+            bool Empty;
+            Entry KeyVal;
+        };
+
+        class BP_TPL_API Iterator : public IIterator<typename Map<K, V>::Iterator, Entry>
         {
         protected:
-            V *Data;
-            K *KeyData;
-            bool *EmptyKeys;
+            Data *_data;
             fsize MaxSize;
             fsize CurID;
-            MapEntry<K, V> Entry;
             void SearchNextEntry();
             void SearchPrevEntry();
 
         public:
-            inline Iterator(V *data, K *keydata, bool *empty, fsize start, fsize size, const bool reverse = false)
-                : Data(data)
-                , KeyData(keydata)
-                , EmptyKeys(empty)
+            inline Iterator(Data *data, fsize start, fsize size, const bool reverse = false)
+                : _data(data)
                 , MaxSize(size)
                 , CurID(start)
             {
@@ -75,13 +76,13 @@ namespace bpf
             }
             void operator++();
             void operator--();
-            inline const MapEntry<K, V> &operator*() const
+            inline const Entry &operator*() const
             {
-                return (Entry);
+                return (_data[CurID].KeyVal);
             }
-            inline const MapEntry<K, V> *operator->() const
+            inline const Entry *operator->() const
             {
-                return (&Entry);
+                return (&_data[CurID].KeyVal);
             }
             inline bool operator==(const Iterator &other) const
             {
@@ -96,8 +97,8 @@ namespace bpf
         class ReverseIterator final : public Iterator
         {
         public:
-            inline ReverseIterator(V *data, K *keydata, bool *empty, fsize start, fsize size)
-                : Iterator(data, keydata, empty, start, size, true)
+            inline ReverseIterator(Data *data, fsize start, fsize size)
+                : Iterator(data, start, size, true)
             {
             }
             void operator++();
@@ -105,10 +106,7 @@ namespace bpf
         };
 
     private:
-        V *Data;
-        K *KeyData;
-        fsize *HashTable;
-        bool *EmptyKeys;
+        Data *_data;
         fsize CurSize;
         fsize ElemCount;
 
@@ -126,6 +124,8 @@ namespace bpf
          * @param value the value to insert
          */
         void Add(const K &key, const V &value);
+
+        void Add(const K &key, V &&value);
       
         /**
          * Removes an element from the hash table
@@ -157,20 +157,20 @@ namespace bpf
         
         inline Iterator begin() const
         {
-            return (Iterator(Data, KeyData, EmptyKeys, 0, CurSize));
+            return (Iterator(_data, 0, CurSize));
         }
         inline Iterator end() const
         {
-            return (Iterator(Data, KeyData, EmptyKeys, CurSize, CurSize));
+            return (Iterator(_data, CurSize, CurSize));
         }
 
         inline ReverseIterator rbegin() const
         {
-            return (ReverseIterator(Data, KeyData, EmptyKeys, CurSize - 1, CurSize));
+            return (ReverseIterator(_data, CurSize - 1, CurSize));
         }
         inline ReverseIterator rend() const
         {
-            return (ReverseIterator(Data, KeyData, EmptyKeys, (fsize)-1, CurSize));
+            return (ReverseIterator(_data, (fsize)-1, CurSize));
         }
     };
 };

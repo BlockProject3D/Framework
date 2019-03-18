@@ -29,6 +29,7 @@
 #include <cassert>
 #include <iostream>
 #include <gtest/gtest.h>
+#include <Framework/Memory/Memory.hpp>
 #include <Framework/Map.hpp>
 #include <Framework/String.hpp>
 
@@ -39,6 +40,62 @@ TEST(Map, Creation)
     map["test1"] = 0;
     map["test2"] = 3;
     map["test3"] = 7;
+}
+
+TEST(Map, ReadWrite)
+{
+    bpf::Map<bpf::String, int> map;
+
+    map["test1"] = 0;
+    map["test2"] = 3;
+    map["test3"] = 7;
+    EXPECT_EQ(map["test1"], 0);
+    EXPECT_EQ(map["test2"], 3);
+    EXPECT_EQ(map["test3"], 7);
+}
+
+TEST(Map, ReadWrite_NonCopy)
+{
+    bpf::Map<bpf::String, bpf::UniquePtr<int>> map;
+
+    map["test1"] = Null;
+    map["test2"] = Null;
+    map["test3"] = Null;
+    EXPECT_EQ(map["test1"], Null);
+    EXPECT_EQ(map["test2"], Null);
+    EXPECT_EQ(map["test3"], Null);
+    map["test1"] = bpf::MakeUnique<int>(0);
+    map["test2"] = bpf::MakeUnique<int>(5);
+    map["test3"] = bpf::MakeUnique<int>(9);
+    EXPECT_EQ(*map["test1"], 0);
+    EXPECT_EQ(*map["test2"], 5);
+    EXPECT_EQ(*map["test3"], 9);
+}
+
+static void RunLeakCheckBody()
+{
+    bpf::Map<bpf::String, bpf::UniquePtr<int>> map;
+
+    map["test1"] = Null;
+    map["test2"] = Null;
+    map["test3"] = Null;
+    EXPECT_EQ(map["test1"], Null);
+    EXPECT_EQ(map["test2"], Null);
+    EXPECT_EQ(map["test3"], Null);
+    map["test1"] = bpf::MakeUnique<int>(0);
+    map["test2"] = bpf::MakeUnique<int>(5);
+    map["test3"] = bpf::MakeUnique<int>(9);
+    EXPECT_EQ(*map["test1"], 0);
+    EXPECT_EQ(*map["test2"], 5);
+    EXPECT_EQ(*map["test3"], 9);
+    map["test3"] = Null;
+}
+
+TEST(Map, ReadWrite_LeakCheck)
+{
+    bpf::fsize count = bpf::Memory::GetAllocCount();
+    RunLeakCheckBody();
+    EXPECT_EQ(count, bpf::Memory::GetAllocCount());
 }
 
 TEST(Map, IterateForward)

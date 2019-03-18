@@ -33,25 +33,15 @@ namespace bpf
     template <typename K, typename V>
     void Map<K, V>::Iterator::SearchNextEntry()
     {
-        while (CurID < MaxSize && EmptyKeys[CurID])
+        while (CurID < MaxSize && _data[CurID].Empty)
             ++CurID;
-        if (CurID < MaxSize && !EmptyKeys[CurID])
-        {
-            Entry.Key = KeyData[CurID];
-            Entry.Value = Data[CurID];
-        }
     }
 
     template <typename K, typename V>
     void Map<K, V>::Iterator::SearchPrevEntry()
     {
-        while (CurID != (fsize)-1 && EmptyKeys[CurID])
+        while (CurID != (fsize)-1 && _data[CurID].Empty)
             --CurID;
-        if (CurID != (fsize)-1 && !EmptyKeys[CurID])
-        {
-            Entry.Key = KeyData[CurID];
-            Entry.Value = Data[CurID];
-        }
     }
 
     template <typename K, typename V>
@@ -88,23 +78,18 @@ namespace bpf
 
     template <typename K, typename V>
     Map<K, V>::Map()
-        : Data(new V[MAP_INIT_BUF_SIZE])
-        , KeyData(new K[MAP_INIT_BUF_SIZE])
-        , HashTable(new fsize[MAP_INIT_BUF_SIZE])
-        , EmptyKeys(new bool[MAP_INIT_BUF_SIZE])
-        , CurSize(MAP_INIT_BUF_SIZE), ElemCount(0)
+        : _data(new Data[MAP_INIT_BUF_SIZE])
+        , CurSize(MAP_INIT_BUF_SIZE)
+        , ElemCount(0)
     {
-        EmptyKeys[0] = true;
-        EmptyKeys[1] = true;
+        _data[0].Empty = true;
+        _data[1].Empty = true;
     }
 
     template <typename K, typename V>
     Map<K, V>::~Map()
     {
-        delete[] Data;
-        delete[] KeyData;
-        delete[] HashTable;
-        delete[] EmptyKeys;
+        delete[] _data;
     }
 
     template <typename K, typename V>
@@ -112,33 +97,24 @@ namespace bpf
     {
         if ((float)ElemCount / (float)CurSize >= MAP_LIMIT_UNTIL_EXTEND)
         {
-            V *olddata = Data;
-            K *oldkeydata = KeyData;
-            fsize *oldhash = HashTable;
-            bool *oldempty = EmptyKeys;
+            Data *olddata = _data;
             CurSize <<= 1;
-            EmptyKeys = new bool[CurSize];
+            _data = new Data[CurSize];
             for (fsize i = 0 ; i < CurSize; ++i)
-                EmptyKeys[i] = true;
-            Data = new V[CurSize];
-            KeyData = new K[CurSize];
-            HashTable = new fsize[CurSize];
+                _data[i].Empty = true;
             for (fsize i = 0 ; i < CurSize >> 1 ; ++i)
             {
-                if (!oldempty[i])
+                if (!olddata[i].Empty)
                 {
-                    fsize id = QuadraticInsert(oldhash[i]);
+                    fsize id = QuadraticInsert(olddata[i].Hash);
                     if (id != (fsize)-1)
                     {
-		        Data[id] = std::move(olddata[i]);
-		        KeyData[id] = std::move(oldkeydata[i]);
+		        _data[id].KeyVal.Key = std::move(olddata[i].KeyVal.Key);
+                        _data[id].KeyVal.Value = std::move(olddata[i].KeyVal.Value);
                     }
                 }
             }
             delete[] olddata;
-            delete[] oldkeydata;
-            delete[] oldhash;
-            delete[] oldempty;
         }
     }
 
@@ -148,7 +124,7 @@ namespace bpf
         for (fsize i = 0 ; i < CurSize ; ++i)
         {
             fsize index = (hkey + ((i * i + i) / 2)) % CurSize;
-            if (!EmptyKeys[index] && HashTable[index] == hkey)
+            if (!_data[index].Empty && _data[index].Hash == hkey)
                 return (index);
         }
         return ((fsize)-1);
@@ -160,10 +136,10 @@ namespace bpf
         for (fsize i = 0 ; i < CurSize ; ++i)
         {
             fsize index = (hkey + ((i * i + i) / 2)) % CurSize;
-            if (EmptyKeys[index])
+            if (_data[index].Empty)
             {
-                HashTable[index] = hkey;
-                EmptyKeys[index] = false;
+                _data[index].Hash = hkey;
+                _data[index].Empty = false;
                 ++ElemCount;
                 return ((int)index);
             }
@@ -182,8 +158,24 @@ namespace bpf
         fsize idx = QuadraticInsert(hkey);
         if (idx != (fsize)-1)
         {
-            Data[idx] = value;
-            KeyData[idx] = key;
+            _data[idx].KeyVal.Value = value;
+            _data[idx].KeyVal.Key = key;
+        }
+    }
+
+    template <typename K, typename V>
+    void Map<K, V>::Add(const K &key, V &&value)
+    {
+        fsize hkey = Hash(key);
+
+        TryExtend();
+        if (QuadraticSearch(hkey) != (fsize)-1)
+            Remove(key);
+        fsize idx = QuadraticInsert(hkey);
+        if (idx != (fsize)-1)
+        {
+            _data[idx].KeyVal.Value = std::move(value);
+            _data[idx].KeyVal.Key = key;
         }
     }
 
@@ -195,7 +187,7 @@ namespace bpf
         if (idx != (fsize)-1)
         {
             --ElemCount;
-            EmptyKeys[idx] = true;
+            _data[idx].Empty = true;
         }
     }
 
@@ -206,7 +198,7 @@ namespace bpf
 
         if (idx == (fsize)-1)
             throw bpf::IndexException((fint)idx);
-        return (Data[idx]);
+        return (_data[idx].KeyVal.Value);
     }
 
     template <typename K, typename V>
@@ -220,9 +212,9 @@ namespace bpf
             idx = QuadraticInsert(Hash(key));
             if (idx == (fsize)-1)
                 throw bpf::IndexException((fint)idx);
-            KeyData[idx] = key;
+            _data[idx].KeyVal.Key = key;
         }
-        return (Data[idx]);
+        return (_data[idx].KeyVal.Value);
     }
 
     template <typename K, typename V>
