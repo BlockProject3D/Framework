@@ -32,7 +32,6 @@
 #include "Framework/TypeInfo.hpp"
 #include "Framework/List.hpp"
 #include "Framework/Array.hpp"
-#include "Framework/Hash.hpp"
 #include "Framework/IndexException.hpp"
 
 //TODO : Remove usage of List go for Array
@@ -432,11 +431,6 @@ namespace bpf
         inline String ToString() const
         {
             return (*this);
-        }
-
-        inline fsize Hash() const
-        {
-            return (bpf::Hash<const char *>(Data));
         }
 
         /**

@@ -112,6 +112,11 @@ namespace bpf
             return (RawPtr);
         }
 
+        inline T *Raw() const noexcept
+        {
+            return (RawPtr);
+        }
+
         inline bool operator==(const T *other) const noexcept
         {
             return (RawPtr == other);

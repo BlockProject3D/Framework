@@ -64,3 +64,14 @@ Color Color::operator*(const Color &other) const
                   static_cast<uint8>(newg * 255),
                   static_cast<uint8>(newb * 255)));
 }
+
+fint Color::GetCode() const noexcept
+{
+    fint res = 0;
+
+    res += R << 24;
+    res += G << 16;
+    res += B << 8;
+    res += A;
+    return (res);
+}

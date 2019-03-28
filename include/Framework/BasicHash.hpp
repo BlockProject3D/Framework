@@ -27,84 +27,43 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/Hash.hpp"
+#include "Framework/String.hpp"
+#include "Framework/Color.hpp"
 
 namespace bpf
 {
-    template <typename T>
-    class BP_TPL_API UniquePtr
+    template <>
+    class Hash<char *>
     {
-    private:
-        T *RawPtr;
-
     public:
-        inline UniquePtr() noexcept
-            : RawPtr(Null)
+        inline static fsize HashCode(const char *val)
         {
-        }
+            fsize res = 5381;
 
-        inline UniquePtr(T *raw) noexcept
-            : RawPtr(raw)
+            for (fsize i = 0; val[i]; ++i)
+                res = ((res << 5) + res) + val[i];
+            return (res);
+        }
+    };
+
+    template <>
+    class Hash<String>
+    {
+    public:
+        inline static fsize HashCode(const String &val)
         {
+            return (Hash<char *>::HashCode(*val));
         }
+    };
 
-        inline UniquePtr(UniquePtr<T> &&other) noexcept
-            : RawPtr(other.RawPtr)
+    template <>
+    class Hash<Color>
+    {
+    public:
+        inline static fsize HashCode(const Color &val)
         {
-            other.RawPtr = Null;
+            return (val.GetCode());
         }
-
-        template <typename T1>
-        inline UniquePtr(UniquePtr<T1> &&other) noexcept
-            : RawPtr(other.RawPtr)
-        {
-            other.RawPtr = Null;
-        }
-
-        inline ~UniquePtr()
-        {
-            Memory::Delete(RawPtr);
-        }
-
-        UniquePtr<T> &operator=(UniquePtr<T> &&other);
-
-        inline T &operator*() const noexcept
-        {
-            return (*RawPtr);
-        }
-
-        inline T *operator->() const noexcept
-        {
-            return (RawPtr);
-        }
-
-        inline T *Raw() const noexcept
-        {
-            return (RawPtr);
-        }
-
-        inline bool operator==(const T *other) const noexcept
-        {
-            return (RawPtr == other);
-        }
-
-        inline bool operator!=(const T *other) const noexcept
-        {
-            return (RawPtr != other);
-        }
-
-        template <typename T1>
-        inline bool operator==(const UniquePtr<T1> &other) const noexcept
-        {
-            return (RawPtr == other.RawPtr);
-        }
-
-        template <typename T1>
-        inline bool operator!=(const UniquePtr<T1> &other) const noexcept
-        {
-            return (RawPtr != other.RawPtr);
-        }
-
-        template <typename T1>
-        friend class UniquePtr;
     };
 }

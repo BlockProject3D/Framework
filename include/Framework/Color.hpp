@@ -100,6 +100,8 @@ namespace bpf
          */
         explicit Color(const fint rgb); //TODO : Implement
 
+        fint GetCode() const noexcept;
+
         /**
          * Blends two colors by addition
          */

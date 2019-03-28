@@ -30,6 +30,7 @@
 #include "Framework/Types.hpp"
 #include "Framework/Iterator.hpp"
 #include "Framework/IndexException.hpp"
+#include "Framework/Hash.hpp"
 
 //TODO : Use bpf::fsize for sizes
 namespace bpf
@@ -37,7 +38,7 @@ namespace bpf
     constexpr fint MAP_INIT_BUF_SIZE = 2;
     constexpr float MAP_LIMIT_UNTIL_EXTEND = 0.5f;
 
-    template <typename K, typename V>
+    template <typename K, typename V, typename HashOp = Hash<K>>
     class BP_TPL_API Map
     {
     public:
@@ -54,7 +55,7 @@ namespace bpf
             Entry KeyVal;
         };
 
-        class BP_TPL_API Iterator : public IIterator<typename Map<K, V>::Iterator, Entry>
+        class BP_TPL_API Iterator : public IIterator<typename Map<K, V, HashOp>::Iterator, Entry>
         {
         protected:
             Data *_data;

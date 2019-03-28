@@ -30,54 +30,54 @@
 
 namespace bpf
 {
-    template <typename K, typename V>
-    void Map<K, V>::Iterator::SearchNextEntry()
+    template <typename K, typename V, typename HashOp>
+    void Map<K, V, HashOp>::Iterator::SearchNextEntry()
     {
         while (CurID < MaxSize && _data[CurID].Empty)
             ++CurID;
     }
 
-    template <typename K, typename V>
-    void Map<K, V>::Iterator::SearchPrevEntry()
+    template <typename K, typename V, typename HashOp>
+    void Map<K, V, HashOp>::Iterator::SearchPrevEntry()
     {
         while (CurID != (fsize)-1 && _data[CurID].Empty)
             --CurID;
     }
 
-    template <typename K, typename V>
-    void Map<K, V>::ReverseIterator::operator++()
+    template <typename K, typename V, typename HashOp>
+    void Map<K, V, HashOp>::ReverseIterator::operator++()
     {
         if (Iterator::CurID != (fsize)-1)
             --Iterator::CurID;
         Iterator::SearchPrevEntry();
     }
 
-    template <typename K, typename V>
-    void Map<K, V>::ReverseIterator::operator--()
+    template <typename K, typename V, typename HashOp>
+    void Map<K, V, HashOp>::ReverseIterator::operator--()
     {
         if (Iterator::CurID < Iterator::MaxSize)
             ++Iterator::CurID;
         Iterator::SearchNextEntry();
     }
 
-    template <typename K, typename V>
-    void Map<K, V>::Iterator::operator++()
+    template <typename K, typename V, typename HashOp>
+    void Map<K, V, HashOp>::Iterator::operator++()
     {
         if (CurID < MaxSize)
             ++CurID;
         SearchNextEntry();
     }
     
-    template <typename K, typename V>
-    void Map<K, V>::Iterator::operator--()
+    template <typename K, typename V, typename HashOp>
+    void Map<K, V, HashOp>::Iterator::operator--()
     {
         if (CurID > 0)
             --CurID;
         SearchPrevEntry();
     }
 
-    template <typename K, typename V>
-    Map<K, V>::Map()
+    template <typename K, typename V, typename HashOp>
+    Map<K, V, HashOp>::Map()
         : _data(new Data[MAP_INIT_BUF_SIZE])
         , CurSize(MAP_INIT_BUF_SIZE)
         , ElemCount(0)
@@ -86,14 +86,14 @@ namespace bpf
         _data[1].Empty = true;
     }
 
-    template <typename K, typename V>
-    Map<K, V>::~Map()
+    template <typename K, typename V, typename HashOp>
+    Map<K, V, HashOp>::~Map()
     {
         delete[] _data;
     }
 
-    template <typename K, typename V>
-    void Map<K, V>::TryExtend()
+    template <typename K, typename V, typename HashOp>
+    void Map<K, V, HashOp>::TryExtend()
     {
         if ((float)ElemCount / (float)CurSize >= MAP_LIMIT_UNTIL_EXTEND)
         {
@@ -118,8 +118,8 @@ namespace bpf
         }
     }
 
-    template <typename K, typename V>
-    fsize Map<K, V>::QuadraticSearch(fsize hkey) const
+    template <typename K, typename V, typename HashOp>
+    fsize Map<K, V, HashOp>::QuadraticSearch(fsize hkey) const
     {
         for (fsize i = 0 ; i < CurSize ; ++i)
         {
@@ -130,8 +130,8 @@ namespace bpf
         return ((fsize)-1);
     }
 
-    template <typename K, typename V>
-    fsize Map<K, V>::QuadraticInsert(fsize hkey)
+    template <typename K, typename V, typename HashOp>
+    fsize Map<K, V, HashOp>::QuadraticInsert(fsize hkey)
     {
         for (fsize i = 0 ; i < CurSize ; ++i)
         {
@@ -147,10 +147,10 @@ namespace bpf
         return ((fsize)-1);
     }
 
-    template <typename K, typename V>
-    void Map<K, V>::Add(const K &key, const V &value)
+    template <typename K, typename V, typename HashOp>
+    void Map<K, V, HashOp>::Add(const K &key, const V &value)
     {
-        fsize hkey = Hash(key);
+        fsize hkey = HashOp::HashCode(key);
 
         TryExtend();
         if (QuadraticSearch(hkey) != (fsize)-1)
@@ -163,10 +163,10 @@ namespace bpf
         }
     }
 
-    template <typename K, typename V>
-    void Map<K, V>::Add(const K &key, V &&value)
+    template <typename K, typename V, typename HashOp>
+    void Map<K, V, HashOp>::Add(const K &key, V &&value)
     {
-        fsize hkey = Hash(key);
+        fsize hkey = HashOp::HashCode(key);
 
         TryExtend();
         if (QuadraticSearch(hkey) != (fsize)-1)
@@ -179,10 +179,10 @@ namespace bpf
         }
     }
 
-    template <typename K, typename V>
-    void Map<K, V>::Remove(const K &key)
+    template <typename K, typename V, typename HashOp>
+    void Map<K, V, HashOp>::Remove(const K &key)
     {
-        fsize idx = QuadraticSearch(Hash(key));
+        fsize idx = QuadraticSearch(HashOp::HashCode(key));
 
         if (idx != (fsize)-1)
         {
@@ -191,25 +191,25 @@ namespace bpf
         }
     }
 
-    template <typename K, typename V>
-    const V &Map<K, V>::operator[](const K &key) const
+    template <typename K, typename V, typename HashOp>
+    const V &Map<K, V, HashOp>::operator[](const K &key) const
     {
-        fsize idx = QuadraticSearch(Hash(key));
+        fsize idx = QuadraticSearch(HashOp::HashCode(key));
 
         if (idx == (fsize)-1)
             throw bpf::IndexException((fint)idx);
         return (_data[idx].KeyVal.Value);
     }
 
-    template <typename K, typename V>
-    V &Map<K, V>::operator[](const K &key)
+    template <typename K, typename V, typename HashOp>
+    V &Map<K, V, HashOp>::operator[](const K &key)
     {
-        fsize idx = QuadraticSearch(Hash(key));
+        fsize idx = QuadraticSearch(HashOp::HashCode(key));
 
         if (idx == (fsize)-1)
         {
             TryExtend();
-            idx = QuadraticInsert(Hash(key));
+            idx = QuadraticInsert(HashOp::HashCode(key));
             if (idx == (fsize)-1)
                 throw bpf::IndexException((fint)idx);
             _data[idx].KeyVal.Key = key;
@@ -217,9 +217,9 @@ namespace bpf
         return (_data[idx].KeyVal.Value);
     }
 
-    template <typename K, typename V>
-    inline bool Map<K, V>::HasKey(const K &key) const
+    template <typename K, typename V, typename HashOp>
+    inline bool Map<K, V, HashOp>::HasKey(const K &key) const
     {
-        return (QuadraticSearch(Hash(key)) != (fsize)-1);
+        return (QuadraticSearch(HashOp::HashCode(key)) != (fsize)-1);
     }
 }

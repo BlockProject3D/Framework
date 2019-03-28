@@ -46,6 +46,7 @@ set(SOURCES
     ./include/Framework/Logging/DefaultLogger.hpp
     ./include/Framework/Logging/FileLogger.hpp
     ./include/Framework/Memory/Memory.hpp
+    ./include/Framework/Memory/Memory.Hash.hpp
     ./include/Framework/Memory/Utility.hpp
     ./include/Framework/Memory/MemoryException.hpp
     ./include/Framework/Memory/SharedPtr.hpp
@@ -79,6 +80,7 @@ set(SOURCES
     ./include/Framework/Delegate.hpp
     ./include/Framework/EntryPoint.hpp
     ./include/Framework/Hash.hpp
+    ./include/Framework/BasicHash.hpp
     ./include/Framework/Iterator.hpp
     ./include/Framework/List.hpp
     ./include/Framework/List.impl.hpp
