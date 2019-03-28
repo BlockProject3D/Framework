@@ -94,7 +94,7 @@ namespace bpf
             }
         };
 
-        class ReverseIterator final : public Iterator
+        class BP_TPL_API ReverseIterator final : public Iterator
         {
         public:
             inline ReverseIterator(Data *data, fsize start, fsize size)
