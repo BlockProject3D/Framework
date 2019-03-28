@@ -328,7 +328,7 @@ void    FList<T>::Sort(void)
     }
 
     template <typename T>
-    inline T List<T>::operator[](fsize const id) const
+    inline const T &List<T>::operator[](fsize const id) const
     {
         T *elem = Get(id);
 

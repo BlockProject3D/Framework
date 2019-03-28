@@ -147,7 +147,7 @@ namespace bpf
 
         T *Get(const fsize id) const;
 
-        T operator[](const fsize id) const;
+        const T &operator[](const fsize id) const;
 
         void RemoveAt(const fsize id);
 

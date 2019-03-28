@@ -31,6 +31,7 @@
 #include <gtest/gtest.h>
 #include <Framework/List.hpp>
 #include <Framework/String.hpp>
+#include <Framework/Memory/Memory.hpp>
 
 TEST(List, Creation)
 {
@@ -95,4 +96,34 @@ TEST(List, IterateBackward_Test2)
     for (auto &i : bpf::Reverse(lst))
         res += i;
     EXPECT_STREQ(*res, "edcba");
+}
+
+TEST(List, ReadWrite_NonCopy)
+{
+    bpf::List<bpf::UniquePtr<int>> lst;
+
+    lst.Add(bpf::MakeUnique<int>(32));
+    for (auto &it : lst)
+        EXPECT_EQ(*it, 32);
+    EXPECT_EQ(*lst[0], 32);
+    *lst[0] = 42;
+    EXPECT_EQ(*lst[0], 42);
+}
+
+static void Test_ReadWrite_NonCopy_MemLeak()
+{
+    bpf::List<bpf::UniquePtr<int>> lst;
+
+    lst.Add(bpf::MakeUnique<int>(32));
+    for (auto &it : lst)
+        EXPECT_EQ(*it, 32);
+    EXPECT_EQ(*lst[0], 32);
+}
+
+TEST(List, ReadWrite_NonCopy_MemLeak)
+{
+    bpf::fsize cur = bpf::Memory::GetAllocCount();
+
+    Test_ReadWrite_NonCopy_MemLeak();
+    EXPECT_EQ(cur, bpf::Memory::GetAllocCount());
 }
