@@ -41,6 +41,7 @@ set(SOURCES
     src/List.cpp
     src/ArrayList.cpp
     src/Map.cpp
+    src/Array.cpp
 )
 
 bp_setup_program(${PROJECT_NAME} include)

@@ -91,7 +91,7 @@ namespace bpf
             T *tmp = _arr;
             _arr = new T[id + 1];
             for (fsize i = 0 ; i < _size ; ++i)
-                _arr[i] = tmp[i];
+                _arr[i] = std::move(tmp[i]);
             for (fsize i = _size ; i < id + 1 ; ++i)
                 _arr[i] = DefaultOf<T>();
             _size = id + 1;

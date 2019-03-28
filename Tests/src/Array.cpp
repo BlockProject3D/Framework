@@ -26,54 +26,41 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-#include "Framework/Types.hpp"
-#include "Framework/String.hpp"
-#include "Framework/Stack.hpp"
-#include "Framework/Array.hpp"
-#include "Framework/Map.hpp"
+#include <cassert>
+#include <iostream>
+#include <gtest/gtest.h>
+#include <Framework/String.hpp>
+#include <Framework/Array.hpp>
+#include <Framework/Memory/Memory.hpp>
 
-# ifdef BUILD_DEBUG
-#  define PROFILER_PUSH_SECTION(name) Framework::FProfiler::PushSection(name)
-#  define PROFILER_POP_SECTION() Framework::FProfiler::PopSection()
-# else
-#  define PROFILER_PUSH_SECTION(name)
-#  define PROFILER_POP_SECTION()
-# endif
-
-namespace bpf
+TEST(Array, ReadWrite_NonCopy)
 {
-    struct BPF_API ProfilerSection
-    {
-        String Name;
-        long long Time; //In micro seconds
-        fint Pos;
-        uint32 CreationID;
-    };
+    bpf::Array<bpf::UniquePtr<int>> arr;
+    arr[0] = bpf::MakeUnique<int>(32);
+    arr[1] = bpf::MakeUnique<int>(42);
+    EXPECT_EQ(*arr[0], 32);
+    EXPECT_EQ(*arr[1], 42);
+    *arr[0] = 42;
+    for (auto &it : arr)
+        EXPECT_EQ(*it, 42);
+}
 
-    class BPF_API Profiler
-    {
-    private:
-        uint32 CurCreationID;
-        Map<String, ProfilerSection> _map;
-        Stack<ProfilerSection> _stack = Stack<ProfilerSection>(32);
+static void Test_ReadWrite_NonCopy_MemLeak()
+{
+    bpf::Array<bpf::UniquePtr<int>> arr;
+    arr[0] = bpf::MakeUnique<int>(32);
+    arr[1] = bpf::MakeUnique<int>(42);
+    EXPECT_EQ(*arr[0], 32);
+    EXPECT_EQ(*arr[1], 42);
+    *arr[0] = 42;
+    for (auto &it : arr)
+        EXPECT_EQ(*it, 42);
+}
 
-        void Push(const String &name);
-        void Pop();
-        Profiler();
+TEST(Array, ReadWrite_NonCopy_MemLeak)
+{
+    bpf::fsize cur = bpf::Memory::GetAllocCount();
 
-    public:
-        static Profiler &Instance();
-        Array<ProfilerSection> GenDisplayList();
-        
-        inline static void PushSection(const String &name)
-        {
-            Instance().Push(name);
-        }
-
-        inline static void PopSection()
-        {
-            Instance().Pop();
-        }
-    };
-};
+    Test_ReadWrite_NonCopy_MemLeak();
+    EXPECT_EQ(cur, bpf::Memory::GetAllocCount());
+}
