@@ -33,35 +33,13 @@
     #include <fcntl.h>
     #include <unistd.h>
     #include <sys/mman.h>
-    #include <errno.h>
-    #include <cstring>
 #endif
 #include "Framework/IO/MemoryMapper.hpp"
 #include "Framework/IO/IOException.hpp"
 #include "Framework/IO/FileStream.hpp"
+#include "OSPrivate.hpp"
 
 using namespace bpf;
-
-#ifdef WINDOWS
-String MemoryMapper::ObtainErrorString()
-{
-    String res = "Unknown";
-    LPTSTR errtxt = Null;
-
-    std::cout << GetLastError() << std::endl;
-    FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER
-        | FORMAT_MESSAGE_FROM_SYSTEM
-        | FORMAT_MESSAGE_IGNORE_INSERTS,
-        Null, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-        reinterpret_cast<LPTSTR>(&errtxt), 0, Null);
-    if (errtxt != Null)
-    {
-        res = errtxt;
-        LocalFree(errtxt);
-    }
-    return (res);
-}
-#endif
 
 MemoryMapper::MemoryMapper(const File &file, fint mode)
     : _file(file)
@@ -95,14 +73,14 @@ MemoryMapper::MemoryMapper(const File &file, fint mode)
     if (_handle == INVALID_HANDLE_VALUE)
         throw IOException(String("Could not open file '")
                           + file.GetAbsolutePath().Path() + "' : "
-                          + ObtainErrorString());
+                          + OSPrivate::ObtainLastErrorString());
     _mapper = CreateFileMapping(_handle, Null, md2, 0, 0, Null);
     if (_mapper == Null)
     {
         CloseHandle(_handle);
         throw IOException(String("Could not create mapper for file '")
                           + file.GetAbsolutePath().Path() + "' : "
-                          + ObtainErrorString());
+                          + OSPrivate::ObtainLastErrorString());
     }
 #else
     int md = 0;
@@ -118,7 +96,7 @@ MemoryMapper::MemoryMapper(const File &file, fint mode)
     if (_handle == -1)
         throw IOException(String("Could not open file '")
             + file.GetAbsolutePath().Path() + "' : "
-            + String(std::strerror(errno)));
+            + OSPrivate::ObtainLastErrorString());
 #endif
 }
 
@@ -173,7 +151,7 @@ void MemoryMapper::Map(uint64 pos, fsize size)
     if (_mem == Null)
         throw IOException(String("Could not map file '")
             + _file.GetAbsolutePath().Path() + "' : "
-            + ObtainErrorString());
+            + OSPrivate::ObtainLastErrorString());
     uint8 *addr = reinterpret_cast<uint8 *>(_mem);
     addr += pos - nearestpsize;
     _memoff = addr;
@@ -193,7 +171,7 @@ void MemoryMapper::Map(uint64 pos, fsize size)
     if (_mem == MAP_FAILED)
         throw IOException(String("Could not map file '")
             + _file.GetAbsolutePath().Path() + "' : "
-            + String(std::strerror(errno)));
+            + OSPrivate::ObtainLastErrorString());
     uint8 *addr = reinterpret_cast<uint8 *>(_mem);
     addr += pos - nearestpsize;
     _memoff = addr;

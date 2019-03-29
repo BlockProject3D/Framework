@@ -26,65 +26,37 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-#include "Framework/IO/File.hpp"
-
-namespace bpf
-{
-    class BPF_API MemoryMapper
-    {
-    private:
-        File _file;
-        void *_mem;
-        fint _mode;
-        void *_memoff;
 #ifdef WINDOWS
-        void *_handle;
-        void *_mapper;
+    #include <Windows.h>
 #else
-        int _handle;
-        fsize _size;
+    #include <errno.h>
+    #include <cstring>
 #endif
+#include "OSPrivate.hpp"
 
-    public:
-        /**
-         * Creates a new MemoryMapper from the given file and mode
-         * @param file file to open
-         * @param mode file mode
-         * @throws IOException
-         */
-        MemoryMapper(const File &file, fint mode);
-        ~MemoryMapper();
-        
-        /**
-         * Cannot copy a MemoryMapper
-         */
-        MemoryMapper(const MemoryMapper &other) = delete;
-        
-        /**
-         * Cannot copy a MemoryMapper
-         */
-        MemoryMapper operator=(const MemoryMapper &other) = delete;
-        
-        /**
-         * Map or re-map the file in virtual memory
-         * @param pos position in bytes in the file to start mapping
-         * @param size the size in bytes to map,
-         *        if the size is greater than the size of the file,
-         *        this function throws
-         * @throws IOException
-         */
-        void Map(uint64 pos, fsize size);
-        
-        const File &GetFile() const noexcept
-        {
-            return (_file);
-        }
+using namespace bpf;
 
-        inline void *operator*()
-        {
-            return (_memoff);
-        }
-    };
+#ifdef WINDOWS
+String OSPrivate::ObtainLastErrorString()
+{
+    String res = "Unknown";
+    LPTSTR errtxt = Null;
+
+    FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER
+        | FORMAT_MESSAGE_FROM_SYSTEM
+        | FORMAT_MESSAGE_IGNORE_INSERTS,
+        Null, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+        reinterpret_cast<LPTSTR>(&errtxt), 0, Null);
+    if (errtxt != Null)
+    {
+        res = errtxt;
+        LocalFree(errtxt);
+    }
+    return (res);
 }
-
+#else
+String OSPrivate::ObtainLastErrorString()
+{
+    return (String(std::strerror(errno)));
+}
+#endif

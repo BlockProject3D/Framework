@@ -104,6 +104,8 @@ set(SOURCES
     ./include/Framework/Stringifier.hpp
     ./include/Framework/TreeNode.hpp
     ./src/Framework/IO/File.cpp
+    ./src/Framework/IO/OSPrivate.hpp
+    ./src/Framework/IO/OSPrivate.cpp
     ./src/Framework/IO/FileStream.cpp
     ./src/Framework/IO/MemoryMapper.cpp
     ./src/Framework/IO/ByteBuf.cpp
