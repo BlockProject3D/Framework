@@ -84,8 +84,6 @@ namespace bpf
             Y = Y / Length();
         }
         
-        //TODO : Rotate function
-
         inline Vector2<T> &operator=(const Vector2<T> &other)
         {
             X = other.X;
