@@ -31,6 +31,7 @@
 #include <gtest/gtest.h>
 #include <Framework/IO/FileStream.hpp>
 #include <Framework/IO/IOException.hpp>
+#include <Framework/Memory/Memory.hpp>
 
 TEST(FileStream, OpenExcept)
 {
@@ -43,6 +44,27 @@ TEST(FileStream, OpenExcept)
         return;
     }
     ASSERT_TRUE(false);
+}
+
+static void Test_OpenExcept_MemLeak()
+{
+    try
+    {
+        bpf::FileStream stream(bpf::File("./doesnotexist.txt"), bpf::FILE_MODE_READ);
+    }
+    catch (const bpf::IOException &)
+    {
+        return;
+    }
+    ASSERT_TRUE(false);
+}
+
+TEST(FileStream, OpenExcept_MemLeak)
+{
+    bpf::fsize cur = bpf::Memory::GetAllocCount();
+
+    Test_OpenExcept_MemLeak();
+    EXPECT_EQ(cur, bpf::Memory::GetAllocCount());
 }
 
 TEST(FileStream, Open)
