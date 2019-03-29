@@ -58,7 +58,7 @@ TEST(Quat, EulerAngles)
 TEST(Quat, AxisAngle)
 {
     bpf::Quatld q = bpf::Quatld(bpf::Vector3ld::Forward, bpf::Math::Pi / 2);
-    bpf::Quatld expected = bpf::Quatld(0.7071068, 0, -0.7071068, 0);
+    bpf::Quatld expected = bpf::Quatld(0.7071068, 0, 0.7071068, 0);
 
     EXPECT_EQ(q, expected);
 }
@@ -67,7 +67,7 @@ TEST(Quat, Multiply)
 {
     bpf::Quatld q = bpf::Quatld(bpf::Vector3ld::Forward, bpf::Math::Pi / 2);
     bpf::Quatld q1 = bpf::Quatld(bpf::Vector3ld::Forward, bpf::Math::Pi / 2);
-    bpf::Quatld expected = bpf::Quatld(0, 0, -1, 0);
+    bpf::Quatld expected = bpf::Quatld(0, 0, 1, 0);
 
     EXPECT_EQ(q * q1, expected);
 }
@@ -76,7 +76,7 @@ TEST(Quat, Add)
 {
     bpf::Quatld q = bpf::Quatld(bpf::Vector3ld::Forward, bpf::Math::Pi / 2);
     bpf::Quatld q1 = bpf::Quatld(bpf::Vector3ld::Forward, bpf::Math::Pi / 2);
-    bpf::Quatld expected = bpf::Quatld(1.4142136, 0, -1.4142136, 0);
+    bpf::Quatld expected = bpf::Quatld(1.4142136, 0, 1.4142136, 0);
 
     EXPECT_EQ(q + q1, expected);
 }
