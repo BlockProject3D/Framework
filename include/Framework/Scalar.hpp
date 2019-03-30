@@ -34,9 +34,9 @@ namespace bpf
     class Int
     {
     public:
-        static const int MaxValue;
-        static const int MinValue;
-        static int Parse(const String &str);
+        static const fint MaxValue;
+        static const fint MinValue;
+        static fint Parse(const String &str);
     };
 
     class UInt
@@ -44,23 +44,39 @@ namespace bpf
     public:
         static const uint32 MaxValue;
         static const uint32 MinValue;
-        static int Parse(const String &str);
+        static uint32 Parse(const String &str);
     };
 
-    class Short
+    class Int8
     {
     public:
-        static const int MaxValue;
-        static const int MinValue;
-        static int Parse(const String &str);
+        static const int8 MaxValue;
+        static const int8 MinValue;
+        static int8 Parse(const String &str);
     };
 
-    class UShort
+    class UInt8
     {
     public:
-        static const uint32 MaxValue;
-        static const uint32 MinValue;
-        static int Parse(const String &str);
+        static const uint8 MaxValue;
+        static const uint8 MinValue;
+        static uint8 Parse(const String &str);
+    };
+
+    class Int16
+    {
+    public:
+        static const int16 MaxValue;
+        static const int16 MinValue;
+        static int16 Parse(const String &str);
+    };
+
+    class UInt16
+    {
+    public:
+        static const uint16 MaxValue;
+        static const uint16 MinValue;
+        static uint16 Parse(const String &str);
     };
 
     class Int64
@@ -82,12 +98,16 @@ namespace bpf
     class Float
     {
     public:
+        static const float MaxValue;
+        static const float MinValue;
         static float Parse(const String &str);
     };
 
     class Double
     {
     public:
+        static const double MaxValue;
+        static const double MinValue;
         static double Parse(const String &str);
     };
 }

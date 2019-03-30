@@ -26,5 +26,88 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include <cstdlib>
+#include <errno.h>
+#include <limits.h>
 #include "Framework/Scalar.hpp"
 
+using namespace bpf;
+
+const fint Int::MaxValue = 0;
+const fint Int::MinValue = 0;
+
+fint Int::Parse(const String &str)
+{
+
+}
+
+const uint32 UInt::MaxValue = 0;
+const uint32 UInt::MinValue = 0;
+
+uint32 UInt::Parse(const String &str)
+{
+}
+
+const int8 Int8::MaxValue = 0;
+const int8 Int8::MinValue = 0;
+
+int8 Int8::Parse(const String &str)
+{
+
+}
+
+const uint8 UInt8::MaxValue = 0;
+const uint8 UInt8::MinValue = 0;
+
+uint8 UInt8::Parse(const String &str)
+{
+
+}
+
+const int16 Int16::MaxValue = 0;
+const int16 Int16::MinValue = 0;
+
+int16 Int16::Parse(const String &str)
+{
+
+}
+
+const uint16 UInt16::MaxValue = 0;
+const uint16 UInt16::MinValue = 0;
+
+uint16 UInt16::Parse(const String &str)
+{
+
+}
+
+const int64 Int64::MaxValue = 0;
+const int64 Int64::MinValue = 0;
+
+int64 Int64::Parse(const String &str)
+{
+
+}
+
+const uint64 UInt64::MaxValue = 0;
+const uint64 UInt64::MinValue = 0;
+
+uint64 UInt64::Parse(const String &str)
+{
+
+}
+
+const float Float::MaxValue = 0;
+const float Float::MinValue = 0;
+
+float Float::Parse(const String &str)
+{
+
+}
+
+const double Double::MaxValue = 0;
+const double Double::MinValue = 0;
+
+double Double::Parse(const String &str)
+{
+
+}
