@@ -47,7 +47,7 @@ namespace bpf
         bool ReadByte2(uint8 &out);
         void ReadSubBuf(void *out, const fsize size);
     public:
-        inline BinaryReader(IInputStream &stream, EPlatformEndianess order = PLATFORM_LITTLEENDIAN, bool buffered = true)
+        explicit inline BinaryReader(IInputStream &stream, EPlatformEndianess order = PLATFORM_LITTLEENDIAN, bool buffered = true)
             : _stream(stream)
             , _buf(READ_BUF_SIZE)
             , _targetorder(order)

@@ -45,7 +45,7 @@ namespace bpf
         void WriteByte(uint8 byte);
         void WriteSubBuf(void *in, const fsize size);
     public:
-        inline BinaryWriter(IOutputStream &stream, EPlatformEndianess order = PLATFORM_LITTLEENDIAN, bool buffered = true)
+        explicit inline BinaryWriter(IOutputStream &stream, EPlatformEndianess order = PLATFORM_LITTLEENDIAN, bool buffered = true)
             : _stream(stream)
             , _buf(WRITE_BUF_SIZE)
             , _targetorder(order)
