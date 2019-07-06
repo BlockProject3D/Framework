@@ -37,6 +37,7 @@ namespace bpf
         static const fint MaxValue;
         static const fint MinValue;
         static fint Parse(const String &str);
+        static bool TryParse(const String &str, fint &res);
     };
 
     class UInt
@@ -45,6 +46,7 @@ namespace bpf
         static const uint32 MaxValue;
         static const uint32 MinValue;
         static uint32 Parse(const String &str);
+        static bool TryParse(const String &str, uint32 &res);
     };
 
     class Int8
@@ -53,6 +55,7 @@ namespace bpf
         static const int8 MaxValue;
         static const int8 MinValue;
         static int8 Parse(const String &str);
+        static bool TryParse(const String &str, int8 &res);
     };
 
     class UInt8
@@ -61,6 +64,7 @@ namespace bpf
         static const uint8 MaxValue;
         static const uint8 MinValue;
         static uint8 Parse(const String &str);
+        static bool TryParse(const String &str, uint8 &res);
     };
 
     class Int16
@@ -69,6 +73,7 @@ namespace bpf
         static const int16 MaxValue;
         static const int16 MinValue;
         static int16 Parse(const String &str);
+        static bool TryParse(const String &str, int16 &res);
     };
 
     class UInt16
@@ -77,6 +82,7 @@ namespace bpf
         static const uint16 MaxValue;
         static const uint16 MinValue;
         static uint16 Parse(const String &str);
+        static bool TryParse(const String &str, uint16 &res);
     };
 
     class Int64
@@ -85,6 +91,7 @@ namespace bpf
         static const int64 MaxValue;
         static const int64 MinValue;
         static int64 Parse(const String &str);
+        static bool TryParse(const String &str, int64 &res);
     };
 
     class UInt64
@@ -93,6 +100,7 @@ namespace bpf
         static const uint64 MaxValue;
         static const uint64 MinValue;
         static uint64 Parse(const String &str);
+        static bool TryParse(const String &str, uint64 &res);
     };
 
     class Float
@@ -101,6 +109,7 @@ namespace bpf
         static const float MaxValue;
         static const float MinValue;
         static float Parse(const String &str);
+        static bool TryParse(const String &str, float &res);
     };
 
     class Double
@@ -109,5 +118,6 @@ namespace bpf
         static const double MaxValue;
         static const double MinValue;
         static double Parse(const String &str);
+        static bool TryParse(const String &str, double &res);
     };
 }

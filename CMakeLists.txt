@@ -103,6 +103,7 @@ set(SOURCES
 	./include/Framework/Scalar.hpp
     ./include/Framework/Stringifier.hpp
     ./include/Framework/TreeNode.hpp
+    ./include/Framework/ParseException.hpp
     ./src/Framework/IO/File.cpp
     ./src/Framework/IO/OSPrivate.hpp
     ./src/Framework/IO/OSPrivate.cpp
