@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 set(SOURCES
     ./include/Framework/IO/File.hpp
-	./include/Framework/IO/EStringSerializer.hpp
+    ./include/Framework/IO/EStringSerializer.hpp
     ./include/Framework/IO/FileStream.hpp
     ./include/Framework/IO/MemoryMapper.hpp
     ./include/Framework/IO/IOException.hpp
@@ -39,10 +39,10 @@ set(SOURCES
     ./include/Framework/Math/Quaternion.hpp
     ./include/Framework/Math/Quaternion.impl.hpp
     ./include/Framework/Math/Matrix.hpp
-	./include/Framework/Math/Matrix.impl.hpp
+    ./include/Framework/Math/Matrix.impl.hpp
     ./include/Framework/Math/Transform.hpp
     ./include/Framework/Math/BMath.hpp
-	./include/Framework/Math/Math.hpp
+    ./include/Framework/Math/Math.hpp
     ./include/Framework/Logging/Logger.hpp
     ./include/Framework/Logging/ILogHandler.hpp
     ./include/Framework/Logging/ELogLevel.hpp
@@ -58,6 +58,12 @@ set(SOURCES
     ./include/Framework/Memory/WeakPtr.hpp
     ./include/Framework/Memory/WeakPtr.impl.hpp
     ./include/Framework/Network/Network.hpp
+    ./include/Framework/Network/ISocket.hpp
+    ./include/Framework/Network/TCPSocketClient.hpp
+    ./include/Framework/Network/TCPSocketServer.hpp
+    ./include/Framework/Network/UDPSocket.hpp
+    ./include/Framework/Network/Endpoint.hpp
+    ./include/Framework/Network/Selector.hpp
     ./include/Framework/System/Module.hpp
     ./include/Framework/System/ModuleException.hpp
     ./include/Framework/System/ModuleManager.hpp
@@ -71,7 +77,7 @@ set(SOURCES
     ./include/Framework/System/ThreadManager.hpp
     ./include/Framework/System/IModuleInterface.hpp
     ./include/Framework/API.hpp
-	./include/Framework/BinUtils.hpp
+    ./include/Framework/BinUtils.hpp
     ./include/Framework/Types.hpp
     ./include/Framework/Tuple.hpp
     ./include/Framework/TypeInfo.hpp
@@ -123,8 +129,12 @@ set(SOURCES
     ./src/Framework/Math/Triangle.cpp
     ./src/Framework/Math/Vector.cpp
     ./src/Framework/Math/Vertex.cpp
-	./src/Framework/Math/Math.cpp
+    ./src/Framework/Math/Math.cpp
     ./src/Framework/Memory/Memory.cpp
+    ./src/Framework/Network/TCPSocketClient.cpp
+    ./src/Framework/Network/TCPSocketServer.cpp
+    ./src/Framework/Network/UDPSocket.cpp
+    ./src/Framework/Network/Selector.cpp
     ./src/Framework/System/Platform.cpp
     ./src/Framework/System/Module.cpp
     ./src/Framework/System/ModuleManager.cpp
