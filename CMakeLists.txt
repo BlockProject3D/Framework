@@ -100,7 +100,7 @@ set(SOURCES
     ./include/Framework/Stack.hpp
     ./include/Framework/Stack.impl.hpp
     ./include/Framework/String.hpp
-	./include/Framework/Scalar.hpp
+    ./include/Framework/Scalar.hpp
     ./include/Framework/Stringifier.hpp
     ./include/Framework/TreeNode.hpp
     ./include/Framework/ParseException.hpp
@@ -138,7 +138,7 @@ set(SOURCES
     ./src/Framework/RuntimeException.cpp
     ./src/Framework/IndexException.cpp
     ./src/Framework/String.cpp
-	./src/Framework/Scalar.cpp
+    ./src/Framework/Scalar.cpp
 )
 
 bp_setup_framework()
