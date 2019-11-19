@@ -32,21 +32,21 @@ namespace bpf
 {
     template <typename T>
     inline List<T>::List()
-        : First(Null)
-        , Last(Null)
-        , Count(0)
+        : _first(Null)
+        , _last(Null)
+        , _count(0)
     {
     }
     
     template <typename T>
     inline List<T>::List(List<T> &&other)
-        : First(other.First)
-        , Last(other.Last)
-        , Count(other.Count)
+        : _first(other._first)
+        , _last(other._last)
+        , _count(other._count)
     {
-        other.First = Null;
-        other.Last = Null;
-        other.Count = 0;
+        other._first = Null;
+        other._last = Null;
+        other._count = 0;
     }
 
     template <typename T>
@@ -69,17 +69,17 @@ namespace bpf
             if (newi->Prev != Null)
                 newi->Prev->Next = newi;
             if (pos == 0)
-                First = newi;
+                _first = newi;
         }
-        else if (Last)
+        else if (_last)
         {
-            newi->Prev = Last;
-            Last->Next = newi;
-            Last = newi;
+            newi->Prev = _last;
+			_last->Next = newi;
+            _last = newi;
         }
         else
-            First = Last = newi;
-        ++Count;
+            _first = _last = newi;
+        ++_count;
     }
 
     template <typename T>
@@ -87,15 +87,15 @@ namespace bpf
     {
         ListNode<T> *newi = new ListNode<T>(elem);
 
-        if (Last == Null)
-            First = newi;
+        if (_last == Null)
+            _first = newi;
         else
         {
-            newi->Prev = Last;
-            Last->Next = newi;
+            newi->Prev = _last;
+            _last->Next = newi;
         }
-        Last = newi;
-        ++Count;
+        _last = newi;
+        ++_count;
     }
 
     template <typename T>
@@ -112,17 +112,17 @@ namespace bpf
             if (newi->Prev != Null)
                 newi->Prev->Next = newi;
             if (pos == 0)
-                First = newi;
+                _first = newi;
         }
-        else if (Last)
+        else if (_last)
         {
-            newi->Prev = Last;
-            Last->Next = newi;
-            Last = newi;
+            newi->Prev = _last;
+            _last->Next = newi;
+            _last = newi;
         }
         else
-            First = Last = newi;
-        ++Count;
+            _first = _last = newi;
+        ++_count;
     }
 
     template <typename T>
@@ -130,105 +130,92 @@ namespace bpf
     {
         ListNode<T> *newi = new ListNode<T>(std::move(elem));
 
-        if (Last == Null)
-            First = newi;
+        if (_last == Null)
+            _first = newi;
         else
         {
-            newi->Prev = Last;
-            Last->Next = newi;
+            newi->Prev = _last;
+            _last->Next = newi;
         }
-        Last = newi;
-        ++Count;
+        _last = newi;
+        ++_count;
     }
 
     template <typename T>
     inline void List<T>::Clear()
     {
-        while (Count > 0)
+        while (_count > 0)
             RemoveLast();
     }
 
-/*template<typename T>
-void    FList<T>::Sort(void)
-{
-    T        *tmp = Null;
+	template <typename T>
+	inline void List<T>::Swap(ListNode<T>* a, ListNode<T>* b)
+	{
+		T tmpdata = std::move(a->Data);
 
-    for (fsize i = 0 ; i < Count ; i++)
-    {
-        for (fsize j = 0 ; j < (Count - i) ; j++)
-        {
-            if (Get(j) != Null && Get(j + 1) != Null
-                && *Get(j) > *Get(j + 1))
-            {
-                tmp = GetNode(j)->Data;
-                GetNode(j)->Data = GetNode(j + 1)->Data;
-                GetNode(j + 1)->Data = tmp;
-            }
-        }
-    }
-}*/
+		a->Data = std::move(b->Data);
+		b->Data = std::move(tmpdata);
+	}
 
     template <typename T>
     ListNode<T> *List<T>::Partition(ListNode<T> *start, ListNode<T> *end)
     {
-        ListNode<T> *tmp = (start != Null) ? (start->Prev) : Null;
-
-        while (start != Null && end != Null && start != end->Prev)
-        {
-            if (start->Data < end->Data && tmp != Null)
-            {
-                tmp = tmp->Next;
-                T tmpdata = tmp->Data;
-                tmp->Data = start->Data;
-                start->Data = tmpdata;
-            }
-            start = start->Next;
-        }
-        if (tmp != Null && tmp->Next != Null)
-        {
-            T tmpdata = tmp->Next->Data;
-            tmp->Next->Data = end->Data;
-            end->Data = tmpdata;
-        }
-        return (tmp == Null ? Null : tmp->Next);
+		ListNode<T> *x = end;
+		ListNode<T> *iter = start->Prev;
+		for (ListNode<T>* j = start; j != end; j = j->Next)
+		{
+			if (j->Data <= x->Data)
+			{
+				iter = (iter == Null) ? start : iter->Next;
+				Swap(iter, j);
+				/*T tmpdata = iter->Data;
+				iter->Data = j->Data;
+				j->Data = tmpdata;*/
+			}
+		}
+		Swap(iter->Next, end);
+		/*T tmpdata = iter->Next->Data;
+		iter->Next->Data = end->Data;
+		end->Data = tmpdata;*/
+		return (iter->Next);
     }
 
     template <typename T>
-    void List<T>::QuickSort(ListNode<T> *start, ListNode<T> *end) //QuickSort seem to be a crap : does not do anything at all
+    void List<T>::QuickSort(ListNode<T> *start, ListNode<T> *end)
     {
-        ListNode<T> *res = Partition(First, Last);
-
-        if (res != Null)
-        {
-            QuickSort(start, res->Prev);
-            QuickSort(res->Next, end);
-        }
+		if (end != Null && start != end && start != end->Next)
+		{
+			ListNode<T> *res = Partition(start, end);
+			QuickSort(start, res->Prev);
+			QuickSort(res->Next, end);
+		}
     }
 
     template <typename T>
-    void List<T>::Sort()
+	void List<T>::Sort(const bool stable) //TODO: Adapt to use different sorting functions
     {
         if (Size() <= 0)
             return;
-        QuickSort(First, Last);
+		if (!stable)
+			QuickSort(_first, _last);
     }
 
     template <typename T>
     ListNode<T> *List<T>::GetNode(fsize id) const
     {
-        if (id < Count)
+        if (id < _count)
         {
-            if (id <= (Count / 2))
+            if (id <= (_count / 2))
             {
-                ListNode<T> *cur = First;
+                ListNode<T> *cur = _first;
                 while (id-- > 0)
                     cur = cur->Next;
                 return (cur);
             }
             else
             {
-                ListNode<T> *cur = Last;
-                while (++id < Count)
+                ListNode<T> *cur = _last;
+                while (++id < _count)
                     cur = cur->Prev;
                 return cur;
             }
@@ -237,23 +224,15 @@ void    FList<T>::Sort(void)
     }
 
     template <typename T>
-    inline T *List<T>::Get(fsize const id) const
+    inline ListNode<T> *List<T>::First() const
     {
-        ListNode<T> *cur = this->GetNode(id);
-
-        return ((cur) ? &cur->Data : Null);
+        return (_first);
     }
 
     template <typename T>
-    inline T *List<T>::GetFirst() const
+    inline ListNode<T> *List<T>::Last() const
     {
-        return ((First) ? &First->Data : Null);
-    }
-
-    template <typename T>
-    inline T *List<T>::GetLast() const
-    {
-        return ((Last) ? &Last->Data : Null);
+        return (_last);
     }
 
     template <typename T>
@@ -268,7 +247,7 @@ void    FList<T>::Sort(void)
     template <typename T>
     void List<T>::RemoveNode(ListNode<T> *toRM)
     {
-        if (toRM == Last)
+        if (toRM == _last)
             RemoveLast();
         else
         {
@@ -278,18 +257,18 @@ void    FList<T>::Sort(void)
             if (prev)
                 prev->Next = next;
             else
-                First = next;
+                _first = next;
             if (next)
                 next->Prev = prev;
             delete toRM;
-            --Count;
+            --_count;
         }
     }
 
     template <typename T>
     void List<T>::Remove(const T &elem, const bool all)
     {
-        ListNode<T> *cur = First;
+        ListNode<T> *cur = _first;
 
         while (cur)
         {
@@ -307,33 +286,33 @@ void    FList<T>::Sort(void)
     template <typename T>
     void List<T>::RemoveLast()
     {
-        if (Last)
+        if (_last)
         {
-            ListNode<T> *lst = Last->Prev;
+            ListNode<T> *lst = _last->Prev;
 
             if (lst)
                 lst->Next = Null;
             else
-                First = Null;
-            delete Last;
-            Last = lst;
-            --Count;
+                _first = Null;
+            delete _last;
+            _last = lst;
+            --_count;
         }
     }
 
     template <typename T>
     inline fsize List<T>::Size() const
     {
-        return (Count);
+        return (_count);
     }
 
     template <typename T>
     inline const T &List<T>::operator[](fsize const id) const
     {
-        T *elem = Get(id);
+        ListNode<T> *elem = GetNode(id);
 
         if (elem == Null)
             throw IndexException((fint)id);
-        return (*elem);
+        return (elem->Data);
     }
 }

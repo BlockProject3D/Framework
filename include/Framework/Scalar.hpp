@@ -27,6 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include <limits>
 #include "Framework/String.hpp"
 
 namespace bpf
@@ -34,8 +35,9 @@ namespace bpf
     class Int
     {
     public:
-        static const fint MaxValue;
-        static const fint MinValue;
+        static constexpr fint MaxValue = 2147483647;
+		//Fuck you MSVC, @Microsoft learn that the min value of 32 bits int is -2147483648!
+        static constexpr fint MinValue = -2147483647 - 1;
         static fint Parse(const String &str);
         static bool TryParse(const String &str, fint &res);
     };
@@ -43,8 +45,8 @@ namespace bpf
     class UInt
     {
     public:
-        static const uint32 MaxValue;
-        static const uint32 MinValue;
+        static constexpr uint32 MaxValue = 4294967295;
+        static constexpr uint32 MinValue = 0;
         static uint32 Parse(const String &str);
         static bool TryParse(const String &str, uint32 &res);
     };
@@ -52,8 +54,8 @@ namespace bpf
     class Int8
     {
     public:
-        static const int8 MaxValue;
-        static const int8 MinValue;
+        static constexpr int8 MaxValue = 127;
+        static constexpr int8 MinValue = -128;
         static int8 Parse(const String &str);
         static bool TryParse(const String &str, int8 &res);
     };
@@ -61,8 +63,8 @@ namespace bpf
     class UInt8
     {
     public:
-        static const uint8 MaxValue;
-        static const uint8 MinValue;
+        static constexpr uint8 MaxValue = 255;
+        static constexpr uint8 MinValue = 0;
         static uint8 Parse(const String &str);
         static bool TryParse(const String &str, uint8 &res);
     };
@@ -70,8 +72,8 @@ namespace bpf
     class Int16
     {
     public:
-        static const int16 MaxValue;
-        static const int16 MinValue;
+        static constexpr int16 MaxValue = 32767;
+        static constexpr int16 MinValue = -32768;
         static int16 Parse(const String &str);
         static bool TryParse(const String &str, int16 &res);
     };
@@ -79,8 +81,8 @@ namespace bpf
     class UInt16
     {
     public:
-        static const uint16 MaxValue;
-        static const uint16 MinValue;
+        static constexpr uint16 MaxValue = 65535;
+        static constexpr uint16 MinValue = 0;
         static uint16 Parse(const String &str);
         static bool TryParse(const String &str, uint16 &res);
     };
@@ -88,8 +90,8 @@ namespace bpf
     class Int64
     {
     public:
-        static const int64 MaxValue;
-        static const int64 MinValue;
+        static constexpr int64 MaxValue = 9223372036854775807LL;
+        static constexpr int64 MinValue = -9223372036854775808LL;
         static int64 Parse(const String &str);
         static bool TryParse(const String &str, int64 &res);
     };
@@ -97,8 +99,8 @@ namespace bpf
     class UInt64
     {
     public:
-        static const uint64 MaxValue;
-        static const uint64 MinValue;
+        static constexpr uint64 MaxValue = 18446744073709551615ULL;
+        static constexpr uint64 MinValue = 0;
         static uint64 Parse(const String &str);
         static bool TryParse(const String &str, uint64 &res);
     };
@@ -106,8 +108,8 @@ namespace bpf
     class Float
     {
     public:
-        static const float MaxValue;
-        static const float MinValue;
+        static constexpr float MaxValue = std::numeric_limits<float>::max();
+        static constexpr float MinValue = std::numeric_limits<float>::min();
         static float Parse(const String &str);
         static bool TryParse(const String &str, float &res);
     };
@@ -115,8 +117,8 @@ namespace bpf
     class Double
     {
     public:
-        static const double MaxValue;
-        static const double MinValue;
+        static constexpr double MaxValue = std::numeric_limits<double>::max();
+        static constexpr double MinValue = std::numeric_limits<double>::max();
         static double Parse(const String &str);
         static bool TryParse(const String &str, double &res);
     };

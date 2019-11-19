@@ -82,6 +82,10 @@ namespace bpf
                 if (Cur)
                     Cur = CanRunBack ? Cur->Next : Cur->Prev;
             }
+			inline const ListNode<T>* Node() const
+			{
+				return (Cur);
+			}
             inline const T *operator->() const
             {
                 return (&Cur->Data);
@@ -101,12 +105,13 @@ namespace bpf
         };
         using ReverseIterator = Iterator;
     private:
-        ListNode<T> *First;
-        ListNode<T> *Last;
-        fsize Count;
+        ListNode<T> *_first;
+        ListNode<T> *_last;
+        fsize _count;
 
         ListNode<T> *Partition(ListNode<T> *start, ListNode<T> *end);
         void QuickSort(ListNode<T> *start, ListNode<T> *end);
+		void MergeSort();
         void RemoveNode(ListNode<T> *toRM);
     public:
         List<T>();
@@ -145,21 +150,26 @@ namespace bpf
          */
         ListNode<T> *GetNode(fsize id) const;
 
-        T *Get(const fsize id) const;
-
         const T &operator[](const fsize id) const;
 
         void RemoveAt(const fsize id);
 
+		/**
+		 * Removes occurences of an element fron the list
+		 * @param elem the element to search for
+		 * @param all wether or not to remove all occurences or just the first one
+		 */
         void Remove(const T &elem, const bool all = true);
 
         void RemoveLast();
 
-        void Sort();
+        void Sort(const bool stable = false);
 
-        T *GetFirst() const;
+		void Swap(ListNode<T>* a, ListNode<T>* b);
 
-        T *GetLast() const;
+        ListNode<T> *First() const;
+
+		ListNode<T> *Last() const;
 
         fsize Size() const;
 
@@ -170,7 +180,7 @@ namespace bpf
          */
         inline Iterator begin() const
         {
-            return (Iterator(First, false));
+            return (Iterator(_first, false));
         }
 
         /**
@@ -186,7 +196,7 @@ namespace bpf
          */
         inline ReverseIterator rbegin() const
         {
-            return (ReverseIterator(Last, true));
+            return (ReverseIterator(_last, true));
         }
 
         /**
