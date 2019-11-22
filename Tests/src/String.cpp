@@ -323,9 +323,9 @@ TEST(String, ExplodeSingleChar)
     bpf::String s = "this is a test";
     bpf::String s1 = "this      is   a                 test";
     bpf::String s2 = "         this      is   a                 test         ";
-    bpf::List<bpf::String> data = s.Explode(' ');
-    bpf::List<bpf::String> data1 = s1.Explode(' ');
-    bpf::List<bpf::String> data2 = s2.Explode(' ');
+    bpf::Array<bpf::String> data = s.Explode(' ');
+    bpf::Array<bpf::String> data1 = s1.Explode(' ');
+    bpf::Array<bpf::String> data2 = s2.Explode(' ');
 
     EXPECT_TRUE(data.Size() == data1.Size());
     EXPECT_TRUE(data.Size() == data2.Size());
@@ -347,7 +347,7 @@ TEST(String, ExplodeSingleChar)
 TEST(String, ExplodeOr)
 {
     bpf::String s = "this is a, test";
-    bpf::List<bpf::String> data = s.ExplodeOr(" ,");
+    bpf::Array<bpf::String> data = s.ExplodeOr(" ,");
 
     EXPECT_TRUE(data.Size() == 4);
     EXPECT_STREQ("this", *data[0]);
@@ -362,10 +362,10 @@ TEST(String, ExplodeString)
     bpf::String s1 = "this      is    a                  test";
     bpf::String s2 = "        this      is    a                  test          ";
     bpf::String s3 = "this is a test";
-    bpf::List<bpf::String> data = s.Explode("  ");
-    bpf::List<bpf::String> data1 = s1.Explode("  ");
-    bpf::List<bpf::String> data2 = s2.Explode("  ");
-    bpf::List<bpf::String> data3 = s3.Explode(" ");
+    bpf::Array<bpf::String> data = s.Explode("  ");
+    bpf::Array<bpf::String> data1 = s1.Explode("  ");
+    bpf::Array<bpf::String> data2 = s2.Explode("  ");
+    bpf::Array<bpf::String> data3 = s3.Explode(" ");
 
     EXPECT_TRUE(data.Size() == data1.Size());
     EXPECT_TRUE(data.Size() == data2.Size());
@@ -394,9 +394,9 @@ TEST(String, ExplodeIgnoreSingleChar)
     bpf::String s = "this 'is a' test";
     bpf::String s1 = "this      'is   a'                 test";
     bpf::String s2 = "         this      'is   a'                 test         ";
-    bpf::List<bpf::String> data = s.ExplodeIgnore(' ', '\'');
-    bpf::List<bpf::String> data1 = s1.ExplodeIgnore(' ', '\'');
-    bpf::List<bpf::String> data2 = s2.ExplodeIgnore(' ', '\'');
+    bpf::Array<bpf::String> data = s.ExplodeIgnore(' ', '\'');
+    bpf::Array<bpf::String> data1 = s1.ExplodeIgnore(' ', '\'');
+    bpf::Array<bpf::String> data2 = s2.ExplodeIgnore(' ', '\'');
 
     EXPECT_TRUE(data.Size() == data1.Size());
     EXPECT_TRUE(data.Size() == data2.Size());
@@ -417,9 +417,9 @@ TEST(String, ExplodeIgnoreString_Test1)
     bpf::String s = "this  'is  a'  test";
     bpf::String s1 = "this      'is   a'                  test";
     bpf::String s2 = "        this      'is   a'                test         ";
-    bpf::List<bpf::String> data = s.ExplodeIgnore("  ", "'");
-    bpf::List<bpf::String> data1 = s1.ExplodeIgnore("  ", "'");
-    bpf::List<bpf::String> data2 = s2.ExplodeIgnore("  ", "'");
+    bpf::Array<bpf::String> data = s.ExplodeIgnore("  ", "'");
+    bpf::Array<bpf::String> data1 = s1.ExplodeIgnore("  ", "'");
+    bpf::Array<bpf::String> data2 = s2.ExplodeIgnore("  ", "'");
 
     EXPECT_TRUE(data.Size() == data1.Size());
     EXPECT_TRUE(data.Size() == data2.Size());
@@ -440,9 +440,9 @@ TEST(String, ExplodeIgnoreString_Test2)
     bpf::String s = "this  !'is  a!'  test";
     bpf::String s1 = "this      !'is   a!'                  test";
     bpf::String s2 = "          this      !'is   a!'                  test          ";
-    bpf::List<bpf::String> data = s.ExplodeIgnore("  ", "!'");
-    bpf::List<bpf::String> data1 = s1.ExplodeIgnore("  ", "!'");
-    bpf::List<bpf::String> data2 = s2.ExplodeIgnore("  ", "!'");
+    bpf::Array<bpf::String> data = s.ExplodeIgnore("  ", "!'");
+    bpf::Array<bpf::String> data1 = s1.ExplodeIgnore("  ", "!'");
+    bpf::Array<bpf::String> data2 = s2.ExplodeIgnore("  ", "!'");
 
     EXPECT_TRUE(data.Size() == data1.Size());
     EXPECT_TRUE(data.Size() == data2.Size());

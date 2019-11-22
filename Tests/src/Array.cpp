@@ -33,6 +33,47 @@
 #include <Framework/Array.hpp>
 #include <Framework/Memory/Memory.hpp>
 
+TEST(Array, Init)
+{
+	auto arr = bpf::Array<int>(3);
+
+	arr[0] = 1;
+	arr[1] = 3;
+	arr[2] = 6;
+	EXPECT_EQ(arr[0], 1);
+	EXPECT_EQ(arr[1], 3);
+	EXPECT_EQ(arr[2], 6);
+}
+
+TEST(Array, Realloc)
+{
+	auto arr = bpf::Array<int>(3);
+
+	arr[0] = 1;
+	arr[1] = 3;
+	arr[2] = 6;
+	arr[3] = 100;
+	EXPECT_EQ(arr[0], 1);
+	EXPECT_EQ(arr[1], 3);
+	EXPECT_EQ(arr[2], 6);
+	EXPECT_EQ(arr[3], 100);
+}
+
+TEST(Array, ReallocForbidThrow)
+{
+	auto arr = bpf::Array<int>(3);
+	const auto &test = arr;
+
+	arr[0] = 1;
+	arr[1] = 3;
+	arr[2] = 6;
+	EXPECT_EQ(arr[0], 1);
+	EXPECT_EQ(arr[1], 3);
+	EXPECT_EQ(arr[2], 6);
+
+	EXPECT_THROW(test[3], bpf::IndexException);
+}
+
 TEST(Array, ReadWrite_NonCopy)
 {
     bpf::Array<bpf::UniquePtr<int>> arr;

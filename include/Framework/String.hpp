@@ -31,11 +31,9 @@
 #include <cstring>
 #include "Framework/Types.hpp"
 #include "Framework/TypeInfo.hpp"
-#include "Framework/List.hpp"
 #include "Framework/Array.hpp"
 #include "Framework/IndexException.hpp"
 
-//TODO : Remove usage of List go for Array
 //TODO : Create BaseConvert class to convert between multiple bases
 //TODO : Create MathParser class to evaluate math expression in strings (in order to seperate string math eval from main string class)
 //TODO : Remove ToString replace by Stringifier as it's more extendable
@@ -263,39 +261,39 @@ namespace bpf
         /**
          * Splits this string using a delimiter
          * @param c the sperator char
-         * @return list of tokens
+         * @return array of tokens
          */
-        List<String> Explode(const char c) const;
+        Array<String> Explode(const char c) const;
 
         /**
          * Splits this string using a delimiter
          * @param c the seperator char
          * @param ignore character to identify escape sequences (all characters between two of this ignore char will be interpreted as a single token)
-         * @return list of tokens
+         * @return array of tokens
          */
-        List<String> ExplodeIgnore(const char c, const char ignore) const;
+        Array<String> ExplodeIgnore(const char c, const char ignore) const;
 
         /**
          * Splits this string using a delimiter
          * @param str the separator string
-         * @return list of tokens
+         * @return array of tokens
          */
-        List<String> Explode(const String &str) const;
+        Array<String> Explode(const String &str) const;
 
         /**
          * Splits this string using a delimiter
          * @param str the separator string
          * @param ignore string to identify escape sequences (all characters between two of this ignore string will be interpreted as a single token)
-         * @return list of tokens
+         * @return array of tokens
          */
-        List<String> ExplodeIgnore(const String &str, const String &ignore) const;
+        Array<String> ExplodeIgnore(const String &str, const String &ignore) const;
 
         /**
          * Splits this string using multiple delimiters
          * @param str the delimiters
-         * @return list of tokens
+         * @return array of tokens
          */
-        List<String> ExplodeOr(const String &str) const;
+        Array<String> ExplodeOr(const String &str) const;
 
         /**
          * Returns true if this string starts with other
@@ -384,7 +382,7 @@ namespace bpf
             {
                 res += format.Sub(0, i);
                 String pattern = format.Sub(i + 1, j);
-                List<String> tokens = pattern.Explode(',');
+                Array<String> tokens = pattern.Explode(',');
                 if (tokens.Size() < 3)
                     return (res + ValueOf(t) + Format(format.Sub(j + 1), args...));
                 fint maxn = std::atoi(*tokens[0]);
