@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2019, BlockProject
 //
 // All rights reserved.
 //
@@ -28,49 +28,22 @@
 
 #pragma once
 
-#define Null nullptr
-
-// Check windows
-#ifdef WINDOWS
-    #if _WIN64
-        #define X86_64
-    #else
-        #define X86
-    #endif
-#else
-    #if __x86_64__ || __ppc64__
-        #define X86_64
-    #else
-        #define X86
-    #endif
-#endif
+#include "Framework/ParseException.hpp"
+#include "Framework/String.hpp"
 
 namespace bpf
 {
-    using uint32 = unsigned int;
-    using uint8 = unsigned char;
-    using int32 = int;
-    using int64 = long long signed int;
-    using uint64 = long long unsigned int;
-    using int8 = signed char;
-    using int16 = signed short;
-    using uint16 = unsigned short;
+	template <typename T>
+	class BP_TPL_API BaseConvert
+	{
+	private:
+		String _base;
+	public:
+		inline BaseConvert(const String &base) : _base(base) {}
 
-    using fchar = uint32;
-
-    /**
-     * Custom int type guarenteed to be ALWAYS 32bits no matter the platform
-     */
-    using fint = int32;
-
-#ifdef X86_64
-    using uintptr = uint64;
-    using intptr = int64;
-#else
-    using uintptr = uint32;
-    using intptr = int32;
-#endif
-
-    using fsize = uintptr;
-	using fisize = intptr;
+		T FromString(const String &nbr);
+		String ToString(T nbr);
+	};
 }
+
+#include "Framework/BaseConvert.impl.hpp"

@@ -650,11 +650,20 @@ TEST(String, IterateUTF8)
     EXPECT_STREQ(*str, *res);
 }
 
-
 TEST(String, ToArray)
 {
     bpf::String str = "this is a test";
     bpf::Array<char> arr = str.ToArray();
 
     EXPECT_STREQ(*str, *arr);
+}
+
+TEST(String, Reverse)
+{
+	bpf::String str = "abc";
+	EXPECT_STREQ(*str.Reverse(), "cba");
+	str = "";
+	EXPECT_STREQ(*str.Reverse(), "");
+	str = "abcd  ef";
+	EXPECT_STREQ(*str.Reverse(), "fe  dcba");
 }

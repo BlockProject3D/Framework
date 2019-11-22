@@ -225,7 +225,7 @@ String::String(String &&s)
     s.UnicodeLen = 0;
 }
 
-void String::MakeSized(String &str, const uint32 len) const
+void String::MakeSized(String &str, const fsize len) const
 {
     str.StrLen = len;
     str.Data = static_cast<char *>(Memory::Malloc(sizeof(char) * (len + 1)));
@@ -341,17 +341,17 @@ String::~String()
     Memory::Free(Data);
 }
 
-void String::CopyString(const char *src, char *dest, const uint32 len) const
+void String::CopyString(const char *src, char *dest, const fsize len) const
 {
     fsize const *fsrc = reinterpret_cast<fsize const *>(src);
     fsize *fdest = reinterpret_cast<fsize *>(dest);
-    uint32 flen = len / sizeof(fsize);
+    fsize flen = len / sizeof(fsize);
 
-    for (uint32 i = 0; i < flen; ++i, ++fsrc, ++fdest)
+    for (fsize i = 0; i < flen; ++i, ++fsrc, ++fdest)
         *fdest = *fsrc;
     dest = reinterpret_cast<char *>(fdest);
     src = reinterpret_cast<char const *>(fsrc);
-    for (uint32 i = flen * sizeof(fsize); i < len; ++i, ++dest, ++src)
+    for (fsize i = flen * sizeof(fsize); i < len; ++i, ++dest, ++src)
         *dest = *src;
     *dest = '\0';
 }
@@ -370,10 +370,10 @@ uint8 String::CalcCharIncrement(const char c) // 1101 & 1111
     return 0;
 }
 
-uint32 String::CalcUnicodeLen(const char *str, const uint32 len) const
+fsize String::CalcUnicodeLen(const char *str, const fsize len) const
 {
-    uint32 ulen = 0;
-    uint32 i = 0;
+	fsize ulen = 0;
+	fsize i = 0;
 
     for (i = 0; i < len; i++)
     {
@@ -392,25 +392,25 @@ Array<char> String::ToArray() const
     return (arr);
 }
 
-uint32 String::CalcStartFromUnicode(const uint32 start) const
+fsize String::CalcStartFromUnicode(const fsize start) const
 {
-    uint32 i = 0;
+	fsize i = 0;
 
-    for (uint32 j = 0 ; i < StrLen && j != start; ++i, ++j)
+    for (fsize j = 0 ; i < StrLen && j != start; ++i, ++j)
         i += CalcCharIncrement(Data[i]);
     return (i);
 }
 
-String String::Sub(const fint begin, const fint end) const
+String String::Sub(const fisize begin, const fisize end) const
 {
     String s;
-    uint32 min;
-    uint32 max;
+	fsize min;
+	fsize max;
 
-    if ((uint32)begin > UnicodeLen || (uint32)end > UnicodeLen)
+    if ((fsize)begin > UnicodeLen || (fsize)end > UnicodeLen)
         return (*this);
-    min = CalcStartFromUnicode((uint32)begin);
-    max = CalcStartFromUnicode((uint32)end);
+    min = CalcStartFromUnicode((fsize)begin);
+    max = CalcStartFromUnicode((fsize)end);
     if (max > min)
     {
         MakeSized(s, max - min);
@@ -420,14 +420,14 @@ String String::Sub(const fint begin, const fint end) const
     return (s);
 }
 
-String String::Sub(const fint begin) const
+String String::Sub(const fisize begin) const
 {
     String s;
-    uint32 min;
+    fsize min;
 
-    if ((uint32)begin > UnicodeLen)
+    if ((fsize)begin > UnicodeLen)
         return (*this);
-    min = CalcStartFromUnicode((uint32)begin);
+    min = CalcStartFromUnicode((fsize)begin);
     if (StrLen > min)
     {
         MakeSized(s, StrLen - min);
@@ -449,7 +449,7 @@ static bool my_strstr(char *pathern, char *str)
 
 bool String::Contains(const String &other) const
 {
-    for (uint32 i = 0 ; i < StrLen ; i++)
+    for (fsize i = 0 ; i < StrLen ; i++)
     {
         if (Data[i] == other.Data[0] && my_strstr(other.Data, Data + i))
             return (true);
@@ -459,7 +459,7 @@ bool String::Contains(const String &other) const
 
 bool String::Contains(const fchar other) const
 {
-    for (uint32 i = 0; i < UnicodeLen; i++)
+    for (fsize i = 0; i < UnicodeLen; i++)
     {
         if (operator[](i) == other)
             return (true);
@@ -473,7 +473,7 @@ bool String::IsNumeric() const
 
     if (UnicodeLen <= 0)
         return (false);
-    for (uint32 i = 0 ; i < StrLen ; i++)
+    for (fsize i = 0 ; i < StrLen ; i++)
     {
         if (Data[i] == '.' && coma)
             return (false);
@@ -493,7 +493,7 @@ Array<String> String::Explode(const char c) const
 	int k = 0;
     String cur;
 
-    for (uint32 i = 0 ; i < StrLen ; i++)
+    for (fsize i = 0 ; i < StrLen ; i++)
     {
         if (Data[i] != c)
             cur += Data[i];
@@ -511,11 +511,11 @@ Array<String> String::Explode(const char c) const
 Array<String> String::ExplodeIgnore(const char c, const char ignore) const
 {
     String cur;
-	int k = 0;
+	fsize k = 0;
     bool ign = false;
 	Array<String> l;
 
-    for (uint32 i = 0 ; i < StrLen ; i++)
+    for (fsize i = 0 ; i < StrLen ; i++)
     {
         if (Data[i] == ignore)
             ign = !ign;
@@ -535,10 +535,10 @@ Array<String> String::ExplodeIgnore(const char c, const char ignore) const
 Array<String> String::Explode(const String &str) const
 {
     String cur;
-	int k = 0;
+	fsize k = 0;
     Array<String> l;
 
-    for (uint32 i = 0 ; i < StrLen ; ++i)
+    for (fsize i = 0 ; i < StrLen ; ++i)
     {
         if (Data[i] != str.Data[0])
             cur += Data[i];
@@ -556,11 +556,11 @@ Array<String> String::Explode(const String &str) const
 Array<String> String::ExplodeIgnore(const String &str, const String &ignore) const
 {
     String cur;
-	int k = 0;
+	fsize k = 0;
     bool ign = false;
 	Array<String> l;
 
-    for (uint32 i = 0 ; i < StrLen ; ++i)
+    for (fsize i = 0 ; i < StrLen ; ++i)
     {
         if (my_strstr(ignore.Data, Data + i))
             ign = !ign;
@@ -580,10 +580,10 @@ Array<String> String::ExplodeIgnore(const String &str, const String &ignore) con
 Array<String> String::ExplodeOr(const String &str) const
 {
     String cur;
-	int k = 0;
+	fsize k = 0;
 	Array<String> l;
 
-    for (uint32 i = 0; i < StrLen; i++)
+    for (fsize i = 0; i < StrLen; i++)
     {
         if (!str.Contains(operator[](i)))
             cur += Data[i];
@@ -600,9 +600,9 @@ Array<String> String::ExplodeOr(const String &str) const
 
 bool String::StartsWith(const String &other) const
 {
-    if (StrLen < (uint32)other.Size())
+    if (StrLen < (fsize)other.Size())
         return (false);
-    for (uint32 i = 0 ; i < (uint32)other.Size() ; i++)
+    for (fsize i = 0 ; i < (fsize)other.Size() ; i++)
         if (Data[i] != other.Data[i])
             return (false);
     return (true);
@@ -612,9 +612,9 @@ bool String::EndsWith(const String &other) const
 {
     if (other.Size() == 0)
         return (true);
-    if (StrLen < (uint32)other.Size())
+    if (StrLen < (fsize)other.Size())
         return (false);
-    uint32 i, j;
+    fsize i, j;
     for (j = StrLen - 1, i = other.Size() - 1 ; i > 0 && j > 0 ; i--, j--)
         if (Data[j] != other.Data[i])
             return (false);
@@ -625,7 +625,7 @@ String String::Replace(const String &search, const String &repby) const
 {
     String str;
 
-    for (uint32 i = 0 ; i < StrLen ; i++)
+    for (fsize i = 0 ; i < StrLen ; i++)
     {
         if (Data[i] == search.ByteAt(0) && my_strstr(Data + i, search.Data))
             str += repby;
@@ -635,12 +635,12 @@ String String::Replace(const String &search, const String &repby) const
     return (str);
 }
 
-fint String::IndexOf(const String &str) const
+fisize String::IndexOf(const String &str) const
 {
-    uint32 i;
-    uint32 charid = 0;
+    fsize i;
+    fsize charid = 0;
 
-    for (i = 0 ; i < StrLen ; ++i)
+    for (i = 0 ; i != StrLen ; ++i)
     {
         if (Data[i] == str.Data[0] && my_strstr(str.Data, Data + i))
             return (charid);
@@ -650,10 +650,10 @@ fint String::IndexOf(const String &str) const
     return (-1);
 }
 
-fint String::LastIndexOf(const String &str) const
+fisize String::LastIndexOf(const String &str) const
 {
-    fint i;
-    fint charid = UnicodeLen - 1;
+    fisize i;
+    fsize charid = UnicodeLen - 1;
 
     for (i = StrLen - 1 ; i >= 0 ; --i)
     {
@@ -665,12 +665,12 @@ fint String::LastIndexOf(const String &str) const
     return (-1);
 }
 
-fint String::IndexOf(const char c) const
+fisize String::IndexOf(const char c) const
 {
-    uint32 i;
-    uint32 charid = 0;
+    fsize i;
+    fsize charid = 0;
 
-    for (i = 0 ; i < StrLen ; ++i)
+    for (i = 0 ; i != StrLen ; ++i)
     {
         if (Data[i] == c)
             return (charid);
@@ -680,10 +680,10 @@ fint String::IndexOf(const char c) const
     return (-1);
 }
 
-fint String::LastIndexOf(const char c) const
+fisize String::LastIndexOf(const char c) const
 {
-    fint i;
-    fint charid = UnicodeLen - 1;
+    fisize i;
+    fsize charid = UnicodeLen - 1;
     
     for (i = StrLen - 1 ; i >= 0 ; --i)
     {
@@ -699,7 +699,7 @@ String String::ToUpper() const
 {
     String res;
 
-    for (uint32 i = 0 ; i < StrLen ; ++i)
+    for (fsize i = 0 ; i < StrLen ; ++i)
     {
         if (CalcCharIncrement(Data[i]) <= 1 && Data[i] >= 'a' && Data[i] <= 'z')
             res += (char)(Data[i] - 32);
@@ -713,7 +713,7 @@ String String::ToLower() const
 {
     String res;
 
-    for (uint32 i = 0 ; i < StrLen ; ++i)
+    for (fsize i = 0 ; i < StrLen ; ++i)
     {
         if (CalcCharIncrement(Data[i]) <= 1 && Data[i] >= 'A' && Data[i] <= 'Z')
             res += (char)(Data[i] + 32);
@@ -723,9 +723,21 @@ String String::ToLower() const
     return (res);
 }
 
+String String::Reverse() const
+{
+	String res = String::Empty;
+
+	if (UnicodeLen == 0)
+		return (res);
+	for (fsize i = UnicodeLen - 1; i > 0; --i)
+		res += this->operator[](i);
+	res += this->operator[](0);
+	return (res);
+}
+
 String String::ValueOf(fint i)
 {
-    std::stringstream    strs;
+    std::stringstream strs;
 
     strs << i;
     return (String(strs.str().c_str()));
@@ -733,7 +745,7 @@ String String::ValueOf(fint i)
 
 String String::ValueOf(uint32 i)
 {
-    std::stringstream    strs;
+    std::stringstream strs;
 
     strs << i;
     return (String(strs.str().c_str()));
@@ -741,7 +753,7 @@ String String::ValueOf(uint32 i)
 
 String String::ValueOf(uint64 i)
 {
-    std::stringstream    strs;
+    std::stringstream strs;
 
     strs << i;
     return (String(strs.str().c_str()));
@@ -749,7 +761,7 @@ String String::ValueOf(uint64 i)
 
 String String::ValueOf(int64 i)
 {
-    std::stringstream    strs;
+    std::stringstream strs;
 
     strs << i;
     return (String(strs.str().c_str()));
@@ -757,7 +769,7 @@ String String::ValueOf(int64 i)
 
 String String::ValueOf(float f)
 {
-    std::stringstream    strs;
+    std::stringstream strs;
 
     strs << f;
     return (String(strs.str().c_str()));
@@ -765,7 +777,7 @@ String String::ValueOf(float f)
 
 String String::ValueOf(double d)
 {
-    std::stringstream    strs;
+    std::stringstream strs;
 
     strs << d;
     return (String(strs.str().c_str()));
@@ -773,7 +785,7 @@ String String::ValueOf(double d)
 
 String String::ValueOf(void *ptr)
 {
-    std::stringstream    strs;
+    std::stringstream strs;
 
     strs << std::hex << (uintptr)ptr;
     return (strs.str().c_str());

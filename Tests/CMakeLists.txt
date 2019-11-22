@@ -44,6 +44,7 @@ set(SOURCES
     src/ArrayList.cpp
     src/Map.cpp
     src/Array.cpp
+    src/BaseConvert.cpp
 )
 
 bp_setup_program(${PROJECT_NAME} include)

@@ -35,16 +35,16 @@ namespace bpf
     class BPF_API IndexException final : public Exception
     {
     private:
-        fint ID;
+        fisize ID;
 
     public:
-        explicit inline IndexException(const fint id) noexcept
+        explicit inline IndexException(const fisize id) noexcept
             : Exception()
             , ID(id)
         {
         }
 
-        fint GetID() const noexcept
+        fisize GetID() const noexcept
         {
             return (ID);
         }

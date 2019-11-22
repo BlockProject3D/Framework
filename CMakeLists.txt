@@ -102,6 +102,8 @@ set(SOURCES
     ./include/Framework/String.hpp
     ./include/Framework/MathEval.hpp
     ./include/Framework/MathEval.impl.hpp
+    ./include/Framework/BaseConvert.hpp
+    ./include/Framework/BaseConvert.impl.hpp
     ./include/Framework/Scalar.hpp
     ./include/Framework/Stringifier.hpp
     ./include/Framework/TreeNode.hpp

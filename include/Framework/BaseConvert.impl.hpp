@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2019, BlockProject
 //
 // All rights reserved.
 //
@@ -28,49 +28,36 @@
 
 #pragma once
 
-#define Null nullptr
-
-// Check windows
-#ifdef WINDOWS
-    #if _WIN64
-        #define X86_64
-    #else
-        #define X86
-    #endif
-#else
-    #if __x86_64__ || __ppc64__
-        #define X86_64
-    #else
-        #define X86
-    #endif
-#endif
-
 namespace bpf
 {
-    using uint32 = unsigned int;
-    using uint8 = unsigned char;
-    using int32 = int;
-    using int64 = long long signed int;
-    using uint64 = long long unsigned int;
-    using int8 = signed char;
-    using int16 = signed short;
-    using uint16 = unsigned short;
+	template <typename T>
+	T BaseConvert<T>::FromString(const String &nbr)
+	{
+		T res = 0;
+		T cb = 1;
 
-    using fchar = uint32;
+		for (fisize i = nbr.Len() - 1; i >= 0; --i)
+		{
+			if (!_base.Contains(nbr[i]))
+				throw ParseException("Invalid string");
+			res += (T)(_base.IndexOf(nbr[i])) * cb;
+			cb *= (T)_base.Len();
+		}
+		return (res);
+	}
 
-    /**
-     * Custom int type guarenteed to be ALWAYS 32bits no matter the platform
-     */
-    using fint = int32;
+	template <typename T>
+	String BaseConvert<T>::ToString(T nbr)
+	{
+		String res = String::Empty;
 
-#ifdef X86_64
-    using uintptr = uint64;
-    using intptr = int64;
-#else
-    using uintptr = uint32;
-    using intptr = int32;
-#endif
-
-    using fsize = uintptr;
-	using fisize = intptr;
+		if (nbr == 0)
+			return ("0");
+		while (nbr > 0)
+		{
+			res += _base[nbr % _base.Len()];
+			nbr /= (T)_base.Len();
+		}
+		return (res.Reverse());
+	}
 }
