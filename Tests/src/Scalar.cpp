@@ -30,7 +30,6 @@
 #include <iostream>
 #include <gtest/gtest.h>
 #include <Framework/Scalar.hpp>
-#include <Framework/ParseException.hpp>
 
 TEST(Int, Parse)
 {

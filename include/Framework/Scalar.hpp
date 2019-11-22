@@ -29,6 +29,7 @@
 #pragma once
 #include <limits>
 #include "Framework/String.hpp"
+#include "Framework/ParseException.hpp"
 
 namespace bpf
 {

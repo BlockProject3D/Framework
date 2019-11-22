@@ -31,7 +31,6 @@
 #include <gtest/gtest.h>
 #include <Framework/String.hpp>
 #include <Framework/Array.hpp>
-#include <Framework/EvalException.hpp>
 
 TEST(String, Create)
 {
@@ -546,58 +545,6 @@ TEST(String, SubLenUTF8)
     EXPECT_STREQ(*s.SubLen(0, 4), "test");
     EXPECT_STREQ(*s.SubLen(11, 2), "¥▦");
     EXPECT_STREQ(*s.SubLen(12), "▦testabc");
-}
-
-TEST(String, Evaluate)
-{
-    double res;
-    res = bpf::String("4+4").Evaluate();
-    EXPECT_EQ(res, 8);
-    res = bpf::String("4+4*8").Evaluate();
-    EXPECT_EQ(res, 36);
-    res = bpf::String("4*1+4*1+2").Evaluate();
-    EXPECT_EQ(res, 10);
-    res = bpf::String("32/32").Evaluate();
-    EXPECT_EQ(res, 1);
-    res = bpf::String("32/1").Evaluate();
-    EXPECT_EQ(res, 32);
-    //TODO : Fix 32/32*32/1 not working without parentheses
-    res = bpf::String("(((32/32)*32)/1)").Evaluate();
-    EXPECT_EQ(res, 32);
-    res = bpf::String("-(1 + 1)").Evaluate();
-    EXPECT_EQ(res, -2);
-    res = bpf::String("-1 + 1").Evaluate();
-    EXPECT_EQ(res, 0);
-    res = bpf::String("-(1 + 1) * (4 - 1)").Evaluate();
-    EXPECT_EQ(res, -6);
-    res = bpf::String("8 % 2").Evaluate();
-    EXPECT_EQ(res, 0);
-    //TODO : Fix 8%2 throws C++ exception
-    //res = bpf::String("8%2").Evaluate();
-    //EXPECT_EQ(res, 0);
-    try
-    {
-        res = bpf::String("8 ff 2").Evaluate();
-    }
-    catch(const bpf::EvalException &)
-    {
-        return;
-    }
-    ASSERT_TRUE(false);
-}
-
-TEST(String, EvaluateErr)
-{
-    try
-    {
-        bpf::String(" 0 / 0 ").Evaluate();
-    }
-    catch (const bpf::EvalException &)
-    {
-        ASSERT_TRUE(true);
-        return;
-    }
-    ASSERT_TRUE(false);
 }
 
 TEST(String, Format_Test1)

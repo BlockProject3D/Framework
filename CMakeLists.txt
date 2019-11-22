@@ -100,6 +100,8 @@ set(SOURCES
     ./include/Framework/Stack.hpp
     ./include/Framework/Stack.impl.hpp
     ./include/Framework/String.hpp
+    ./include/Framework/MathEval.hpp
+    ./include/Framework/MathEval.impl.hpp
     ./include/Framework/Scalar.hpp
     ./include/Framework/Stringifier.hpp
     ./include/Framework/TreeNode.hpp

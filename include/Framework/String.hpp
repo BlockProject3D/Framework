@@ -33,9 +33,9 @@
 #include "Framework/TypeInfo.hpp"
 #include "Framework/Array.hpp"
 #include "Framework/IndexException.hpp"
+#include "Framework/API.hpp"
 
 //TODO : Create BaseConvert class to convert between multiple bases
-//TODO : Create MathParser class to evaluate math expression in strings (in order to seperate string math eval from main string class)
 //TODO : Remove ToString replace by Stringifier as it's more extendable
 
 //Needing some more tests:
@@ -336,21 +336,6 @@ namespace bpf
          * @param begin the begin index in characters (inclusive)
          */
         String Sub(const fint begin) const;
-
-        /**
-         * Evaluate a mathematical expression
-         * @throws EvalException
-         */
-        static double Evaluate(const char *expr);
-
-        /**
-         * Evaluate a mathematical expression from the contents of the FString
-         * @throws EvalException
-         */
-        inline double Evaluate()
-        {
-            return (String::Evaluate(Data));
-        }
 
         /**
          * Builds a string using the following formating syntax : '[]' for no format and [<num chars padding>,<allignment (left / right)>,<characters to serve as padding>]
