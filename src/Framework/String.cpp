@@ -690,21 +690,6 @@ fint String::LastIndexOf(const char c) const
     return (-1);
 }
 
-fint String::ToInt() const
-{
-    return (atoi(Data));
-}
-
-float String::ToFloat() const
-{
-    return ((float)atof(Data));
-}
-
-double String::ToDouble() const
-{
-    return (atof(Data));
-}
-
 String String::ToUpper() const
 {
     String res;

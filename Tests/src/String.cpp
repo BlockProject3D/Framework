@@ -548,40 +548,6 @@ TEST(String, SubLenUTF8)
     EXPECT_STREQ(*s.SubLen(12), "▦testabc");
 }
 
-TEST(String, ToInt)
-{
-    bpf::String s = "42";
-    EXPECT_TRUE(s.ToInt() == 42);
-    s = "0";
-    EXPECT_TRUE(s.ToInt() == 0);
-    s = "-42";
-    EXPECT_TRUE(s.ToInt() == -42);
-}
-
-TEST(String, ToFloat)
-{
-    bpf::String s = "42.42";
-    EXPECT_TRUE(s.ToFloat() == 42.42f);
-    s = "0.5";
-    EXPECT_TRUE(s.ToFloat() == 0.5f);
-    s = "-42.42";
-    EXPECT_TRUE(s.ToFloat() == -42.42f);
-}
-
-TEST(String, ToDouble)
-{
-    bpf::String s = "42.42";
-    EXPECT_TRUE(s.ToDouble() == 42.42);
-    s = "0.5";
-    EXPECT_TRUE(s.ToDouble() == 0.5);
-    s = "-42.42";
-    EXPECT_TRUE(s.ToDouble() == -42.42);
-    s = "3.141592654";
-    EXPECT_TRUE(s.ToDouble() == 3.141592654);
-    s = "2.71828";
-    EXPECT_TRUE(s.ToDouble() == 2.71828);
-}
-
 TEST(String, Evaluate)
 {
     double res;

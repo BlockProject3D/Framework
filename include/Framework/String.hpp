@@ -28,6 +28,7 @@
 
 #pragma once
 #include <type_traits>
+#include <cstring>
 #include "Framework/Types.hpp"
 #include "Framework/TypeInfo.hpp"
 #include "Framework/List.hpp"
@@ -35,11 +36,12 @@
 #include "Framework/IndexException.hpp"
 
 //TODO : Remove usage of List go for Array
-//TODO : Implement Scalar type classes
 //TODO : Create BaseConvert class to convert between multiple bases
 //TODO : Create MathParser class to evaluate math expression in strings (in order to seperate string math eval from main string class)
-//TODO : Search for better alternative to Stringifier
 //TODO : Remove ToString replace by Stringifier as it's more extendable
+
+//Needing some more tests:
+//Scalar types
 
 namespace bpf
 {
@@ -338,21 +340,6 @@ namespace bpf
         String Sub(const fint begin) const;
 
         /**
-         * Converts this string to an integer
-         */
-        fint ToInt() const;
-
-        /**
-         * Converts this string to a float
-         */
-        float ToFloat() const;
-
-        /**
-         * Converts this string to a double
-         */
-        double ToDouble() const;
-
-        /**
          * Evaluate a mathematical expression
          * @throws EvalException
          */
@@ -400,7 +387,7 @@ namespace bpf
                 List<String> tokens = pattern.Explode(',');
                 if (tokens.Size() < 3)
                     return (res + ValueOf(t) + Format(format.Sub(j + 1), args...));
-                fint maxn = tokens[0].ToInt();
+                fint maxn = std::atoi(*tokens[0]);
                 bool left = tokens[1] == "left";
                 String leading = tokens[2];
                 String data = ValueOf(t);

@@ -32,7 +32,7 @@
 
 namespace bpf
 {
-    class Int
+    class BPF_API Int
     {
     public:
         static constexpr fint MaxValue = 2147483647;
@@ -42,7 +42,7 @@ namespace bpf
         static bool TryParse(const String &str, fint &res);
     };
 
-    class UInt
+    class BPF_API UInt
     {
     public:
         static constexpr uint32 MaxValue = 4294967295;
@@ -51,7 +51,7 @@ namespace bpf
         static bool TryParse(const String &str, uint32 &res);
     };
 
-    class Int8
+    class BPF_API Int8
     {
     public:
         static constexpr int8 MaxValue = 127;
@@ -60,7 +60,7 @@ namespace bpf
         static bool TryParse(const String &str, int8 &res);
     };
 
-    class UInt8
+    class BPF_API UInt8
     {
     public:
         static constexpr uint8 MaxValue = 255;
@@ -69,7 +69,7 @@ namespace bpf
         static bool TryParse(const String &str, uint8 &res);
     };
 
-    class Int16
+    class BPF_API Int16
     {
     public:
         static constexpr int16 MaxValue = 32767;
@@ -78,7 +78,7 @@ namespace bpf
         static bool TryParse(const String &str, int16 &res);
     };
 
-    class UInt16
+    class BPF_API UInt16
     {
     public:
         static constexpr uint16 MaxValue = 65535;
@@ -87,7 +87,7 @@ namespace bpf
         static bool TryParse(const String &str, uint16 &res);
     };
 
-    class Int64
+    class BPF_API Int64
     {
     public:
         static constexpr int64 MaxValue = 9223372036854775807LL;
@@ -96,7 +96,7 @@ namespace bpf
         static bool TryParse(const String &str, int64 &res);
     };
 
-    class UInt64
+    class BPF_API UInt64
     {
     public:
         static constexpr uint64 MaxValue = 18446744073709551615ULL;
@@ -105,7 +105,7 @@ namespace bpf
         static bool TryParse(const String &str, uint64 &res);
     };
 
-    class Float
+    class BPF_API Float
     {
     public:
         static constexpr float MaxValue = std::numeric_limits<float>::max();
@@ -114,7 +114,7 @@ namespace bpf
         static bool TryParse(const String &str, float &res);
     };
 
-    class Double
+    class BPF_API Double
     {
     public:
         static constexpr double MaxValue = std::numeric_limits<double>::max();

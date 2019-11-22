@@ -36,198 +36,238 @@ using namespace bpf;
 
 fint Int::Parse(const String &str)
 {
-    long l = std::strtol(*str, Null, 0);
+	errno = 0;
+	char* ptr;
+    long l = std::strtol(*str, &ptr, 0);
 
-    if (errno != 0)
+    if (errno != 0 || ptr != *str + str.Size())
         throw ParseException(errno == ERANGE ? "Out of range" : "Invalid string format");
     return ((fint)l);
 }
 
 bool Int::TryParse(const String &str, fint &res)
 {
-    long l = std::strtol(*str, Null, 0);
+	errno = 0;
+	char* ptr;
+	long l = std::strtol(*str, &ptr, 0);
 
     res = (fint)l;
-    if (errno != 0)
+    if (errno != 0 || ptr != *str + str.Size())
         return (false);
     return (true);
 }
 
 uint32 UInt::Parse(const String &str)
 {
-    unsigned long l = std::strtoul(*str, Null, 0);
+	errno = 0;
+	char* ptr;
+    unsigned long l = std::strtoul(*str, &ptr, 0);
 
-    if (errno != 0)
+    if (errno != 0 || ptr != *str + str.Size())
 		throw ParseException(errno == ERANGE ? "Out of range" : "Invalid string format");
 	return ((uint32)l);
 }
 
 bool UInt::TryParse(const String &str, uint32 &res)
 {
-    unsigned long l = std::strtoul(*str, Null, 0);
+	errno = 0;
+	char* ptr;
+    unsigned long l = std::strtoul(*str, &ptr, 0);
 
     res = (uint32)l;
-    if (errno != 0)
+    if (errno != 0 || ptr != *str + str.Size())
         return (false);
     return (true);
 }
 
 int8 Int8::Parse(const String &str)
 {
-	long l = std::strtol(*str, Null, 0);
+	errno = 0;
+	char* ptr;
+	long l = std::strtol(*str, &ptr, 0);
 
 	if (errno != 0)
 		throw ParseException(errno == ERANGE ? "Out of range" : "Invalid string format");
-	if (l < MinValue || l > MaxValue)
+	if (l < MinValue || l > MaxValue || ptr != *str + str.Size())
 		throw ParseException("Out of range");
 	return ((int8)l);
 }
 
 bool Int8::TryParse(const String &str, int8 &res)
 {
-	long l = std::strtol(*str, Null, 0);
+	errno = 0;
+	char* ptr;
+	long l = std::strtol(*str, &ptr, 0);
 
 	res = (int8)l;
-	if (errno != 0 || l < MinValue || l > MaxValue)
+	if (errno != 0 || ptr != *str + str.Size() || l < MinValue || l > MaxValue)
 		return (false);
 	return (true);
 } 
 
 uint8 UInt8::Parse(const String &str)
 {
-	unsigned long l = std::strtoul(*str, Null, 0);
+	errno = 0;
+	char* ptr;
+	unsigned long l = std::strtoul(*str, &ptr, 0);
 
 	if (errno != 0)
 		throw ParseException(errno == ERANGE ? "Out of range" : "Invalid string format");
-	if (l < MinValue || l > MaxValue)
+	if (l < MinValue || l > MaxValue || ptr != *str + str.Size())
 		throw ParseException("Out of range");
 	return ((uint8)l);
 }
 
 bool UInt8::TryParse(const String &str, uint8 &res)
 {
-	unsigned long l = std::strtoul(*str, Null, 0);
+	errno = 0;
+	char* ptr;
+	unsigned long l = std::strtoul(*str, &ptr, 0);
 
 	res = (uint8)l;
-	if (errno != 0 || l < MinValue || l > MaxValue)
+	if (errno != 0 || ptr != *str + str.Size() || l < MinValue || l > MaxValue)
 		return (false);
 	return (true);
 }
 
 int16 Int16::Parse(const String &str)
 {
-	long l = std::strtol(*str, Null, 0);
+	errno = 0;
+	char* ptr;
+	long l = std::strtol(*str, &ptr, 0);
 
 	if (errno != 0)
 		throw ParseException(errno == ERANGE ? "Out of range" : "Invalid string format");
-	if (l < MinValue || l > MaxValue)
+	if (l < MinValue || l > MaxValue || ptr != *str + str.Size())
 		throw ParseException("Out of range");
 	return ((int16)l);
 }
 
 bool Int16::TryParse(const String &str, int16 &res)
 {
-	long l = std::strtol(*str, Null, 0);
+	errno = 0;
+	char* ptr;
+	long l = std::strtol(*str, &ptr, 0);
 
 	res = (int16)l;
-	if (errno != 0 || l < MinValue || l > MaxValue)
+	if (errno != 0 || ptr != *str + str.Size() || l < MinValue || l > MaxValue)
 		return (false);
 	return (true);
 }
 
 uint16 UInt16::Parse(const String &str)
 {
-	unsigned long l = std::strtoul(*str, Null, 0);
+	errno = 0;
+	char* ptr;
+	unsigned long l = std::strtoul(*str, &ptr, 0);
 
 	if (errno != 0)
 		throw ParseException(errno == ERANGE ? "Out of range" : "Invalid string format");
-	if (l < MinValue || l > MaxValue)
+	if (l < MinValue || l > MaxValue || ptr != *str + str.Size())
 		throw ParseException("Out of range");
 	return ((uint16)l);
 }
 
 bool UInt16::TryParse(const String &str, uint16 &res)
 {
-	unsigned long l = std::strtoul(*str, Null, 0);
+	errno = 0;
+	char* ptr;
+	unsigned long l = std::strtoul(*str, &ptr, 0);
 
 	res = (uint16)l;
-	if (errno != 0 || l < MinValue || l > MaxValue)
+	if (errno != 0 || ptr != *str + str.Size() || l < MinValue || l > MaxValue)
 		return (false);
 	return (true);
 }
 
 int64 Int64::Parse(const String &str)
 {
-	int64 l = std::strtoll(*str, Null, 0);
+	errno = 0;
+	char* ptr;
+	int64 l = std::strtoll(*str, &ptr, 0);
 
-	if (errno != 0)
+	if (errno != 0 || ptr != *str + str.Size())
 		throw ParseException(errno == ERANGE ? "Out of range" : "Invalid string format");
 	return (l);
 }
 
 bool Int64::TryParse(const String &str, int64 &res)
 {
-	int64 l = std::strtoll(*str, Null, 0);
+	errno = 0;
+	char* ptr;
+	int64 l = std::strtoll(*str, &ptr, 0);
 
 	res = l;
-	if (errno != 0)
+	if (errno != 0 || ptr != *str + str.Size())
 		return (false);
 	return (true);
 }
 
 uint64 UInt64::Parse(const String &str)
 {
-	uint64 l = std::strtoull(*str, Null, 0);
+	errno = 0;
+	char* ptr;
+	uint64 l = std::strtoull(*str, &ptr, 0);
 
-	if (errno != 0)
+	if (errno != 0 || ptr != *str + str.Size())
 		throw ParseException(errno == ERANGE ? "Out of range" : "Invalid string format");
 	return (l);
 }
 
 bool UInt64::TryParse(const String &str, uint64 &res)
 {
-	uint64 l = std::strtoull(*str, Null, 0);
+	errno = 0;
+	char* ptr;
+	uint64 l = std::strtoull(*str, &ptr, 0);
 
 	res = l;
-	if (errno != 0)
+	if (errno != 0 || ptr != *str + str.Size())
 		return (false);
 	return (true);
 }
 
 float Float::Parse(const String &str)
 {
-	float f = std::strtof(*str, Null);
+	errno = 0;
+	char* ptr;
+	float f = std::strtof(*str, &ptr);
 
-	if (errno != 0)
+	if (errno != 0 || ptr != *str + str.Size())
 		throw ParseException(errno == ERANGE ? "Out of range" : "Invalid string format");
 	return (f);
 }
 
 bool Float::TryParse(const String &str, float &res)
 {
-	float f = std::strtof(*str, Null);
+	errno = 0;
+	char* ptr;
+	float f = std::strtof(*str, &ptr);
 
 	res = f;
-	if (errno != 0)
+	if (errno != 0 || ptr != *str + str.Size())
 		return (false);
 	return (true);
 }
 
 double Double::Parse(const String &str)
 {
-	double d = std::strtod(*str, Null);
+	errno = 0;
+	char* ptr;
+	double d = std::strtod(*str, &ptr);
 
-	if (errno != 0)
+	if (errno != 0 || ptr != *str + str.Size())
 		throw ParseException(errno == ERANGE ? "Out of range" : "Invalid string format");
 	return (d);
 }
 
 bool Double::TryParse(const String &str, double &res)
 {
-	double d = std::strtod(*str, Null);
+	errno = 0;
+	char* ptr;
+	double d = std::strtod(*str, &ptr);
 
 	res = d;
-	if (errno != 0)
+	if (errno != 0 || ptr != *str + str.Size())
 		return (false);
 	return (true);
 }
