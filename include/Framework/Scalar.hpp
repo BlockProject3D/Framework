@@ -92,7 +92,7 @@ namespace bpf
     {
     public:
         static constexpr int64 MaxValue = 9223372036854775807LL;
-        static constexpr int64 MinValue = -9223372036854775808LL;
+        static constexpr int64 MinValue = -9223372036854775807LL - 1;
         static int64 Parse(const String &str);
         static bool TryParse(const String &str, int64 &res);
     };

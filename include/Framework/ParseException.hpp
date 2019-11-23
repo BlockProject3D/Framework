@@ -34,7 +34,7 @@ namespace bpf
     class ParseException : public RuntimeException
     {
     public:
-        ParseException(const String &msg) noexcept
+        inline explicit ParseException(const String &msg) noexcept
             : RuntimeException("Parse", msg)
         {
         }

@@ -34,6 +34,27 @@
 
 using namespace bpf;
 
+constexpr fint Int::MaxValue;
+constexpr fint Int::MinValue;
+constexpr uint32 UInt::MaxValue;
+constexpr uint32 UInt::MinValue;
+constexpr int8 Int8::MaxValue;
+constexpr int8 Int8::MinValue;
+constexpr uint8 UInt8::MaxValue;
+constexpr uint8 UInt8::MinValue;
+constexpr int16 Int16::MaxValue;
+constexpr int16 Int16::MinValue;
+constexpr uint16 UInt16::MaxValue;
+constexpr uint16 UInt16::MinValue;
+constexpr int64 Int64::MaxValue;
+constexpr int64 Int64::MinValue;
+constexpr uint64 UInt64::MaxValue;
+constexpr uint64 UInt64::MinValue;
+constexpr float Float::MaxValue;
+constexpr float Float::MinValue;
+constexpr double Double::MaxValue;
+constexpr double Double::MinValue;
+
 fint Int::Parse(const String &str)
 {
 	errno = 0;
@@ -230,7 +251,7 @@ float Float::Parse(const String &str)
 {
 	errno = 0;
 	char* ptr;
-	float f = std::strtof(*str, &ptr);
+	float f = (float)std::strtod(*str, &ptr);
 
 	if (errno != 0 || ptr != *str + str.Size())
 		throw ParseException(errno == ERANGE ? "Out of range" : "Invalid string format");

@@ -104,7 +104,7 @@ namespace bpf
 		template <typename T>
 		T EvalNbr(const char* expr, char** endptr)
 		{
-			return (std::strtol(expr, endptr))
+			return (std::strtol(expr, endptr, 0));
 		}
 
 		template <>

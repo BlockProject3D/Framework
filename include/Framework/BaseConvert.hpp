@@ -39,7 +39,7 @@ namespace bpf
 	private:
 		String _base;
 	public:
-		inline BaseConvert(const String &base) : _base(base) {}
+		inline explicit BaseConvert(const String &base) : _base(base) {}
 
 		T FromString(const String &nbr);
 		String ToString(T nbr);

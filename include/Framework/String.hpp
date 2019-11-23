@@ -28,7 +28,7 @@
 
 #pragma once
 #include <type_traits>
-#include <cstring>
+#include <cstdlib>
 #include "Framework/Types.hpp"
 #include "Framework/TypeInfo.hpp"
 #include "Framework/Array.hpp"
