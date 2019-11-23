@@ -29,7 +29,6 @@
 #pragma once
 #include "Framework/Array.hpp"
 
-//TODO : Use bpf::fsize for sizes
 namespace bpf
 {
     template <typename T>
@@ -42,10 +41,12 @@ namespace bpf
         fsize CurPtr;
         
     public:
-        explicit Stack(fsize maxsize);
+        explicit Stack(const fsize maxsize);
+		Stack(const std::initializer_list<T> &lst);
         ~Stack();
         void Push(const T &element);
-        const T &Pop();
+		void Push(T &&element);
+        T Pop();
 
         inline const T &operator[](const fsize id) const
         {

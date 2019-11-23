@@ -31,13 +31,24 @@
 namespace bpf
 {
     template <typename T>
-    inline Stack<T>::Stack(fsize maxsize)
+    inline Stack<T>::Stack(const fsize maxsize)
         : Content(new T[maxsize])
         , MaxSize(maxsize)
         , CurSize(0)
         , CurPtr(MaxSize - 1)
     {
     }
+
+	template <typename T>
+	Stack<T>::Stack(const std::initializer_list<T>& lst)
+		: Content(new T[lst.size()])
+		, MaxSize(lst.size())
+		, CurSize(0)
+		, CurPtr(MaxSize - 1)
+	{
+		for (auto& elem : lst)
+			Push(elem);
+	}
 
     template <typename T>
     inline Stack<T>::~Stack()
@@ -50,19 +61,29 @@ namespace bpf
     {
         if (CurSize >= MaxSize)
             return;
-        Content[CurPtr] = T(element);
+        Content[CurPtr] = element;
         --CurPtr;
         ++CurSize;
     }
 
+	template <typename T>
+	void Stack<T>::Push(T &&element)
+	{
+		if (CurSize >= MaxSize)
+			return;
+		Content[CurPtr] = std::move(element);
+		--CurPtr;
+		++CurSize;
+	}
+
     template <typename T>
-    const T &Stack<T>::Pop()
+    T Stack<T>::Pop()
     {
         if (CurSize > 0)
         {
             --CurSize;
             ++CurPtr;
         }
-        return (Content[CurPtr]);
+        return (std::move(Content[CurPtr]));
     }
 }

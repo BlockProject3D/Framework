@@ -46,6 +46,15 @@ TEST(List, Creation)
 	EXPECT_EQ(lst[2], 7);
 }
 
+TEST(List, Creation_List)
+{
+	bpf::List<int> lst = { 0, 3, 7 };
+
+	EXPECT_EQ(lst[0], 0);
+	EXPECT_EQ(lst[1], 3);
+	EXPECT_EQ(lst[2], 7);
+}
+
 TEST(List, FirstLast)
 {
 	bpf::List<int> lst;

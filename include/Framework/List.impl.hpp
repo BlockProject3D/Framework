@@ -59,6 +59,16 @@ namespace bpf
 			Add(elem);
 	}
 
+	template <typename T>
+	List<T>::List(const std::initializer_list<T> &lst)
+		: _first(Null)
+		, _last(Null)
+		, _count(0)
+	{
+		for (auto& elem : lst)
+			Add(elem);
+	}
+
     template <typename T>
     inline List<T>::~List()
     {

@@ -44,6 +44,13 @@ namespace bpf
         {
         }
 
+		inline ArrayList(const std::initializer_list<T> &lst)
+			: _curid(other._curid), _arr(16)
+		{
+			for (auto& elem : lst)
+				Add(elem);
+		}
+
 		inline ArrayList(const ArrayList<T> &other)
 			: _curid(other._curid), _arr(other._arr)
 		{

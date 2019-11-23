@@ -27,6 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include <initializer_list>
 #include "Framework/Iterator.hpp"
 #include "Framework/Types.hpp"
 #include "Framework/IndexException.hpp"
@@ -127,6 +128,8 @@ namespace bpf
                 _arr[i] = DefaultOf<T>();
         }
         
+		Array(const std::initializer_list<T> &lst);
+
         inline Array(const Array<T> &arr)
         {
             for (fsize i = 0 ; i != I ; ++i)
@@ -313,6 +316,8 @@ namespace bpf
          * @param size the size of the new array
          */
         explicit Array(const fsize size);
+
+		Array(const std::initializer_list<T>& lst);
         Array(Array<T> &&arr);
 		Array(const Array<T> &arr);
 		~Array();

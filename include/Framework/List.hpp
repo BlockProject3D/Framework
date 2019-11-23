@@ -115,6 +115,7 @@ namespace bpf
         void RemoveNode(ListNode<T> *toRM);
     public:
         List<T>();
+		List<T>(const std::initializer_list<T> &lst);
 		List<T>(const List<T> &other);
         List<T>(List<T> &&other);
         ~List<T>();

@@ -33,7 +33,7 @@
 #include <Framework/Array.hpp>
 #include <Framework/Memory/Memory.hpp>
 
-TEST(Array, Init)
+TEST(Array, Creation)
 {
 	auto arr = bpf::Array<int>(3);
 
@@ -43,6 +43,15 @@ TEST(Array, Init)
 	EXPECT_EQ(arr[0], 1);
 	EXPECT_EQ(arr[1], 3);
 	EXPECT_EQ(arr[2], 6);
+}
+
+TEST(Array, Creation_List)
+{
+	bpf::Array<int> lst = { 0, 3, 7 };
+
+	EXPECT_EQ(lst[0], 0);
+	EXPECT_EQ(lst[1], 3);
+	EXPECT_EQ(lst[2], 7);
 }
 
 TEST(Array, FirstLast)

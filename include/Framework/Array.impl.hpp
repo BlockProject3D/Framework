@@ -73,6 +73,32 @@ namespace bpf
         }
     }
 
+	template <typename T>
+	Array<T>::Array(const std::initializer_list<T> &lst)
+		: _size(lst.size())
+		, _arr(Null)
+	{
+		if (_size > 0)
+		{
+			_arr = new T[_size];
+			fsize i = 0;
+			for (auto& elem : lst)
+				_arr[i++] = elem;
+		}
+	}
+
+	template <typename T, fsize I>
+	Array<T, I>::Array(const std::initializer_list<T> &lst)
+	{
+		fsize i = 0;
+		for (auto& elem : list)
+		{
+			_arr[i++] = elem;
+			if (i > I)
+				break;
+		}
+	}
+
     template <typename T>
     Array<T> &Array<T>::operator=(Array<T> &&arr)
     {
