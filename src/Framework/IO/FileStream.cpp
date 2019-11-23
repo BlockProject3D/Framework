@@ -31,33 +31,12 @@
 #else
     #include <fcntl.h>
     #include <unistd.h>
-    #include <errno.h>
-    #include <cstring>
 #endif
 #include "Framework/IO/FileStream.hpp"
 #include "Framework/IO/IOException.hpp"
+#include "OSPrivate.hpp"
 
 using namespace bpf;
-
-#ifdef WINDOWS
-String FileStream::ObtainErrorString()
-{
-    String res = "Unknown";
-    LPTSTR errtxt = Null;
-
-    FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER
-        | FORMAT_MESSAGE_FROM_SYSTEM
-        | FORMAT_MESSAGE_IGNORE_INSERTS,
-        Null, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-        reinterpret_cast<LPTSTR>(&errtxt), 0, Null);
-    if (errtxt != Null)
-    {
-        res = errtxt;
-        LocalFree(errtxt);
-    }
-    return (res);
-}
-#endif
 
 FileStream::FileStream(const File &file, fint mode)
     : _mode(mode)
@@ -83,7 +62,7 @@ FileStream::FileStream(const File &file, fint mode)
     if (_handle == INVALID_HANDLE_VALUE)
         throw IOException(String("Could not open file '")
             + file.GetAbsolutePath().Path() + "' : "
-            + ObtainErrorString());
+            + OSPrivate::ObtainLastErrorString());
     if (mode & FILE_MODE_APPEND)
     {
         LARGE_INTEGER pos;
@@ -107,7 +86,7 @@ FileStream::FileStream(const File &file, fint mode)
     if (_handle == -1)
         throw IOException(String("Could not open file '")
             + file.GetAbsolutePath().Path() + "' : "
-            + String(std::strerror(errno)));
+            + OSPrivate::ObtainLastErrorString());
 #endif
 }
 
@@ -178,10 +157,13 @@ fsize FileStream::Read(void *buf, fsize bufsize)
 #ifdef WINDOWS
     DWORD readsize;
     if (ReadFile(_handle, buf, (DWORD)bufsize, &readsize, Null) == FALSE)
-        return (0);
+        throw IOException(String("Error reading file : ") + OSPrivate::ObtainLastErrorString());
     return (readsize);
 #else
-    return (read(_handle, buf, bufsize));
+    fsize len = read(_handle, buf, bufsize);
+    if (len == (fsize)-1)
+        throw IOException(String("Error reading file : ") + OSPrivate::ObtainLastErrorString());
+    return (len);
 #endif
 }
 
@@ -192,9 +174,12 @@ fsize FileStream::Write(const void *buf, fsize bufsize)
 #ifdef WINDOWS
     DWORD writesize;
     if (WriteFile(_handle, buf, (DWORD)bufsize, &writesize, Null) == FALSE)
-        return (0);
+        throw IOException(String("Error writing file : ") + OSPrivate::ObtainLastErrorString());
     return (writesize);
 #else
-    return (write(_handle, buf, bufsize));
+    fsize len = write(_handle, buf, bufsize);
+    if (len == (fsize)-1)
+        throw IOException(String("Error writing file : ") + OSPrivate::ObtainLastErrorString());
+    return (len);
 #endif
 }

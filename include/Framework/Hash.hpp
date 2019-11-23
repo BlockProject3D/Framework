@@ -29,36 +29,17 @@
 #pragma once
 #include "Framework/Types.hpp"
 
-//TODO : Drop Hash function replace by class to allow for partial template specialization
 namespace bpf
 {
-    /**
-     * Hashes a given tyoe
-     * @tparam T the type to hash
-     */
-    template <typename T, typename std::enable_if<!std::is_pointer<T>::value>::type * = nullptr>
-    inline fsize Hash(T t)
+    template <typename T>
+    class Hash
     {
-        return (t.Hash());
-    }
-
-    /**
-     * Hashes a given tyoe
-     * @tparam T the type to hash
-     */
-    template <typename T, typename std::enable_if<std::is_pointer<T>::value>::type * = nullptr>
-    inline fsize Hash(T t)
-    {
-        return ((fsize)t);
-    }
-
-    template <>
-    inline fsize Hash<const char *>(const char *str)
-    {
-        fsize res = 5381;
-
-        for (fsize i = 0 ; str[i] ; ++i)
-            res = ((res << 5) + res) + str[i];
-        return (res);
-    }
+    public:
+        inline static fsize HashCode(const T &val)
+        {
+            return ((fsize)val);
+        }
+    };
 }
+
+#include "Framework/BasicHash.hpp"

@@ -75,20 +75,14 @@ namespace bpf
 
         inline Vector3<T> Cross(const Vector3<T> &other) const
         {
-            return (FVector(Y * other.Z - Z * other.Y,
-                            Z * other.X - X * other.Z,
-                            X * other.Y - Y * other.X));
+            return (Vector3<T>(Y * other.Z - Z * other.Y,
+                               Z * other.X - X * other.Z,
+                               X * other.Y - Y * other.X));
         }
-
-        //TODO : Update viewport
-        //Vector3<T> Project(const Matrix<4, 4, T> &view, const FViewport &viewport);
-
-        //TODO : Update Transform
-        //void ApplyTransform(const FTransform &transform);
 
         inline T Length() const
         {
-            return (Math::Sqrt(X * X + Y * Y));
+            return (Math::Sqrt(X * X + Y * Y + Z * Z));
         }
 
         inline T Distance(const Vector3<T> &other) const
@@ -100,7 +94,7 @@ namespace bpf
         inline T DistanceSquared(const Vector3<T> &other) const
         {
             Vector3<T> v(Math::Abs(other.X - X), Math::Abs(other.Y - Y), Math::Abs(other.Z - Z));
-            return (v.X * v.X + v.Y * v.Y);
+            return (v.X * v.X + v.Y * v.Y + v.Z * v.Z);
         }
 
         inline void Normalize()
@@ -250,9 +244,9 @@ namespace bpf
     template <typename T>
     const Vector3<T> Vector3<T>::Up = Vector3<T>(0, 0, 1);
     template <typename T>
-    const Vector3<T> Vector3<T>::Forward = Vector3<T>(0, -1, 0);
+    const Vector3<T> Vector3<T>::Forward = Vector3<T>(0, 1, 0);
     template <typename T>
-    const Vector3<T> Vector3<T>::Backward = Vector3<T>(0, 1, 0);
+    const Vector3<T> Vector3<T>::Backward = Vector3<T>(0, -1, 0);
     template <typename T>
     const Vector3<T> Vector3<T>::Left = Vector3<T>(-1, 0, 0);
     template <typename T>

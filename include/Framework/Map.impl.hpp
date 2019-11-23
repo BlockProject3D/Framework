@@ -30,140 +30,116 @@
 
 namespace bpf
 {
-    template <typename K, typename V>
-    void Map<K, V>::Iterator::SearchNextEntry()
+    template <typename K, typename V, typename HashOp>
+    void Map<K, V, HashOp>::Iterator::SearchNextEntry()
     {
-        while (CurID < MaxSize && EmptyKeys[CurID])
+        while (CurID < MaxSize && _data[CurID].Empty)
             ++CurID;
-        if (CurID < MaxSize && !EmptyKeys[CurID])
-        {
-            Entry.Key = KeyData[CurID];
-            Entry.Value = Data[CurID];
-        }
     }
 
-    template <typename K, typename V>
-    void Map<K, V>::Iterator::SearchPrevEntry()
+    template <typename K, typename V, typename HashOp>
+    void Map<K, V, HashOp>::Iterator::SearchPrevEntry()
     {
-        while (CurID != (fsize)-1 && EmptyKeys[CurID])
+        while (CurID != (fsize)-1 && _data[CurID].Empty)
             --CurID;
-        if (CurID != (fsize)-1 && !EmptyKeys[CurID])
-        {
-            Entry.Key = KeyData[CurID];
-            Entry.Value = Data[CurID];
-        }
     }
 
-    template <typename K, typename V>
-    void Map<K, V>::ReverseIterator::operator++()
+    template <typename K, typename V, typename HashOp>
+    void Map<K, V, HashOp>::ReverseIterator::operator++()
     {
         if (Iterator::CurID != (fsize)-1)
             --Iterator::CurID;
         Iterator::SearchPrevEntry();
     }
 
-    template <typename K, typename V>
-    void Map<K, V>::ReverseIterator::operator--()
+    template <typename K, typename V, typename HashOp>
+    void Map<K, V, HashOp>::ReverseIterator::operator--()
     {
         if (Iterator::CurID < Iterator::MaxSize)
             ++Iterator::CurID;
         Iterator::SearchNextEntry();
     }
 
-    template <typename K, typename V>
-    void Map<K, V>::Iterator::operator++()
+    template <typename K, typename V, typename HashOp>
+    void Map<K, V, HashOp>::Iterator::operator++()
     {
         if (CurID < MaxSize)
             ++CurID;
         SearchNextEntry();
     }
     
-    template <typename K, typename V>
-    void Map<K, V>::Iterator::operator--()
+    template <typename K, typename V, typename HashOp>
+    void Map<K, V, HashOp>::Iterator::operator--()
     {
         if (CurID > 0)
             --CurID;
         SearchPrevEntry();
     }
 
-    template <typename K, typename V>
-    Map<K, V>::Map()
-        : Data(new V[MAP_INIT_BUF_SIZE])
-        , KeyData(new K[MAP_INIT_BUF_SIZE])
-        , HashTable(new fsize[MAP_INIT_BUF_SIZE])
-        , EmptyKeys(new bool[MAP_INIT_BUF_SIZE])
-        , CurSize(MAP_INIT_BUF_SIZE), ElemCount(0)
+    template <typename K, typename V, typename HashOp>
+    Map<K, V, HashOp>::Map()
+        : _data(new Data[MAP_INIT_BUF_SIZE])
+        , CurSize(MAP_INIT_BUF_SIZE)
+        , ElemCount(0)
     {
-        EmptyKeys[0] = true;
-        EmptyKeys[1] = true;
+        _data[0].Empty = true;
+        _data[1].Empty = true;
     }
 
-    template <typename K, typename V>
-    Map<K, V>::~Map()
+    template <typename K, typename V, typename HashOp>
+    Map<K, V, HashOp>::~Map()
     {
-        delete[] Data;
-        delete[] KeyData;
-        delete[] HashTable;
-        delete[] EmptyKeys;
+        delete[] _data;
     }
 
-    template <typename K, typename V>
-    void Map<K, V>::TryExtend()
+    template <typename K, typename V, typename HashOp>
+    void Map<K, V, HashOp>::TryExtend()
     {
         if ((float)ElemCount / (float)CurSize >= MAP_LIMIT_UNTIL_EXTEND)
         {
-            V *olddata = Data;
-            K *oldkeydata = KeyData;
-            fsize *oldhash = HashTable;
-            bool *oldempty = EmptyKeys;
+            Data *olddata = _data;
             CurSize <<= 1;
-            EmptyKeys = new bool[CurSize];
+            _data = new Data[CurSize];
             for (fsize i = 0 ; i < CurSize; ++i)
-                EmptyKeys[i] = true;
-            Data = new V[CurSize];
-            KeyData = new K[CurSize];
-            HashTable = new fsize[CurSize];
+                _data[i].Empty = true;
             for (fsize i = 0 ; i < CurSize >> 1 ; ++i)
             {
-                if (!oldempty[i])
+                if (!olddata[i].Empty)
                 {
-                    fsize id = QuadraticInsert(oldhash[i]);
+                    fsize id = QuadraticInsert(olddata[i].Hash);
                     if (id != (fsize)-1)
                     {
-		        Data[id] = std::move(olddata[i]);
-		        KeyData[id] = std::move(oldkeydata[i]);
+		        _data[id].KeyVal.Key = std::move(olddata[i].KeyVal.Key);
+                        _data[id].KeyVal.Value = std::move(olddata[i].KeyVal.Value);
                     }
                 }
             }
             delete[] olddata;
-            delete[] oldkeydata;
-            delete[] oldhash;
-            delete[] oldempty;
         }
     }
 
-    template <typename K, typename V>
-    fsize Map<K, V>::QuadraticSearch(fsize hkey) const
+    template <typename K, typename V, typename HashOp>
+    fsize Map<K, V, HashOp>::QuadraticSearch(fsize hkey) const
     {
         for (fsize i = 0 ; i < CurSize ; ++i)
         {
             fsize index = (hkey + ((i * i + i) / 2)) % CurSize;
-            if (!EmptyKeys[index] && HashTable[index] == hkey)
+            if (!_data[index].Empty && _data[index].Hash == hkey)
                 return (index);
         }
         return ((fsize)-1);
     }
 
-    template <typename K, typename V>
-    fsize Map<K, V>::QuadraticInsert(fsize hkey)
+    template <typename K, typename V, typename HashOp>
+    fsize Map<K, V, HashOp>::QuadraticInsert(fsize hkey)
     {
         for (fsize i = 0 ; i < CurSize ; ++i)
         {
             fsize index = (hkey + ((i * i + i) / 2)) % CurSize;
-            if (EmptyKeys[index])
+            if (_data[index].Empty)
             {
-                HashTable[index] = hkey;
-                EmptyKeys[index] = false;
+                _data[index].Hash = hkey;
+                _data[index].Empty = false;
                 ++ElemCount;
                 return ((int)index);
             }
@@ -171,10 +147,10 @@ namespace bpf
         return ((fsize)-1);
     }
 
-    template <typename K, typename V>
-    void Map<K, V>::Add(const K &key, const V &value)
+    template <typename K, typename V, typename HashOp>
+    void Map<K, V, HashOp>::Add(const K &key, const V &value)
     {
-        fsize hkey = Hash(key);
+        fsize hkey = HashOp::HashCode(key);
 
         TryExtend();
         if (QuadraticSearch(hkey) != (fsize)-1)
@@ -182,52 +158,68 @@ namespace bpf
         fsize idx = QuadraticInsert(hkey);
         if (idx != (fsize)-1)
         {
-            Data[idx] = value;
-            KeyData[idx] = key;
+            _data[idx].KeyVal.Value = value;
+            _data[idx].KeyVal.Key = key;
         }
     }
 
-    template <typename K, typename V>
-    void Map<K, V>::Remove(const K &key)
+    template <typename K, typename V, typename HashOp>
+    void Map<K, V, HashOp>::Add(const K &key, V &&value)
     {
-        fsize idx = QuadraticSearch(Hash(key));
+        fsize hkey = HashOp::HashCode(key);
+
+        TryExtend();
+        if (QuadraticSearch(hkey) != (fsize)-1)
+            Remove(key);
+        fsize idx = QuadraticInsert(hkey);
+        if (idx != (fsize)-1)
+        {
+            _data[idx].KeyVal.Value = std::move(value);
+            _data[idx].KeyVal.Key = key;
+        }
+    }
+
+    template <typename K, typename V, typename HashOp>
+    void Map<K, V, HashOp>::Remove(const K &key)
+    {
+        fsize idx = QuadraticSearch(HashOp::HashCode(key));
 
         if (idx != (fsize)-1)
         {
             --ElemCount;
-            EmptyKeys[idx] = true;
+            _data[idx].Empty = true;
         }
     }
 
-    template <typename K, typename V>
-    const V &Map<K, V>::operator[](const K &key) const
+    template <typename K, typename V, typename HashOp>
+    const V &Map<K, V, HashOp>::operator[](const K &key) const
     {
-        fsize idx = QuadraticSearch(Hash(key));
+        fsize idx = QuadraticSearch(HashOp::HashCode(key));
 
         if (idx == (fsize)-1)
             throw bpf::IndexException((fint)idx);
-        return (Data[idx]);
+        return (_data[idx].KeyVal.Value);
     }
 
-    template <typename K, typename V>
-    V &Map<K, V>::operator[](const K &key)
+    template <typename K, typename V, typename HashOp>
+    V &Map<K, V, HashOp>::operator[](const K &key)
     {
-        fsize idx = QuadraticSearch(Hash(key));
+        fsize idx = QuadraticSearch(HashOp::HashCode(key));
 
         if (idx == (fsize)-1)
         {
             TryExtend();
-            idx = QuadraticInsert(Hash(key));
+            idx = QuadraticInsert(HashOp::HashCode(key));
             if (idx == (fsize)-1)
                 throw bpf::IndexException((fint)idx);
-            KeyData[idx] = key;
+            _data[idx].KeyVal.Key = key;
         }
-        return (Data[idx]);
+        return (_data[idx].KeyVal.Value);
     }
 
-    template <typename K, typename V>
-    inline bool Map<K, V>::HasKey(const K &key) const
+    template <typename K, typename V, typename HashOp>
+    inline bool Map<K, V, HashOp>::HasKey(const K &key) const
     {
-        return (QuadraticSearch(Hash(key)) != (fsize)-1);
+        return (QuadraticSearch(HashOp::HashCode(key)) != (fsize)-1);
     }
 }

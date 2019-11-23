@@ -65,7 +65,10 @@ namespace bpf
      * @tparam T the type to find the default of
      */
     template <typename T, typename std::enable_if<!std::is_pointer<T>::value>::type * = nullptr>
-    T DefaultOf();
+    inline T DefaultOf()
+    {
+        return (T());
+    }
     template <class T, typename std::enable_if<std::is_pointer<T>::value>::type * = nullptr>
     inline T DefaultOf()
     {

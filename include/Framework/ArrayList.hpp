@@ -72,12 +72,12 @@ namespace bpf
         {
             return (_curid);
         }
-        
-        inline String ToString() const
-        {
-            return (_arr.ToString());
-        }
-        
+
+		inline const Array<T> &ToArray() const
+		{
+			return (_arr);
+		}
+
         /**
          * Returns an iterator to the begining of the array
          */

@@ -28,19 +28,12 @@
 
 #pragma once
 #include <type_traits>
+#include <cstdlib>
 #include "Framework/Types.hpp"
 #include "Framework/TypeInfo.hpp"
-#include "Framework/List.hpp"
 #include "Framework/Array.hpp"
-#include "Framework/Hash.hpp"
 #include "Framework/IndexException.hpp"
-
-//TODO : Remove usage of List go for Array
-//TODO : Implement Scalar type classes
-//TODO : Create BaseConvert class to convert between multiple bases
-//TODO : Create MathParser class to evaluate math expression in strings (in order to seperate string math eval from main string class)
-//TODO : Search for better alternative to Stringifier
-//TODO : Remove ToString replace by Stringifier as it's more extendable
+#include "Framework/API.hpp"
 
 namespace bpf
 {
@@ -48,23 +41,23 @@ namespace bpf
     {
     private:
         char *Data;
-        uint32 StrLen;
-        uint32 UnicodeLen;
+        fsize StrLen;
+		fsize UnicodeLen;
 
-        void CopyString(const char *src, char *dest, const uint32 len) const;
-        uint32 CalcUnicodeLen(const char *str, const uint32 len) const;
-        uint32 CalcStartFromUnicode(const uint32 start) const;
+        void CopyString(const char *src, char *dest, const fsize len) const;
+		fsize CalcUnicodeLen(const char *str, const fsize len) const;
+		fsize CalcStartFromUnicode(const fsize start) const;
         static uint8 CalcCharIncrement(const char c);
-        void MakeSized(String &str, const uint32 len) const;
+        void MakeSized(String &str, const fsize len) const;
     public:
         template <typename T>
         class Stringifier
         {
         public:
-            inline static String Stringify(const T &obj)
-            {
-                return (obj.ToString());
-            }
+			inline static String Stringify(const T& obj)
+			{
+				return (obj);
+			}
         };
 
         /**
@@ -113,10 +106,10 @@ namespace bpf
          * @param id the index of the byte to return
          * @throws IndexException
          */
-        inline char ByteAt(const uint32 id) const
+        inline char ByteAt(const fisize id) const
         {
-            if (id >= StrLen)
-                throw IndexException((int)id);
+            if (id < 0 || id >= Size())
+                throw IndexException(id);
             return ((char)(Data[id]));
         }
 
@@ -189,7 +182,7 @@ namespace bpf
          * @param id the offset of the character to get
          * @throws IndexException
          */
-        inline fchar operator[](const fint id) const
+        inline fchar operator[](const fisize id) const
         {
             if (id < 0 || id > Len())
                 throw IndexException(id);
@@ -209,7 +202,7 @@ namespace bpf
         /**
          * Returns the number of characters in this string
          */
-        inline fint Len() const
+        inline fisize Len() const
 	{
 	    return (UnicodeLen);
 	}
@@ -217,7 +210,7 @@ namespace bpf
         /**
          * Returns the size in bytes of this string
          */
-        inline fint Size() const
+        inline fisize Size() const
         {
             return (StrLen);
         }
@@ -229,72 +222,93 @@ namespace bpf
 
         /**
          * Returns a copy of this string in all upper case
-         * Not working with non ascii characters
+         * Unicode not supported
          */
         String ToUpper() const;
 
         /**
          * Returns a copy of this string in all lower case
-         * Not working with non ascii characters
+         * Unicode not supported
          */
         String ToLower() const;
+
+		/**
+		 * Returns a copy of this string reversed
+		 */
+		String Reverse() const;
 
         /**
          * Returns the index of the first occurence of str in this
          */
-        fint IndexOf(const String &str) const;
+		fisize IndexOf(const String &str) const;
 
         /**
          * Returns the index of the last occurence of str in this
          */
-        fint LastIndexOf(const String &str) const;
+		fisize LastIndexOf(const String &str) const;
 
         /**
          * Returns the index of the first occurence of c in this
          */
-        fint IndexOf(const char c) const;
+		fisize IndexOf(const char c) const;
 
         /**
          * Returns the index of the last occurence of c in this
          */
-        fint LastIndexOf(const char c) const;
+		fisize LastIndexOf(const char c) const;
+
+		/**
+		 * Returns the index of the first occurence of c in this
+		 */
+		inline fisize IndexOf(const fchar c) const
+		{
+			return (IndexOf(UTF8(c)));
+		}
+
+		/**
+		 * Returns the index of the last occurence of c in this
+		 */
+		inline fisize LastIndexOf(const fchar c) const
+		{
+			return (LastIndexOf(UTF8(c)));
+		}
 
         /**
          * Splits this string using a delimiter
          * @param c the sperator char
-         * @return list of tokens
+         * @return array of tokens
          */
-        List<String> Explode(const char c) const;
+        Array<String> Explode(const char c) const;
 
         /**
          * Splits this string using a delimiter
          * @param c the seperator char
          * @param ignore character to identify escape sequences (all characters between two of this ignore char will be interpreted as a single token)
-         * @return list of tokens
+         * @return array of tokens
          */
-        List<String> ExplodeIgnore(const char c, const char ignore) const;
+        Array<String> ExplodeIgnore(const char c, const char ignore) const;
 
         /**
          * Splits this string using a delimiter
          * @param str the separator string
-         * @return list of tokens
+         * @return array of tokens
          */
-        List<String> Explode(const String &str) const;
+        Array<String> Explode(const String &str) const;
 
         /**
          * Splits this string using a delimiter
          * @param str the separator string
          * @param ignore string to identify escape sequences (all characters between two of this ignore string will be interpreted as a single token)
-         * @return list of tokens
+         * @return array of tokens
          */
-        List<String> ExplodeIgnore(const String &str, const String &ignore) const;
+        Array<String> ExplodeIgnore(const String &str, const String &ignore) const;
 
         /**
          * Splits this string using multiple delimiters
          * @param str the delimiters
-         * @return list of tokens
+         * @return array of tokens
          */
-        List<String> ExplodeOr(const String &str) const;
+        Array<String> ExplodeOr(const String &str) const;
 
         /**
          * Returns true if this string starts with other
@@ -318,7 +332,7 @@ namespace bpf
          * @param begin the begin index in characters (inclusive)
          * @param count the amount of characters to read
          */
-        inline String SubLen(const fint begin, const fint count = -1) const
+        inline String SubLen(const fisize begin, const fisize count = -1) const
         {
             if (count < 0)
                 return (Sub(begin));
@@ -330,43 +344,13 @@ namespace bpf
          * @param begin the begin index in characters (inclusive)
          * @param end the end index in characters (exclusive)
          */
-        String Sub(const fint begin, const fint end) const;
+        String Sub(const fisize begin, const fisize end) const;
 
         /**
          * Returns a substring where the end is the end of this string
          * @param begin the begin index in characters (inclusive)
          */
-        String Sub(const fint begin) const;
-
-        /**
-         * Converts this string to an integer
-         */
-        fint ToInt() const;
-
-        /**
-         * Converts this string to a float
-         */
-        float ToFloat() const;
-
-        /**
-         * Converts this string to a double
-         */
-        double ToDouble() const;
-
-        /**
-         * Evaluate a mathematical expression
-         * @throws EvalException
-         */
-        static double Evaluate(const char *expr);
-
-        /**
-         * Evaluate a mathematical expression from the contents of the FString
-         * @throws EvalException
-         */
-        inline double Evaluate()
-        {
-            return (String::Evaluate(Data));
-        }
+        String Sub(const fisize begin) const;
 
         /**
          * Builds a string using the following formating syntax : '[]' for no format and [<num chars padding>,<allignment (left / right)>,<characters to serve as padding>]
@@ -392,16 +376,16 @@ namespace bpf
         {
             String res;
 
-            fint i = format.IndexOf('[');
-            fint j = format.IndexOf(']');
+            fisize i = format.IndexOf('[');
+			fisize j = format.IndexOf(']');
             if (i > -1 && j > -1 && format.Sub(i - 1, i) != "\\")
             {
                 res += format.Sub(0, i);
                 String pattern = format.Sub(i + 1, j);
-                List<String> tokens = pattern.Explode(',');
+                Array<String> tokens = pattern.Explode(',');
                 if (tokens.Size() < 3)
                     return (res + ValueOf(t) + Format(format.Sub(j + 1), args...));
-                fint maxn = tokens[0].ToInt();
+                fint maxn = std::atoi(*tokens[0]);
                 bool left = tokens[1] == "left";
                 String leading = tokens[2];
                 String data = ValueOf(t);
@@ -409,7 +393,7 @@ namespace bpf
                     data = data.Sub(0, maxn);
                 else if (data.Len() < maxn)
                 {
-                    fint remain = maxn - data.Len();
+					fisize remain = maxn - data.Len();
                     for (int k = 0 ; k < remain ; ++k)
                     {
                         if (left)
@@ -427,16 +411,6 @@ namespace bpf
                 res += format.Sub(format.IndexOf('\\') + 1);
                 return (res);
             }
-        }
-
-        inline String ToString() const
-        {
-            return (*this);
-        }
-
-        inline fsize Hash() const
-        {
-            return (bpf::Hash<const char *>(Data));
         }
 
         /**
@@ -549,4 +523,3 @@ namespace bpf
 
 DEFINE_DEFAULT(bpf::String, bpf::String());
 
-#include "Framework/Stringifier.hpp"

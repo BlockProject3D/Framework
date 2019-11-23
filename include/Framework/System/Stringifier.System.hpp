@@ -26,49 +26,23 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef CLASS_H
-# define CLASS_H
+#pragma once
+#include "Framework/String.hpp"
+#include "Framework/System/DateTime.hpp"
 
-# include "framework/factory.h"
-
-namespace Framework
+namespace bpf
 {
-    /**
-     * Provides a template to an abstract factory for type T
-     * @tparam T the parent type
-     * @tparam Args the constructor arguments
-     */
-    template <class /* ? extends */ T, typename ...Args>
-    class FClass
+    template <>
+    class String::Stringifier<DateTime>
     {
-    private:
-        IFactory<T, Args...> *Factory;
     public:
-        inline FClass()
-            : Factory(Null)
+        inline static String Stringify(const DateTime &dt)
         {
-        }
-
-        /**
-         * Initializes a FClass using a given concrete type factory
-         * @param factory the factory to store
-         */
-        inline FClass(IFactory<T, Args...> *factory)
-            : Factory(factory)
-        {
-        }
-
-        /**
-         * Returns a new instance of a T using the stored factory, Null if failed
-         * @param args arguments to pass to the constructor
-         */
-        inline T *NewInstance(Args... args)
-        {
-            if (Factory == NULL)
-                return (NULL);
-            return (Factory->Create(args...));
+			return (dt.GetDayName() + " "
+				+ dt.GetMonthName() + " "
+				+ dt.GetDay() + " "
+				+ dt.GetYear() + " "
+				+ dt.GetHours() + ":" + dt.GetMinutes() + ":" + dt.GetSeconds());
         }
     };
-};
-
-#endif /* !CLASS_H */
+}

@@ -27,53 +27,44 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Types.hpp"
 #include "Framework/String.hpp"
-#include "Framework/Stack.hpp"
-#include "Framework/Array.hpp"
+#include "Framework/IObjectConstructor.hpp"
 #include "Framework/Map.hpp"
-
-# ifdef BUILD_DEBUG
-#  define PROFILER_PUSH_SECTION(name) Framework::FProfiler::PushSection(name)
-#  define PROFILER_POP_SECTION() Framework::FProfiler::PopSection()
-# else
-#  define PROFILER_PUSH_SECTION(name)
-#  define PROFILER_POP_SECTION()
-# endif
 
 namespace bpf
 {
-    struct BPF_API ProfilerSection
-    {
-        String Name;
-        long long Time; //In micro seconds
-        fint Pos;
-        uint32 CreationID;
-    };
-
-    class BPF_API Profiler
+    /**
+     * Factory, creates object instances from object constructor names
+     * @tparam T the type of parent to generate
+     * @tparam Args the arguments to the constructor
+     */
+    template <class /* ? extends */ T, typename ...Args>
+    class BPF_API ObjectFactory
     {
     private:
-        uint32 CurCreationID;
-        Map<String, ProfilerSection> _map;
-        Stack<ProfilerSection> _stack = Stack<ProfilerSection>(32);
-
-        void Push(const String &name);
-        void Pop();
-        Profiler();
+        Map<String, IObjectConstructor<T, Args...> *> Registry;
 
     public:
-        static Profiler &Instance();
-        Array<ProfilerSection> GenDisplayList();
-        
-        inline static void PushSection(const String &name)
+        template <class ObjConstructor>
+        inline void AddClass()
         {
-            Instance().Push(name);
+            IObjectConstructor<T, Args...> *raw = Memory::New<ObjConstructor>(); // TODO : Update when Map will accept UniquePtr as a value
+            //WARNING : MemLeak to fix here
+            Registry[raw->GetName()] = raw;
         }
-
-        inline static void PopSection()
+        
+        inline UniquePtr<T> MakeUnique(const String &name, Args&&... args)
         {
-            Instance().Pop();
+            if (!Registry.HasKey(name))
+                return (Null);
+            return (Registry[name]->MakeUnique(std::forward<Args>(args)...));
+        }
+        
+        inline SharedPtr<T> MakeShared(const String &name, Args&&... args)
+        {
+            if (!Registry.HasKey(name))
+                return (Null);
+            return (Registry[name]->MakeShared(std::forward<Args>(args)...));
         }
     };
-};
+}

@@ -30,6 +30,8 @@ include_directories("${gtest_SOURCE_DIR}/include")
 set(SOURCES
     src/main.cpp
     src/String.cpp
+    src/MathEval.cpp
+    src/Scalar.cpp
     src/File.cpp
     src/MemoryMapper.cpp
     src/FileStream.cpp
@@ -41,6 +43,8 @@ set(SOURCES
     src/List.cpp
     src/ArrayList.cpp
     src/Map.cpp
+    src/Array.cpp
+    src/BaseConvert.cpp
 )
 
 bp_setup_program(${PROJECT_NAME} include)

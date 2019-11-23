@@ -26,67 +26,28 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Framework/Framework.hpp"
-#include "Framework/Math/BMath.hpp"
-#include "Framework/Math/Vector.hpp"
-#include "Framework/Math/Vertex.hpp"
+#include "Framework/Math/Viewport.hpp"
 
-using namespace Framework;
+using namespace bpf;
 
-FVertex::FVertex(float x, float y, float z, float u, float v)
-    : X(x), Y(y), Z(z), U(u), V(v)
+Vector3f Viewport::Project(const Matrix4f &view, const Vector3f &pt)
 {
-    SetNormal(FVector::Zero);
-}
+    Matrix4f viewproj = view * Projection;
+    Vector4f vec(pt, 1.0f);
+    Vector3f projected;
 
-FVertex::FVertex(const FVector &pos, const FVector &normal, float u, float v)
-    : X(pos.X), Y(pos.Y), Z(pos.Z), U(u), V(v)
-{
-    SetNormal(normal);
-}
-
-FVertex::FVertex(const FVertex &other)
-    : X(other.X), Y(other.Y), Z(other.Z), U(other.U), V(other.V)
-{
-    SetNormal(FVector::Zero);
-}
-
-FVertex::FVertex()
-    : X(0), Y(0), Z(0), U(0), V(0)
-{
-    SetNormal(FVector::Zero);
-}
-
-void FVertex::SetNormal(const FVector &vec)
-{
-    NX = vec.X;
-    NY = vec.Y;
-    NZ = vec.Z;
-}
-
-FVertex FVertex::operator-()
-{
-    return (FVertex(FVector(-X, -Y, -Z), FVector(NX, NY, NZ), U, V));
-}
-
-bool FVertex::operator==(const FVertex &other)
-{
-    return (X == other.X && Y == other.Y && Z == other.Z && U == other.U && V == other.V);
-}
-
-void FVertex::ApplyTransform(const FTransform &tr)
-{
-    FMatrix mat = tr.GetMatrix();
-    FVector4D v(X, Y, Z, 1.0f);
-    FVector4D res = v * mat;
-    FMatrix rot = tr.GetQuat().ToMatrix();
-    FVector4D v1(NX, NY, NZ, 1.0f);
-    FVector4D res1 = v1 * rot;
-
-    X = res.X;
-    Y = res.Y;
-    Z = res.Z;
-    NX = res1.X;
-    NY = res1.Y;
-    NZ = res1.Z;
+    vec = viewproj * vec;
+    projected = Vector3f(vec.X / vec.W, vec.Y / vec.W, vec.Z / vec.W);
+    projected.X /= projected.Z;
+    projected.Y /= projected.Z;
+    projected.X = (((1 + projected.X) / 2.f) * Width) + 0.5f;
+    projected.Y = (((1 - projected.Y) / 2.f) * Height) + 0.5f;
+    if (vec.W < 0)
+    {
+        if (projected.X > 0)
+            projected.X *= -1;
+        if (projected.Y > 0)
+            projected.Y *= -1;
+    }
+    return (projected);
 }

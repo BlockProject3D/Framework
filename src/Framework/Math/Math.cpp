@@ -32,6 +32,10 @@
 
 using namespace bpf;
 
+constexpr float Math::RadToDeg;
+constexpr float Math::DegToRad;
+constexpr float Math::Pi;
+
 bool Math::IsPrime(const fint n)
 {
     fint a = 2;

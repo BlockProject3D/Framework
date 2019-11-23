@@ -57,27 +57,27 @@ void BinaryWriter::WriteSubBuf(void *out, const fsize size)
 
 IDataOutputStream &BinaryWriter::operator<<(const bpf::String &str)
 {
-    uint32 size = str.Size();
+    fisize size = str.Size();
 
     switch (_serializer)
     {
     case EStringSerializer::VARCHAR_32:
         WriteSubBuf(&size, 4);
-        for (uint32 i = 0; i < size; ++i)
+        for (fisize i = 0; i < size; ++i)
             WriteByte((uint8)str.ByteAt(i));
         break;
     case EStringSerializer::VARCHAR_16:
         WriteSubBuf(&size, 2);
-        for (uint32 i = 0; i < (uint16)size; ++i)
+        for (fisize i = 0; i < (uint16)size; ++i)
             WriteByte((uint8)str.ByteAt(i));
         break;
     case EStringSerializer::VARCHAR_8:
         WriteSubBuf(&size, 1);
-        for (uint32 i = 0; i < (uint8)size; ++i)
+        for (fisize i = 0; i < (uint8)size; ++i)
             WriteByte((uint8)str.ByteAt(i));
         break;
     case EStringSerializer::CSTYLE:
-        for (uint32 i = 0; i < size; ++i)
+        for (fisize i = 0; i < size; ++i)
             WriteByte((uint8)str.ByteAt(i));
         WriteByte(0);
         break;
@@ -87,28 +87,28 @@ IDataOutputStream &BinaryWriter::operator<<(const bpf::String &str)
 
 IDataOutputStream &BinaryWriter::operator<<(const char *str)
 {
-    uint32 size = 0;
+	fisize size = 0;
 
     for (; str[size]; ++size);
     switch (_serializer)
     {
     case EStringSerializer::VARCHAR_32:
         WriteSubBuf(&size, 4);
-        for (uint32 i = 0; i < size; ++i)
+        for (fisize i = 0; i < size; ++i)
             WriteByte((uint8)str[i]);
         break;
     case EStringSerializer::VARCHAR_16:
         WriteSubBuf(&size, 2);
-        for (uint32 i = 0; i < (uint16)size; ++i)
+        for (fisize i = 0; i < (uint16)size; ++i)
             WriteByte((uint8)str[i]);
         break;
     case EStringSerializer::VARCHAR_8:
         WriteSubBuf(&size, 1);
-        for (uint32 i = 0; i < (uint8)size; ++i)
+        for (fisize i = 0; i < (uint8)size; ++i)
             WriteByte((uint8)str[i]);
         break;
     case EStringSerializer::CSTYLE:
-        for (uint32 i = 0; i < size; ++i)
+        for (fisize i = 0; i < size; ++i)
             WriteByte((uint8)str[i]);
         WriteByte(0);
         break;

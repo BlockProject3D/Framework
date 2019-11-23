@@ -36,6 +36,7 @@ namespace bpf
     private:
         List<void **> Refs;
 
+    public:
         virtual ~Object();
         inline void AddRef(void **ref)
         {

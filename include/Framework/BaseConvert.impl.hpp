@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2019, BlockProject
 //
 // All rights reserved.
 //
@@ -27,53 +27,37 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Types.hpp"
-#include "Framework/String.hpp"
-#include "Framework/Stack.hpp"
-#include "Framework/Array.hpp"
-#include "Framework/Map.hpp"
-
-# ifdef BUILD_DEBUG
-#  define PROFILER_PUSH_SECTION(name) Framework::FProfiler::PushSection(name)
-#  define PROFILER_POP_SECTION() Framework::FProfiler::PopSection()
-# else
-#  define PROFILER_PUSH_SECTION(name)
-#  define PROFILER_POP_SECTION()
-# endif
 
 namespace bpf
 {
-    struct BPF_API ProfilerSection
-    {
-        String Name;
-        long long Time; //In micro seconds
-        fint Pos;
-        uint32 CreationID;
-    };
+	template <typename T>
+	T BaseConvert<T>::FromString(const String &nbr)
+	{
+		T res = 0;
+		T cb = 1;
 
-    class BPF_API Profiler
-    {
-    private:
-        uint32 CurCreationID;
-        Map<String, ProfilerSection> _map;
-        Stack<ProfilerSection> _stack = Stack<ProfilerSection>(32);
+		for (fisize i = nbr.Len() - 1; i >= 0; --i)
+		{
+			if (!_base.Contains(nbr[i]))
+				throw ParseException("Invalid string");
+			res += (T)(_base.IndexOf(nbr[i])) * cb;
+			cb *= (T)_base.Len();
+		}
+		return (res);
+	}
 
-        void Push(const String &name);
-        void Pop();
-        Profiler();
+	template <typename T>
+	String BaseConvert<T>::ToString(T nbr)
+	{
+		String res = String::Empty;
 
-    public:
-        static Profiler &Instance();
-        Array<ProfilerSection> GenDisplayList();
-        
-        inline static void PushSection(const String &name)
-        {
-            Instance().Push(name);
-        }
-
-        inline static void PopSection()
-        {
-            Instance().Pop();
-        }
-    };
-};
+		if (nbr == 0)
+			return ("0");
+		while (nbr > 0)
+		{
+			res += _base[nbr % _base.Len()];
+			nbr /= (T)_base.Len();
+		}
+		return (res.Reverse());
+	}
+}

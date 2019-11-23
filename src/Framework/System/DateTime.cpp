@@ -28,7 +28,6 @@
 
 #include <cstring>
 #include <ctime>
-#include "Framework/Framework.hpp"
 #include "Framework/System/DateTime.hpp"
 
 using namespace bpf;
@@ -231,15 +230,6 @@ DateTime DateTime::ToLocalTime() const
     res._curtm = _curtm;
     res.RecalcLocal();
     return (res);
-}
-
-String DateTime::ToString() const
-{
-    return (GetDayName() + " "
-            + GetMonthName() + " "
-            + GetDay() + " "
-            + GetYear() + " "
-            + GetHours() + ":" + GetMinutes() + ":" + GetSeconds());
 }
 
 DateTime DateTime::UTCTime()

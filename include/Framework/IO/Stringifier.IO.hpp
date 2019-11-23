@@ -27,53 +27,18 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Types.hpp"
 #include "Framework/String.hpp"
-#include "Framework/Stack.hpp"
-#include "Framework/Array.hpp"
-#include "Framework/Map.hpp"
-
-# ifdef BUILD_DEBUG
-#  define PROFILER_PUSH_SECTION(name) Framework::FProfiler::PushSection(name)
-#  define PROFILER_POP_SECTION() Framework::FProfiler::PopSection()
-# else
-#  define PROFILER_PUSH_SECTION(name)
-#  define PROFILER_POP_SECTION()
-# endif
+#include "Framework/IO/File.hpp"
 
 namespace bpf
 {
-    struct BPF_API ProfilerSection
+    template <>
+    class String::Stringifier<File>
     {
-        String Name;
-        long long Time; //In micro seconds
-        fint Pos;
-        uint32 CreationID;
-    };
-
-    class BPF_API Profiler
-    {
-    private:
-        uint32 CurCreationID;
-        Map<String, ProfilerSection> _map;
-        Stack<ProfilerSection> _stack = Stack<ProfilerSection>(32);
-
-        void Push(const String &name);
-        void Pop();
-        Profiler();
-
     public:
-        static Profiler &Instance();
-        Array<ProfilerSection> GenDisplayList();
-        
-        inline static void PushSection(const String &name)
+        inline static String Stringify(const File &f)
         {
-            Instance().Push(name);
-        }
-
-        inline static void PopSection()
-        {
-            Instance().Pop();
+			return (bpf::String("File(") + f.Path() + ")");
         }
     };
-};
+}

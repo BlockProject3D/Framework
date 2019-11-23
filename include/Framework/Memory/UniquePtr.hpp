@@ -42,7 +42,7 @@ namespace bpf
         {
         }
 
-        explicit inline UniquePtr(T *raw) noexcept
+        inline UniquePtr(T *raw) noexcept
             : RawPtr(raw)
         {
         }
@@ -67,12 +67,17 @@ namespace bpf
 
         UniquePtr<T> &operator=(UniquePtr<T> &&other);
 
-        inline T *operator*() const noexcept
+        inline T &operator*() const noexcept
+        {
+            return (*RawPtr);
+        }
+
+        inline T *operator->() const noexcept
         {
             return (RawPtr);
         }
 
-        inline T *operator->() const noexcept
+        inline T *Raw() const noexcept
         {
             return (RawPtr);
         }

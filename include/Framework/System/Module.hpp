@@ -26,10 +26,7 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef MODULE_H_
-# define MODULE_H_
-
-#include "Framework/Framework.hpp"
+#pragma once
 #include "Framework/System/ModuleException.hpp"
 
 namespace bpf
@@ -68,5 +65,3 @@ namespace bpf
         }
     };
 }
-
-#endif /* !MODULE_H_ */

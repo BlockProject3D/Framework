@@ -31,6 +31,8 @@
 #include "Framework/Types.hpp"
 #include "Framework/String.hpp"
 
+//TODO: Parse and TryParse
+
 namespace bpf
 {
     class BPF_API DateTime
@@ -92,7 +94,6 @@ namespace bpf
         bool operator!=(const DateTime &other) const;
         void operator+=(const DateTime &other);
         void operator-=(const DateTime &other);
-        String ToString() const;
         DateTime ToUTCTime() const;
         DateTime ToLocalTime() const;
 

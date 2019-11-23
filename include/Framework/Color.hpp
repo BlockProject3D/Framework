@@ -100,6 +100,8 @@ namespace bpf
          */
         explicit Color(const fint rgb); //TODO : Implement
 
+        fint GetCode() const noexcept;
+
         /**
          * Blends two colors by addition
          */
@@ -118,11 +120,6 @@ namespace bpf
         inline bool operator!=(const Color &other)
         {
             return (!(R == other.R && G == other.G && B == other.B && A == other.A));
-        }
-
-        inline String ToString() const
-        {
-            return (String("Color(") + R + ", " + G + ", " + B + ", " + A + ")");
         }
 
         /**

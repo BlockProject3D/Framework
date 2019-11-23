@@ -26,54 +26,37 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-#include "Framework/Types.hpp"
-#include "Framework/String.hpp"
-#include "Framework/Stack.hpp"
-#include "Framework/Array.hpp"
-#include "Framework/Map.hpp"
+#ifdef WINDOWS
+    #include <Windows.h>
+#else
+    #include <errno.h>
+    #include <cstring>
+#endif
+#include "OSPrivate.hpp"
 
-# ifdef BUILD_DEBUG
-#  define PROFILER_PUSH_SECTION(name) Framework::FProfiler::PushSection(name)
-#  define PROFILER_POP_SECTION() Framework::FProfiler::PopSection()
-# else
-#  define PROFILER_PUSH_SECTION(name)
-#  define PROFILER_POP_SECTION()
-# endif
+using namespace bpf;
 
-namespace bpf
+#ifdef WINDOWS
+String OSPrivate::ObtainLastErrorString()
 {
-    struct BPF_API ProfilerSection
+    String res = "Unknown";
+    LPTSTR errtxt = Null;
+
+    FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER
+        | FORMAT_MESSAGE_FROM_SYSTEM
+        | FORMAT_MESSAGE_IGNORE_INSERTS,
+        Null, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+        reinterpret_cast<LPTSTR>(&errtxt), 0, Null);
+    if (errtxt != Null)
     {
-        String Name;
-        long long Time; //In micro seconds
-        fint Pos;
-        uint32 CreationID;
-    };
-
-    class BPF_API Profiler
-    {
-    private:
-        uint32 CurCreationID;
-        Map<String, ProfilerSection> _map;
-        Stack<ProfilerSection> _stack = Stack<ProfilerSection>(32);
-
-        void Push(const String &name);
-        void Pop();
-        Profiler();
-
-    public:
-        static Profiler &Instance();
-        Array<ProfilerSection> GenDisplayList();
-        
-        inline static void PushSection(const String &name)
-        {
-            Instance().Push(name);
-        }
-
-        inline static void PopSection()
-        {
-            Instance().Pop();
-        }
-    };
-};
+        res = errtxt;
+        LocalFree(errtxt);
+    }
+    return (res);
+}
+#else
+String OSPrivate::ObtainLastErrorString()
+{
+    return (String(std::strerror(errno)));
+}
+#endif

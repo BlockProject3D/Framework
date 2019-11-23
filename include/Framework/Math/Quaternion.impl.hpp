@@ -70,7 +70,7 @@ namespace bpf
     template <typename T>
     Vector3<T> Quat<T>::Rotate(const Vector3<T> &v) const
     {
-        Quat<T> p(0, X, Y, Z);
+        Quat<T> p(0, v.X, v.Y, v.Z);
         Quat<T> pprime = Invert() * p * *this;
 
         return (pprime.GetAxis());

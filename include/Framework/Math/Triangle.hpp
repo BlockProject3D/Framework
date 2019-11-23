@@ -26,22 +26,30 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef TRIANGLE_H_
-# define TRIANGLE_H_
+#pragma once
+#include "Framework/Math/Vector.hpp"
+#include "Framework/Math/Transform.hpp"
 
-namespace Framework
+namespace bpf
 {
-    class ENGINE_API FTriangle
+    class BPF_API Triangle
     {
     public:
-        FVertex VertA;
-        FVertex VertB;
-        FVertex VertC;
+        Vector3f A;
+        Vector3f B;
+        Vector3f C;
 
-        FTriangle(const FVertex &p1, const FVertex &p2, const FVertex &p3);
-        void Move(const FVector &offset);
-        void ApplyTransform(const FTransform &tr);
+        inline Triangle()
+        {
+        }
+        inline Triangle(const Vector3f &p1, const Vector3f &p2, const Vector3f &p3)
+            : A(p1)
+            , B(p2)
+            , C(p3)
+        {
+        }
+        void ApplyTransform(const Transform &tr);
+        Vector3f GetNormal() const;
+        Vector3f GetBarycentricCoordinates(const Vector3f &p) const;
     };
 };
-
-#endif /* !TRIANGLE_H_ */

@@ -64,8 +64,6 @@ namespace bpf
             return (I);
         }
 
-        String ToString() const;
-
         inline const T *operator*() const
         {
             return (_arr);

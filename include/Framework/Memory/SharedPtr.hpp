@@ -58,7 +58,7 @@ namespace bpf
         {
         }
 
-        explicit inline SharedPtr(T *raw)
+        inline SharedPtr(T *raw)
             : Count(static_cast<fint *>(Memory::Malloc(sizeof(int))))
             , WCount(static_cast<fint *>(Memory::Malloc(sizeof(int))))
             , RawPtr(raw)
@@ -102,12 +102,17 @@ namespace bpf
 
         SharedPtr<T> &operator=(const SharedPtr<T> &other);
 
-        inline T *operator*() const noexcept
+        inline T &operator*() const noexcept
+        {
+            return (*RawPtr);
+        }
+
+        inline T *operator->() const noexcept
         {
             return (RawPtr);
         }
 
-        inline T *operator->() const noexcept
+        inline T *Raw() const noexcept
         {
             return (RawPtr);
         }

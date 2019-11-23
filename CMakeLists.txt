@@ -11,7 +11,6 @@ set(SOURCES
     ./include/Framework/IO/FileStream.hpp
     ./include/Framework/IO/MemoryMapper.hpp
     ./include/Framework/IO/IOException.hpp
-#    ./include/Framework/IO/FileSystem.hpp
     ./include/Framework/IO/IInputStream.hpp
     ./include/Framework/IO/IOutputStream.hpp
     ./include/Framework/IO/IDataInputStream.hpp
@@ -22,7 +21,7 @@ set(SOURCES
     ./include/Framework/IO/BinaryWriter.hpp
     ./include/Framework/IO/TextReader.hpp
     ./include/Framework/IO/TextWriter.hpp
-#    ./include/Framework/IO/Stream.hpp
+    ./include/Framework/IO/Stringifier.IO.hpp
     ./include/Framework/Math/Triangle.hpp
     ./include/Framework/Math/Vector.hpp
     ./include/Framework/Math/Vector2.hpp
@@ -34,14 +33,13 @@ set(SOURCES
     ./include/Framework/Math/Matrix2.impl.hpp
     ./include/Framework/Math/Matrix3.impl.hpp
     ./include/Framework/Math/Matrix4.impl.hpp
-    ./include/Framework/Math/Vertex.hpp
     ./include/Framework/Math/Viewport.hpp
     ./include/Framework/Math/Quaternion.hpp
     ./include/Framework/Math/Quaternion.impl.hpp
     ./include/Framework/Math/Matrix.hpp
     ./include/Framework/Math/Matrix.impl.hpp
     ./include/Framework/Math/Transform.hpp
-    ./include/Framework/Math/BMath.hpp
+    ./include/Framework/Math/Triangle.hpp
     ./include/Framework/Math/Math.hpp
     ./include/Framework/Logging/Logger.hpp
     ./include/Framework/Logging/ILogHandler.hpp
@@ -49,6 +47,7 @@ set(SOURCES
     ./include/Framework/Logging/DefaultLogger.hpp
     ./include/Framework/Logging/FileLogger.hpp
     ./include/Framework/Memory/Memory.hpp
+    ./include/Framework/Memory/Memory.Hash.hpp
     ./include/Framework/Memory/Utility.hpp
     ./include/Framework/Memory/MemoryException.hpp
     ./include/Framework/Memory/SharedPtr.hpp
@@ -62,7 +61,6 @@ set(SOURCES
     ./include/Framework/System/ModuleException.hpp
     ./include/Framework/System/ModuleManager.hpp
     ./include/Framework/System/Platform.hpp
-#    ./include/Framework/System/System.hpp
     ./include/Framework/System/TypeExpander.hpp
     ./include/Framework/System/DateTime.hpp
     ./include/Framework/System/Timer.hpp
@@ -70,6 +68,7 @@ set(SOURCES
     ./include/Framework/System/Mutex.hpp
     ./include/Framework/System/ThreadManager.hpp
     ./include/Framework/System/IModuleInterface.hpp
+    ./include/Framework/System/Stringifier.System.hpp
     ./include/Framework/API.hpp
     ./include/Framework/BinUtils.hpp
     ./include/Framework/Types.hpp
@@ -79,19 +78,19 @@ set(SOURCES
     ./include/Framework/Array.impl.hpp
     ./include/Framework/ArrayList.hpp
     ./include/Framework/ArrayList.impl.hpp
-    ./include/Framework/Class.hpp
     ./include/Framework/Color.hpp
     ./include/Framework/Delegate.hpp
     ./include/Framework/EntryPoint.hpp
-    ./include/Framework/Factory.hpp
-    ./include/Framework/Framework.hpp
     ./include/Framework/Hash.hpp
+    ./include/Framework/BasicHash.hpp
     ./include/Framework/Iterator.hpp
     ./include/Framework/List.hpp
     ./include/Framework/List.impl.hpp
     ./include/Framework/Map.hpp
     ./include/Framework/Map.impl.hpp
     ./include/Framework/Object.hpp
+    ./include/Framework/ObjectFactory.hpp
+    ./include/Framework/IObjectConstructor.hpp
     ./include/Framework/ObjectPtr.hpp
     ./include/Framework/Path.hpp
     ./include/Framework/Profiler.hpp
@@ -103,10 +102,18 @@ set(SOURCES
     ./include/Framework/Stack.hpp
     ./include/Framework/Stack.impl.hpp
     ./include/Framework/String.hpp
-	./include/Framework/Scalar.hpp
-    ./include/Framework/Stringifier.hpp
+    ./include/Framework/MathEval.hpp
+    ./include/Framework/MathEval.impl.hpp
+    ./include/Framework/BaseConvert.hpp
+    ./include/Framework/BaseConvert.impl.hpp
+    ./include/Framework/Scalar.hpp
+    ./include/Framework/Stringifier.Container.hpp
+    ./include/Framework/Stringifier.Base.hpp
     ./include/Framework/TreeNode.hpp
+    ./include/Framework/ParseException.hpp
     ./src/Framework/IO/File.cpp
+    ./src/Framework/IO/OSPrivate.hpp
+    ./src/Framework/IO/OSPrivate.cpp
     ./src/Framework/IO/FileStream.cpp
     ./src/Framework/IO/MemoryMapper.cpp
     ./src/Framework/IO/ByteBuf.cpp
@@ -115,22 +122,16 @@ set(SOURCES
     ./src/Framework/IO/BinaryWriter.cpp
     ./src/Framework/IO/TextReader.cpp
     ./src/Framework/IO/TextWriter.cpp
-#    ./src/Framework/IO/Stream.cpp
     ./src/Framework/Logging/DefaultLogger.cpp
     ./src/Framework/Logging/FileLogger.cpp
-    ./src/Framework/Math/BMath.cpp
-    ./src/Framework/Math/Matrix.cpp
-    ./src/Framework/Math/Quaternion.cpp
     ./src/Framework/Math/Transform.cpp
     ./src/Framework/Math/Triangle.cpp
-    ./src/Framework/Math/Vector.cpp
-    ./src/Framework/Math/Vertex.cpp
     ./src/Framework/Math/Math.cpp
+    ./src/Framework/Math/Viewport.cpp
     ./src/Framework/Memory/Memory.cpp
     ./src/Framework/System/Platform.cpp
     ./src/Framework/System/Module.cpp
     ./src/Framework/System/ModuleManager.cpp
-#    ./src/Framework/System/System.cpp
     ./src/Framework/System/DateTime.cpp
     ./src/Framework/System/Thread.cpp
     ./src/Framework/System/Mutex.cpp
@@ -144,7 +145,7 @@ set(SOURCES
     ./src/Framework/RuntimeException.cpp
     ./src/Framework/IndexException.cpp
     ./src/Framework/String.cpp
-	./src/Framework/Scalar.cpp
+    ./src/Framework/Scalar.cpp
 )
 
 bp_setup_framework()

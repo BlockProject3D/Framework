@@ -26,12 +26,14 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef VIEWPORT_H_
-# define VIEWPORT_H_
+#pragma once
+#include "Framework/Types.hpp"
+#include "Framework/Math/Vector.hpp"
+#include "Framework/Math/Matrix.hpp"
 
-namespace Framework
+namespace bpf
 {
-    class ENGINE_API FViewport
+    class BPF_API Viewport
     {
     public:
         /**
@@ -52,24 +54,28 @@ namespace Framework
         /**
          * Viewport width
          */
-        unsigned int Width;
+        uint32 Width;
         
         /**
          * Viewport height
          */
-        unsigned int Height;
+        uint32 Height;
         
         /**
          * Projection matrix
          */
-        FMatrix Projection;
-        
-        inline FViewport()
-            : FOV(0.0f), NearPlane(0.0f), FarPlane(0.0f),
-            Width(0), Height(0), Projection(FMatrix::Identity)
+        Matrix4f Projection;
+
+        Vector3f Project(const Matrix4f &view, const Vector3f &pt);
+
+        inline Viewport()
+            : FOV(0.0f)
+            , NearPlane(0.0f)
+            , FarPlane(0.0f)
+            , Width(0)
+            , Height(0)
+            , Projection(Matrix4f::Identity)
         {
         }
     };
 };
-
-#endif /* !VIEWPORT_H_ */

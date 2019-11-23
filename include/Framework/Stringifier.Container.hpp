@@ -26,46 +26,59 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef FACTORY_H_
-# define FACTORY_H_
+#pragma once
+#include "Framework/String.hpp"
+#include "Framework/Array.hpp"
+#include "Framework/List.hpp"
+#include "Framework/ArrayList.hpp"
 
-namespace Framework
+namespace bpf
 {
-    /**
-     * Constructor abstraction
-     * @tparam T the type of parent to generate
-     * @tparam Args the arguments to the constructor
-     */
-    template <class /* ? extends */ T, typename ...Args>
-    class ENGINE_API IConstructor
+    template <typename T, fsize I>
+    class String::Stringifier<Array<T, I>>
     {
     public:
-        virtual ~IConstructor() {}
+        inline static String Stringify(const Array<T, I> &arr)
+        {
+            String res = "[";
 
-        /**
-         * Creates a new instance of the given type
-         * @param args arguments to the constructor
-         */
-        virtual T *NewInstance(Args... args) = 0;
+            for (uint32 i = 0; i < arr.Size(); ++i)
+            {
+                res += String::ValueOf(arr[i]);
+                if (i < arr.Size() - 1)
+                    res += ", ";
+            }
+            res += "]";
+            return (res);
+        }
     };
     
-    template <class /* ? extends */ T, typename ...Args>
-    class ENGINE_API FFactory
+    template <typename T>
+    class String::Stringifier<List<T>>
     {
-    private:
-        bpf::Map<bpf::String, IConstructor<T, Args...> *> Registry;
     public:
-        inline void AddClass(const bpf::String &name, IConstructor<T, Args...> *c)
+        inline static String Stringify(const List<T> &lst)
         {
-            Registry[name] = c;
-        }
-        inline T *New(const bpf::String &name, Args&&... args)
-        {
-            if (!Registry.HasKey(name))
-                return (Null);
-            return (Registry[name]->NewInstance(std::forward<Args>(args)...));
+            String res = "[";
+
+            for (uint32 i = 0; i < lst.Size(); ++i)
+            {
+                res += String::ValueOf(lst[i]);
+                if (i < lst.Size() - 1)
+                    res += ", ";
+            }
+            res += "]";
+            return (res);
         }
     };
-};
 
-#endif /* !FACTORY_H_ */
+	template <typename T>
+	class String::Stringifier<ArrayList<T>>
+	{
+	public:
+		inline static String Stringify(const ArrayList<T> &arr)
+		{
+			return (String::ValueOf(arr.ToArray()));
+		}
+	};
+}

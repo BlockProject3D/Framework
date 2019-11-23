@@ -72,4 +72,5 @@ namespace bpf
 #endif
 
     using fsize = uintptr;
+	using fisize = intptr;
 }

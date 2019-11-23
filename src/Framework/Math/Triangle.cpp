@@ -26,34 +26,35 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Framework/Framework.hpp"
-#include "Framework/Math/BMath.hpp"
+#include "Framework/Math/Triangle.hpp"
 
-using namespace Framework;
+using namespace bpf;
 
-FTriangle::FTriangle(const FVertex &p1, const FVertex &p2, const FVertex &p3)
-    : VertA(p1), VertB(p2), VertC(p3)
+Vector3f Triangle::GetNormal() const
 {
+    Vector3f v = B - A;
+    Vector3f w = C - A;
+
+    return (v.Cross(w));
 }
 
-void FTriangle::Move(const FVector &offset)
+void Triangle::ApplyTransform(const Transform &tr)
 {
-    VertA.X += offset.X;
-    VertA.Y += offset.Y;
-    VertA.Z += offset.Z;
-
-    VertB.X += offset.X;
-    VertB.Y += offset.Y;
-    VertB.Z += offset.Z;
-
-    VertC.X += offset.X;
-    VertC.Y += offset.Y;
-    VertC.Z += offset.Z;
+    A = tr.TransformPoint(A);
+    B = tr.TransformPoint(B);
+    C = tr.TransformPoint(C);
 }
 
-void FTriangle::ApplyTransform(const FTransform &tr)
+Vector3f Triangle::GetBarycentricCoordinates(const Vector3f &p) const
 {
-    VertA.ApplyTransform(tr);
-    VertB.ApplyTransform(tr);
-    VertC.ApplyTransform(tr);
+    Vector3f normal = GetNormal();
+    Vector3f res;
+
+    float abc = normal.Dot((B - A).Cross(C - A));
+    float pbc = normal.Dot((B - p).Cross(C - p));
+    float pca = normal.Dot((C - p).Cross(A - p));
+    res.X = pbc / abc;
+    res.Y = pca / abc;
+    res.Z = 1.0f - res.X - res.Y;
+    return (res);
 }

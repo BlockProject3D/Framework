@@ -225,7 +225,7 @@ String::String(String &&s)
     s.UnicodeLen = 0;
 }
 
-void String::MakeSized(String &str, const uint32 len) const
+void String::MakeSized(String &str, const fsize len) const
 {
     str.StrLen = len;
     str.Data = static_cast<char *>(Memory::Malloc(sizeof(char) * (len + 1)));
@@ -341,17 +341,17 @@ String::~String()
     Memory::Free(Data);
 }
 
-void String::CopyString(const char *src, char *dest, const uint32 len) const
+void String::CopyString(const char *src, char *dest, const fsize len) const
 {
     fsize const *fsrc = reinterpret_cast<fsize const *>(src);
     fsize *fdest = reinterpret_cast<fsize *>(dest);
-    uint32 flen = len / sizeof(fsize);
+    fsize flen = len / sizeof(fsize);
 
-    for (uint32 i = 0; i < flen; ++i, ++fsrc, ++fdest)
+    for (fsize i = 0; i < flen; ++i, ++fsrc, ++fdest)
         *fdest = *fsrc;
     dest = reinterpret_cast<char *>(fdest);
     src = reinterpret_cast<char const *>(fsrc);
-    for (uint32 i = flen * sizeof(fsize); i < len; ++i, ++dest, ++src)
+    for (fsize i = flen * sizeof(fsize); i < len; ++i, ++dest, ++src)
         *dest = *src;
     *dest = '\0';
 }
@@ -370,10 +370,10 @@ uint8 String::CalcCharIncrement(const char c) // 1101 & 1111
     return 0;
 }
 
-uint32 String::CalcUnicodeLen(const char *str, const uint32 len) const
+fsize String::CalcUnicodeLen(const char *str, const fsize len) const
 {
-    uint32 ulen = 0;
-    uint32 i = 0;
+	fsize ulen = 0;
+	fsize i = 0;
 
     for (i = 0; i < len; i++)
     {
@@ -392,25 +392,25 @@ Array<char> String::ToArray() const
     return (arr);
 }
 
-uint32 String::CalcStartFromUnicode(const uint32 start) const
+fsize String::CalcStartFromUnicode(const fsize start) const
 {
-    uint32 i = 0;
+	fsize i = 0;
 
-    for (uint32 j = 0 ; i < StrLen && j != start; ++i, ++j)
+    for (fsize j = 0 ; i < StrLen && j != start; ++i, ++j)
         i += CalcCharIncrement(Data[i]);
     return (i);
 }
 
-String String::Sub(const fint begin, const fint end) const
+String String::Sub(const fisize begin, const fisize end) const
 {
     String s;
-    uint32 min;
-    uint32 max;
+	fsize min;
+	fsize max;
 
-    if ((uint32)begin > UnicodeLen || (uint32)end > UnicodeLen)
+    if ((fsize)begin > UnicodeLen || (fsize)end > UnicodeLen)
         return (*this);
-    min = CalcStartFromUnicode((uint32)begin);
-    max = CalcStartFromUnicode((uint32)end);
+    min = CalcStartFromUnicode((fsize)begin);
+    max = CalcStartFromUnicode((fsize)end);
     if (max > min)
     {
         MakeSized(s, max - min);
@@ -420,14 +420,14 @@ String String::Sub(const fint begin, const fint end) const
     return (s);
 }
 
-String String::Sub(const fint begin) const
+String String::Sub(const fisize begin) const
 {
     String s;
-    uint32 min;
+    fsize min;
 
-    if ((uint32)begin > UnicodeLen)
+    if ((fsize)begin > UnicodeLen)
         return (*this);
-    min = CalcStartFromUnicode((uint32)begin);
+    min = CalcStartFromUnicode((fsize)begin);
     if (StrLen > min)
     {
         MakeSized(s, StrLen - min);
@@ -449,7 +449,7 @@ static bool my_strstr(char *pathern, char *str)
 
 bool String::Contains(const String &other) const
 {
-    for (uint32 i = 0 ; i < StrLen ; i++)
+    for (fsize i = 0 ; i < StrLen ; i++)
     {
         if (Data[i] == other.Data[0] && my_strstr(other.Data, Data + i))
             return (true);
@@ -459,7 +459,7 @@ bool String::Contains(const String &other) const
 
 bool String::Contains(const fchar other) const
 {
-    for (uint32 i = 0; i < UnicodeLen; i++)
+    for (fsize i = 0; i < UnicodeLen; i++)
     {
         if (operator[](i) == other)
             return (true);
@@ -473,7 +473,7 @@ bool String::IsNumeric() const
 
     if (UnicodeLen <= 0)
         return (false);
-    for (uint32 i = 0 ; i < StrLen ; i++)
+    for (fsize i = 0 ; i < StrLen ; i++)
     {
         if (Data[i] == '.' && coma)
             return (false);
@@ -487,33 +487,35 @@ bool String::IsNumeric() const
     return (true);
 }
 
-List<String> String::Explode(const char c) const
+Array<String> String::Explode(const char c) const
 {
-    List<String> l;
+    Array<String> l;
+	int k = 0;
     String cur;
 
-    for (uint32 i = 0 ; i < StrLen ; i++)
+    for (fsize i = 0 ; i < StrLen ; i++)
     {
         if (Data[i] != c)
             cur += Data[i];
         else if (cur != String::Empty)
         {
-            l.Add(cur);
+            l[k++] = cur;
             cur = String::Empty;
         }
     }
     if (cur != String::Empty)
-        l.Add(cur);
+		l[k++] = cur;
     return (l);
 }
 
-List<String> String::ExplodeIgnore(const char c, const char ignore) const
+Array<String> String::ExplodeIgnore(const char c, const char ignore) const
 {
     String cur;
+	fsize k = 0;
     bool ign = false;
-    List<String> l;
+	Array<String> l;
 
-    for (uint32 i = 0 ; i < StrLen ; i++)
+    for (fsize i = 0 ; i < StrLen ; i++)
     {
         if (Data[i] == ignore)
             ign = !ign;
@@ -521,42 +523,44 @@ List<String> String::ExplodeIgnore(const char c, const char ignore) const
             cur += Data[i];
         else if (cur != String::Empty)
         {
-            l.Add(cur);
+            l[k++] = cur;
             cur = String::Empty;
         }
     }
     if (cur != String::Empty)
-        l.Add(cur);
+		l[k++] = cur;
     return (l);
 }
 
-List<String> String::Explode(const String &str) const
+Array<String> String::Explode(const String &str) const
 {
     String cur;
-    List<String> l;
+	fsize k = 0;
+    Array<String> l;
 
-    for (uint32 i = 0 ; i < StrLen ; ++i)
+    for (fsize i = 0 ; i < StrLen ; ++i)
     {
         if (Data[i] != str.Data[0])
             cur += Data[i];
         else if (cur != String::Empty && my_strstr(str.Data, Data + i))
         {
-            l.Add(cur);
+			l[k++] = cur;
             cur = String::Empty;
         }
     }
     if (cur != String::Empty)
-        l.Add(cur);
+		l[k++] = cur;
     return (l);
 }
 
-List<String> String::ExplodeIgnore(const String &str, const String &ignore) const
+Array<String> String::ExplodeIgnore(const String &str, const String &ignore) const
 {
     String cur;
+	fsize k = 0;
     bool ign = false;
-    List<String> l;
+	Array<String> l;
 
-    for (uint32 i = 0 ; i < StrLen ; ++i)
+    for (fsize i = 0 ; i < StrLen ; ++i)
     {
         if (my_strstr(ignore.Data, Data + i))
             ign = !ign;
@@ -564,40 +568,41 @@ List<String> String::ExplodeIgnore(const String &str, const String &ignore) cons
             cur += Data[i];
         else if (cur != String::Empty && my_strstr(str.Data, Data + i))
         {
-            l.Add(cur);
+			l[k++] = cur;
             cur = String::Empty;
         }
     }
     if (cur != String::Empty)
-        l.Add(cur);
+		l[k++] = cur;
     return (l);
 }
 
-List<String> String::ExplodeOr(const String &str) const
+Array<String> String::ExplodeOr(const String &str) const
 {
     String cur;
-    List<String> l;
+	fsize k = 0;
+	Array<String> l;
 
-    for (uint32 i = 0; i < StrLen; i++)
+    for (fsize i = 0; i < StrLen; i++)
     {
         if (!str.Contains(operator[](i)))
             cur += Data[i];
         else if (cur != String::Empty)
         {
-            l.Add(cur);
+			l[k++] = cur;
             cur = String::Empty;
         }
     }
     if (cur != String::Empty)
-        l.Add(cur);
+		l[k++] = cur;
     return (l);
 }
 
 bool String::StartsWith(const String &other) const
 {
-    if (StrLen < (uint32)other.Size())
+    if (StrLen < (fsize)other.Size())
         return (false);
-    for (uint32 i = 0 ; i < (uint32)other.Size() ; i++)
+    for (fsize i = 0 ; i < (fsize)other.Size() ; i++)
         if (Data[i] != other.Data[i])
             return (false);
     return (true);
@@ -607,9 +612,9 @@ bool String::EndsWith(const String &other) const
 {
     if (other.Size() == 0)
         return (true);
-    if (StrLen < (uint32)other.Size())
+    if (StrLen < (fsize)other.Size())
         return (false);
-    uint32 i, j;
+    fsize i, j;
     for (j = StrLen - 1, i = other.Size() - 1 ; i > 0 && j > 0 ; i--, j--)
         if (Data[j] != other.Data[i])
             return (false);
@@ -620,7 +625,7 @@ String String::Replace(const String &search, const String &repby) const
 {
     String str;
 
-    for (uint32 i = 0 ; i < StrLen ; i++)
+    for (fsize i = 0 ; i < StrLen ; i++)
     {
         if (Data[i] == search.ByteAt(0) && my_strstr(Data + i, search.Data))
             str += repby;
@@ -630,12 +635,12 @@ String String::Replace(const String &search, const String &repby) const
     return (str);
 }
 
-fint String::IndexOf(const String &str) const
+fisize String::IndexOf(const String &str) const
 {
-    uint32 i;
-    uint32 charid = 0;
+    fsize i;
+    fsize charid = 0;
 
-    for (i = 0 ; i < StrLen ; ++i)
+    for (i = 0 ; i != StrLen ; ++i)
     {
         if (Data[i] == str.Data[0] && my_strstr(str.Data, Data + i))
             return (charid);
@@ -645,10 +650,10 @@ fint String::IndexOf(const String &str) const
     return (-1);
 }
 
-fint String::LastIndexOf(const String &str) const
+fisize String::LastIndexOf(const String &str) const
 {
-    fint i;
-    fint charid = UnicodeLen - 1;
+    fisize i;
+    fsize charid = UnicodeLen - 1;
 
     for (i = StrLen - 1 ; i >= 0 ; --i)
     {
@@ -660,12 +665,12 @@ fint String::LastIndexOf(const String &str) const
     return (-1);
 }
 
-fint String::IndexOf(const char c) const
+fisize String::IndexOf(const char c) const
 {
-    uint32 i;
-    uint32 charid = 0;
+    fsize i;
+    fsize charid = 0;
 
-    for (i = 0 ; i < StrLen ; ++i)
+    for (i = 0 ; i != StrLen ; ++i)
     {
         if (Data[i] == c)
             return (charid);
@@ -675,10 +680,10 @@ fint String::IndexOf(const char c) const
     return (-1);
 }
 
-fint String::LastIndexOf(const char c) const
+fisize String::LastIndexOf(const char c) const
 {
-    fint i;
-    fint charid = UnicodeLen - 1;
+    fisize i;
+    fsize charid = UnicodeLen - 1;
     
     for (i = StrLen - 1 ; i >= 0 ; --i)
     {
@@ -690,26 +695,11 @@ fint String::LastIndexOf(const char c) const
     return (-1);
 }
 
-fint String::ToInt() const
-{
-    return (atoi(Data));
-}
-
-float String::ToFloat() const
-{
-    return ((float)atof(Data));
-}
-
-double String::ToDouble() const
-{
-    return (atof(Data));
-}
-
 String String::ToUpper() const
 {
     String res;
 
-    for (uint32 i = 0 ; i < StrLen ; ++i)
+    for (fsize i = 0 ; i < StrLen ; ++i)
     {
         if (CalcCharIncrement(Data[i]) <= 1 && Data[i] >= 'a' && Data[i] <= 'z')
             res += (char)(Data[i] - 32);
@@ -723,7 +713,7 @@ String String::ToLower() const
 {
     String res;
 
-    for (uint32 i = 0 ; i < StrLen ; ++i)
+    for (fsize i = 0 ; i < StrLen ; ++i)
     {
         if (CalcCharIncrement(Data[i]) <= 1 && Data[i] >= 'A' && Data[i] <= 'Z')
             res += (char)(Data[i] + 32);
@@ -733,230 +723,21 @@ String String::ToLower() const
     return (res);
 }
 
-/* BEGIN Eval expr */
-namespace FEvalExpr
+String String::Reverse() const
 {
-    enum EEvalExprOperator
-    {
-        EVAL_EXPR_ADD = 0,
-        EVAL_EXPR_SUB,
-        EVAL_EXPR_MUL,
-        EVAL_EXPR_DIV,
-        EVAL_EXPR_MOD,
-        EVAL_EXPR_NONE,
-    };
+	String res = String::Empty;
 
-    enum EEvalExprCode
-    {
-        EVAL_EXPR_PARENTHESIS = 0,
-        EVAL_EXPR_DIVIDE_ZERO,
-        EVAL_EXPR_MODULO_ZERO,
-        EVAL_EXPR_SYNTHAX_INCORRECT,
-        EVAL_EXPR_INVALID_NUMBER,
-        EVAL_EXPR_SUCCESS,
-    };
-
-    static EEvalExprCode Operation(char const **expr, double &res, bool const parenthesis);
-
-    static unsigned char IsOperator(char const expr)
-    {
-        return (expr == '+' || expr == '-' || expr == '*' || expr == '/');
-    }
-
-    static void DeleteSpace(char const **expr)
-    {
-        while (**expr && (**expr == ' ' || **expr == '\t'))
-            ++(*expr);
-    }
-
-    static EEvalExprCode Calc(double const left, double const right, double &res, EEvalExprOperator const op)
-    {
-        EEvalExprCode status = EVAL_EXPR_SUCCESS;
-
-        switch (op)
-        {
-        case EVAL_EXPR_ADD:
-            res = left + right;
-            break;
-        case EVAL_EXPR_SUB:
-            res = left - right;
-            break;
-        case EVAL_EXPR_MUL:
-            res = left * right;
-            break;
-        case EVAL_EXPR_DIV:
-            if (right)
-                res = left / right;
-            else
-                status = EVAL_EXPR_DIVIDE_ZERO;
-            break;
-        case EVAL_EXPR_MOD:
-            if (right != 0.0)
-                res = (double)(((uint64)left) % ((uint64)right));
-            else
-                status = EVAL_EXPR_MODULO_ZERO;
-            break;
-        default:
-            status = EVAL_EXPR_SYNTHAX_INCORRECT;
-            break;
-        }
-        return status;
-    }
-
-    static EEvalExprCode Number(char const **expr, double &num)
-    {
-        EEvalExprCode status = EVAL_EXPR_SUCCESS;
-
-        DeleteSpace(expr);
-        if (**expr)
-        {
-            num = ::strtod(*expr, (char **)expr);
-            if (**expr == '(')
-            {
-                if (num == 0.0)
-                {
-                    ++(*expr);
-                    status = Operation(expr, num, true);
-                }
-            }
-            else if (!(!**expr || IsOperator(**expr) || **expr == ' '
-                || **expr == '\t' || **expr == ')'))
-                status = EVAL_EXPR_INVALID_NUMBER;
-        }
-        return status;
-    }
-
-    static EEvalExprCode Product(char const **expr, double &res)
-    {
-        double leftOperand = 0;
-        double rightOperand = 0;
-        EEvalExprOperator op = EVAL_EXPR_MUL;
-        EEvalExprCode status = EVAL_EXPR_SUCCESS;
-
-        if ((status = Number(expr, leftOperand)) == EVAL_EXPR_SUCCESS)
-        {
-            DeleteSpace(expr);
-            switch (**expr)
-            {
-            case '*':
-            case '/':
-                if (**expr == '/')
-                    op = EVAL_EXPR_DIV;
-            case '%':
-                if (**expr == '%')
-                    op = EVAL_EXPR_MOD;
-                ++(*expr);
-                DeleteSpace(expr);
-                status = (IsOperator(**expr)) ? EVAL_EXPR_SYNTHAX_INCORRECT : Product(expr, rightOperand);
-                break;
-            case '(':
-                status = EVAL_EXPR_SYNTHAX_INCORRECT;
-                break;
-            case '+':
-            case '-':
-            case ')':
-            case '\0':
-                rightOperand = 1.0;
-                break;
-            default:
-                status = EVAL_EXPR_SYNTHAX_INCORRECT;
-                break;
-            }
-            if (status == EVAL_EXPR_SUCCESS)
-            {
-                if (rightOperand != 1.0 || op == EVAL_EXPR_MOD)
-                    status = Calc(leftOperand, rightOperand, res, op);
-                else
-                    res = leftOperand;
-            }
-        }
-        return status;
-    }
-
-    static EEvalExprCode Sum(char const **expr, double &res)
-    {
-        double leftOperand = 0;
-        double rightOperand = 0;
-        EEvalExprOperator op = EVAL_EXPR_ADD;
-        EEvalExprCode status = EVAL_EXPR_SUCCESS;
-
-        if ((status = Product(expr, leftOperand)) == EVAL_EXPR_SUCCESS)
-        {
-            switch (**expr)
-            {
-            case '-':
-                op = EVAL_EXPR_SUB;
-            case '+':
-                ++(*expr);
-                DeleteSpace(expr);
-                status = (IsOperator(**expr)) ? EVAL_EXPR_SYNTHAX_INCORRECT : Sum(expr, rightOperand);
-                if (status == EVAL_EXPR_SUCCESS)
-                    status = Calc(leftOperand, rightOperand, res, op);
-                break;
-            default:
-                res = leftOperand;
-                break;
-            }
-        }
-        return status;
-    }
-
-    static EEvalExprCode Operation(char const **expr, double &res, bool const parenthesis)
-    {
-        double operand = 0;
-        EEvalExprCode status = EVAL_EXPR_SUCCESS;
-
-        DeleteSpace(expr);
-        switch (**expr)
-        {
-        case '\0':
-            break;
-        default:
-            if (((status = Sum(expr, res)) == EVAL_EXPR_SUCCESS) && **expr == '(')
-            {
-                ++(*expr);
-                status = Operation(expr, operand, true);
-            }
-            break;
-        }
-        if (parenthesis)
-        {
-            if (**expr == ')')
-                ++(*expr);
-            else
-                status = EVAL_EXPR_PARENTHESIS;
-        }
-        res += operand;
-        return status;
-    }
+	if (UnicodeLen == 0)
+		return (res);
+	for (fsize i = UnicodeLen - 1; i > 0; --i)
+		res += this->operator[](i);
+	res += this->operator[](0);
+	return (res);
 }
-
-double String::Evaluate(const char *expr)
-{
-    double res = 0;
-    FEvalExpr::EEvalExprCode code = FEvalExpr::Operation(&expr, res, false);
-
-    switch (code)
-    {
-    case FEvalExpr::EVAL_EXPR_DIVIDE_ZERO:
-        throw EvalException("Division by zero");
-    case FEvalExpr::EVAL_EXPR_INVALID_NUMBER:
-        throw EvalException("Number expected");
-    case FEvalExpr::EVAL_EXPR_MODULO_ZERO:
-        throw EvalException("Modulo by zero");
-    case FEvalExpr::EVAL_EXPR_SYNTHAX_INCORRECT:
-        throw EvalException("Syntax error");
-    case FEvalExpr::EVAL_EXPR_PARENTHESIS:
-        throw EvalException("Missing parenthesis");
-    default:
-        return (res);
-    }
-}
-/* END Eval expr */
 
 String String::ValueOf(fint i)
 {
-    std::stringstream    strs;
+    std::stringstream strs;
 
     strs << i;
     return (String(strs.str().c_str()));
@@ -964,7 +745,7 @@ String String::ValueOf(fint i)
 
 String String::ValueOf(uint32 i)
 {
-    std::stringstream    strs;
+    std::stringstream strs;
 
     strs << i;
     return (String(strs.str().c_str()));
@@ -972,7 +753,7 @@ String String::ValueOf(uint32 i)
 
 String String::ValueOf(uint64 i)
 {
-    std::stringstream    strs;
+    std::stringstream strs;
 
     strs << i;
     return (String(strs.str().c_str()));
@@ -980,7 +761,7 @@ String String::ValueOf(uint64 i)
 
 String String::ValueOf(int64 i)
 {
-    std::stringstream    strs;
+    std::stringstream strs;
 
     strs << i;
     return (String(strs.str().c_str()));
@@ -988,7 +769,7 @@ String String::ValueOf(int64 i)
 
 String String::ValueOf(float f)
 {
-    std::stringstream    strs;
+    std::stringstream strs;
 
     strs << f;
     return (String(strs.str().c_str()));
@@ -996,7 +777,7 @@ String String::ValueOf(float f)
 
 String String::ValueOf(double d)
 {
-    std::stringstream    strs;
+    std::stringstream strs;
 
     strs << d;
     return (String(strs.str().c_str()));
@@ -1004,7 +785,7 @@ String String::ValueOf(double d)
 
 String String::ValueOf(void *ptr)
 {
-    std::stringstream    strs;
+    std::stringstream strs;
 
     strs << std::hex << (uintptr)ptr;
     return (strs.str().c_str());

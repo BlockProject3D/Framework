@@ -29,55 +29,62 @@
 #include <cassert>
 #include <iostream>
 #include <gtest/gtest.h>
-#include <Framework/IO/FileStream.hpp>
-#include <Framework/IO/IOException.hpp>
-#include <Framework/Memory/Memory.hpp>
+#include <Framework/BaseConvert.hpp>
 
-TEST(FileStream, OpenExcept)
+TEST(BaseConvert, FromStringBin)
 {
-    try
-    {
-        bpf::FileStream stream(bpf::File("./doesnotexist.txt"), bpf::FILE_MODE_READ);
-    }
-    catch (const bpf::IOException &)
-    {
-        return;
-    }
-    ASSERT_TRUE(false);
+	bpf::BaseConvert<bpf::fint> bin("01");
+
+	EXPECT_EQ(bin.FromString("111"), 7);
+	EXPECT_EQ(bin.FromString("110"), 6);
+	EXPECT_EQ(bin.FromString("101"), 5);
+	EXPECT_EQ(bin.FromString("100"), 4);
+	EXPECT_EQ(bin.FromString("011"), 3);
+	EXPECT_EQ(bin.FromString("010"), 2);
+	EXPECT_EQ(bin.FromString("001"), 1);
+	EXPECT_EQ(bin.FromString("000"), 0);
 }
 
-static void Test_OpenExcept_MemLeak()
+TEST(BaseConvert, FromStringHex)
 {
-    try
-    {
-        bpf::FileStream stream(bpf::File("./doesnotexist.txt"), bpf::FILE_MODE_READ);
-    }
-    catch (const bpf::IOException &)
-    {
-        return;
-    }
-    ASSERT_TRUE(false);
+	bpf::BaseConvert<bpf::fint> hex("0123456789ABCDEF");
+
+	EXPECT_EQ(hex.FromString("100"), 256);
+	EXPECT_EQ(hex.FromString("FF"), 255);
+	EXPECT_EQ(hex.FromString("0"), 0);
+	EXPECT_EQ(hex.FromString("A"), 10);
+	EXPECT_EQ(hex.FromString("F"), 15);
+	EXPECT_EQ(hex.FromString("B"), 11);
+	EXPECT_EQ(hex.FromString("2"), 2);
+	EXPECT_EQ(hex.FromString("5"), 5);
+	EXPECT_EQ(hex.FromString("AF"), 175);
 }
 
-TEST(FileStream, OpenExcept_MemLeak)
+TEST(BaseConvert, ToStringBin)
 {
-    bpf::fsize cur = bpf::Memory::GetAllocCount();
+	bpf::BaseConvert<bpf::fint> bin("01");
 
-    Test_OpenExcept_MemLeak();
-    EXPECT_EQ(cur, bpf::Memory::GetAllocCount());
+	EXPECT_STREQ(*bin.ToString(7), "111");
+	EXPECT_STREQ(*bin.ToString(6), "110");
+	EXPECT_STREQ(*bin.ToString(5), "101");
+	EXPECT_STREQ(*bin.ToString(4), "100");
+	EXPECT_STREQ(*bin.ToString(3), "11");
+	EXPECT_STREQ(*bin.ToString(2), "10");
+	EXPECT_STREQ(*bin.ToString(1), "1");
+	EXPECT_STREQ(*bin.ToString(0), "0");
 }
 
-TEST(FileStream, Open)
+TEST(BaseConvert, ToStringHex)
 {
-    bpf::File f("./doesnotexist.txt");
-    bpf::FileStream stream(f, bpf::FILE_MODE_WRITE | bpf::FILE_MODE_TRUNCATE);
-    EXPECT_EQ(stream.Write("This is a test", 14), (bpf::fsize)14);
-    stream.Close();
-    bpf::FileStream stream1(f, bpf::FILE_MODE_READ);
-    char buf[15];
-    EXPECT_EQ(stream1.Read(buf, 14), (bpf::fsize)14);
-    buf[14] = '\0';
-    EXPECT_STREQ(buf, "This is a test");
-    stream1.Close();
-    f.Delete();
+	bpf::BaseConvert<bpf::fint> bin("0123456789ABCDEF");
+
+	EXPECT_STREQ(*bin.ToString(256), "100");
+	EXPECT_STREQ(*bin.ToString(255), "FF");
+	EXPECT_STREQ(*bin.ToString(0), "0");
+	EXPECT_STREQ(*bin.ToString(10), "A");
+	EXPECT_STREQ(*bin.ToString(15), "F");
+	EXPECT_STREQ(*bin.ToString(11), "B");
+	EXPECT_STREQ(*bin.ToString(2), "2");
+	EXPECT_STREQ(*bin.ToString(5), "5");
+	EXPECT_STREQ(*bin.ToString(175), "AF");
 }

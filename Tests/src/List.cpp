@@ -31,6 +31,8 @@
 #include <gtest/gtest.h>
 #include <Framework/List.hpp>
 #include <Framework/String.hpp>
+#include <Framework/Stringifier.Container.hpp>
+#include <Framework/Memory/Memory.hpp>
 
 TEST(List, Creation)
 {
@@ -95,4 +97,92 @@ TEST(List, IterateBackward_Test2)
     for (auto &i : bpf::Reverse(lst))
         res += i;
     EXPECT_STREQ(*res, "edcba");
+}
+
+TEST(List, ReadWrite_NonCopy)
+{
+    bpf::List<bpf::UniquePtr<int>> lst;
+
+    lst.Add(bpf::MakeUnique<int>(32));
+    for (auto &it : lst)
+        EXPECT_EQ(*it, 32);
+    EXPECT_EQ(*lst[0], 32);
+    *lst[0] = 42;
+    EXPECT_EQ(*lst[0], 42);
+}
+
+static void Test_ReadWrite_NonCopy_MemLeak()
+{
+    bpf::List<bpf::UniquePtr<int>> lst;
+
+    lst.Add(bpf::MakeUnique<int>(32));
+    for (auto &it : lst)
+        EXPECT_EQ(*it, 32);
+    EXPECT_EQ(*lst[0], 32);
+}
+
+TEST(List, ReadWrite_NonCopy_MemLeak)
+{
+    bpf::fsize cur = bpf::Memory::GetAllocCount();
+
+    Test_ReadWrite_NonCopy_MemLeak();
+    EXPECT_EQ(cur, bpf::Memory::GetAllocCount());
+}
+
+TEST(List, Swap_1)
+{
+	bpf::List<int> lst;
+
+	lst.Add(0);
+	lst.Add(3);
+	lst.Add(7);
+	lst.Swap(lst.First(), lst.Last());
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[7, 3, 0]");
+}
+
+TEST(List, Swap_2)
+{
+	bpf::List<int> lst;
+
+	lst.Add(0);
+	lst.Add(3);
+	lst.Add(7);
+	lst.Swap(lst.First()->Next, lst.Last());
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 7, 3]");
+}
+
+TEST(List, Swap_3)
+{
+	bpf::List<int> lst;
+
+	lst.Add(0);
+	lst.Add(7);
+	lst.Swap(lst.First(), lst.Last());
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[7, 0]");
+}
+
+TEST(List, Swap_4)
+{
+	bpf::List<bpf::UniquePtr<int>> lst;
+
+	lst.Add(bpf::MakeUnique<int>(0));
+	lst.Add(bpf::MakeUnique<int>(7));
+	lst.Swap(lst.First(), lst.Last());
+}
+
+TEST(List, Sort_1)
+{
+	bpf::List<int> lst;
+
+	lst.Add(0);
+	lst.Add(7);
+	lst.Add(3);
+	lst.Add(9);
+	lst.Add(1);
+	lst.Add(-67);
+	lst.Add(-1);
+	lst.Add(-5);
+	lst.Add(0);
+	lst.Sort();
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[-67, -5, -1, 0, 0, 1, 3, 7, 9]");
 }

@@ -33,6 +33,7 @@
 #include "Framework/System/Module.hpp"
 #include "Framework/System/IModuleInterface.hpp"
 #include "Framework/Map.hpp"
+#include "Framework/List.hpp"
 
 # ifdef WINDOWS
 #  define IMPLEMENT_MODULE(name, clname) \

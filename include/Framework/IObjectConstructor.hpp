@@ -27,53 +27,53 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Types.hpp"
 #include "Framework/String.hpp"
-#include "Framework/Stack.hpp"
-#include "Framework/Array.hpp"
-#include "Framework/Map.hpp"
-
-# ifdef BUILD_DEBUG
-#  define PROFILER_PUSH_SECTION(name) Framework::FProfiler::PushSection(name)
-#  define PROFILER_POP_SECTION() Framework::FProfiler::PopSection()
-# else
-#  define PROFILER_PUSH_SECTION(name)
-#  define PROFILER_POP_SECTION()
-# endif
+#include "Framework/Memory/Memory.hpp"
 
 namespace bpf
 {
-    struct BPF_API ProfilerSection
+    /**
+     * Constructor abstraction
+     * @tparam T the type of parent to generate
+     * @tparam Args the arguments to pass to the constructor
+     */
+    template <class /* ? extends */ T, typename ...Args>
+    class BPF_API IObjectConstructor
     {
-        String Name;
-        long long Time; //In micro seconds
-        fint Pos;
-        uint32 CreationID;
-    };
-
-    class BPF_API Profiler
-    {
-    private:
-        uint32 CurCreationID;
-        Map<String, ProfilerSection> _map;
-        Stack<ProfilerSection> _stack = Stack<ProfilerSection>(32);
-
-        void Push(const String &name);
-        void Pop();
-        Profiler();
-
     public:
-        static Profiler &Instance();
-        Array<ProfilerSection> GenDisplayList();
-        
-        inline static void PushSection(const String &name)
-        {
-            Instance().Push(name);
-        }
+        virtual ~IObjectConstructor() {}
 
-        inline static void PopSection()
+        virtual const String &GetName() const noexcept = 0;
+        virtual UniquePtr<T> MakeUnique(Args &&... args) const = 0;
+        virtual SharedPtr<T> MakeShared(Args &&... args) const = 0;
+    };
+
+    template <class Class, class Parent, typename ...Args>
+    class BPF_API SimpleObjectConstructor : public IObjectConstructor<Parent, Args...>
+    {
+    public:
+        virtual const String &GetName() const noexcept = 0;
+
+        inline UniquePtr<Parent> MakeUnique(Args &&... args) const
         {
-            Instance().Pop();
+            return (bpf::MakeUnique<Class>(std::forward<Args>(args)...));
+        }
+        inline SharedPtr<Parent> MakeShared(Args &&... args) const
+        {
+            return (bpf::MakeShared<Class>(std::forward<Args>(args)...));
         }
     };
-};
+}
+
+#define MAP_CONSTRUCTOR(Name, Parent, Class, ...) \
+    class Name final : public bpf::SimpleObjectConstructor<Class, Parent, ##__VA_ARGS__> \
+    { \
+    private: \
+        bpf::String _name; \
+    public:\
+        Name() : _name(#Class"::"#Name) {} \
+        const bpf::String &GetName() const noexcept \
+        { \
+            return (_name); \
+        } \
+    }; \

@@ -32,6 +32,41 @@
 #include <Framework/IO/FileStream.hpp>
 #include <Framework/IO/IOException.hpp>
 #include <Framework/IO/MemoryMapper.hpp>
+#include <Framework/Memory/Memory.hpp>
+
+TEST(MemoryMapper, OpenExcept)
+{
+    try
+    {
+        bpf::MemoryMapper mapper(bpf::File("./doesnotexist.txt"), bpf::FILE_MODE_READ);
+    }
+    catch (const bpf::IOException &)
+    {
+        return;
+    }
+    ASSERT_TRUE(false);
+}
+
+static void Test_OpenExcept_MemLeak()
+{
+    try
+    {
+        bpf::MemoryMapper mapper(bpf::File("./doesnotexist.txt"), bpf::FILE_MODE_READ);
+    }
+    catch (const bpf::IOException &)
+    {
+        return;
+    }
+    ASSERT_TRUE(false);
+}
+
+TEST(MemoryMapper, OpenExcept_MemLeak)
+{
+    bpf::fsize cur = bpf::Memory::GetAllocCount();
+
+    Test_OpenExcept_MemLeak();
+    EXPECT_EQ(cur, bpf::Memory::GetAllocCount());
+}
 
 static void SetupTestFile(bpf::File &f)
 {
