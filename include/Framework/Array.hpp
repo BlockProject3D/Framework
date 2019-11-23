@@ -147,6 +147,16 @@ namespace bpf
             return (I);
         }
 
+		inline T& First()
+		{
+			return (_arr[0]);
+		}
+
+		inline T& Last()
+		{
+			return (_arr[I - 1]);
+		}
+
         inline const T *operator*() const
         {
             return (_arr);
@@ -323,6 +333,20 @@ namespace bpf
          * @param id the index of the element, in case of out of bounds, re-sizes the array
          */
         T &operator[](const fsize id);
+
+		inline T& First()
+		{
+			if (_arr == Null || _size == 0)
+				throw IndexException(0);
+			return (_arr[0]);
+		}
+
+		inline T& Last()
+		{
+			if (_arr == Null || _size == 0)
+				throw IndexException(0);
+			return (_arr[_size - 1]);
+		}
 
         /**
          * Returns the length of the array

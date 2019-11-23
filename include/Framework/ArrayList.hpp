@@ -70,6 +70,18 @@ namespace bpf
 			return (*this);
 		}
 
+		inline T& First()
+		{
+			return (_arr.First());
+		}
+
+		inline T& Last()
+		{
+			if (_curid == 0)
+				throw IndexException(0);
+			return (_arr[_curid]);
+		}
+
 		inline T &operator[](const fsize id) const
 		{
 			if (id >= _curid)

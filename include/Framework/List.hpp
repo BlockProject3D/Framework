@@ -175,6 +175,20 @@ namespace bpf
 
 		ListNode<T> *LastNode() const;
 
+		inline T &First()
+		{
+			if (FirstNode() == Null)
+				throw IndexException(0);
+			return (FirstNode()->Data);
+		}
+
+		inline T& Last()
+		{
+			if (LastNode() == Null)
+				throw IndexException(0);
+			return (LastNode()->Data);
+		}
+
         fsize Size() const;
 
         void Clear();

@@ -46,6 +46,20 @@ TEST(List, Creation)
 	EXPECT_EQ(lst[2], 7);
 }
 
+TEST(List, FirstLast)
+{
+	bpf::List<int> lst;
+
+	lst.Add(0);
+	lst.Add(3);
+	lst.Add(7);
+	EXPECT_EQ(lst.First(), 0);
+	EXPECT_EQ(lst.Last(), 7);
+	lst.Clear();
+	EXPECT_THROW(lst.First(), bpf::IndexException);
+	EXPECT_THROW(lst.Last(), bpf::IndexException);
+}
+
 TEST(List, Copy)
 {
 	bpf::List<int> lst;

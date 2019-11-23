@@ -54,18 +54,18 @@ namespace bpf
             return (Content[CurPtr + 1 + id]);
         }
 
-        inline T *GetLast() const
+        inline T &Last() const
         {
-            if (Size() <= 0)
-                return (nullptr);
-            return (&Content[CurPtr + 1]);
+			if (Size() <= 0)
+				throw IndexException(0);
+            return (Content[CurPtr + 1]);
         }
 
-        inline T *GetFirst() const
+        inline T &First() const
         {
-            if (Size() <= 0)
-                return (nullptr);
-            return (&Content[0]);
+			if (Size() <= 0)
+				throw IndexException(0);
+            return (Content[0]);
         }
 
         inline fsize Size() const

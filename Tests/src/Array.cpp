@@ -45,6 +45,17 @@ TEST(Array, Init)
 	EXPECT_EQ(arr[2], 6);
 }
 
+TEST(Array, FirstLast)
+{
+	auto arr = bpf::Array<int>(3);
+
+	arr[0] = 1;
+	arr[1] = 3;
+	arr[2] = 6;
+	EXPECT_EQ(arr.First(), 1);
+	EXPECT_EQ(arr.Last(), 6);
+}
+
 TEST(Array, Copy)
 {
 	auto arr = bpf::Array<int>(3);
