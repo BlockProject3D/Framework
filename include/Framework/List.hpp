@@ -115,8 +115,12 @@ namespace bpf
         void RemoveNode(ListNode<T> *toRM);
     public:
         List<T>();
+		List<T>(const List<T> &other);
         List<T>(List<T> &&other);
         ~List<T>();
+
+		List<T> &operator=(List<T> &&other);
+		List<T> &operator=(const List<T> &other);
 
         /**
          * Adds an element at the end of the list
@@ -167,9 +171,9 @@ namespace bpf
 
 		void Swap(ListNode<T>* a, ListNode<T>* b);
 
-        ListNode<T> *First() const;
+        ListNode<T> *FirstNode() const;
 
-		ListNode<T> *Last() const;
+		ListNode<T> *LastNode() const;
 
         fsize Size() const;
 

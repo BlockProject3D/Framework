@@ -45,6 +45,40 @@ TEST(Array, Init)
 	EXPECT_EQ(arr[2], 6);
 }
 
+TEST(Array, Copy)
+{
+	auto arr = bpf::Array<int>(3);
+
+	arr[0] = 1;
+	arr[1] = 3;
+	arr[2] = 6;
+	EXPECT_EQ(arr[0], 1);
+	EXPECT_EQ(arr[1], 3);
+	EXPECT_EQ(arr[2], 6);
+	auto copy = arr;
+	EXPECT_EQ(copy[0], 1);
+	EXPECT_EQ(copy[1], 3);
+	EXPECT_EQ(copy[2], 6);
+}
+
+TEST(Array, Move)
+{
+	auto arr = bpf::Array<int>(3);
+
+	arr[0] = 1;
+	arr[1] = 3;
+	arr[2] = 6;
+	EXPECT_EQ(arr[0], 1);
+	EXPECT_EQ(arr[1], 3);
+	EXPECT_EQ(arr[2], 6);
+	auto mv = std::move(arr);
+	EXPECT_EQ(mv[0], 1);
+	EXPECT_EQ(mv[1], 3);
+	EXPECT_EQ(mv[2], 6);
+	EXPECT_EQ(arr.Size(), 0);
+	EXPECT_EQ(arr.Release(), Null);
+}
+
 TEST(Array, Realloc)
 {
 	auto arr = bpf::Array<int>(3);

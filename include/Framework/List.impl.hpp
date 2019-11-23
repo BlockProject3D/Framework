@@ -49,11 +49,43 @@ namespace bpf
         other._count = 0;
     }
 
+	template <typename T>
+	List<T>::List(const List<T> &other)
+		: _first(Null)
+		, _last(Null)
+		, _count(0)
+	{
+		for (auto &elem : other)
+			Add(elem);
+	}
+
     template <typename T>
     inline List<T>::~List()
     {
-        this->Clear();
+        Clear();
     }
+
+	template <typename T>
+	List<T> &List<T>::operator=(List<T> &&other)
+	{
+		Clear();
+		_first = other._first;
+		_last = other._last;
+		_count = other._count;
+		other._first = Null;
+		other._last = Null;
+		other._count = 0;
+		return (*this);
+	}
+
+	template <typename T>
+	List<T> &List<T>::operator=(const List<T> &other)
+	{
+		Clear();
+		for (auto &elem : other)
+			Add(elem);
+		return (*this);
+	}
 
     template <typename T>
     void List<T>::Insert(const T &elem, fsize pos)
@@ -224,13 +256,13 @@ namespace bpf
     }
 
     template <typename T>
-    inline ListNode<T> *List<T>::First() const
+    inline ListNode<T> *List<T>::FirstNode() const
     {
         return (_first);
     }
 
     template <typename T>
-    inline ListNode<T> *List<T>::Last() const
+    inline ListNode<T> *List<T>::LastNode() const
     {
         return (_last);
     }

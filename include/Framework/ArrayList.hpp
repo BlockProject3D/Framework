@@ -44,28 +44,66 @@ namespace bpf
         {
         }
 
+		inline ArrayList(const ArrayList<T> &other)
+			: _curid(other._curid), _arr(other._arr)
+		{
+		}
+
+		inline ArrayList(ArrayList<T> &&other)
+			: _curid(other._curid), _arr(std::move(other._arr))
+		{
+			other._curid = 0;
+		}
+
+		inline ArrayList<T> &operator=(const ArrayList<T> &other)
+		{
+			_curid = other._curid;
+			_arr = other._arr;
+			return (*this);
+		}
+
+		inline ArrayList<T> &operator=(ArrayList<T> &&other)
+		{
+			_curid = other._curid;
+			_arr = std::move(other._arr);
+			other._curid = 0;
+			return (*this);
+		}
+
+		inline T &operator[](const fsize id) const
+		{
+			if (id >= _curid)
+				throw IndexException(static_cast<fisize>(id));
+			return (_arr[id]);
+		}
+
         inline void Add(const T &elem)
         {
             _arr[_curid++] = elem;
         }
 
+		inline void Add(T &&elem)
+		{
+			_arr[_curid++] = std::move(elem);
+		}
+
+		void Insert(const T& elem, const fsize pos);
+		
+		void Insert(T&& elem, const fsize pos);
+
         void RemoveAt(const fsize id);
         
         void Remove(const T &elem, const bool all = true);
-        
-        inline T *GetLast() const
-        {
-            return (_curid == 0 ? Null : &_arr[_curid]);
-        }
 
-        inline T *GetFirst() const
-        {
-            return (_curid == 0 ? Null : &_arr[0]);
-        }
+		inline void Clear()
+		{
+			while (Size() > 0)
+				RemoveLast();
+		}
 
         inline void RemoveLast()
         {
-            Remove(_curid);
+            RemoveAt(_curid);
         }
         
         inline fsize Size() const

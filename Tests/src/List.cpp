@@ -41,6 +41,41 @@ TEST(List, Creation)
     lst.Add(0);
     lst.Add(3);
     lst.Add(7);
+	EXPECT_EQ(lst[0], 0);
+	EXPECT_EQ(lst[1], 3);
+	EXPECT_EQ(lst[2], 7);
+}
+
+TEST(List, Copy)
+{
+	bpf::List<int> lst;
+
+	lst.Add(0);
+	lst.Add(3);
+	lst.Add(7);
+	auto copy = lst;
+	EXPECT_EQ(lst[0], 0);
+	EXPECT_EQ(lst[1], 3);
+	EXPECT_EQ(lst[2], 7);
+	EXPECT_EQ(copy[0], 0);
+	EXPECT_EQ(copy[1], 3);
+	EXPECT_EQ(copy[2], 7);
+}
+
+TEST(List, Move)
+{
+	bpf::List<int> lst;
+
+	lst.Add(0);
+	lst.Add(3);
+	lst.Add(7);
+	auto mv = std::move(lst);
+	EXPECT_EQ(mv[0], 0);
+	EXPECT_EQ(mv[1], 3);
+	EXPECT_EQ(mv[2], 7);
+	EXPECT_EQ(lst.Size(), 0);
+	EXPECT_EQ(lst.FirstNode(), Null);
+	EXPECT_EQ(lst.LastNode(), Null);
 }
 
 TEST(List, IterateForward_Test1)
@@ -136,7 +171,7 @@ TEST(List, Swap_1)
 	lst.Add(0);
 	lst.Add(3);
 	lst.Add(7);
-	lst.Swap(lst.First(), lst.Last());
+	lst.Swap(lst.FirstNode(), lst.LastNode());
 	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[7, 3, 0]");
 }
 
@@ -147,7 +182,7 @@ TEST(List, Swap_2)
 	lst.Add(0);
 	lst.Add(3);
 	lst.Add(7);
-	lst.Swap(lst.First()->Next, lst.Last());
+	lst.Swap(lst.FirstNode()->Next, lst.LastNode());
 	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 7, 3]");
 }
 
@@ -157,7 +192,7 @@ TEST(List, Swap_3)
 
 	lst.Add(0);
 	lst.Add(7);
-	lst.Swap(lst.First(), lst.Last());
+	lst.Swap(lst.FirstNode(), lst.LastNode());
 	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[7, 0]");
 }
 
@@ -167,7 +202,7 @@ TEST(List, Swap_4)
 
 	lst.Add(bpf::MakeUnique<int>(0));
 	lst.Add(bpf::MakeUnique<int>(7));
-	lst.Swap(lst.First(), lst.Last());
+	lst.Swap(lst.FirstNode(), lst.LastNode());
 }
 
 TEST(List, Sort_1)

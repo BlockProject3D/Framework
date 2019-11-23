@@ -47,6 +47,19 @@ namespace bpf
         arr._size = 0;
     }
 
+	template <typename T>
+	Array<T>::Array(const Array<T> &arr)
+		: _size(arr._size)
+		, _arr(Null)
+	{
+		if (_size > 0)
+		{
+			_arr = new T[_size];
+			for (fsize i = 0; i < _size; ++i)
+				_arr[i] = arr[i];
+		}
+	}
+
     template <typename T>
     Array<T>::Array(const fsize size)
         : _size(size)
@@ -55,7 +68,7 @@ namespace bpf
         if (size > 0)
         {
             _arr = new T[_size];
-            for (uint32 i = 0 ; i < _size ; ++i)
+            for (fsize i = 0 ; i < _size ; ++i)
                 _arr[i] = DefaultOf<T>();
         }
     }
@@ -63,12 +76,24 @@ namespace bpf
     template <typename T>
     Array<T> &Array<T>::operator=(Array<T> &&arr)
     {
+		delete[] _arr;
         _size = arr._size;
         _arr = arr._arr;
         arr._arr = Null;
         arr._size = 0;
         return (*this);
     }
+
+	template <typename T>
+	Array<T> &Array<T>::operator=(const Array<T> &arr)
+	{
+		delete[] _arr;
+		_size = arr._size;
+		_arr = new T[_size];
+		for (fsize i = 0; i < _size; ++i)
+			_arr[i] = arr[i];
+		return (*this);
+	}
 
     template <typename T>
     inline Array<T>::~Array()
@@ -80,7 +105,7 @@ namespace bpf
     inline T &Array<T>::operator[](const fsize id) const
     {
         if (id >= _size)
-            throw IndexException(static_cast<int>(id));
+            throw IndexException(static_cast<fisize>(id));
         return (_arr[id]);
     }
 

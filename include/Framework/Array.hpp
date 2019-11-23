@@ -36,9 +36,90 @@ namespace bpf
     template <typename T, fsize I = 0>
     class BP_TPL_API Array
     {
+	public:
+		class BP_TPL_API Iterator final : public IIterator<typename Array<T>::Iterator, T>
+		{
+		private:
+			fsize _curid;
+			fsize _max;
+			T* _arr;
+
+		public:
+			inline Iterator(T* lowlevel, const fsize size, const fsize start)
+				: _curid(start), _max(size), _arr(lowlevel)
+			{
+			}
+			inline void operator++()
+			{
+				if (_curid < _max)
+					_curid++;
+			}
+			inline void operator--()
+			{
+				if (_curid > 0)
+					_curid--;
+			}
+			inline const T& operator*() const
+			{
+				return (_arr[_curid]);
+			}
+			inline const T* operator->() const
+			{
+				return (&_arr[_curid]);
+			}
+			inline bool operator==(const Iterator& other) const
+			{
+				return (_curid == other._curid);
+			}
+			inline bool operator!=(const Iterator& other) const
+			{
+				return (_curid != other._curid);
+			}
+		};
+
+		class BP_TPL_API ReverseIterator final : public IIterator<typename Array<T>::Iterator, T>
+		{
+		private:
+			fsize _curid;
+			fsize _max;
+			T* _arr;
+
+		public:
+			inline ReverseIterator(T* lowlevel, const fsize size, const fsize start)
+				: _curid(start), _max(size), _arr(lowlevel)
+			{
+			}
+			inline void operator++()
+			{
+				if (_curid > (fsize)-1)
+					_curid--;
+			}
+			inline void operator--()
+			{
+				if (_curid < _max)
+					_curid++;
+			}
+			inline const T& operator*() const
+			{
+				return (_arr[_curid]);
+			}
+			inline const T* operator->() const
+			{
+				return (&_arr[_curid]);
+			}
+			inline bool operator==(const Iterator& other) const
+			{
+				return (_curid == other._curid);
+			}
+			inline bool operator!=(const Iterator& other) const
+			{
+				return (_curid != other._curid);
+			}
+		};
+
     private:
         T _arr[I];
-        
+
     public:
         inline Array()
         {
@@ -77,16 +158,48 @@ namespace bpf
         inline T &operator[](const fsize id) const
         {
             if (id >= I)
-                throw IndexException(static_cast<int>(id));
+                throw IndexException(static_cast<fisize>(id));
             return (_arr[id]);
         }
         
         inline T &operator[](const fsize id)
         {
             if (id >= I)
-                throw IndexException(static_cast<int>(id));
+                throw IndexException(static_cast<fisize>(id));
             return (_arr[id]);
         }
+
+		/**
+		 * Returns an iterator to the begining of the array
+		 */
+		inline Iterator begin() const
+		{
+			return (Iterator(_arr, _size, 0));
+		}
+
+		/**
+		 * Returns an iterator to the end of the array
+		 */
+		inline Iterator end() const
+		{
+			return (Iterator(_arr, _size, _size));
+		}
+
+		/**
+		 * Returns a reverse iterator to the begining of the array
+		 */
+		inline ReverseIterator rbegin() const
+		{
+			return (ReverseIterator(_arr, _size, _size - 1));
+		}
+
+		/**
+		 * Returns a reverse iterator to the end of the array
+		 */
+		inline ReverseIterator rend() const
+		{
+			return (ReverseIterator(_arr, _size, (fsize)-1));
+		}
     };
     
     template <typename T>
@@ -187,11 +300,13 @@ namespace bpf
          * Constructs an array of given size
          * @param size the size of the new array
          */
-        Array(const fsize size);
-
+        explicit Array(const fsize size);
         Array(Array<T> &&arr);
-        ~Array();
-        Array<T> &operator=(Array<T> &&arr);
+		Array(const Array<T> &arr);
+		~Array();
+
+		Array<T> &operator=(Array<T> &&arr);
+		Array<T> &operator=(const Array<T> &arr);
 
         /**
          * Returns an element const mode
