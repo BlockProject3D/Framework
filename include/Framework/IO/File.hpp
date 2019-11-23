@@ -28,6 +28,7 @@
 
 #pragma once
 #include "Framework/String.hpp"
+#include "Framework/List.hpp"
 
 namespace bpf
 {
@@ -130,7 +131,5 @@ namespace bpf
         {
             return (FileExt);
         }
-
-        String ToString() const;
     };
 };

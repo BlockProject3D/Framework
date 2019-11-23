@@ -31,7 +31,7 @@
 #include <gtest/gtest.h>
 #include <Framework/List.hpp>
 #include <Framework/String.hpp>
-#include <Framework/Stringifier.hpp>
+#include <Framework/Stringifier.Container.hpp>
 #include <Framework/Memory/Memory.hpp>
 
 TEST(List, Creation)

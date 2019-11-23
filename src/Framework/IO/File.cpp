@@ -275,8 +275,3 @@ void File::CreateDir()
     mkdir(*FullPath, 0755);
 #endif
 }
-
-bpf::String File::ToString() const
-{
-    return (bpf::String("File(") + FullPath + ")");
-}

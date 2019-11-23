@@ -232,15 +232,6 @@ DateTime DateTime::ToLocalTime() const
     return (res);
 }
 
-String DateTime::ToString() const
-{
-    return (GetDayName() + " "
-            + GetMonthName() + " "
-            + GetDay() + " "
-            + GetYear() + " "
-            + GetHours() + ":" + GetMinutes() + ":" + GetSeconds());
-}
-
 DateTime DateTime::UTCTime()
 {
     DateTime res;

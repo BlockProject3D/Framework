@@ -30,7 +30,8 @@
 #include <iostream>
 #include <gtest/gtest.h>
 #include <Framework/String.hpp>
-#include <Framework/Array.hpp>
+#include <Framework/List.hpp>
+#include <Framework/Stringifier.Container.hpp>
 
 TEST(String, Create)
 {

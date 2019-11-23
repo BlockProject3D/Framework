@@ -94,7 +94,6 @@ namespace bpf
         bool operator!=(const DateTime &other) const;
         void operator+=(const DateTime &other);
         void operator-=(const DateTime &other);
-        String ToString() const;
         DateTime ToUTCTime() const;
         DateTime ToLocalTime() const;
 

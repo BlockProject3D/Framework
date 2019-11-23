@@ -27,73 +27,58 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/String.hpp"
 #include "Framework/Array.hpp"
+#include "Framework/List.hpp"
+#include "Framework/ArrayList.hpp"
 
 namespace bpf
 {
-    template <typename T>
-    class BP_TPL_API ArrayList
+    template <typename T, fsize I>
+    class String::Stringifier<Array<T, I>>
     {
-    private:
-        fsize _curid;
-        Array<T> _arr;
-
     public:
-        inline ArrayList()
-            : _curid(0), _arr(16)
+        inline static String Stringify(const Array<T, I> &arr)
         {
-        }
+            String res = "[";
 
-        inline void Add(const T &elem)
-        {
-            _arr[_curid++] = elem;
-        }
-
-        void RemoveAt(const fsize id);
-        
-        void Remove(const T &elem, const bool all = true);
-        
-        inline T *GetLast() const
-        {
-            return (_curid == 0 ? Null : &_arr[_curid]);
-        }
-
-        inline T *GetFirst() const
-        {
-            return (_curid == 0 ? Null : &_arr[0]);
-        }
-
-        inline void RemoveLast()
-        {
-            Remove(_curid);
-        }
-        
-        inline fsize Size() const
-        {
-            return (_curid);
-        }
-
-		inline const Array<T> &ToArray() const
-		{
-			return (_arr);
-		}
-
-        /**
-         * Returns an iterator to the begining of the array
-         */
-        inline typename Array<T>::Iterator Begin() const
-        {
-            return (typename Array<T>::Iterator(*_arr, _curid, 0));
-        }
-
-        /**
-         * Returns an iterator to the end of the array
-         */
-        inline typename Array<T>::Iterator End() const
-        {
-            return (typename Array<T>::Iterator(*_arr, _curid, _curid));
+            for (uint32 i = 0; i < arr.Size(); ++i)
+            {
+                res += String::ValueOf(arr[i]);
+                if (i < arr.Size() - 1)
+                    res += ", ";
+            }
+            res += "]";
+            return (res);
         }
     };
-}
+    
+    template <typename T>
+    class String::Stringifier<List<T>>
+    {
+    public:
+        inline static String Stringify(const List<T> &lst)
+        {
+            String res = "[";
 
-#include "Framework/ArrayList.impl.hpp"
+            for (uint32 i = 0; i < lst.Size(); ++i)
+            {
+                res += String::ValueOf(lst[i]);
+                if (i < lst.Size() - 1)
+                    res += ", ";
+            }
+            res += "]";
+            return (res);
+        }
+    };
+
+	template <typename T>
+	class String::Stringifier<ArrayList<T>>
+	{
+	public:
+		inline static String Stringify(const ArrayList<T> &arr)
+		{
+			return (String::ValueOf(arr.ToArray()));
+		}
+	};
+}

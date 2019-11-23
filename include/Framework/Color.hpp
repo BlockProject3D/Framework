@@ -122,11 +122,6 @@ namespace bpf
             return (!(R == other.R && G == other.G && B == other.B && A == other.A));
         }
 
-        inline String ToString() const
-        {
-            return (String("Color(") + R + ", " + G + ", " + B + ", " + A + ")");
-        }
-
         /**
          * RED constant
          */

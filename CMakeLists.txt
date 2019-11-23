@@ -21,6 +21,7 @@ set(SOURCES
     ./include/Framework/IO/BinaryWriter.hpp
     ./include/Framework/IO/TextReader.hpp
     ./include/Framework/IO/TextWriter.hpp
+    ./include/Framework/IO/Stringifier.IO.hpp
     ./include/Framework/Math/Triangle.hpp
     ./include/Framework/Math/Vector.hpp
     ./include/Framework/Math/Vector2.hpp
@@ -67,6 +68,7 @@ set(SOURCES
     ./include/Framework/System/Mutex.hpp
     ./include/Framework/System/ThreadManager.hpp
     ./include/Framework/System/IModuleInterface.hpp
+    ./include/Framework/System/Stringifier.System.hpp
     ./include/Framework/API.hpp
     ./include/Framework/BinUtils.hpp
     ./include/Framework/Types.hpp
@@ -105,7 +107,8 @@ set(SOURCES
     ./include/Framework/BaseConvert.hpp
     ./include/Framework/BaseConvert.impl.hpp
     ./include/Framework/Scalar.hpp
-    ./include/Framework/Stringifier.hpp
+    ./include/Framework/Stringifier.Container.hpp
+    ./include/Framework/Stringifier.Base.hpp
     ./include/Framework/TreeNode.hpp
     ./include/Framework/ParseException.hpp
     ./src/Framework/IO/File.cpp

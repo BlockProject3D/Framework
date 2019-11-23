@@ -44,6 +44,13 @@ TEST(Int, Parse)
 	EXPECT_THROW(bpf::Int::Parse("64262727648623784326834632"), bpf::ParseException);
 }
 
+TEST(Int, TryParse)
+{
+	int res;
+	EXPECT_TRUE(bpf::Int::TryParse("42", res));
+	EXPECT_EQ(res, 42);
+}
+
 TEST(UInt, Parse)
 {
 	EXPECT_EQ(bpf::UInt::Parse("0"), 0U);
@@ -55,6 +62,13 @@ TEST(UInt, Parse)
 	EXPECT_THROW(bpf::UInt::Parse("4.2"), bpf::ParseException);
 	EXPECT_THROW(bpf::UInt::Parse("-64262727648623784326834632"), bpf::ParseException);
 	EXPECT_THROW(bpf::UInt::Parse("64262727648623784326834632"), bpf::ParseException);
+}
+
+TEST(UInt, TryParse)
+{
+	bpf::uint32 res;
+	EXPECT_TRUE(bpf::UInt::TryParse("42", res));
+	EXPECT_EQ(res, 42U);
 }
 
 TEST(Int8, Parse)
@@ -71,6 +85,13 @@ TEST(Int8, Parse)
 	EXPECT_THROW(bpf::Int8::Parse("64262727648623784326834632"), bpf::ParseException);
 }
 
+TEST(Int8, TryParse)
+{
+	bpf::int8 res;
+	EXPECT_TRUE(bpf::Int8::TryParse("42", res));
+	EXPECT_EQ(res, 42);
+}
+
 TEST(UInt8, Parse)
 {
 	EXPECT_EQ(bpf::UInt8::Parse("42"), 42U);
@@ -83,6 +104,13 @@ TEST(UInt8, Parse)
 	EXPECT_THROW(bpf::UInt8::Parse("4.2"), bpf::ParseException);
 	EXPECT_THROW(bpf::UInt8::Parse("-64262727648623784326834632"), bpf::ParseException);
 	EXPECT_THROW(bpf::UInt8::Parse("64262727648623784326834632"), bpf::ParseException);
+}
+
+TEST(UInt8, TryParse)
+{
+	bpf::uint8 res;
+	EXPECT_TRUE(bpf::UInt8::TryParse("42", res));
+	EXPECT_EQ(res, 42);
 }
 
 TEST(Int16, Parse)
@@ -99,6 +127,13 @@ TEST(Int16, Parse)
 	EXPECT_THROW(bpf::Int16::Parse("64262727648623784326834632"), bpf::ParseException);
 }
 
+TEST(Int16, TryParse)
+{
+	bpf::int16 res;
+	EXPECT_TRUE(bpf::Int16::TryParse("42", res));
+	EXPECT_EQ(res, 42);
+}
+
 TEST(UInt16, Parse)
 {
 	EXPECT_EQ(bpf::UInt16::Parse("42"), 42U);
@@ -111,6 +146,13 @@ TEST(UInt16, Parse)
 	EXPECT_THROW(bpf::UInt16::Parse("4.2"), bpf::ParseException);
 	EXPECT_THROW(bpf::UInt16::Parse("-64262727648623784326834632"), bpf::ParseException);
 	EXPECT_THROW(bpf::UInt16::Parse("64262727648623784326834632"), bpf::ParseException);
+}
+
+TEST(UInt16, TryParse)
+{
+	bpf::uint16 res;
+	EXPECT_TRUE(bpf::UInt16::TryParse("42", res));
+	EXPECT_EQ(res, 42);
 }
 
 TEST(Int64, Parse)
@@ -127,6 +169,13 @@ TEST(Int64, Parse)
 	EXPECT_THROW(bpf::Int64::Parse("64262727648623784326834632"), bpf::ParseException);
 }
 
+TEST(Int64, TryParse)
+{
+	bpf::int64 res;
+	EXPECT_TRUE(bpf::Int64::TryParse("42", res));
+	EXPECT_EQ(res, 42);
+}
+
 TEST(UInt64, Parse)
 {
 	EXPECT_EQ(bpf::UInt64::Parse("42"), 42U);
@@ -139,6 +188,13 @@ TEST(UInt64, Parse)
 	EXPECT_THROW(bpf::UInt64::Parse("4.2"), bpf::ParseException);
 	EXPECT_THROW(bpf::UInt64::Parse("-64262727648623784326834632"), bpf::ParseException);
 	EXPECT_THROW(bpf::UInt64::Parse("64262727648623784326834632"), bpf::ParseException);
+}
+
+TEST(UInt64, TryParse)
+{
+	bpf::uint64 res;
+	EXPECT_TRUE(bpf::UInt64::TryParse("42", res));
+	EXPECT_EQ(res, 42);
 }
 
 TEST(Float, Parse)
@@ -155,6 +211,13 @@ TEST(Float, Parse)
 	EXPECT_LE(bpf::Float::Parse(bpf::String::ValueOf(bpf::Float::MinValue)) - bpf::Float::MinValue, 0.0000001f);
 }
 
+TEST(Float, TryParse)
+{
+	float res;
+	EXPECT_TRUE(bpf::Float::TryParse("42", res));
+	EXPECT_EQ(res, 42);
+}
+
 TEST(Double, Parse)
 {
 	EXPECT_EQ(bpf::Double::Parse("42"), 42);
@@ -167,4 +230,11 @@ TEST(Double, Parse)
 	EXPECT_EQ(bpf::Double::Parse("0.5"), 0.5);
 	EXPECT_LE(bpf::Double::Parse(bpf::String::ValueOf(bpf::Double::MaxValue)) - bpf::Double::MaxValue, 0.0000001);
 	EXPECT_LE(bpf::Double::Parse(bpf::String::ValueOf(bpf::Double::MinValue)) - bpf::Double::MinValue, 0.0000001);
+}
+
+TEST(Double, TryParse)
+{
+	float res;
+	EXPECT_TRUE(bpf::Float::TryParse("42", res));
+	EXPECT_EQ(res, 42);
 }

@@ -27,73 +27,18 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Array.hpp"
+#include "Framework/String.hpp"
+#include "Framework/IO/File.hpp"
 
 namespace bpf
 {
-    template <typename T>
-    class BP_TPL_API ArrayList
+    template <>
+    class String::Stringifier<File>
     {
-    private:
-        fsize _curid;
-        Array<T> _arr;
-
     public:
-        inline ArrayList()
-            : _curid(0), _arr(16)
+        inline static String Stringify(const File &f)
         {
-        }
-
-        inline void Add(const T &elem)
-        {
-            _arr[_curid++] = elem;
-        }
-
-        void RemoveAt(const fsize id);
-        
-        void Remove(const T &elem, const bool all = true);
-        
-        inline T *GetLast() const
-        {
-            return (_curid == 0 ? Null : &_arr[_curid]);
-        }
-
-        inline T *GetFirst() const
-        {
-            return (_curid == 0 ? Null : &_arr[0]);
-        }
-
-        inline void RemoveLast()
-        {
-            Remove(_curid);
-        }
-        
-        inline fsize Size() const
-        {
-            return (_curid);
-        }
-
-		inline const Array<T> &ToArray() const
-		{
-			return (_arr);
-		}
-
-        /**
-         * Returns an iterator to the begining of the array
-         */
-        inline typename Array<T>::Iterator Begin() const
-        {
-            return (typename Array<T>::Iterator(*_arr, _curid, 0));
-        }
-
-        /**
-         * Returns an iterator to the end of the array
-         */
-        inline typename Array<T>::Iterator End() const
-        {
-            return (typename Array<T>::Iterator(*_arr, _curid, _curid));
+			return (bpf::String("File(") + f.Path() + ")");
         }
     };
 }
-
-#include "Framework/ArrayList.impl.hpp"

@@ -35,11 +35,6 @@
 #include "Framework/IndexException.hpp"
 #include "Framework/API.hpp"
 
-//TODO : Remove ToString replace by Stringifier as it's more extendable
-
-//Needing some more tests:
-//Scalar types
-
 namespace bpf
 {
     class BPF_API String
@@ -59,10 +54,10 @@ namespace bpf
         class Stringifier
         {
         public:
-            inline static String Stringify(const T &obj)
-            {
-                return (obj.ToString());
-            }
+			inline static String Stringify(const T& obj)
+			{
+				return (obj);
+			}
         };
 
         /**
@@ -418,11 +413,6 @@ namespace bpf
             }
         }
 
-        inline String ToString() const
-        {
-            return (*this);
-        }
-
         /**
          * Converts any object to it's string representation by calling ToString on it
          */
@@ -533,4 +523,3 @@ namespace bpf
 
 DEFINE_DEFAULT(bpf::String, bpf::String());
 
-#include "Framework/Stringifier.hpp"
