@@ -87,6 +87,11 @@ namespace bpf
 			_arr[_curid++] = std::move(elem);
 		}
 
+		inline void Swap(const fsize a, const fsize b)
+		{
+			_arr.Swap(a, b);
+		}
+
 		void Insert(const T& elem, const fsize pos);
 		
 		void Insert(T&& elem, const fsize pos);

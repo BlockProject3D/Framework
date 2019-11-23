@@ -169,7 +169,7 @@ namespace bpf
 
         void Sort(const bool stable = false);
 
-		void Swap(ListNode<T>* a, ListNode<T>* b);
+		void Swap(ListNode<T> *a, ListNode<T> *b);
 
         ListNode<T> *FirstNode() const;
 

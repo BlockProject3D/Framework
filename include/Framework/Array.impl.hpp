@@ -125,4 +125,20 @@ namespace bpf
         }
         return (_arr[id]);
     }
+
+	template <typename T, fsize I>
+	void Array<T, I>::Swap(const fsize a, const fsize b)
+	{
+		T tmp = std::move(_arr[a]);
+		_arr[a] = std::move(_arr[b]);
+		_arr[b] = std::move(tmp);
+	}
+
+	template <typename T>
+	void Array<T>::Swap(const fsize a, const fsize b)
+	{
+		T tmp = std::move(_arr[a]);
+		_arr[a] = std::move(_arr[b]);
+		_arr[b] = std::move(tmp);
+	}
 }

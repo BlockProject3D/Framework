@@ -140,6 +140,8 @@ namespace bpf
             return (*this);
         }
 
+		void Swap(const fsize a, const fsize b);
+
         inline fsize Size() const
         {
             return (I);
@@ -307,6 +309,8 @@ namespace bpf
 
 		Array<T> &operator=(Array<T> &&arr);
 		Array<T> &operator=(const Array<T> &arr);
+
+		void Swap(const fsize a, const fsize b);
 
         /**
          * Returns an element const mode

@@ -79,6 +79,32 @@ TEST(Array, Move)
 	EXPECT_EQ(arr.Release(), Null);
 }
 
+TEST(Array, Swap_1)
+{
+	auto arr = bpf::Array<int>(3);
+
+	arr[0] = 1;
+	arr[1] = 3;
+	arr[2] = 6;
+	arr.Swap(0, 2);
+	EXPECT_EQ(arr[0], 6);
+	EXPECT_EQ(arr[1], 3);
+	EXPECT_EQ(arr[2], 1);
+}
+
+TEST(Array, Swap_2)
+{
+	auto arr = bpf::Array<int>(3);
+
+	arr[0] = 1;
+	arr[1] = 3;
+	arr[2] = 6;
+	arr.Swap(1, 2);
+	EXPECT_EQ(arr[0], 1);
+	EXPECT_EQ(arr[1], 6);
+	EXPECT_EQ(arr[2], 3);
+}
+
 TEST(Array, Realloc)
 {
 	auto arr = bpf::Array<int>(3);
