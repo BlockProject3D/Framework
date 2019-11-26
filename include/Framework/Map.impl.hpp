@@ -45,35 +45,39 @@ namespace bpf
     }
 
     template <typename K, typename V, typename HashOp>
-    void Map<K, V, HashOp>::ReverseIterator::operator++()
+	typename Map<K, V, HashOp>::ReverseIterator &Map<K, V, HashOp>::ReverseIterator::operator++()
     {
         if (Iterator::CurID != (fsize)-1)
             --Iterator::CurID;
         Iterator::SearchPrevEntry();
+		return (*this);
     }
 
     template <typename K, typename V, typename HashOp>
-    void Map<K, V, HashOp>::ReverseIterator::operator--()
+	typename Map<K, V, HashOp>::ReverseIterator &Map<K, V, HashOp>::ReverseIterator::operator--()
     {
         if (Iterator::CurID < Iterator::MaxSize)
             ++Iterator::CurID;
         Iterator::SearchNextEntry();
+		return (*this);
     }
 
     template <typename K, typename V, typename HashOp>
-    void Map<K, V, HashOp>::Iterator::operator++()
+	typename Map<K, V, HashOp>::Iterator &Map<K, V, HashOp>::Iterator::operator++()
     {
         if (CurID < MaxSize)
             ++CurID;
         SearchNextEntry();
+		return (*this);
     }
     
     template <typename K, typename V, typename HashOp>
-    void Map<K, V, HashOp>::Iterator::operator--()
+	typename Map<K, V, HashOp>::Iterator &Map<K, V, HashOp>::Iterator::operator--()
     {
         if (CurID > 0)
             --CurID;
         SearchPrevEntry();
+		return (*this);
     }
 
     template <typename K, typename V, typename HashOp>

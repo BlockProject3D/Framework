@@ -98,7 +98,7 @@ namespace bpf
 	}
 
     template <typename T>
-    void List<T>::Insert(const T &elem, fsize pos)
+    void List<T>::Insert(fsize pos, const T &elem)
     {
         ListNode<T> *nd = GetNode(pos);
         ListNode<T> *newi = new ListNode<T>(elem);
@@ -124,6 +124,87 @@ namespace bpf
         ++_count;
     }
 
+	template <typename T>
+	void List<T>::Insert(fsize pos, T &&elem)
+	{
+		ListNode<T> *nd = GetNode(pos);
+		ListNode<T> *newi = new ListNode<T>(std::move(elem));
+
+		newi->Next = nd;
+		if (nd != Null)
+		{
+			newi->Prev = nd->Prev;
+			nd->Prev = newi;
+			if (newi->Prev != Null)
+				newi->Prev->Next = newi;
+			if (pos == 0)
+				_first = newi;
+		}
+		else if (_last)
+		{
+			newi->Prev = _last;
+			_last->Next = newi;
+			_last = newi;
+		}
+		else
+			_first = _last = newi;
+		++_count;
+	}
+	
+	template <typename T>
+	void List<T>::Insert(const Iterator &pos, const T &elem)
+	{
+		ListNode<T> *nd = pos._cur;
+		ListNode<T> *newi = new ListNode<T>(elem);
+
+		newi->Next = nd;
+		if (nd != Null)
+		{
+			newi->Prev = nd->Prev;
+			nd->Prev = newi;
+			if (newi->Prev != Null)
+				newi->Prev->Next = newi;
+			if (pos._cur == FirstNode())
+				_first = newi;
+		}
+		else if (_last)
+		{
+			newi->Prev = _last;
+			_last->Next = newi;
+			_last = newi;
+		}
+		else
+			_first = _last = newi;
+		++_count;
+	}
+
+	template <typename T>
+	void List<T>::Insert(const Iterator &pos, T &&elem)
+	{
+		ListNode<T> *nd = pos._cur;
+		ListNode<T> *newi = new ListNode<T>(std::move(elem));
+
+		newi->Next = nd;
+		if (nd != Null)
+		{
+			newi->Prev = nd->Prev;
+			nd->Prev = newi;
+			if (newi->Prev != Null)
+				newi->Prev->Next = newi;
+			if (pos._cur == FirstNode())
+				_first = newi;
+		}
+		else if (_last)
+		{
+			newi->Prev = _last;
+			_last->Next = newi;
+			_last = newi;
+		}
+		else
+			_first = _last = newi;
+		++_count;
+	}
+
     template <typename T>
     void List<T>::Add(const T &elem)
     {
@@ -137,33 +218,6 @@ namespace bpf
             _last->Next = newi;
         }
         _last = newi;
-        ++_count;
-    }
-
-    template <typename T>
-    void List<T>::Insert(T &&elem, fsize pos)
-    {
-        ListNode<T> *nd = GetNode(pos);
-        ListNode<T> *newi = new ListNode<T>(std::move(elem));
-
-        newi->Next = nd;
-        if (nd != Null)
-        {
-            newi->Prev = nd->Prev;
-            nd->Prev = newi;
-            if (newi->Prev != Null)
-                newi->Prev->Next = newi;
-            if (pos == 0)
-                _first = newi;
-        }
-        else if (_last)
-        {
-            newi->Prev = _last;
-            _last->Next = newi;
-            _last = newi;
-        }
-        else
-            _first = _last = newi;
         ++_count;
     }
 
@@ -191,7 +245,7 @@ namespace bpf
     }
 
 	template <typename T>
-	inline void List<T>::Swap(ListNode<T>* a, ListNode<T>* b)
+	inline void List<T>::Swap(ListNode<T> *a, ListNode<T> *b)
 	{
 		T tmpdata = std::move(a->Data);
 
@@ -210,15 +264,9 @@ namespace bpf
 			{
 				iter = (iter == Null) ? start : iter->Next;
 				Swap(iter, j);
-				/*T tmpdata = iter->Data;
-				iter->Data = j->Data;
-				j->Data = tmpdata;*/
 			}
 		}
 		Swap(iter->Next, end);
-		/*T tmpdata = iter->Next->Data;
-		iter->Next->Data = end->Data;
-		end->Data = tmpdata;*/
 		return (iter->Next);
     }
 
@@ -241,6 +289,36 @@ namespace bpf
 		if (!stable)
 			QuickSort(_first, _last);
     }
+
+	template <typename T>
+	void List<T>::Swap(const Iterator &a, const Iterator &b)
+	{
+		ListNode<T> *an = a._cur;
+		ListNode<T> *bn = b._cur;
+		if (an == Null || bn == Null || an == bn)
+			return;
+		Swap(an, bn);
+	}
+
+	template <typename T>
+	void List<T>::RemoveAt(Iterator &pos)
+	{
+		if (pos._cur == Null)
+			return;
+		ListNode<T> *next = pos._cur->Next;
+		RemoveNode(pos._cur);
+		pos._cur = next;
+	}
+
+	template <typename T>
+	void List<T>::RemoveAt(Iterator &&pos)
+	{
+		if (pos._cur == Null)
+			return;
+		ListNode<T> *next = pos._cur->Next;
+		RemoveNode(pos._cur);
+		pos._cur = next;
+	}
 
     template <typename T>
     ListNode<T> *List<T>::GetNode(fsize id) const
@@ -278,9 +356,9 @@ namespace bpf
     }
 
     template <typename T>
-    void List<T>::RemoveAt(fsize const id)
+    void List<T>::RemoveAt(fsize const pos)
     {
-        ListNode<T> *toRM = GetNode(id);
+        ListNode<T> *toRM = GetNode(pos);
 
         if (toRM)
             RemoveNode(toRM);

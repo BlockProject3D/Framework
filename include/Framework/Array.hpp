@@ -50,15 +50,17 @@ namespace bpf
 				: _curid(start), _max(size), _arr(lowlevel)
 			{
 			}
-			inline void operator++()
+			inline Iterator &operator++()
 			{
 				if (_curid < _max)
 					_curid++;
+				return (*this);
 			}
-			inline void operator--()
+			inline Iterator &operator--()
 			{
 				if (_curid > 0)
 					_curid--;
+				return (*this);
 			}
 			inline const T& operator*() const
 			{
@@ -90,15 +92,17 @@ namespace bpf
 				: _curid(start), _max(size), _arr(lowlevel)
 			{
 			}
-			inline void operator++()
+			inline ReverseIterator &operator++()
 			{
 				if (_curid > (fsize)-1)
 					_curid--;
+				return (*this);
 			}
-			inline void operator--()
+			inline ReverseIterator &operator--()
 			{
 				if (_curid < _max)
 					_curid++;
+				return (*this);
 			}
 			inline const T& operator*() const
 			{
@@ -189,7 +193,7 @@ namespace bpf
 		 */
 		inline Iterator begin() const
 		{
-			return (Iterator(_arr, _size, 0));
+			return (Iterator(_arr, I, 0));
 		}
 
 		/**
@@ -197,7 +201,7 @@ namespace bpf
 		 */
 		inline Iterator end() const
 		{
-			return (Iterator(_arr, _size, _size));
+			return (Iterator(_arr, I, I));
 		}
 
 		/**
@@ -205,7 +209,7 @@ namespace bpf
 		 */
 		inline ReverseIterator rbegin() const
 		{
-			return (ReverseIterator(_arr, _size, _size - 1));
+			return (ReverseIterator(_arr, I, I - 1));
 		}
 
 		/**
@@ -213,7 +217,7 @@ namespace bpf
 		 */
 		inline ReverseIterator rend() const
 		{
-			return (ReverseIterator(_arr, _size, (fsize)-1));
+			return (ReverseIterator(_arr, I, (fsize)-1));
 		}
     };
     
@@ -233,15 +237,17 @@ namespace bpf
                 : _curid(start), _max(size), _arr(lowlevel)
             {
             }
-            inline void operator++()
+            inline Iterator &operator++()
             {
                 if (_curid < _max)
                     _curid++;
+				return (*this);
             }
-            inline void operator--()
+            inline Iterator &operator--()
             {
                 if (_curid > 0)
                     _curid--;
+				return (*this);
             }
             inline const T &operator*() const
             {
@@ -273,15 +279,17 @@ namespace bpf
                 : _curid(start), _max(size), _arr(lowlevel)
             {
             }
-            inline void operator++()
+            inline ReverseIterator &operator++()
             {
                 if (_curid > (fsize)-1)
                     _curid--;
+				return (*this);
             }
-            inline void operator--()
+            inline ReverseIterator &operator--()
             {
                 if (_curid < _max)
                     _curid++;
+				return (*this);
             }
             inline const T &operator*() const
             {

@@ -75,8 +75,8 @@ namespace bpf
                 else
                     SearchNextEntry();
             }
-            void operator++();
-            void operator--();
+            Iterator &operator++();
+			Iterator &operator--();
             inline const Entry &operator*() const
             {
                 return (_data[CurID].KeyVal);
@@ -102,8 +102,8 @@ namespace bpf
                 : Iterator(data, start, size, true)
             {
             }
-            void operator++();
-            void operator--();
+			ReverseIterator &operator++();
+			ReverseIterator &operator--();
         };
 
     private:

@@ -91,7 +91,7 @@ namespace bpf
 	Array<T, I>::Array(const std::initializer_list<T> &lst)
 	{
 		fsize i = 0;
-		for (auto& elem : list)
+		for (auto& elem : lst)
 		{
 			_arr[i++] = elem;
 			if (i > I)

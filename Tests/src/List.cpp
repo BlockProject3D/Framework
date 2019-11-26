@@ -55,6 +55,32 @@ TEST(List, Creation_List)
 	EXPECT_EQ(lst[2], 7);
 }
 
+TEST(List, Add)
+{
+	const int i = 12;
+	bpf::List<int> lst = { i, 2 };
+
+	EXPECT_EQ(lst.Size(), 2);
+	lst.Add(3);
+	EXPECT_EQ(lst.Size(), 3);
+	lst.Add(i);
+	EXPECT_EQ(lst.Size(), 4);
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[12, 2, 3, 12]");
+}
+
+TEST(List, Indexer)
+{
+	bpf::List<int> lst = { 0, 3, 7 };
+
+	EXPECT_EQ(lst[0], 0);
+	EXPECT_EQ(lst[1], 3);
+	EXPECT_EQ(lst[2], 7);
+	EXPECT_THROW(lst[3], bpf::IndexException);
+	EXPECT_THROW(lst[678], bpf::IndexException);
+	EXPECT_THROW(lst[(bpf::fsize)-1], bpf::IndexException);
+	EXPECT_THROW(lst[(bpf::fsize)-465], bpf::IndexException);
+}
+
 TEST(List, FirstLast)
 {
 	bpf::List<int> lst;
@@ -97,8 +123,129 @@ TEST(List, Move)
 	EXPECT_EQ(mv[1], 3);
 	EXPECT_EQ(mv[2], 7);
 	EXPECT_EQ(lst.Size(), 0);
-	EXPECT_EQ(lst.FirstNode(), Null);
-	EXPECT_EQ(lst.LastNode(), Null);
+	EXPECT_EQ(lst.begin(), lst.end());
+}
+
+TEST(List, Remove)
+{
+	bpf::List<int> lst = { 0, 3, 7, 0 };
+
+	lst.Remove(0, false);
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[3, 7, 0]");
+	lst.Insert(0, 0);
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 3, 7, 0]");
+	lst.Remove(0);
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[3, 7]");
+}
+
+TEST(List, RemoveAt)
+{
+	bpf::List<int> lst = { 0, 3, 7, 0 };
+
+	lst.RemoveAt(2);
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 3, 0]");
+	lst.RemoveAt(++lst.begin());
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 0]");
+	auto it = lst.begin();
+	lst.RemoveAt(it);
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0]");
+	EXPECT_NE(it, lst.end());
+	lst.RemoveAt(--lst.end());
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[]");
+	lst = { 0, 3, 7, 0 };
+	lst.RemoveAt(--(--lst.end()));
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 3, 0]");
+	lst.RemoveAt(lst.end());
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 3, 0]");
+}
+
+TEST(List, RemoveLast)
+{
+	bpf::List<int> lst = { 0, 3, 7, 0 };
+
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 3, 7, 0]");
+	EXPECT_NE(lst.begin(), lst.end());
+	lst.RemoveLast();
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 3, 7]");
+	EXPECT_NE(lst.begin(), lst.end());
+	lst.RemoveLast();
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 3]");
+	EXPECT_NE(lst.begin(), lst.end());
+	lst.RemoveLast();
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0]");
+	EXPECT_NE(lst.begin(), lst.end());
+	lst.RemoveLast();
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[]");
+	EXPECT_EQ(lst.begin(), lst.end());
+}
+
+TEST(List, Insert)
+{
+	bpf::List<int> lst = { 0, 3, 7, 0 };
+
+	lst.Insert(1, 4);
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 4, 3, 7, 0]");
+	lst.Insert(++lst.begin(), 5);
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 5, 4, 3, 7, 0]");
+	lst.Insert(lst.begin(), -1);
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[-1, 0, 5, 4, 3, 7, 0]");
+	const int i = -2;
+	lst.Insert(lst.begin(), i);
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[-2, -1, 0, 5, 4, 3, 7, 0]");
+	lst.Insert(lst.end(), 2);
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[-2, -1, 0, 5, 4, 3, 7, 0, 2]");
+	lst.Insert(--lst.end(), 10);
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[-2, -1, 0, 5, 4, 3, 7, 0, 10, 2]");
+}
+
+TEST(List, Iterator)
+{
+	bpf::List<int> lst = { 0, 3, 7, 0 };
+
+	auto it = lst.begin();
+	++it;
+	--it;
+	EXPECT_EQ(it, lst.begin());
+	--it;
+	++it;
+	EXPECT_EQ(it, lst.begin());
+	it = lst.end();
+	--it;
+	++it;
+	EXPECT_EQ(it, lst.end());
+	++it;
+	--it;
+	EXPECT_EQ(it, lst.end());
+}
+
+TEST(List, ReverseIterator)
+{
+	bpf::List<int> lst = { 0, 3, 7, 0 };
+
+	auto it = lst.rbegin();
+	--it;
+	++it;
+	EXPECT_EQ(it, lst.rbegin());
+	++it;
+	--it;
+	EXPECT_EQ(it, lst.rbegin());
+	it = lst.end();
+	++it;
+	--it;
+	EXPECT_EQ(it, lst.rend());
+	--it;
+	++it;
+	EXPECT_EQ(it, lst.rend());
+}
+
+TEST(List, Clear)
+{
+	bpf::List<int> lst = { 0, 3, 7, 0 };
+
+	EXPECT_EQ(lst.Size(), 4);
+	lst.Clear();
+	EXPECT_EQ(lst.Size(), 0);
+	EXPECT_EQ(lst.begin(), lst.end());
 }
 
 TEST(List, IterateForward_Test1)
@@ -194,8 +341,8 @@ TEST(List, Swap_1)
 	lst.Add(0);
 	lst.Add(3);
 	lst.Add(7);
-	lst.Swap(lst.FirstNode(), lst.LastNode());
-	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[7, 3, 0]");
+	lst.Swap(lst.begin(), --(--lst.end()));
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[3, 0, 7]");
 }
 
 TEST(List, Swap_2)
@@ -205,7 +352,7 @@ TEST(List, Swap_2)
 	lst.Add(0);
 	lst.Add(3);
 	lst.Add(7);
-	lst.Swap(lst.FirstNode()->Next, lst.LastNode());
+	lst.Swap(++lst.begin(), --lst.end());
 	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 7, 3]");
 }
 
@@ -215,7 +362,7 @@ TEST(List, Swap_3)
 
 	lst.Add(0);
 	lst.Add(7);
-	lst.Swap(lst.FirstNode(), lst.LastNode());
+	lst.Swap(lst.begin(), --lst.end());
 	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[7, 0]");
 }
 
@@ -225,7 +372,26 @@ TEST(List, Swap_4)
 
 	lst.Add(bpf::MakeUnique<int>(0));
 	lst.Add(bpf::MakeUnique<int>(7));
-	lst.Swap(lst.FirstNode(), lst.LastNode());
+	lst.Swap(lst.begin(), --lst.end());
+}
+
+TEST(List, Swap_Err_1)
+{
+	bpf::List<bpf::UniquePtr<int>> lst;
+
+	lst.Swap(lst.begin(), --lst.end());
+}
+
+TEST(List, Swap_Err_2)
+{
+	bpf::List<int> lst;
+
+	lst.Add(0);
+	lst.Add(7);
+	lst.Swap(lst.begin(), lst.begin());
+	lst.Swap(lst.end(), lst.end());
+	lst.Swap(--lst.end(), --lst.end());
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 7]");
 }
 
 TEST(List, Sort_1)

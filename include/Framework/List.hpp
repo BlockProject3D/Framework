@@ -32,6 +32,8 @@
 #include "Framework/Iterator.hpp"
 #include "Framework/IndexException.hpp"
 
+//TODO: Finish ALL TESTS for List and then copy these tests for ArrayList and copy relevant tests to other containers
+
 namespace bpf
 {
     template <typename T>
@@ -63,45 +65,53 @@ namespace bpf
         class BP_TPL_API Iterator final : public IIterator<typename List<T>::Iterator, T>
         {
         private:
-            ListNode<T> *Cur;
-            bool CanRunBack;
+            ListNode<T> *_cur;
+			ListNode<T> *_first;
+			ListNode<T> *_last;
+            bool _reverse;
 
         public:
-            inline Iterator(ListNode<T> *start, bool reverse)
-                : Cur(start)
-                , CanRunBack(reverse)
+            inline Iterator(ListNode<T> *start, ListNode<T> *first, ListNode<T> *last, bool reverse)
+                : _cur(start)
+				, _first(first)
+				, _last(last)
+                , _reverse(reverse)
             {
             }
-            inline void operator++()
+            inline Iterator &operator++()
             {
-                if (Cur)
-                    Cur = CanRunBack ? Cur->Prev : Cur->Next;
+				if (_cur)
+					_cur = _reverse ? _cur->Prev : _cur->Next;
+				else
+					_cur = _reverse ? _last : _first;
+				return (*this);
             }
-            inline void operator--()
+            inline Iterator &operator--()
             {
-                if (Cur)
-                    Cur = CanRunBack ? Cur->Next : Cur->Prev;
+				if (_cur)
+                    _cur = _reverse ? _cur->Next : _cur->Prev;
+				else
+					_cur = _reverse ? _first : _last;
+				return (*this);
             }
-			inline const ListNode<T>* Node() const
-			{
-				return (Cur);
-			}
-            inline const T *operator->() const
+			inline const T *operator->() const
             {
-                return (&Cur->Data);
+                return (&_cur->Data);
             }
             inline const T &operator*() const
             {
-                return (Cur->Data);
+                return (_cur->Data);
             }
             inline bool operator==(const Iterator &it) const
             {
-                return (Cur == it.Cur);
+                return (_cur == it._cur);
             }
             inline bool operator!=(const Iterator &it) const
             {
-                return (Cur != it.Cur);
+                return (_cur != it._cur);
             }
+
+			friend class List<T>;
         };
         using ReverseIterator = Iterator;
     private:
@@ -113,6 +123,10 @@ namespace bpf
         void QuickSort(ListNode<T> *start, ListNode<T> *end);
 		void MergeSort();
         void RemoveNode(ListNode<T> *toRM);
+		void Swap(ListNode<T>* a, ListNode<T>* b);
+		ListNode<T>* GetNode(fsize id) const;
+		ListNode<T>* FirstNode() const;
+		ListNode<T>* LastNode() const;
     public:
         List<T>();
 		List<T>(const std::initializer_list<T> &lst);
@@ -128,18 +142,6 @@ namespace bpf
          * @param elem element to add
          */
         void Add(const T &elem);
-
-        /**
-         * Inserts an element at a given position
-         * @param elem element to insert
-         * @param pos position
-         */
-        void Insert(const T &elem, fsize pos);
-
-        /**
-         * Adds an element at the end of the list
-         * @param elem element to add
-         */
         void Add(T &&elem);
 
         /**
@@ -147,17 +149,25 @@ namespace bpf
          * @param elem element to insert
          * @param pos position
          */
-        void Insert(T &&elem, fsize pos);
+		void Insert(fsize pos, const T &elem);
+		void Insert(fsize pos, T &&elem);
+		void Insert(const Iterator &pos, const T &elem);
+		void Insert(const Iterator &pos, T &&elem);
 
         /**
-         * Returns an element (safe), returns Null whenever element could not be found
+         * Returns an element
          * @param id index of the element
+		 * @throws IndexException if the position is outside the bounds of the list
          */
-        ListNode<T> *GetNode(fsize id) const;
-
         const T &operator[](const fsize id) const;
 
-        void RemoveAt(const fsize id);
+        /**
+		 * Removes an element at specified position in the list
+		 * @param pos the position of the element
+		 */
+		void RemoveAt(const fsize pos);
+		void RemoveAt(Iterator &pos);
+		void RemoveAt(Iterator &&pos);
 
 		/**
 		 * Removes occurences of an element fron the list
@@ -166,15 +176,11 @@ namespace bpf
 		 */
         void Remove(const T &elem, const bool all = true);
 
+		void Swap(const Iterator &a, const Iterator &b);
+
         void RemoveLast();
 
         void Sort(const bool stable = false);
-
-		void Swap(ListNode<T> *a, ListNode<T> *b);
-
-        ListNode<T> *FirstNode() const;
-
-		ListNode<T> *LastNode() const;
 
 		inline T &First()
 		{
@@ -183,7 +189,7 @@ namespace bpf
 			return (FirstNode()->Data);
 		}
 
-		inline T& Last()
+		inline T &Last()
 		{
 			if (LastNode() == Null)
 				throw IndexException(0);
@@ -199,7 +205,7 @@ namespace bpf
          */
         inline Iterator begin() const
         {
-            return (Iterator(_first, false));
+            return (Iterator(_first, _first, _last, false));
         }
 
         /**
@@ -207,7 +213,7 @@ namespace bpf
          */
         inline Iterator end() const
         {
-            return (Iterator(Null, false));
+            return (Iterator(Null, _first, _last, false));
         }
 
         /**
@@ -215,7 +221,7 @@ namespace bpf
          */
         inline ReverseIterator rbegin() const
         {
-            return (ReverseIterator(_last, true));
+            return (ReverseIterator(_last, _first, _last, true));
         }
 
         /**
@@ -223,7 +229,7 @@ namespace bpf
          */
         inline ReverseIterator rend() const
         {
-            return (ReverseIterator(Null, true));
+            return (ReverseIterator(Null, _first, _last, true));
         }
     };
 };
