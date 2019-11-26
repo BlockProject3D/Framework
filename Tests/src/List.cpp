@@ -208,14 +208,14 @@ TEST(List, Iterator)
 	EXPECT_EQ(it, lst.begin());
 	--it;
 	++it;
-	EXPECT_EQ(it, lst.begin());
+	EXPECT_EQ(it, ++lst.begin());
 	it = lst.end();
 	--it;
 	++it;
 	EXPECT_EQ(it, lst.end());
 	++it;
 	--it;
-	EXPECT_EQ(it, lst.end());
+	EXPECT_EQ(it, --lst.end());
 }
 
 TEST(List, ReverseIterator)
@@ -223,19 +223,19 @@ TEST(List, ReverseIterator)
 	bpf::List<int> lst = { 0, 3, 7, 0 };
 
 	auto it = lst.rbegin();
-	--it;
-	++it;
-	EXPECT_EQ(it, lst.rbegin());
 	++it;
 	--it;
 	EXPECT_EQ(it, lst.rbegin());
-	it = lst.end();
-	++it;
-	--it;
-	EXPECT_EQ(it, lst.rend());
 	--it;
 	++it;
+	EXPECT_EQ(it, ++lst.rbegin());
+	it = lst.rend();
+	--it;
+	++it;
 	EXPECT_EQ(it, lst.rend());
+	++it;
+	--it;
+	EXPECT_EQ(it, --lst.rend());
 }
 
 TEST(List, Clear)

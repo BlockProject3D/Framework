@@ -38,21 +38,20 @@ namespace bpf
     class BP_TPL_API Array
     {
 	public:
-		class BP_TPL_API Iterator final : public IIterator<typename Array<T>::Iterator, T>
+		class BP_TPL_API Iterator final : public IIterator<typename Array<T, I>::Iterator, T>
 		{
 		private:
 			fsize _curid;
-			fsize _max;
-			T* _arr;
+			const T *_arr;
 
 		public:
-			inline Iterator(T* lowlevel, const fsize size, const fsize start)
-				: _curid(start), _max(size), _arr(lowlevel)
+			inline Iterator(const T* lowlevel, const fsize start)
+				: _curid(start), _arr(lowlevel)
 			{
 			}
 			inline Iterator &operator++()
 			{
-				if (_curid < _max)
+				if (_curid != I)
 					_curid++;
 				return (*this);
 			}
@@ -70,53 +69,54 @@ namespace bpf
 			{
 				return (&_arr[_curid]);
 			}
-			inline bool operator==(const Iterator& other) const
+			inline bool operator==(const Iterator &other) const
 			{
 				return (_curid == other._curid);
 			}
-			inline bool operator!=(const Iterator& other) const
+			inline bool operator!=(const Iterator &other) const
 			{
 				return (_curid != other._curid);
 			}
+
+			friend class Array<T, I>;
 		};
 
-		class BP_TPL_API ReverseIterator final : public IIterator<typename Array<T>::Iterator, T>
+		class BP_TPL_API ReverseIterator final : public IIterator<typename Array<T, I>::ReverseIterator, T>
 		{
 		private:
 			fsize _curid;
-			fsize _max;
-			T* _arr;
+			const T *_arr;
 
 		public:
-			inline ReverseIterator(T* lowlevel, const fsize size, const fsize start)
-				: _curid(start), _max(size), _arr(lowlevel)
+			inline ReverseIterator(const T* lowlevel, const fsize start)
+				: _curid(start), _arr(lowlevel)
 			{
 			}
 			inline ReverseIterator &operator++()
 			{
-				if (_curid > (fsize)-1)
+				if (_curid != (fsize)-1)
 					_curid--;
 				return (*this);
 			}
 			inline ReverseIterator &operator--()
 			{
-				if (_curid < _max)
+				if (_curid < I - 1)
 					_curid++;
 				return (*this);
 			}
-			inline const T& operator*() const
+			inline const T &operator*() const
 			{
 				return (_arr[_curid]);
 			}
-			inline const T* operator->() const
+			inline const T *operator->() const
 			{
 				return (&_arr[_curid]);
 			}
-			inline bool operator==(const Iterator& other) const
+			inline bool operator==(const ReverseIterator &other) const
 			{
 				return (_curid == other._curid);
 			}
-			inline bool operator!=(const Iterator& other) const
+			inline bool operator!=(const ReverseIterator &other) const
 			{
 				return (_curid != other._curid);
 			}
@@ -147,19 +147,19 @@ namespace bpf
             return (*this);
         }
 
-		void Swap(const fsize a, const fsize b);
+		void Swap(const Iterator &a, const Iterator &b);
 
-        inline fsize Size() const
+        constexpr inline fsize Size() const
         {
             return (I);
         }
 
-		inline T& First()
+		inline T &First()
 		{
 			return (_arr[0]);
 		}
 
-		inline T& Last()
+		inline T &Last()
 		{
 			return (_arr[I - 1]);
 		}
@@ -173,14 +173,7 @@ namespace bpf
         {
             return (_arr);
         }
-        
-        inline T &operator[](const fsize id) const
-        {
-            if (id >= I)
-                throw IndexException(static_cast<fisize>(id));
-            return (_arr[id]);
-        }
-        
+
         inline T &operator[](const fsize id)
         {
             if (id >= I)
@@ -188,12 +181,19 @@ namespace bpf
             return (_arr[id]);
         }
 
+		inline const T &operator[](const fsize id) const
+		{
+			if (id >= I)
+				throw IndexException(static_cast<fisize>(id));
+			return (_arr[id]);
+		}
+
 		/**
 		 * Returns an iterator to the begining of the array
 		 */
 		inline Iterator begin() const
 		{
-			return (Iterator(_arr, I, 0));
+			return (Iterator(_arr, 0));
 		}
 
 		/**
@@ -201,7 +201,7 @@ namespace bpf
 		 */
 		inline Iterator end() const
 		{
-			return (Iterator(_arr, I, I));
+			return (Iterator(_arr, I));
 		}
 
 		/**
@@ -209,7 +209,7 @@ namespace bpf
 		 */
 		inline ReverseIterator rbegin() const
 		{
-			return (ReverseIterator(_arr, I, I - 1));
+			return (ReverseIterator(_arr, I - 1));
 		}
 
 		/**
@@ -217,7 +217,7 @@ namespace bpf
 		 */
 		inline ReverseIterator rend() const
 		{
-			return (ReverseIterator(_arr, I, (fsize)-1));
+			return (ReverseIterator(_arr, (fsize)-1));
 		}
     };
     
@@ -225,7 +225,7 @@ namespace bpf
     class BP_TPL_API Array<T, 0>
     {
     public:
-        class BP_TPL_API Iterator final : public IIterator<typename Array<T>::Iterator, T>
+        class BP_TPL_API Iterator final : public IIterator<typename Array<T, 0>::Iterator, T>
         {
         private:
             fsize _curid;
@@ -239,14 +239,14 @@ namespace bpf
             }
             inline Iterator &operator++()
             {
-                if (_curid < _max)
+                if (_curid != _max)
                     _curid++;
 				return (*this);
             }
             inline Iterator &operator--()
             {
-                if (_curid > 0)
-                    _curid--;
+				if (_curid > 0)
+					_curid--;
 				return (*this);
             }
             inline const T &operator*() const
@@ -265,9 +265,11 @@ namespace bpf
             {
                 return (_curid != other._curid);
             }
+
+			friend class Array<T, 0>;
         };
 
-        class BP_TPL_API ReverseIterator final : public IIterator<typename Array<T>::Iterator, T>
+        class BP_TPL_API ReverseIterator final : public IIterator<typename Array<T, 0>::ReverseIterator, T>
         {
         private:
             fsize _curid;
@@ -281,14 +283,14 @@ namespace bpf
             }
             inline ReverseIterator &operator++()
             {
-                if (_curid > (fsize)-1)
+                if (_curid != (fsize)-1)
                     _curid--;
 				return (*this);
             }
             inline ReverseIterator &operator--()
             {
-                if (_curid < _max)
-                    _curid++;
+				if (_curid < _max - 1)
+					_curid++;
 				return (*this);
             }
             inline const T &operator*() const
@@ -299,11 +301,11 @@ namespace bpf
             {
                 return (&_arr[_curid]);
             }
-            inline bool operator==(const Iterator &other) const
+            inline bool operator==(const ReverseIterator &other) const
             {
                 return (_curid == other._curid);
             }
-            inline bool operator!=(const Iterator &other) const
+            inline bool operator!=(const ReverseIterator &other) const
             {
                 return (_curid != other._curid);
             }
@@ -333,7 +335,7 @@ namespace bpf
 		Array<T> &operator=(Array<T> &&arr);
 		Array<T> &operator=(const Array<T> &arr);
 
-		void Swap(const fsize a, const fsize b);
+		void Swap(const Iterator &a, const Iterator &b);
 
         /**
          * Returns an element const mode
@@ -347,14 +349,14 @@ namespace bpf
          */
         T &operator[](const fsize id);
 
-		inline T& First()
+		inline T &First()
 		{
 			if (_arr == Null || _size == 0)
 				throw IndexException(0);
 			return (_arr[0]);
 		}
 
-		inline T& Last()
+		inline T &Last()
 		{
 			if (_arr == Null || _size == 0)
 				throw IndexException(0);

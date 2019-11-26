@@ -42,7 +42,7 @@ namespace bpf
         {
             String res = "[";
 
-            for (uint32 i = 0; i < arr.Size(); ++i)
+            for (fsize i = 0; i < arr.Size(); ++i)
             {
                 res += String::ValueOf(arr[i]);
                 if (i < arr.Size() - 1)
@@ -61,7 +61,7 @@ namespace bpf
         {
             String res = "[";
 
-            for (uint32 i = 0; i < lst.Size(); ++i)
+            for (fsize i = 0; i < lst.Size(); ++i)
             {
                 res += String::ValueOf(lst[i]);
                 if (i < lst.Size() - 1)

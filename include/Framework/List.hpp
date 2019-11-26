@@ -66,32 +66,26 @@ namespace bpf
         {
         private:
             ListNode<T> *_cur;
-			ListNode<T> *_first;
-			ListNode<T> *_last;
-            bool _reverse;
+			ListNode<T> *_reset;
 
         public:
-            inline Iterator(ListNode<T> *start, ListNode<T> *first, ListNode<T> *last, bool reverse)
+            inline Iterator(ListNode<T> *start, ListNode<T> *reset)
                 : _cur(start)
-				, _first(first)
-				, _last(last)
-                , _reverse(reverse)
+				, _reset(reset)
             {
             }
             inline Iterator &operator++()
             {
 				if (_cur)
-					_cur = _reverse ? _cur->Prev : _cur->Next;
-				else
-					_cur = _reverse ? _last : _first;
+					_cur = _cur->Next;
 				return (*this);
             }
             inline Iterator &operator--()
             {
 				if (_cur)
-                    _cur = _reverse ? _cur->Next : _cur->Prev;
+					_cur = _cur->Prev ? _cur->Prev : _cur;
 				else
-					_cur = _reverse ? _first : _last;
+					_cur = _reset;
 				return (*this);
             }
 			inline const T *operator->() const
@@ -113,7 +107,50 @@ namespace bpf
 
 			friend class List<T>;
         };
-        using ReverseIterator = Iterator;
+
+		class BP_TPL_API ReverseIterator final : public IIterator<typename List<T>::ReverseIterator, T>
+		{
+		private:
+			ListNode<T> *_cur;
+			ListNode<T> *_reset;
+
+		public:
+			inline ReverseIterator(ListNode<T> *start, ListNode<T> *reset)
+				: _cur(start)
+				, _reset(reset)
+			{
+			}
+			inline ReverseIterator &operator++()
+			{
+				if (_cur)
+					_cur = _cur->Prev;
+				return (*this);
+			}
+			inline ReverseIterator &operator--()
+			{
+				if (_cur)
+					_cur = _cur->Next ? _cur->Next : _cur;
+				else
+					_cur = _reset;
+				return (*this);
+			}
+			inline const T *operator->() const
+			{
+				return (&_cur->Data);
+			}
+			inline const T &operator*() const
+			{
+				return (_cur->Data);
+			}
+			inline bool operator==(const ReverseIterator &it) const
+			{
+				return (_cur == it._cur);
+			}
+			inline bool operator!=(const ReverseIterator &it) const
+			{
+				return (_cur != it._cur);
+			}
+		};
     private:
         ListNode<T> *_first;
         ListNode<T> *_last;
@@ -205,7 +242,7 @@ namespace bpf
          */
         inline Iterator begin() const
         {
-            return (Iterator(_first, _first, _last, false));
+            return (Iterator(_first, _last));
         }
 
         /**
@@ -213,7 +250,7 @@ namespace bpf
          */
         inline Iterator end() const
         {
-            return (Iterator(Null, _first, _last, false));
+            return (Iterator(Null, _last));
         }
 
         /**
@@ -221,7 +258,7 @@ namespace bpf
          */
         inline ReverseIterator rbegin() const
         {
-            return (ReverseIterator(_last, _first, _last, true));
+            return (ReverseIterator(_last, _first));
         }
 
         /**
@@ -229,7 +266,7 @@ namespace bpf
          */
         inline ReverseIterator rend() const
         {
-            return (ReverseIterator(Null, _first, _last, true));
+            return (ReverseIterator(Null, _first));
         }
     };
 };
