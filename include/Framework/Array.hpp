@@ -30,6 +30,7 @@
 #include <initializer_list>
 #include "Framework/Iterator.hpp"
 #include "Framework/Types.hpp"
+#include "Framework/TypeInfo.hpp"
 #include "Framework/IndexException.hpp"
 
 namespace bpf
@@ -143,7 +144,7 @@ namespace bpf
                 _arr[i] = arr._arr[i];
         }
         
-        inline Array<T> &operator=(const Array<T> &arr)
+        inline Array<T, I> &operator=(const Array<T, I> &arr)
         {
             for (fsize i = 0 ; i != I ; ++i)
                 _arr[i] = arr._arr[i];
