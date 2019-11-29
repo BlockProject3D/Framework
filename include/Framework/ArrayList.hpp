@@ -39,6 +39,9 @@ namespace bpf
         Array<T> _arr;
 
     public:
+		using Iterator = typename Array<T>::Iterator;
+		using ReverseIterator = typename Array<T>::ReverseIterator;
+
         inline ArrayList()
             : _curid(0), _arr(16)
         {
@@ -79,6 +82,8 @@ namespace bpf
 
 		inline T& First()
 		{
+			if (_curid == 0)
+				throw IndexException(0);
 			return (_arr.First());
 		}
 
@@ -86,7 +91,7 @@ namespace bpf
 		{
 			if (_curid == 0)
 				throw IndexException(0);
-			return (_arr[_curid]);
+			return (_arr[_curid - 1]);
 		}
 
 		inline T &operator[](const fsize id) const
@@ -106,17 +111,26 @@ namespace bpf
 			_arr[_curid++] = std::move(elem);
 		}
 
-		inline void Swap(const fsize a, const fsize b)
+		inline void Swap(const Iterator &a, const Iterator &b)
 		{
 			_arr.Swap(a, b);
 		}
 
-		void Insert(const T& elem, const fsize pos);
-		
-		void Insert(T&& elem, const fsize pos);
+		void Insert(const fsize pos, const T &elem);
+		void Insert(const fsize pos, T &&elem);
+		void Insert(const Iterator &pos, const T &elem);
+		void Insert(const Iterator &pos, T &&elem);
 
-        void RemoveAt(const fsize id);
-        
+        void RemoveAt(const fsize pos);
+		void RemoveAt(Iterator &pos)
+		{
+			RemoveAt(pos._curid);
+		}
+		void RemoveAt(Iterator &&pos)
+		{
+			RemoveAt(pos._curid);
+		}
+
         void Remove(const T &elem, const bool all = true);
 
 		inline void Clear()
@@ -127,7 +141,7 @@ namespace bpf
 
         inline void RemoveLast()
         {
-            RemoveAt(_curid);
+            RemoveAt(_curid - 1);
         }
         
         inline fsize Size() const
@@ -143,19 +157,35 @@ namespace bpf
         /**
          * Returns an iterator to the begining of the array
          */
-        inline typename Array<T>::Iterator Begin() const
+        inline Iterator begin() const
         {
-            return (typename Array<T>::Iterator(*_arr, _curid, 0));
+            return (Iterator(*_arr, _curid, 0));
         }
 
         /**
          * Returns an iterator to the end of the array
          */
-        inline typename Array<T>::Iterator End() const
+        inline Iterator end() const
         {
-            return (typename Array<T>::Iterator(*_arr, _curid, _curid));
+            return (Iterator(*_arr, _curid, _curid));
         }
-    };
+		
+		/**
+		 * Returns a reverse iterator to the begining of the array
+		 */
+		inline ReverseIterator rbegin() const
+		{
+			return (ReverseIterator(*_arr, _curid, _curid - 1));
+		}
+
+		/**
+		 * Returns a reverse iterator to the end of the array
+		 */
+		inline ReverseIterator rend() const
+		{
+			return (ReverseIterator(*_arr, _curid, (fsize)-1));
+		}
+	};
 }
 
 #include "Framework/ArrayList.impl.hpp"

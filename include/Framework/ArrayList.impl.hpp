@@ -31,10 +31,16 @@
 namespace bpf
 {
     template <typename T>
-    void ArrayList<T>::RemoveAt(const fsize id)
+    void ArrayList<T>::RemoveAt(const fsize pos)
     {
-        _arr[id] = DefaultOf<T>();
-        for (fsize i = id ; i < _curid ; i += 2)
+		if (pos >= _curid)
+			return;
+		if (_curid == 0 || _curid == 1)
+		{
+			_curid = 0;
+			return;
+		}
+        for (fsize i = pos ; i < _curid ; ++i)
             _arr[i] = _arr[i + 1];
         --_curid;
     }
@@ -42,16 +48,52 @@ namespace bpf
     template <typename T>
     void ArrayList<T>::Remove(const T &elem, const bool all)
     {
-        for (fsize i = _curid ; i > 0 ; --i)
+        for (fsize i = 0 ; i < _curid ; ++i)
         {
             if (_arr[i] == elem)
             {
-                Remove(i);
+                RemoveAt(i);
                 if (!all)
                     return;
             }
         }
         if (_arr[0] == elem)
-            Remove((fsize)0);
+            RemoveAt((fsize)0);
     }
+
+	template <typename T>
+	void ArrayList<T>::Insert(const fsize pos, const T &elem)
+	{
+		for (fsize i = _curid; i > pos; --i)
+			_arr[i] = _arr[i - 1];
+		_arr[pos] = elem;
+		++_curid;
+	}
+
+	template <typename T>
+	void ArrayList<T>::Insert(const fsize pos, T &&elem)
+	{
+		for (fsize i = _curid; i > pos; --i)
+			_arr[i] = _arr[i - 1];
+		_arr[pos] = std::move(elem);
+		++_curid;
+	}
+
+	template <typename T>
+	void ArrayList<T>::Insert(const Iterator &pos, const T &elem)
+	{
+		for (fsize i = _curid; i > pos._curid; --i)
+			_arr[i] = _arr[i - 1];
+		_arr[pos._curid] = elem;
+		++_curid;
+	}
+
+	template <typename T>
+	void ArrayList<T>::Insert(const Iterator &pos, T &&elem)
+	{
+		for (fsize i = _curid; i > pos._curid; --i)
+			_arr[i] = _arr[i - 1];
+		_arr[pos._curid] = std::move(elem);
+		++_curid;
+	}
 }

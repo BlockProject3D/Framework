@@ -78,7 +78,16 @@ namespace bpf
 	public:
 		inline static String Stringify(const ArrayList<T> &arr)
 		{
-			return (String::ValueOf(arr.ToArray()));
+			String res = "[";
+
+			for (fsize i = 0; i < arr.Size(); ++i)
+			{
+				res += String::ValueOf(arr[i]);
+				if (i < arr.Size() - 1)
+					res += ", ";
+			}
+			res += "]";
+			return (res);
 		}
 	};
 }

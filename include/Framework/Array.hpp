@@ -34,6 +34,9 @@
 
 namespace bpf
 {
+	template <typename T>
+	class BP_TPL_API ArrayList;
+
     template <typename T, fsize I = 0>
     class BP_TPL_API Array
     {
@@ -230,10 +233,10 @@ namespace bpf
         private:
             fsize _curid;
             fsize _max;
-            T *_arr;
+            const T *_arr;
 
         public:
-            inline Iterator(T *lowlevel, const fsize size, const fsize start)
+            inline Iterator(const T *lowlevel, const fsize size, const fsize start)
                 : _curid(start), _max(size), _arr(lowlevel)
             {
             }
@@ -267,6 +270,7 @@ namespace bpf
             }
 
 			friend class Array<T, 0>;
+			friend class ArrayList<T>;
         };
 
         class BP_TPL_API ReverseIterator final : public IIterator<typename Array<T, 0>::ReverseIterator, T>
@@ -274,10 +278,10 @@ namespace bpf
         private:
             fsize _curid;
             fsize _max;
-            T *_arr;
+            const T *_arr;
 
         public:
-            inline ReverseIterator(T *lowlevel, const fsize size, const fsize start)
+            inline ReverseIterator(const T *lowlevel, const fsize size, const fsize start)
                 : _curid(start), _max(size), _arr(lowlevel)
             {
             }
