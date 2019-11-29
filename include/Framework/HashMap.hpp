@@ -35,11 +35,11 @@
 //TODO : Use bpf::fsize for sizes
 namespace bpf
 {
-    constexpr fint MAP_INIT_BUF_SIZE = 2;
-    constexpr float MAP_LIMIT_UNTIL_EXTEND = 0.5f;
+    constexpr fint HASH_MAP_INIT_BUF_SIZE = 2;
+    constexpr float HASH_MAP_LIMIT_UNTIL_EXTEND = 0.5f;
 
     template <typename K, typename V, typename HashOp = Hash<K>>
-    class BP_TPL_API Map
+    class BP_TPL_API HashMap
     {
     public:
         struct BP_TPL_API Entry
@@ -55,7 +55,7 @@ namespace bpf
             Entry KeyVal;
         };
 
-        class BP_TPL_API Iterator : public IIterator<typename Map<K, V, HashOp>::Iterator, Entry>
+        class BP_TPL_API Iterator : public IIterator<typename HashMap<K, V, HashOp>::Iterator, Entry>
         {
         protected:
             Data *_data;
@@ -116,8 +116,8 @@ namespace bpf
         fsize QuadraticInsert(fsize hkey);
 
     public:
-        Map();
-        ~Map();
+        HashMap();
+        ~HashMap();
       
         /**
          * Adds a new element in this hash map, replaces if key already exists
@@ -176,4 +176,4 @@ namespace bpf
     };
 };
 
-#include "Framework/Map.impl.hpp"
+#include "Framework/HashMap.impl.hpp"

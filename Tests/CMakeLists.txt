@@ -42,7 +42,7 @@ set(SOURCES
     src/Quaternion.cpp
     src/List.cpp
     src/ArrayList.cpp
-    src/Map.cpp
+    src/HashMap.cpp
     src/ArrayDynamic.cpp
     src/ArrayStatic.cpp
     src/BaseConvert.cpp

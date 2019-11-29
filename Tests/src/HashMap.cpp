@@ -30,21 +30,21 @@
 #include <iostream>
 #include <gtest/gtest.h>
 #include <Framework/Memory/Memory.hpp>
-#include <Framework/Map.hpp>
+#include <Framework/HashMap.hpp>
 #include <Framework/String.hpp>
 
-TEST(Map, Creation)
+TEST(HashMap, Creation)
 {
-    bpf::Map<bpf::String, int> map;
+    bpf::HashMap<bpf::String, int> map;
 
     map["test1"] = 0;
     map["test2"] = 3;
     map["test3"] = 7;
 }
 
-TEST(Map, ReadWrite)
+TEST(HashMap, ReadWrite)
 {
-    bpf::Map<bpf::String, int> map;
+    bpf::HashMap<bpf::String, int> map;
 
     map["test1"] = 0;
     map["test2"] = 3;
@@ -54,9 +54,9 @@ TEST(Map, ReadWrite)
     EXPECT_EQ(map["test3"], 7);
 }
 
-TEST(Map, ReadWrite_NonCopy)
+TEST(HashMap, ReadWrite_NonCopy)
 {
-    bpf::Map<bpf::String, bpf::UniquePtr<int>> map;
+    bpf::HashMap<bpf::String, bpf::UniquePtr<int>> map;
 
     map["test1"] = Null;
     map["test2"] = Null;
@@ -74,7 +74,7 @@ TEST(Map, ReadWrite_NonCopy)
 
 static void RunLeakCheckBody()
 {
-    bpf::Map<bpf::String, bpf::UniquePtr<int>> map;
+    bpf::HashMap<bpf::String, bpf::UniquePtr<int>> map;
 
     map["test1"] = Null;
     map["test2"] = Null;
@@ -91,17 +91,17 @@ static void RunLeakCheckBody()
     map["test3"] = Null;
 }
 
-TEST(Map, ReadWrite_LeakCheck)
+TEST(HashMap, ReadWrite_LeakCheck)
 {
     bpf::fsize count = bpf::Memory::GetAllocCount();
     RunLeakCheckBody();
     EXPECT_EQ(count, bpf::Memory::GetAllocCount());
 }
 
-TEST(Map, IterateForward)
+TEST(HashMap, IterateForward)
 {
     bpf::String res = bpf::String::Empty;
-    bpf::Map<bpf::String, int> map;
+    bpf::HashMap<bpf::String, int> map;
 
     map["test1"] = 0;
     map["test2"] = 3;
@@ -111,10 +111,10 @@ TEST(Map, IterateForward)
     EXPECT_STREQ(*res, "test37;test10;test23;");
 }
 
-TEST(Map, IterateBackward)
+TEST(HashMap, IterateBackward)
 {
     bpf::String res = bpf::String::Empty;
-    bpf::Map<bpf::String, int> map;
+    bpf::HashMap<bpf::String, int> map;
 
     map["test1"] = 0;
     map["test2"] = 3;

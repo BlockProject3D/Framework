@@ -31,21 +31,21 @@
 namespace bpf
 {
     template <typename K, typename V, typename HashOp>
-    void Map<K, V, HashOp>::Iterator::SearchNextEntry()
+    void HashMap<K, V, HashOp>::Iterator::SearchNextEntry()
     {
         while (CurID < MaxSize && _data[CurID].Empty)
             ++CurID;
     }
 
     template <typename K, typename V, typename HashOp>
-    void Map<K, V, HashOp>::Iterator::SearchPrevEntry()
+    void HashMap<K, V, HashOp>::Iterator::SearchPrevEntry()
     {
         while (CurID != (fsize)-1 && _data[CurID].Empty)
             --CurID;
     }
 
     template <typename K, typename V, typename HashOp>
-	typename Map<K, V, HashOp>::ReverseIterator &Map<K, V, HashOp>::ReverseIterator::operator++()
+	typename HashMap<K, V, HashOp>::ReverseIterator &HashMap<K, V, HashOp>::ReverseIterator::operator++()
     {
         if (Iterator::CurID != (fsize)-1)
             --Iterator::CurID;
@@ -54,7 +54,7 @@ namespace bpf
     }
 
     template <typename K, typename V, typename HashOp>
-	typename Map<K, V, HashOp>::ReverseIterator &Map<K, V, HashOp>::ReverseIterator::operator--()
+	typename HashMap<K, V, HashOp>::ReverseIterator &HashMap<K, V, HashOp>::ReverseIterator::operator--()
     {
         if (Iterator::CurID < Iterator::MaxSize)
             ++Iterator::CurID;
@@ -63,7 +63,7 @@ namespace bpf
     }
 
     template <typename K, typename V, typename HashOp>
-	typename Map<K, V, HashOp>::Iterator &Map<K, V, HashOp>::Iterator::operator++()
+	typename HashMap<K, V, HashOp>::Iterator &HashMap<K, V, HashOp>::Iterator::operator++()
     {
         if (CurID < MaxSize)
             ++CurID;
@@ -72,7 +72,7 @@ namespace bpf
     }
     
     template <typename K, typename V, typename HashOp>
-	typename Map<K, V, HashOp>::Iterator &Map<K, V, HashOp>::Iterator::operator--()
+	typename HashMap<K, V, HashOp>::Iterator &HashMap<K, V, HashOp>::Iterator::operator--()
     {
         if (CurID > 0)
             --CurID;
@@ -81,9 +81,9 @@ namespace bpf
     }
 
     template <typename K, typename V, typename HashOp>
-    Map<K, V, HashOp>::Map()
-        : _data(new Data[MAP_INIT_BUF_SIZE])
-        , CurSize(MAP_INIT_BUF_SIZE)
+	HashMap<K, V, HashOp>::HashMap()
+        : _data(new Data[HASH_MAP_INIT_BUF_SIZE])
+        , CurSize(HASH_MAP_INIT_BUF_SIZE)
         , ElemCount(0)
     {
         _data[0].Empty = true;
@@ -91,15 +91,15 @@ namespace bpf
     }
 
     template <typename K, typename V, typename HashOp>
-    Map<K, V, HashOp>::~Map()
+	HashMap<K, V, HashOp>::~HashMap()
     {
         delete[] _data;
     }
 
     template <typename K, typename V, typename HashOp>
-    void Map<K, V, HashOp>::TryExtend()
+    void HashMap<K, V, HashOp>::TryExtend()
     {
-        if ((float)ElemCount / (float)CurSize >= MAP_LIMIT_UNTIL_EXTEND)
+        if ((float)ElemCount / (float)CurSize >= HASH_MAP_LIMIT_UNTIL_EXTEND)
         {
             Data *olddata = _data;
             CurSize <<= 1;
@@ -123,7 +123,7 @@ namespace bpf
     }
 
     template <typename K, typename V, typename HashOp>
-    fsize Map<K, V, HashOp>::QuadraticSearch(fsize hkey) const
+    fsize HashMap<K, V, HashOp>::QuadraticSearch(fsize hkey) const
     {
         for (fsize i = 0 ; i < CurSize ; ++i)
         {
@@ -135,7 +135,7 @@ namespace bpf
     }
 
     template <typename K, typename V, typename HashOp>
-    fsize Map<K, V, HashOp>::QuadraticInsert(fsize hkey)
+    fsize HashMap<K, V, HashOp>::QuadraticInsert(fsize hkey)
     {
         for (fsize i = 0 ; i < CurSize ; ++i)
         {
@@ -152,7 +152,7 @@ namespace bpf
     }
 
     template <typename K, typename V, typename HashOp>
-    void Map<K, V, HashOp>::Add(const K &key, const V &value)
+    void HashMap<K, V, HashOp>::Add(const K &key, const V &value)
     {
         fsize hkey = HashOp::HashCode(key);
 
@@ -168,7 +168,7 @@ namespace bpf
     }
 
     template <typename K, typename V, typename HashOp>
-    void Map<K, V, HashOp>::Add(const K &key, V &&value)
+    void HashMap<K, V, HashOp>::Add(const K &key, V &&value)
     {
         fsize hkey = HashOp::HashCode(key);
 
@@ -184,7 +184,7 @@ namespace bpf
     }
 
     template <typename K, typename V, typename HashOp>
-    void Map<K, V, HashOp>::Remove(const K &key)
+    void HashMap<K, V, HashOp>::Remove(const K &key)
     {
         fsize idx = QuadraticSearch(HashOp::HashCode(key));
 
@@ -196,7 +196,7 @@ namespace bpf
     }
 
     template <typename K, typename V, typename HashOp>
-    const V &Map<K, V, HashOp>::operator[](const K &key) const
+    const V &HashMap<K, V, HashOp>::operator[](const K &key) const
     {
         fsize idx = QuadraticSearch(HashOp::HashCode(key));
 
@@ -206,7 +206,7 @@ namespace bpf
     }
 
     template <typename K, typename V, typename HashOp>
-    V &Map<K, V, HashOp>::operator[](const K &key)
+    V &HashMap<K, V, HashOp>::operator[](const K &key)
     {
         fsize idx = QuadraticSearch(HashOp::HashCode(key));
 
@@ -222,7 +222,7 @@ namespace bpf
     }
 
     template <typename K, typename V, typename HashOp>
-    inline bool Map<K, V, HashOp>::HasKey(const K &key) const
+    inline bool HashMap<K, V, HashOp>::HasKey(const K &key) const
     {
         return (QuadraticSearch(HashOp::HashCode(key)) != (fsize)-1);
     }
