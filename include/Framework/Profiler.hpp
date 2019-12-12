@@ -31,7 +31,7 @@
 #include "Framework/String.hpp"
 #include "Framework/Stack.hpp"
 #include "Framework/Array.hpp"
-#include "Framework/Map.hpp"
+#include "Framework/HashMap.hpp"
 
 # ifdef BUILD_DEBUG
 #  define PROFILER_PUSH_SECTION(name) Framework::FProfiler::PushSection(name)
@@ -55,7 +55,7 @@ namespace bpf
     {
     private:
         uint32 CurCreationID;
-        Map<String, ProfilerSection> _map;
+        HashMap<String, ProfilerSection> _map;
         Stack<ProfilerSection> _stack = Stack<ProfilerSection>(32);
 
         void Push(const String &name);

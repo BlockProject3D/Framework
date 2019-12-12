@@ -27,6 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include <initializer_list>
 #include "Framework/Types.hpp"
 #include "Framework/Iterator.hpp"
 #include "Framework/IndexException.hpp"
@@ -117,6 +118,9 @@ namespace bpf
 
     public:
         HashMap();
+		//HashMap(const HashMap &other);
+		//HashMap(HashMap &&other);
+		explicit HashMap(const std::initializer_list<Entry> &entries);
         ~HashMap();
       
         /**
@@ -132,8 +136,21 @@ namespace bpf
          * Removes an element from the hash table
          * @param key the key of the element to remove
          */
-        void Remove(const K &key);
-      
+        void RemoveAt(const K &key);
+		void RemoveAt(Iterator &pos);
+		void RemoveAt(Iterator &&pos);
+
+		void Swap(const Iterator &a, const Iterator &b);
+
+		void Clear();
+
+		/**
+		 * Removes an element by value
+		 * @param value the value to search for
+		 * @param all wether to remove all occurances or just the first one
+		 */
+		void Remove(const V &value, const bool all = true);
+
         /**
          * Returns the element at the specified key, if no key exists in this hash table, throws
          * @param key the key of the element to return
@@ -141,6 +158,9 @@ namespace bpf
         const V &operator[](const K &key) const;
         
         V &operator[](const K &key);
+
+		//HashMap &operator=(const HashMap &other);
+		//HashMap &operator=(HashMap &&other);
       
         /**
          * Returns true if the specified key exists, false otherwise

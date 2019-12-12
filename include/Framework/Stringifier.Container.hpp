@@ -31,6 +31,7 @@
 #include "Framework/Array.hpp"
 #include "Framework/List.hpp"
 #include "Framework/ArrayList.hpp"
+#include "Framework/HashMap.hpp"
 
 namespace bpf
 {
@@ -87,6 +88,27 @@ namespace bpf
 					res += ", ";
 			}
 			res += "]";
+			return (res);
+		}
+	};
+
+	template <typename K, typename V>
+	class String::Stringifier<HashMap<K, V>>
+	{
+	public:
+		inline static String Stringify(const HashMap<K, V> &map)
+		{
+			String res = "{";
+			fsize i = 0;
+
+			for (auto &it : map)
+			{
+				res += '\'' + String::ValueOf(it.Key) + "': " + String::ValueOf(it.Value);
+				if (i < arr.Size() - 1)
+					res += ", ";
+				++i;
+			}
+			res += "}";
 			return (res);
 		}
 	};

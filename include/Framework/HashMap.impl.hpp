@@ -90,6 +90,13 @@ namespace bpf
         _data[1].Empty = true;
     }
 
+	template <typename K, typename V, typename HashOp>
+	HashMap<K, V, HashOp>::HashMap(const std::initializer_list<Entry> &entries)
+	{
+		for (auto &it : entries)
+			Add(it.Key, it.Value);
+	}
+
     template <typename K, typename V, typename HashOp>
 	HashMap<K, V, HashOp>::~HashMap()
     {
@@ -158,7 +165,7 @@ namespace bpf
 
         TryExtend();
         if (QuadraticSearch(hkey) != (fsize)-1)
-            Remove(key);
+            RemoveAt(key);
         fsize idx = QuadraticInsert(hkey);
         if (idx != (fsize)-1)
         {
@@ -174,7 +181,7 @@ namespace bpf
 
         TryExtend();
         if (QuadraticSearch(hkey) != (fsize)-1)
-            Remove(key);
+            RemoveAt(key);
         fsize idx = QuadraticInsert(hkey);
         if (idx != (fsize)-1)
         {
@@ -184,7 +191,7 @@ namespace bpf
     }
 
     template <typename K, typename V, typename HashOp>
-    void HashMap<K, V, HashOp>::Remove(const K &key)
+    void HashMap<K, V, HashOp>::RemoveAt(const K &key)
     {
         fsize idx = QuadraticSearch(HashOp::HashCode(key));
 
@@ -194,6 +201,49 @@ namespace bpf
             _data[idx].Empty = true;
         }
     }
+
+	template <typename K, typename V, typename HashOp>
+	void HashMap<K, V, HashOp>::RemoveAt(Iterator &pos)
+	{
+		auto cur = pos;
+
+		++pos;
+		RemoveAt(cur->Key);
+	}
+
+	template <typename K, typename V, typename HashOp>
+	void HashMap<K, V, HashOp>::RemoveAt(Iterator &&pos)
+	{
+		auto cur = pos;
+
+		++pos;
+		RemoveAt(cur->Key);
+	}
+
+	template <typename K, typename V, typename HashOp>
+	void HashMap<K, V, HashOp>::Swap(const Iterator &a, const Iterator &b)
+	{
+		auto v = std::move(*this[a->Key]);
+		*this[a->Key] = std::move(*this[b->Key]);
+		*this[b->Key] = std::move(v);
+	}
+
+	template <typename K, typename V, typename HashOp>
+	void HashMap<K, V, HashOp>::Clear()
+	{
+		delete[] _data;
+		_data = new Data[HASH_MAP_INIT_BUF_SIZE];
+		CurSize = HASH_MAP_INIT_BUF_SIZE;
+		ElemCount = 0;
+		_data[0].Empty = true;
+		_data[1].Empty = true;
+	}
+
+	template <typename K, typename V, typename HashOp>
+	void HashMap<K, V, HashOp>::Remove(const V &value, const bool all = true)
+	{
+		
+	}
 
     template <typename K, typename V, typename HashOp>
     const V &HashMap<K, V, HashOp>::operator[](const K &key) const

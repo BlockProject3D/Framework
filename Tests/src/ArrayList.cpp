@@ -410,3 +410,31 @@ TEST(ArrayList, Swap_Err_2)
 	lst.Sort();
 	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[-67, -5, -1, 0, 0, 1, 3, 7, 9]");
 }*/
+
+static void Test_CopyMoveObj_MemLeak()
+{
+	bpf::ArrayList<bpf::String> lst = { "a", "b", "c" };
+
+	lst.Add("d");
+	bpf::ArrayList<bpf::String> cpy = lst;
+	EXPECT_EQ(lst.Size(), cpy.Size());
+	EXPECT_EQ(lst.Size(), 4);
+	bpf::ArrayList<bpf::String> mv = std::move(lst);
+	EXPECT_EQ(lst.Size(), 0);
+	EXPECT_EQ(mv.Size(), 4);
+	EXPECT_EQ(cpy.Size(), 4);
+	cpy.Add("e");
+	EXPECT_EQ(cpy.Size(), 5);
+	EXPECT_EQ(mv.Size(), 4);
+	EXPECT_EQ(lst.Size(), 0);
+	EXPECT_STREQ(*bpf::String::ValueOf(mv), "[a, b, c, d]");
+	EXPECT_STREQ(*bpf::String::ValueOf(cpy), "[a, b, c, d, e]");
+}
+
+TEST(ArrayList, Test_CopyMoveObj_MemLeak)
+{
+	bpf::fsize cur = bpf::Memory::GetAllocCount();
+
+	Test_CopyMoveObj_MemLeak();
+	EXPECT_EQ(cur, bpf::Memory::GetAllocCount());
+}

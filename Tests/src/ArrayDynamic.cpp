@@ -340,3 +340,31 @@ TEST(ArrayDynamic, ReadWrite_NonCopy_MemLeak)
     Test_ReadWrite_NonCopy_MemLeak();
     EXPECT_EQ(cur, bpf::Memory::GetAllocCount());
 }
+
+static void Test_CopyMoveObj_MemLeak()
+{
+	bpf::Array<bpf::String> lst = { "a", "b", "c" };
+
+	lst[3] = "d";
+	bpf::Array<bpf::String> cpy = lst;
+	EXPECT_EQ(lst.Size(), cpy.Size());
+	EXPECT_EQ(lst.Size(), 4);
+	bpf::Array<bpf::String> mv = std::move(lst);
+	EXPECT_EQ(lst.Size(), 0);
+	EXPECT_EQ(mv.Size(), 4);
+	EXPECT_EQ(cpy.Size(), 4);
+	cpy[4] = "e";
+	EXPECT_EQ(cpy.Size(), 5);
+	EXPECT_EQ(mv.Size(), 4);
+	EXPECT_EQ(lst.Size(), 0);
+	EXPECT_STREQ(*bpf::String::ValueOf(mv), "[a, b, c, d]");
+	EXPECT_STREQ(*bpf::String::ValueOf(cpy), "[a, b, c, d, e]");
+}
+
+TEST(ArrayDynamic, Test_CopyMoveObj_MemLeak)
+{
+	bpf::fsize cur = bpf::Memory::GetAllocCount();
+
+	Test_CopyMoveObj_MemLeak();
+	EXPECT_EQ(cur, bpf::Memory::GetAllocCount());
+}
