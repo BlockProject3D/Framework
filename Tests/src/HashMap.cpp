@@ -83,10 +83,6 @@ TEST(HashMap, Indexer)
 	EXPECT_EQ(lst[0], 0);
 	EXPECT_EQ(lst[1], 3);
 	EXPECT_EQ(lst[2], 7);
-	EXPECT_THROW(lst[3], bpf::IndexException);
-	EXPECT_THROW(lst[678], bpf::IndexException);
-	EXPECT_THROW(lst[(bpf::fsize) - 1], bpf::IndexException);
-	EXPECT_THROW(lst[(bpf::fsize) - 465], bpf::IndexException);
 }
 
 TEST(HashMap, HasKey)
@@ -137,7 +133,7 @@ TEST(HashMap, Remove)
 	bpf::HashMap<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
 
 	lst.Remove(0, false);
-	EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'0': 3, '1': 7, '2': 0}");
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'1': 3, '2': 7, '3': 0}");
 	lst.Add(0, 0);
 	EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'0': 0, '1': 3, '2': 7, '3': 0}");
 	lst.Remove(0);
@@ -154,7 +150,7 @@ TEST(HashMap, RemoveAt)
 	EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'0': 0, '3': 0}");
 	auto it = lst.begin();
 	lst.RemoveAt(it);
-	EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'0': 0}");
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'3': 0}");
 	EXPECT_NE(it, lst.end());
 	lst.RemoveAt(--lst.end());
 	EXPECT_STREQ(*bpf::String::ValueOf(lst), "{}");
@@ -165,7 +161,7 @@ TEST(HashMap, RemoveAt)
 	EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'0': 0, '1': 3, '3': 0}");
 }
 
-TEST(HashMap, Iterator)
+TEST(HashMap, Iterator_1)
 {
 	bpf::HashMap<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
 
@@ -185,9 +181,49 @@ TEST(HashMap, Iterator)
 	EXPECT_EQ(it, --lst.end());
 }
 
-TEST(HashMap, ReverseIterator)
+TEST(HashMap, Iterator_2)
+{
+	bpf::HashMap<int, int> lst = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+
+	auto it = lst.begin();
+	++it;
+	--it;
+	EXPECT_EQ(it, lst.begin());
+	--it;
+	++it;
+	EXPECT_EQ(it, ++lst.begin());
+	it = lst.end();
+	--it;
+	++it;
+	EXPECT_EQ(it, lst.end());
+	++it;
+	--it;
+	EXPECT_EQ(it, --lst.end());
+}
+
+TEST(HashMap, ReverseIterator_1)
 {
 	bpf::HashMap<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
+
+	auto it = lst.rbegin();
+	++it;
+	--it;
+	EXPECT_EQ(it, lst.rbegin());
+	--it;
+	++it;
+	EXPECT_EQ(it, ++lst.rbegin());
+	it = lst.rend();
+	--it;
+	++it;
+	EXPECT_EQ(it, lst.rend());
+	++it;
+	--it;
+	EXPECT_EQ(it, --lst.rend());
+}
+
+TEST(HashMap, ReverseIterator_2)
+{
+	bpf::HashMap<int, int> lst = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
 
 	auto it = lst.rbegin();
 	++it;
@@ -215,7 +251,7 @@ TEST(HashMap, Clear)
 	EXPECT_EQ(lst.begin(), lst.end());
 }
 
-TEST(List, IterateForward_Test1)
+TEST(HashMap, IterateForward_Test1)
 {
 	int res = 0;
 	bpf::HashMap<int, int> lst;

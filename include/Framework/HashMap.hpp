@@ -33,7 +33,6 @@
 #include "Framework/IndexException.hpp"
 #include "Framework/Hash.hpp"
 
-//TODO : Use bpf::fsize for sizes
 namespace bpf
 {
     constexpr fint HASH_MAP_INIT_BUF_SIZE = 2;
@@ -61,21 +60,13 @@ namespace bpf
         protected:
             Data *_data;
             fsize MaxSize;
+			fsize MinSize;
             fsize CurID;
             void SearchNextEntry();
             void SearchPrevEntry();
 
         public:
-            inline Iterator(Data *data, fsize start, fsize size, const bool reverse = false)
-                : _data(data)
-                , MaxSize(size)
-                , CurID(start)
-            {
-                if (reverse)
-                    SearchPrevEntry();
-                else
-                    SearchNextEntry();
-            }
+			Iterator(Data *data, fsize start, fsize size, const bool reverse = false);
             Iterator &operator++();
 			Iterator &operator--();
             inline const Entry &operator*() const
@@ -94,6 +85,8 @@ namespace bpf
             {
                 return (CurID != other.CurID);
             }
+
+			friend class HashMap<K, V, HashOp>;
         };
 
         class BP_TPL_API ReverseIterator final : public Iterator
@@ -105,6 +98,8 @@ namespace bpf
             }
 			ReverseIterator &operator++();
 			ReverseIterator &operator--();
+
+			friend class HashMap<K, V, HashOp>;
         };
 
     private:
@@ -118,9 +113,9 @@ namespace bpf
 
     public:
         HashMap();
-		//HashMap(const HashMap &other);
-		//HashMap(HashMap &&other);
-		explicit HashMap(const std::initializer_list<Entry> &entries);
+		HashMap(const HashMap &other);
+		HashMap(HashMap &&other);
+		HashMap(const std::initializer_list<Entry> &entries);
         ~HashMap();
       
         /**
@@ -159,8 +154,8 @@ namespace bpf
         
         V &operator[](const K &key);
 
-		//HashMap &operator=(const HashMap &other);
-		//HashMap &operator=(HashMap &&other);
+		HashMap &operator=(const HashMap &other);
+		HashMap &operator=(HashMap &&other);
       
         /**
          * Returns true if the specified key exists, false otherwise

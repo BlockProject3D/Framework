@@ -101,10 +101,10 @@ namespace bpf
 			String res = "{";
 			fsize i = 0;
 
-			for (auto &it : map)
+			for (auto &entry : map)
 			{
-				res += '\'' + String::ValueOf(it.Key) + "': " + String::ValueOf(it.Value);
-				if (i < arr.Size() - 1)
+				res += String('\'') + String::ValueOf(entry.Key) + "': " + String::ValueOf(entry.Value);
+				if (i < map.Size() - 1)
 					res += ", ";
 				++i;
 			}

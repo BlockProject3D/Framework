@@ -30,6 +30,28 @@
 
 namespace bpf
 {
+	template <typename K, typename V, typename HashOp>
+	HashMap<K, V, HashOp>::Iterator::Iterator(Data *data, fsize start, fsize size, const bool reverse)
+		: _data(data)
+		, MaxSize(size)
+		, CurID(start)
+	{
+		if (reverse)
+		{
+			SearchPrevEntry();
+			MaxSize = CurID;
+		}
+		else
+		{
+			fsize old = CurID;
+			CurID = 0;
+			SearchNextEntry();
+			MinSize = CurID;
+			CurID = old;
+			SearchNextEntry();
+		}
+	}
+
     template <typename K, typename V, typename HashOp>
     void HashMap<K, V, HashOp>::Iterator::SearchNextEntry()
     {
@@ -47,36 +69,44 @@ namespace bpf
     template <typename K, typename V, typename HashOp>
 	typename HashMap<K, V, HashOp>::ReverseIterator &HashMap<K, V, HashOp>::ReverseIterator::operator++()
     {
-        if (Iterator::CurID != (fsize)-1)
-            --Iterator::CurID;
-        Iterator::SearchPrevEntry();
+		if (Iterator::CurID != (fsize)-1)
+		{
+			--Iterator::CurID;
+			Iterator::SearchPrevEntry();
+		}
 		return (*this);
     }
 
     template <typename K, typename V, typename HashOp>
 	typename HashMap<K, V, HashOp>::ReverseIterator &HashMap<K, V, HashOp>::ReverseIterator::operator--()
     {
-        if (Iterator::CurID < Iterator::MaxSize)
-            ++Iterator::CurID;
-        Iterator::SearchNextEntry();
+		if (Iterator::CurID < Iterator::MaxSize)
+		{
+			++Iterator::CurID;
+			Iterator::SearchNextEntry();
+		}
 		return (*this);
     }
 
     template <typename K, typename V, typename HashOp>
 	typename HashMap<K, V, HashOp>::Iterator &HashMap<K, V, HashOp>::Iterator::operator++()
     {
-        if (CurID < MaxSize)
-            ++CurID;
-        SearchNextEntry();
+		if (CurID < MaxSize)
+		{
+			++CurID;
+			SearchNextEntry();
+		}
 		return (*this);
     }
     
     template <typename K, typename V, typename HashOp>
 	typename HashMap<K, V, HashOp>::Iterator &HashMap<K, V, HashOp>::Iterator::operator--()
     {
-        if (CurID > 0)
-            --CurID;
-        SearchPrevEntry();
+		if (CurID > MinSize)
+		{
+			--CurID;
+			SearchPrevEntry();
+		}
 		return (*this);
     }
 
@@ -92,9 +122,60 @@ namespace bpf
 
 	template <typename K, typename V, typename HashOp>
 	HashMap<K, V, HashOp>::HashMap(const std::initializer_list<Entry> &entries)
+		: _data(new Data[HASH_MAP_INIT_BUF_SIZE])
+		, CurSize(HASH_MAP_INIT_BUF_SIZE)
+		, ElemCount(0)
 	{
-		for (auto &it : entries)
-			Add(it.Key, it.Value);
+		_data[0].Empty = true;
+		_data[1].Empty = true;
+		for (auto &entry : entries)
+			Add(entry.Key, entry.Value);
+	}
+
+	template <typename K, typename V, typename HashOp>
+	HashMap<K, V, HashOp>::HashMap(const HashMap &other)
+		: _data(new Data[HASH_MAP_INIT_BUF_SIZE])
+		, CurSize(HASH_MAP_INIT_BUF_SIZE)
+		, ElemCount(0)
+	{
+		for (auto &entry : other)
+			Add(entry.Key, entry.Value);
+	}
+
+	template <typename K, typename V, typename HashOp>
+	HashMap<K, V, HashOp> &HashMap<K, V, HashOp>::operator=(const HashMap &other)
+	{
+		delete[] _data;
+		_data = new Data[HASH_MAP_INIT_BUF_SIZE];
+		CurSize = HASH_MAP_INIT_BUF_SIZE;
+		ElemCount = 0;
+		for (auto &entry : other)
+			Add(entry.Key, entry.Value);
+		return (*this);
+	}
+
+	template <typename K, typename V, typename HashOp>
+	HashMap<K, V, HashOp>::HashMap(HashMap &&other)
+		: _data(other._data)
+		, CurSize(other.CurSize)
+		, ElemCount(other.ElemCount)
+	{
+		other._data = Null;
+		other.CurSize = 0;
+		other.ElemCount = 0;
+	}
+
+	template <typename K, typename V, typename HashOp>
+	HashMap<K, V, HashOp> &HashMap<K, V, HashOp>::operator=(HashMap &&other)
+	{
+		delete[] _data;
+		_data = other._data;
+		CurSize = other.CurSize;
+		ElemCount = other.ElemCount;
+		other._data = Null;
+		other.CurSize = 0;
+		other.ElemCount = 0;
+		return (*this);
 	}
 
     template <typename K, typename V, typename HashOp>
@@ -120,7 +201,7 @@ namespace bpf
                     fsize id = QuadraticInsert(olddata[i].Hash);
                     if (id != (fsize)-1)
                     {
-		        _data[id].KeyVal.Key = std::move(olddata[i].KeyVal.Key);
+						_data[id].KeyVal.Key = std::move(olddata[i].KeyVal.Key);
                         _data[id].KeyVal.Value = std::move(olddata[i].KeyVal.Value);
                     }
                 }
@@ -151,7 +232,6 @@ namespace bpf
             {
                 _data[index].Hash = hkey;
                 _data[index].Empty = false;
-                ++ElemCount;
                 return ((int)index);
             }
         }
@@ -171,6 +251,7 @@ namespace bpf
         {
             _data[idx].KeyVal.Value = value;
             _data[idx].KeyVal.Key = key;
+			++ElemCount;
         }
     }
 
@@ -187,6 +268,7 @@ namespace bpf
         {
             _data[idx].KeyVal.Value = std::move(value);
             _data[idx].KeyVal.Key = key;
+			++ElemCount;
         }
     }
 
@@ -223,9 +305,12 @@ namespace bpf
 	template <typename K, typename V, typename HashOp>
 	void HashMap<K, V, HashOp>::Swap(const Iterator &a, const Iterator &b)
 	{
-		auto v = std::move(*this[a->Key]);
-		*this[a->Key] = std::move(*this[b->Key]);
-		*this[b->Key] = std::move(v);
+		if (a.CurID >= CurSize || b.CurID >= CurSize
+			|| _data[a.CurID].Empty || _data[b.CurID].Empty)
+			return;
+		auto v = std::move(this->operator[](a->Key));
+		this->operator[](a->Key) = std::move(this->operator[](b->Key));
+		this->operator[](b->Key) = std::move(v);
 	}
 
 	template <typename K, typename V, typename HashOp>
@@ -240,9 +325,17 @@ namespace bpf
 	}
 
 	template <typename K, typename V, typename HashOp>
-	void HashMap<K, V, HashOp>::Remove(const V &value, const bool all = true)
+	void HashMap<K, V, HashOp>::Remove(const V &value, const bool all)
 	{
-		
+		for (auto &entry : *this)
+		{
+			if (entry.Value == value)
+			{
+				RemoveAt(entry.Key);
+				if (!all)
+					return;
+			}
+		}
 	}
 
     template <typename K, typename V, typename HashOp>
@@ -267,6 +360,7 @@ namespace bpf
             if (idx == (fsize)-1)
                 throw bpf::IndexException((fint)idx);
             _data[idx].KeyVal.Key = key;
+			++ElemCount;
         }
         return (_data[idx].KeyVal.Value);
     }
