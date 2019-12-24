@@ -55,14 +55,14 @@ namespace bpf
     template <typename K, typename V, typename HashOp>
     void HashMap<K, V, HashOp>::Iterator::SearchNextEntry()
     {
-        while (CurID < MaxSize && _data[CurID].Empty)
+        while (CurID < MaxSize && _data[CurID].State != ENTRY_STATE_OCCUPIED)
             ++CurID;
     }
 
     template <typename K, typename V, typename HashOp>
     void HashMap<K, V, HashOp>::Iterator::SearchPrevEntry()
     {
-        while (CurID != (fsize)-1 && _data[CurID].Empty)
+        while (CurID != (fsize)-1 && _data[CurID].State != ENTRY_STATE_OCCUPIED)
             --CurID;
     }
 
@@ -116,8 +116,8 @@ namespace bpf
         , CurSize(HASH_MAP_INIT_BUF_SIZE)
         , ElemCount(0)
     {
-        _data[0].Empty = true;
-        _data[1].Empty = true;
+        _data[0].State = ENTRY_STATE_NON_EXISTANT;
+        _data[1].State = ENTRY_STATE_NON_EXISTANT;
     }
 
 	template <typename K, typename V, typename HashOp>
@@ -126,8 +126,8 @@ namespace bpf
 		, CurSize(HASH_MAP_INIT_BUF_SIZE)
 		, ElemCount(0)
 	{
-		_data[0].Empty = true;
-		_data[1].Empty = true;
+		_data[0].State = ENTRY_STATE_NON_EXISTANT;
+		_data[1].State = ENTRY_STATE_NON_EXISTANT;
 		for (auto &entry : entries)
 			Add(entry.Key, entry.Value);
 	}
@@ -138,6 +138,8 @@ namespace bpf
 		, CurSize(HASH_MAP_INIT_BUF_SIZE)
 		, ElemCount(0)
 	{
+		_data[0].State = ENTRY_STATE_NON_EXISTANT;
+		_data[1].State = ENTRY_STATE_NON_EXISTANT;
 		for (auto &entry : other)
 			Add(entry.Key, entry.Value);
 	}
@@ -147,6 +149,8 @@ namespace bpf
 	{
 		delete[] _data;
 		_data = new Data[HASH_MAP_INIT_BUF_SIZE];
+		_data[0].State = ENTRY_STATE_NON_EXISTANT;
+		_data[1].State = ENTRY_STATE_NON_EXISTANT;
 		CurSize = HASH_MAP_INIT_BUF_SIZE;
 		ElemCount = 0;
 		for (auto &entry : other)
@@ -193,10 +197,10 @@ namespace bpf
             CurSize <<= 1;
             _data = new Data[CurSize];
             for (fsize i = 0 ; i < CurSize; ++i)
-                _data[i].Empty = true;
+                _data[i].State = ENTRY_STATE_NON_EXISTANT;
             for (fsize i = 0 ; i < CurSize >> 1 ; ++i)
             {
-                if (!olddata[i].Empty)
+                if (olddata[i].State == ENTRY_STATE_OCCUPIED)
                 {
                     fsize id = QuadraticInsert(olddata[i].Hash);
                     if (id != (fsize)-1)
@@ -216,7 +220,9 @@ namespace bpf
         for (fsize i = 0 ; i < CurSize ; ++i)
         {
             fsize index = (hkey + ((i * i + i) / 2)) % CurSize;
-            if (!_data[index].Empty && _data[index].Hash == hkey)
+			if (_data[index].State == ENTRY_STATE_NON_EXISTANT)
+				break;
+            if (_data[index].State == ENTRY_STATE_OCCUPIED && _data[index].Hash == hkey)
                 return (index);
         }
         return ((fsize)-1);
@@ -228,10 +234,11 @@ namespace bpf
         for (fsize i = 0 ; i < CurSize ; ++i)
         {
             fsize index = (hkey + ((i * i + i) / 2)) % CurSize;
-            if (_data[index].Empty)
+            if (_data[index].State == ENTRY_STATE_NON_EXISTANT
+				|| _data[index].State == ENTRY_STATE_INSTANCE_DELETE)
             {
                 _data[index].Hash = hkey;
-                _data[index].Empty = false;
+                _data[index].State = ENTRY_STATE_OCCUPIED;
                 return ((int)index);
             }
         }
@@ -244,14 +251,17 @@ namespace bpf
         fsize hkey = HashOp::HashCode(key);
 
         TryExtend();
-        if (QuadraticSearch(hkey) != (fsize)-1)
-            RemoveAt(key);
-        fsize idx = QuadraticInsert(hkey);
+        fsize idx = QuadraticSearch(hkey);
+		if (idx == (fsize)-1)
+		{
+			idx = QuadraticInsert(hkey);
+			if (idx != (fsize)-1)
+				++ElemCount;
+		}
         if (idx != (fsize)-1)
         {
             _data[idx].KeyVal.Value = value;
             _data[idx].KeyVal.Key = key;
-			++ElemCount;
         }
     }
 
@@ -261,14 +271,17 @@ namespace bpf
         fsize hkey = HashOp::HashCode(key);
 
         TryExtend();
-        if (QuadraticSearch(hkey) != (fsize)-1)
-            RemoveAt(key);
-        fsize idx = QuadraticInsert(hkey);
-        if (idx != (fsize)-1)
+        fsize idx = QuadraticSearch(hkey);
+		if (idx == (fsize)-1)
+		{
+			idx = QuadraticInsert(hkey);
+			if (idx != (fsize)-1)
+				++ElemCount;
+		}
+		if (idx != (fsize)-1)
         {
             _data[idx].KeyVal.Value = std::move(value);
             _data[idx].KeyVal.Key = key;
-			++ElemCount;
         }
     }
 
@@ -280,7 +293,7 @@ namespace bpf
         if (idx != (fsize)-1)
         {
             --ElemCount;
-            _data[idx].Empty = true;
+            _data[idx].State = ENTRY_STATE_INSTANCE_DELETE;
         }
     }
 
@@ -290,7 +303,8 @@ namespace bpf
 		auto cur = pos;
 
 		++pos;
-		RemoveAt(cur->Key);
+		if (cur.CurID < CurSize && _data[cur.CurID].State == ENTRY_STATE_OCCUPIED)
+			RemoveAt(cur->Key);
 	}
 
 	template <typename K, typename V, typename HashOp>
@@ -299,14 +313,16 @@ namespace bpf
 		auto cur = pos;
 
 		++pos;
-		RemoveAt(cur->Key);
+		if (cur.CurID < CurSize && _data[cur.CurID].State == ENTRY_STATE_OCCUPIED)
+			RemoveAt(cur->Key);
 	}
 
 	template <typename K, typename V, typename HashOp>
 	void HashMap<K, V, HashOp>::Swap(const Iterator &a, const Iterator &b)
 	{
 		if (a.CurID >= CurSize || b.CurID >= CurSize
-			|| _data[a.CurID].Empty || _data[b.CurID].Empty)
+			|| _data[a.CurID].State != ENTRY_STATE_OCCUPIED
+			|| _data[b.CurID].State != ENTRY_STATE_OCCUPIED)
 			return;
 		auto v = std::move(this->operator[](a->Key));
 		this->operator[](a->Key) = std::move(this->operator[](b->Key));
@@ -320,8 +336,8 @@ namespace bpf
 		_data = new Data[HASH_MAP_INIT_BUF_SIZE];
 		CurSize = HASH_MAP_INIT_BUF_SIZE;
 		ElemCount = 0;
-		_data[0].Empty = true;
-		_data[1].Empty = true;
+		_data[0].State = ENTRY_STATE_NON_EXISTANT;
+		_data[1].State = ENTRY_STATE_NON_EXISTANT;
 	}
 
 	template <typename K, typename V, typename HashOp>

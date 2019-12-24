@@ -48,10 +48,17 @@ namespace bpf
             V Value;
         };
 
+		enum EntryState
+		{
+			ENTRY_STATE_INSTANCE_DELETE,
+			ENTRY_STATE_NON_EXISTANT,
+			ENTRY_STATE_OCCUPIED
+		};
+
         struct BP_TPL_API Data
         {
             fsize Hash;
-            bool Empty;
+            EntryState State;
             Entry KeyVal;
         };
 
