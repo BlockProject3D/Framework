@@ -128,29 +128,35 @@ namespace bpf
     }
 
     template <typename T>
-    inline T &Array<T>::operator[](const fsize id) const
+    inline const T &Array<T>::operator[](const fsize id) const
     {
         if (id >= _size)
             throw IndexException(static_cast<fisize>(id));
         return (_arr[id]);
     }
 
+	template <typename T>
+	void Array<T>::Resize(const fsize newSize)
+	{
+		if (_size == newSize)
+			return;
+		T *tmp = _arr;
+		_arr = new T[newSize];
+		for (fsize i = 0; i < ((newSize < _size) ? newSize : _size); ++i)
+			_arr[i] = std::move(tmp[i]);
+		for (fsize i = _size; i < newSize; ++i)
+			_arr[i] = DefaultOf<T>();
+		_size = newSize;
+		delete[] tmp;
+	}
+
     template <typename T>
     T &Array<T>::operator[](const fsize id)
     {
-        if (id >= _size)
-        {
-            T *tmp = _arr;
-            _arr = new T[id + 1];
-            for (fsize i = 0 ; i < _size ; ++i)
-                _arr[i] = std::move(tmp[i]);
-            for (fsize i = _size ; i < id + 1 ; ++i)
-                _arr[i] = DefaultOf<T>();
-            _size = id + 1;
-            delete[] tmp;
-        }
-        return (_arr[id]);
-    }
+		if (id >= _size)
+			throw IndexException(static_cast<fisize>(id));
+		return (_arr[id]);
+	}
 
 	template <typename T, fsize I>
 	void Array<T, I>::Swap(const Iterator &a, const Iterator &b)

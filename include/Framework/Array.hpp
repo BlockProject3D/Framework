@@ -346,13 +346,19 @@ namespace bpf
          * Returns an element const mode
          * @param id the index of the element, in case of out of bounds, throws
          */
-        T &operator[](const fsize id) const;
+        const T &operator[](const fsize id) const;
 
         /**
          * Returns an element non-const mode
-         * @param id the index of the element, in case of out of bounds, re-sizes the array
+         * @param id the index of the element, in case of out of bounds, throws
          */
         T &operator[](const fsize id);
+
+		/**
+		 * Resizes the array to a different size
+		 * @param newSize the new array size
+		 */
+		void Resize(const fsize newSize);
 
 		inline T &First()
 		{

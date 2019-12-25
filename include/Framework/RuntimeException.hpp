@@ -35,8 +35,8 @@ namespace bpf
     class BPF_API RuntimeException : public Exception
     {
     private:
-        String Type;
-        String Message;
+        String _type;
+        String _message;
 
     public:
         virtual ~RuntimeException() {}
@@ -45,14 +45,14 @@ namespace bpf
         /**
          * Returns the exception's message
          */
-        inline const String &GetMessage() const
+        inline const String &Message() const
         {
-            return (Message);
+            return (_message);
         }
 
-        inline const char *GetType() const noexcept override
+        inline const char *Type() const noexcept override
         {
-            return (*Type);
+            return (*_type);
         }
         //virtual void Log(Framework::FLogger &logger) const override;
     };

@@ -64,6 +64,8 @@ namespace bpf
 	template <typename T>
 	void ArrayList<T>::Insert(const fsize pos, const T &elem)
 	{
+		if (_curid + 1 >= _arr.Size())
+			_arr.Resize(_arr.Size() * 2);
 		for (fsize i = _curid; i > pos; --i)
 			_arr[i] = _arr[i - 1];
 		_arr[pos] = elem;
@@ -73,6 +75,8 @@ namespace bpf
 	template <typename T>
 	void ArrayList<T>::Insert(const fsize pos, T &&elem)
 	{
+		if (_curid + 1 >= _arr.Size())
+			_arr.Resize(_arr.Size() * 2);
 		for (fsize i = _curid; i > pos; --i)
 			_arr[i] = _arr[i - 1];
 		_arr[pos] = std::move(elem);
@@ -82,6 +86,8 @@ namespace bpf
 	template <typename T>
 	void ArrayList<T>::Insert(const Iterator &pos, const T &elem)
 	{
+		if (_curid + 1 >= _arr.Size())
+			_arr.Resize(_arr.Size() * 2);
 		for (fsize i = _curid; i > pos._curid; --i)
 			_arr[i] = _arr[i - 1];
 		_arr[pos._curid] = elem;
@@ -91,6 +97,8 @@ namespace bpf
 	template <typename T>
 	void ArrayList<T>::Insert(const Iterator &pos, T &&elem)
 	{
+		if (_curid + 1 >= _arr.Size())
+			_arr.Resize(_arr.Size() * 2);
 		for (fsize i = _curid; i > pos._curid; --i)
 			_arr[i] = _arr[i - 1];
 		_arr[pos._curid] = std::move(elem);

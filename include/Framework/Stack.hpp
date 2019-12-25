@@ -27,7 +27,8 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Array.hpp"
+#include "Framework/ArrayList.hpp"
+#include "Framework/StackException.hpp"
 
 namespace bpf
 {
@@ -35,53 +36,41 @@ namespace bpf
     class BP_TPL_API Stack
     {
     private:
-        T *Content;
-        fsize MaxSize;
-        fsize CurSize;
-        fsize CurPtr;
-        
+        fsize _maxSize;
+        ArrayList<T> _data;
+
     public:
         explicit Stack(const fsize maxsize);
-		Stack(const std::initializer_list<T> &lst);
-        ~Stack();
-        void Push(const T &element);
-		void Push(T &&element);
+        Stack(const std::initializer_list<T> &lst);
+
+		/**
+		 * Pushes an element on the stack
+		 */
+		void Push(const T &element);
+
+        /**
+         * Pushes an element on the stack
+         */
+        void Push(T &&element);
+
+        /**
+         * Extracts the top of the stack
+         */
         T Pop();
 
-        inline const T &operator[](const fsize id) const
+        /**
+         * Returns the top of the stack
+         */
+        inline T &Top() const
         {
-            if (id >= MaxSize)
-                throw IndexException((fint)id);
-            return (Content[CurPtr + 1 + id]);
-        }
-
-        inline T &Last() const
-        {
-			if (Size() <= 0)
-				throw IndexException(0);
-            return (Content[CurPtr + 1]);
-        }
-
-        inline T &First() const
-        {
-			if (Size() <= 0)
-				throw IndexException(0);
-            return (Content[0]);
+            if (Size() <= 0)
+                throw IndexException(0);
+            return (_data.Last());
         }
 
         inline fsize Size() const
         {
-            return (CurSize);
-        }
-
-        inline typename Array<T>::Iterator Begin() const
-        {
-            return (typename Array<T>::Iterator(Content, MaxSize, 0));
-        }
-
-        inline typename Array<T>::Iterator End() const
-        {
-            return (typename Array<T>::Iterator(Content, MaxSize, MaxSize - 1));
+            return (_data.Size());
         }
     };
 };

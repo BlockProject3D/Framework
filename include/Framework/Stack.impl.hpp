@@ -32,58 +32,41 @@ namespace bpf
 {
     template <typename T>
     inline Stack<T>::Stack(const fsize maxsize)
-        : Content(new T[maxsize])
-        , MaxSize(maxsize)
-        , CurSize(0)
-        , CurPtr(MaxSize - 1)
+        : _maxSize(maxsize)
     {
     }
 
-	template <typename T>
-	Stack<T>::Stack(const std::initializer_list<T>& lst)
-		: Content(new T[lst.size()])
-		, MaxSize(lst.size())
-		, CurSize(0)
-		, CurPtr(MaxSize - 1)
-	{
-		for (auto& elem : lst)
-			Push(elem);
-	}
-
     template <typename T>
-    inline Stack<T>::~Stack()
+    Stack<T>::Stack(const std::initializer_list<T>& lst)
+        : _maxSize(0)
     {
-        delete[] Content;
+        for (auto& elem : lst)
+            Push(elem);
     }
 
     template <typename T>
     void Stack<T>::Push(const T &element)
     {
-        if (CurSize >= MaxSize)
-            return;
-        Content[CurPtr] = element;
-        --CurPtr;
-        ++CurSize;
+        if (_maxSize > 0 && _data.Size() >= _maxSize)
+            throw StackOverflowException(_maxSize);
+        _data.Add(element);
     }
 
 	template <typename T>
 	void Stack<T>::Push(T &&element)
 	{
-		if (CurSize >= MaxSize)
-			return;
-		Content[CurPtr] = std::move(element);
-		--CurPtr;
-		++CurSize;
-	}
+        if (_maxSize > 0 && _data.Size() >= _maxSize)
+            throw StackOverflowException(_maxSize);
+        _data.Add(std::move(element));
+    }
 
     template <typename T>
     T Stack<T>::Pop()
     {
-        if (CurSize > 0)
-        {
-            --CurSize;
-            ++CurPtr;
-        }
-        return (std::move(Content[CurPtr]));
+        if (_data.Size() == 0)
+            throw StackUnderflowException();
+        auto ref = std::move(_data.Last());
+        _data.RemoveLast();
+        return (std::move(ref));
     }
 }

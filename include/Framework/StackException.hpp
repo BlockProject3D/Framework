@@ -27,17 +27,49 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/Types.hpp"
 #include "Framework/Exception.hpp"
 
 namespace bpf
 {
-    class BPF_API MemoryException final : public Exception
+    class BPF_API StackOverflowException final : public Exception
     {
+    private:
+        fisize _size;
+
     public:
-        inline MemoryException() {}
-        inline const char *Type() const noexcept override
+        explicit inline StackOverflowException(const fisize size) noexcept
+            : Exception()
+            , _size(size)
         {
-            return ("Memory");
         }
+
+        fisize Size() const noexcept
+        {
+            return (_size);
+        }
+
+        const char *Type() const noexcept
+        {
+            return ("StackOverflow");
+        }
+
+        //void Log(Framework::FLogger &logger) const;
     };
+
+	class BPF_API StackUnderflowException final : public Exception
+	{
+	public:
+		explicit inline StackUnderflowException() noexcept
+			: Exception()
+		{
+		}
+
+		const char *Type() const noexcept
+		{
+			return ("StackUnderflow");
+		}
+
+		//void Log(Framework::FLogger &logger) const;
+	};
 }
