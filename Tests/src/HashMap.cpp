@@ -54,6 +54,14 @@ TEST(HashMap, Creation_2)
 	EXPECT_EQ(lst[2], 7);
 }
 
+TEST(HashMap, PreHash)
+{
+	EXPECT_NE(bpf::Hash<bpf::String>::HashCode("B"), bpf::Hash<bpf::String>::HashCode("C"));
+	EXPECT_NE(bpf::Hash<bpf::String>::HashCode("a"), bpf::Hash<bpf::String>::HashCode("b"));
+	EXPECT_NE(bpf::Hash<bpf::String>::HashCode("a"), bpf::Hash<bpf::String>::HashCode("aa"));
+	EXPECT_NE(bpf::Hash<bpf::String>::HashCode("a"), bpf::Hash<bpf::String>::HashCode("a\a"));
+}
+
 TEST(HashMap, Creation_List)
 {
 	bpf::HashMap<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 } };
