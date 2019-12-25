@@ -46,6 +46,7 @@ set(SOURCES
     src/ArrayDynamic.cpp
     src/ArrayStatic.cpp
     src/BaseConvert.cpp
+    src/Tuple.cpp
 )
 
 bp_setup_program(${PROJECT_NAME} include)
