@@ -41,7 +41,7 @@ namespace bpf
     }
 
     template <typename T>
-    Queue<T>::Stack(const std::initializer_list<T>& lst)
+    Queue<T>::Queue(const std::initializer_list<T>& lst)
         : _maxSize(0)
         , _headPtr(0)
         , _tailPtr(0)
@@ -99,7 +99,7 @@ namespace bpf
             if (_tailPtr >= _maxSize)
             {
                 _tailPtr = 0;
-                --_count;
+                _count = 0;
             }
             _data[_tailPtr++] = std::move(element);
             ++_count;
@@ -109,6 +109,8 @@ namespace bpf
     template <typename T>
     T Queue<T>::Pop()
     {
+        if (_count == 0)
+            throw IndexException(0);
         auto elem = std::move(_data[_headPtr++]);
         --_count;
         if (_maxSize > 0 && _headPtr >= _maxSize)

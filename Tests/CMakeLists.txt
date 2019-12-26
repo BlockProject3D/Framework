@@ -47,6 +47,8 @@ set(SOURCES
     src/ArrayStatic.cpp
     src/BaseConvert.cpp
     src/Tuple.cpp
+    src/Stack.cpp
+    src/Queue.cpp
 )
 
 bp_setup_program(${PROJECT_NAME} include)

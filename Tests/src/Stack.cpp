@@ -26,65 +26,64 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-#include "Framework/Array.hpp"
+#include <cassert>
+#include <iostream>
+#include <gtest/gtest.h>
+#include <Framework/Stack.hpp>
 
-namespace bpf
+TEST(Stack, Creation)
 {
-    template <typename T>
-    class BP_TPL_API Queue
-    {
-    private:
-        fsize _maxSize;
-        fsize _headPtr;
-        fsize _tailPtr;
-        fsize _count;
-        Array<T> _data;
+    bpf::Stack<int> stack(8);
 
-    public:
-        explicit Queue(const fsize maxsize = 0);
-        Queue(const std::initializer_list<T> &lst);
+    stack.Push(0);
+    stack.Push(42);
+    stack.Push(-1);
 
-		/**
-		 * Pushes an element on the queue
-		 */
-		void Push(const T &element);
+    EXPECT_EQ(stack.Top(), -1);
+    EXPECT_EQ(stack.Size(), 3);
+}
 
-        /**
-         * Pushes an element on the queue
-         */
-        void Push(T &&element);
+TEST(Stack, Creation_List)
+{
+    bpf::Stack<int> stack = { 0, 42, -1 };
 
-        /**
-         * Extracts the top of the queue
-         */
-        T Pop();
+    EXPECT_EQ(stack.Top(), -1);
+    EXPECT_EQ(stack.Size(), 3);
+}
 
-        /**
-         * Returns the top of the queue
-         */
-        inline T &Top()
-        {
-            if (Size() <= 0)
-                throw IndexException(0);
-            return (_data[_headPtr]);
-        }
+TEST(Stack, Push_Pop_Limited)
+{
+    bpf::Stack<int> stack(3);
 
-        /**
-         * Returns the top of the queue
-         */
-        inline const T &Top() const
-        {
-            if (Size() <= 0)
-                throw IndexException(0);
-            return (_data[_headPtr]);
-        }
+    stack.Push(0);
+    stack.Push(42);
+    stack.Push(-1);
 
-        inline fsize Size() const
-        {
-            return (_count);
-        }
-    };
-};
+    EXPECT_EQ(stack.Top(), -1);
+    EXPECT_EQ(stack.Size(), 3);
+    EXPECT_THROW(stack.Push(1), bpf::StackOverflowException);
+    EXPECT_EQ(stack.Pop(), -1);
+    EXPECT_EQ(stack.Pop(), 42);
+    EXPECT_EQ(stack.Pop(), 0);
+    EXPECT_THROW(stack.Pop(), bpf::StackUnderflowException);
+}
 
-#include "Framework/Queue.impl.hpp"
+TEST(Stack, Push_Pop_Unlimited)
+{
+    bpf::Stack<int> stack;
+
+    stack.Push(0);
+    stack.Push(42);
+    stack.Push(-1);
+
+    EXPECT_EQ(stack.Top(), -1);
+    EXPECT_EQ(stack.Size(), 3);
+    stack.Push(1);
+    EXPECT_EQ(stack.Size(), 4);
+    EXPECT_EQ(stack.Top(), 1);
+    EXPECT_EQ(stack.Pop(), 1);
+    EXPECT_EQ(stack.Pop(), -1);
+    EXPECT_EQ(stack.Pop(), 42);
+    EXPECT_EQ(stack.Pop(), 0);
+    EXPECT_THROW(stack.Pop(), bpf::StackUnderflowException);
+}

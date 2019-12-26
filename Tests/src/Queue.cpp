@@ -26,65 +26,62 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-#include "Framework/Array.hpp"
+#include <cassert>
+#include <iostream>
+#include <gtest/gtest.h>
+#include <Framework/Queue.hpp>
 
-namespace bpf
+TEST(Queue, Creation)
 {
-    template <typename T>
-    class BP_TPL_API Queue
-    {
-    private:
-        fsize _maxSize;
-        fsize _headPtr;
-        fsize _tailPtr;
-        fsize _count;
-        Array<T> _data;
+    bpf::Queue<int> queue(8);
 
-    public:
-        explicit Queue(const fsize maxsize = 0);
-        Queue(const std::initializer_list<T> &lst);
+    queue.Push(0);
+    queue.Push(42);
+    queue.Push(-1);
 
-		/**
-		 * Pushes an element on the queue
-		 */
-		void Push(const T &element);
+    EXPECT_EQ(queue.Top(), 0);
+    EXPECT_EQ(queue.Size(), 3);
+}
 
-        /**
-         * Pushes an element on the queue
-         */
-        void Push(T &&element);
+TEST(Queue, Creation_List)
+{
+    bpf::Queue<int> queue = { 0, 42, -1 };
 
-        /**
-         * Extracts the top of the queue
-         */
-        T Pop();
+    EXPECT_EQ(queue.Top(), 0);
+    EXPECT_EQ(queue.Size(), 3);
+}
 
-        /**
-         * Returns the top of the queue
-         */
-        inline T &Top()
-        {
-            if (Size() <= 0)
-                throw IndexException(0);
-            return (_data[_headPtr]);
-        }
+TEST(Queue, Push_Pop_Limited)
+{
+    bpf::Queue<int> queue(3);
 
-        /**
-         * Returns the top of the queue
-         */
-        inline const T &Top() const
-        {
-            if (Size() <= 0)
-                throw IndexException(0);
-            return (_data[_headPtr]);
-        }
+    queue.Push(0);
+    queue.Push(42);
+    queue.Push(-1);
 
-        inline fsize Size() const
-        {
-            return (_count);
-        }
-    };
-};
+    EXPECT_EQ(queue.Top(), 0);
+    EXPECT_EQ(queue.Size(), 3);
+    queue.Push(1);
+    EXPECT_EQ(queue.Pop(), 1);
+    EXPECT_THROW(queue.Pop(), bpf::IndexException);
+}
 
-#include "Framework/Queue.impl.hpp"
+TEST(Queue, Push_Pop_Unlimited)
+{
+    bpf::Queue<int> queue;
+
+    queue.Push(0);
+    queue.Push(42);
+    queue.Push(-1);
+
+    EXPECT_EQ(queue.Top(), 0);
+    EXPECT_EQ(queue.Size(), 3);
+    queue.Push(1);
+    EXPECT_EQ(queue.Size(), 4);
+    EXPECT_EQ(queue.Top(), 0);
+    EXPECT_EQ(queue.Pop(), 0);
+    EXPECT_EQ(queue.Pop(), 42);
+    EXPECT_EQ(queue.Pop(), -1);
+    EXPECT_EQ(queue.Pop(), 1);
+    EXPECT_THROW(queue.Pop(), bpf::IndexException);
+}

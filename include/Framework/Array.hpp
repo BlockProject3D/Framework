@@ -168,6 +168,16 @@ namespace bpf
 			return (_arr[I - 1]);
 		}
 
+        inline const T &First() const
+        {
+            return (_arr[0]);
+        }
+
+        inline const T &Last() const
+        {
+            return (_arr[I - 1]);
+        }
+
         inline const T *operator*() const
         {
             return (_arr);
@@ -373,6 +383,20 @@ namespace bpf
 				throw IndexException(0);
 			return (_arr[_size - 1]);
 		}
+
+        inline const T &First() const
+        {
+            if (_arr == Null || _size == 0)
+                throw IndexException(0);
+            return (_arr[0]);
+        }
+
+        inline const T &Last() const
+        {
+            if (_arr == Null || _size == 0)
+                throw IndexException(0);
+            return (_arr[_size - 1]);
+        }
 
         /**
          * Returns the length of the array

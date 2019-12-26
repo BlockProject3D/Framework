@@ -233,6 +233,20 @@ namespace bpf
 			return (LastNode()->Data);
 		}
 
+        inline const T &First() const
+        {
+            if (FirstNode() == Null)
+                throw IndexException(0);
+            return (FirstNode()->Data);
+        }
+
+        inline const T &Last() const
+        {
+            if (LastNode() == Null)
+                throw IndexException(0);
+            return (LastNode()->Data);
+        }
+
         fsize Size() const;
 
         void Clear();

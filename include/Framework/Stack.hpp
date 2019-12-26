@@ -40,7 +40,7 @@ namespace bpf
         ArrayList<T> _data;
 
     public:
-        explicit Stack(const fsize maxsize);
+        explicit Stack(const fsize maxsize = 0);
         Stack(const std::initializer_list<T> &lst);
 
 		/**
@@ -61,7 +61,17 @@ namespace bpf
         /**
          * Returns the top of the stack
          */
-        inline T &Top() const
+        inline T &Top()
+        {
+            if (Size() <= 0)
+                throw IndexException(0);
+            return (_data.Last());
+        }
+
+        /**
+         * Returns the top of the stack
+         */
+        inline const T &Top() const
         {
             if (Size() <= 0)
                 throw IndexException(0);
