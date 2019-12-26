@@ -102,6 +102,8 @@ set(SOURCES
     ./include/Framework/EvalException.hpp
     ./include/Framework/Stack.hpp
     ./include/Framework/Stack.impl.hpp
+    ./include/Framework/Queue.hpp
+    ./include/Framework/Queue.impl.hpp
     ./include/Framework/String.hpp
     ./include/Framework/MathEval.hpp
     ./include/Framework/MathEval.impl.hpp
