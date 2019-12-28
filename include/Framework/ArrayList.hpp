@@ -28,6 +28,7 @@
 
 #pragma once
 #include "Framework/Array.hpp"
+#include "Framework/ContainerUtilities.hpp"
 
 namespace bpf
 {
@@ -145,13 +146,14 @@ namespace bpf
         void RemoveAt(const fsize pos);
 		void RemoveAt(Iterator &pos)
 		{
-			RemoveAt(pos._curid);
+			RemoveAt(pos.ArrayPos());
 		}
 		void RemoveAt(Iterator &&pos)
 		{
-			RemoveAt(pos._curid);
+			RemoveAt(pos.ArrayPos());
 		}
 
+        template <typename Equal = bpf::ops::Equal<T>>
         void Remove(const T &elem, const bool all = true);
 
 		inline void Clear()

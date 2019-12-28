@@ -161,20 +161,20 @@ namespace bpf
 	template <typename T, fsize I>
 	void Array<T, I>::Swap(const Iterator &a, const Iterator &b)
 	{
-		if (a._curid >= I || b._curid >= I)
+		if (a.ArrayPos() >= I || b.ArrayPos() >= I)
 			return;
-		T tmp = std::move(_arr[a._curid]);
-		_arr[a._curid] = std::move(_arr[b._curid]);
-		_arr[b._curid] = std::move(tmp);
+		T tmp = std::move(_arr[a.ArrayPos()]);
+		_arr[a.ArrayPos()] = std::move(_arr[b.ArrayPos()]);
+		_arr[b.ArrayPos()] = std::move(tmp);
 	}
 
 	template <typename T>
 	void Array<T>::Swap(const Iterator &a, const Iterator &b)
 	{
-		if (a._curid >= _size || b._curid >= _size)
+		if (a.ArrayPos() >= _size || b.ArrayPos() >= _size)
 			return;
-		T tmp = std::move(_arr[a._curid]);
-		_arr[a._curid] = std::move(_arr[b._curid]);
-		_arr[b._curid] = std::move(tmp);
+		T tmp = std::move(_arr[a.ArrayPos()]);
+		_arr[a.ArrayPos()] = std::move(_arr[b.ArrayPos()]);
+		_arr[b.ArrayPos()] = std::move(tmp);
 	}
 }

@@ -341,11 +341,12 @@ namespace bpf
 	}
 
 	template <typename K, typename V, typename HashOp>
+    template <typename Equal>
 	void HashMap<K, V, HashOp>::Remove(const V &value, const bool all)
 	{
 		for (auto &entry : *this)
 		{
-			if (entry.Value == value)
+			if (Equal::Eval(entry.Value, value))
 			{
 				RemoveAt(entry.Key);
 				if (!all)

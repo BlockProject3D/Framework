@@ -31,6 +31,7 @@
 #include "Framework/Types.hpp"
 #include "Framework/Iterator.hpp"
 #include "Framework/IndexException.hpp"
+#include "Framework/ContainerUtilities.hpp"
 
 //TODO: Finish ALL TESTS for List and then copy these tests for ArrayList and copy relevant tests to other containers
 
@@ -210,7 +211,9 @@ namespace bpf
 		 * Removes occurences of an element fron the list
 		 * @param elem the element to search for
 		 * @param all wether or not to remove all occurences or just the first one
+         * @tparam Equal the equal operator to use for comparing values
 		 */
+        template <typename Equal = bpf::ops::Equal<T>>
         void Remove(const T &elem, const bool all = true);
 
 		void Swap(const Iterator &a, const Iterator &b);

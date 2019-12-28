@@ -46,11 +46,12 @@ namespace bpf
     }
     
     template <typename T>
+    template <typename Equal>
     void ArrayList<T>::Remove(const T &elem, const bool all)
     {
         for (fsize i = 0 ; i < _curid ; ++i)
         {
-            if (_arr[i] == elem)
+            if (Equal::Eval(_arr[i], elem))
             {
                 RemoveAt(i);
                 if (!all)
@@ -88,9 +89,9 @@ namespace bpf
 	{
 		if (_curid + 1 >= _arr.Size())
 			_arr.Resize(_arr.Size() * 2);
-		for (fsize i = _curid; i > pos._curid; --i)
+		for (fsize i = _curid; i > pos.ArrayPos(); --i)
 			_arr[i] = _arr[i - 1];
-		_arr[pos._curid] = elem;
+		_arr[pos.ArrayPos()] = elem;
 		++_curid;
 	}
 
@@ -99,9 +100,9 @@ namespace bpf
 	{
 		if (_curid + 1 >= _arr.Size())
 			_arr.Resize(_arr.Size() * 2);
-		for (fsize i = _curid; i > pos._curid; --i)
+		for (fsize i = _curid; i > pos.ArrayPos(); --i)
 			_arr[i] = _arr[i - 1];
-		_arr[pos._curid] = std::move(elem);
+		_arr[pos.ArrayPos()] = std::move(elem);
 		++_curid;
 	}
 }

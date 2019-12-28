@@ -35,9 +35,6 @@
 
 namespace bpf
 {
-	template <typename T>
-	class BP_TPL_API ArrayList;
-
     template <typename T, fsize I = 0>
     class BP_TPL_API Array
     {
@@ -82,7 +79,10 @@ namespace bpf
 				return (_curid != other._curid);
 			}
 
-			friend class Array<T, I>;
+            inline fsize ArrayPos() const noexcept
+            {
+                return (_curid);
+            }
 		};
 
 		class BP_TPL_API ReverseIterator final : public IIterator<typename Array<T, I>::ReverseIterator, T>
@@ -124,6 +124,11 @@ namespace bpf
 			{
 				return (_curid != other._curid);
 			}
+
+            inline fsize ArrayPos() const noexcept
+            {
+                return (_curid);
+            }
 		};
 
     private:
@@ -280,8 +285,10 @@ namespace bpf
                 return (_curid != other._curid);
             }
 
-			friend class Array<T, 0>;
-			friend class ArrayList<T>;
+            inline fsize ArrayPos() const noexcept
+            {
+                return (_curid);
+            }
         };
 
         class BP_TPL_API ReverseIterator final : public IIterator<typename Array<T, 0>::ReverseIterator, T>
@@ -323,6 +330,11 @@ namespace bpf
             inline bool operator!=(const ReverseIterator &other) const
             {
                 return (_curid != other._curid);
+            }
+
+            inline fsize ArrayPos() const noexcept
+            {
+                return (_curid);
             }
         };
 

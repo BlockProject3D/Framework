@@ -104,6 +104,9 @@ set(SOURCES
     ./include/Framework/Stack.impl.hpp
     ./include/Framework/Queue.hpp
     ./include/Framework/Queue.impl.hpp
+    ./include/Framework/PriorityQueue.hpp
+    ./include/Framework/PriorityQueue.impl.hpp
+    ./include/Framework/ContainerUtilities.hpp
     ./include/Framework/String.hpp
     ./include/Framework/MathEval.hpp
     ./include/Framework/MathEval.impl.hpp
