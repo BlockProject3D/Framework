@@ -45,6 +45,50 @@ namespace bpf
         explicit Queue(const fsize maxsize = 0);
         Queue(const std::initializer_list<T> &lst);
 
+        inline Queue(const Queue<T> &other)
+            : _maxSize(other._maxSize)
+            , _headPtr(other._headPtr)
+            , _tailPtr(other._tailPtr)
+            , _count(other._count)
+            , _data(other._data)
+        {
+        }
+
+        inline Queue(Queue<T> &&other)
+            : _maxSize(other._maxSize)
+            , _headPtr(other._headPtr)
+            , _tailPtr(other._tailPtr)
+            , _count(other._count)
+            , _data(std::move(other._data))
+        {
+            other._headPtr = 0;
+            other._tailPtr = 0;
+            other._count = 0;
+        }
+
+        inline Queue<T> &operator=(const Queue<T> &other)
+        {
+            _maxSize = other._maxSize;
+            _headPtr = other._headPtr;
+            _tailPtr = other._tailPtr;
+            _count = other._count;
+            _data = other._data;
+            return (*this);
+        }
+
+        inline Queue<T> &operator=(Queue<T> &&other)
+        {
+            _maxSize = other._maxSize;
+            _headPtr = other._headPtr;
+            _tailPtr = other._tailPtr;
+            _count = other._count;
+            _data = std::move(other._data);
+            other._headPtr = 0;
+            other._tailPtr = 0;
+            other._count = 0;
+            return (*this);
+        }
+
 		/**
 		 * Pushes an element on the queue
 		 */

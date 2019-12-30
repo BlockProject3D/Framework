@@ -43,6 +43,32 @@ namespace bpf
         explicit Stack(const fsize maxsize = 0);
         Stack(const std::initializer_list<T> &lst);
 
+        inline Stack(const Stack<T> &other)
+            : _maxSize(other._maxSize)
+            , _data(other._data)
+        {
+        }
+
+        inline Stack(Stack<T> &&other)
+            : _maxSize(other._maxSize)
+            , _data(std::move(other._data))
+        {
+        }
+
+        inline Stack<T> &operator=(const Stack<T> &other)
+        {
+            _maxSize = other._maxSize;
+            _data = other._data;
+            return (*this);
+        }
+
+        inline Stack<T> &operator=(Stack<T> &&other)
+        {
+            _maxSize = other._maxSize;
+            _data = std::move(other._data);
+            return (*this);
+        }
+
 		/**
 		 * Pushes an element on the stack
 		 */

@@ -30,6 +30,7 @@
 #include <iostream>
 #include <gtest/gtest.h>
 #include <Framework/Stack.hpp>
+#include <Framework/Memory/Memory.hpp>
 
 TEST(Stack, Creation)
 {
@@ -85,5 +86,25 @@ TEST(Stack, Push_Pop_Unlimited)
     EXPECT_EQ(stack.Pop(), -1);
     EXPECT_EQ(stack.Pop(), 42);
     EXPECT_EQ(stack.Pop(), 0);
+    EXPECT_THROW(stack.Pop(), bpf::StackUnderflowException);
+}
+
+TEST(Stack, Push_Pop_NonCopy)
+{
+    bpf::Stack<bpf::UniquePtr<int>> stack;
+
+    stack.Push(bpf::MakeUnique<int>(0));
+    stack.Push(bpf::MakeUnique<int>(42));
+    stack.Push(bpf::MakeUnique<int>(-1));
+
+    EXPECT_EQ(*stack.Top(), -1);
+    EXPECT_EQ(stack.Size(), 3);
+    stack.Push(bpf::MakeUnique<int>(1));
+    EXPECT_EQ(stack.Size(), 4);
+    EXPECT_EQ(*stack.Top(), 1);
+    EXPECT_EQ(*stack.Pop(), 1);
+    EXPECT_EQ(*stack.Pop(), -1);
+    EXPECT_EQ(*stack.Pop(), 42);
+    EXPECT_EQ(*stack.Pop(), 0);
     EXPECT_THROW(stack.Pop(), bpf::StackUnderflowException);
 }

@@ -151,8 +151,9 @@ namespace bpf
 		 * Removes an element by value
 		 * @param value the value to search for
 		 * @param all wether to remove all occurances or just the first one
+         * @tparam Equal the equal operator to use for comparing values
 		 */
-        template <typename Equal = bpf::ops::Equal<V>>
+        template <template <typename> typename Equal = bpf::ops::Equal>
 		void Remove(const V &value, const bool all = true);
 
         /**

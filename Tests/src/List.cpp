@@ -136,6 +136,8 @@ TEST(List, Remove)
 	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 3, 7, 0]");
 	lst.Remove(0);
 	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[3, 7]");
+    lst.Remove<bpf::ops::Less>(7);
+    EXPECT_STREQ(*bpf::String::ValueOf(lst), "[7]");
 }
 
 TEST(List, RemoveAt)

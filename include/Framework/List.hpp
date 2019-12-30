@@ -213,7 +213,7 @@ namespace bpf
 		 * @param all wether or not to remove all occurences or just the first one
          * @tparam Equal the equal operator to use for comparing values
 		 */
-        template <typename Equal = bpf::ops::Equal<T>>
+        template <template <typename> typename Equal = bpf::ops::Equal>
         void Remove(const T &elem, const bool all = true);
 
 		void Swap(const Iterator &a, const Iterator &b);

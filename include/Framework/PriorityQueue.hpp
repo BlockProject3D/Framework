@@ -33,7 +33,7 @@
 
 namespace bpf
 {
-    template <typename K, typename V, template <typename> typename HeapFunc = bpf::MaxHeap>
+    template <typename K, typename V, template <typename> typename HeapFunc = MaxHeap>
     class BP_TPL_API PriorityQueue
     {
     public:
@@ -47,13 +47,58 @@ namespace bpf
         fsize _maxSize;
         fsize _tailPtr;
         fsize _count;
-        Array<Entry> _data;
+        // MSVC absolutely wants to instantiate unused C++ template member functions !
+        // Seriously Microsoft, please fix your fucking non standard compliant compiler !!
+        Array<K> _dataK;
+        Array<V> _dataV;
 
         void BubbleUp(fsize i);
         void SinkDown(fsize i);
     public:
         explicit PriorityQueue(const fsize maxsize = 0);
         PriorityQueue(const std::initializer_list<Entry> &lst);
+
+        inline PriorityQueue(const PriorityQueue<K, V, HeapFunc> &other)
+            : _maxSize(other._maxSize)
+            , _tailPtr(other._tailPtr)
+            , _count(other._count)
+            , _dataK(other._dataK)
+            , _dataV(other._dataV)
+        {
+        }
+
+        inline PriorityQueue(PriorityQueue<K, V, HeapFunc> &&other)
+            : _maxSize(other._maxSize)
+            , _tailPtr(other._tailPtr)
+            , _count(other._count)
+            , _dataK(std::move(other._dataK))
+            , _dataV(std::move(other._dataV))
+        {
+            other._tailPtr = 0;
+            other._count = 0;
+        }
+
+        inline PriorityQueue<K, V, HeapFunc> &operator=(const PriorityQueue<K, V, HeapFunc> &other)
+        {
+            _maxSize = other._maxSize;
+            _tailPtr = other._tailPtr;
+            _count = other._count;
+            _dataK = other._dataK;
+            _dataV = other._dataV;
+            return (*this);
+        }
+
+        inline PriorityQueue<K, V, HeapFunc> &operator=(PriorityQueue<K, V, HeapFunc> &&other)
+        {
+            _maxSize = other._maxSize;
+            _tailPtr = other._tailPtr;
+            _count = other._count;
+            _dataK = std::move(other._dataK);
+            _dataV = std::move(other._dataV);
+            other._tailPtr = 0;
+            other._count = 0;
+            return (*this);
+        }
 
 		/**
 		 * Pushes an element on the queue
@@ -73,21 +118,21 @@ namespace bpf
         /**
          * Returns the top of the queue
          */
-        inline T &Top()
+        inline V &Top()
         {
             if (Size() <= 0)
                 throw IndexException(0);
-            return (_data[1]);
+            return (_dataV[1]);
         }
 
         /**
          * Returns the top of the queue
          */
-        inline const T &Top() const
+        inline const V &Top() const
         {
             if (Size() <= 0)
                 throw IndexException(0);
-            return (_data[1]);
+            return (_dataV[1]);
         }
 
         inline fsize Size() const

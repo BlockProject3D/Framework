@@ -46,19 +46,19 @@ namespace bpf
     }
     
     template <typename T>
-    template <typename Equal>
+    template <template <typename> typename Equal>
     void ArrayList<T>::Remove(const T &elem, const bool all)
     {
         for (fsize i = 0 ; i < _curid ; ++i)
         {
-            if (Equal::Eval(_arr[i], elem))
+            if (Equal<T>::Eval(_arr[i], elem))
             {
                 RemoveAt(i);
                 if (!all)
                     return;
             }
         }
-        if (_arr[0] == elem)
+        if (Equal<T>::Eval(_arr[0], elem))
             RemoveAt((fsize)0);
     }
 

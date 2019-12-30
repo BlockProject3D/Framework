@@ -35,11 +35,14 @@ namespace bpf
     {
         fsize parent = i / 2;
 
-        while (i > 1 && HeapFunc<K>::Eval(_data[i].Key, _data[parent].Key))
+        while (i > 1 && HeapFunc<K>::Eval(_dataK[i], _dataK[parent]))
         {
-            Entry tmp = std::move(_data[i]);
-            _data[i] = std::move(_data[parent]);
-            _data[parent] = std::move(tmp);
+            K key = std::move(_dataK[i]);
+            V value = std::move(_dataV[i]);
+            _dataK[i] = std::move(_dataK[parent]);
+            _dataV[i] = std::move(_dataV[parent]);
+            _dataK[parent] = std::move(key);
+            _dataV[parent] = std::move(value);
             i = parent;
             parent = i / 2;
         }
@@ -53,17 +56,20 @@ namespace bpf
         fsize k = i;
 
         while (left < _tailPtr + 1 && right < _tailPtr + 1
-            && (HeapFunc<K>::Eval(_data[left].Key, _data[i].Key) || HeapFunc<K>::Eval(_data[right].Key, _data[i].Key)))
+            && (HeapFunc<K>::Eval(_dataK[left], _dataK[i]) || HeapFunc<K>::Eval(_dataK[right], _dataK[i])))
         {
-            if (HeapFunc<K>::Eval(_data[left].Key, _data[right].Key))
+            if (HeapFunc<K>::Eval(_dataK[left], _dataK[right]))
                 k = left;
-            else if (HeapFunc<K>::Eval(_data[right].Key, _data[left].Key))
+            else if (HeapFunc<K>::Eval(_dataK[right], _dataK[left]))
                 k = right;
             if (k != i)
             {
-                Entry tmp = std::move(_data[i]);
-                _data[i] = std::move(_data[k]);
-                _data[k] = std::move(tmp);
+                K key = std::move(_dataK[i]);
+                V value = std::move(_dataV[i]);
+                _dataK[i] = std::move(_dataK[k]);
+                _dataV[i] = std::move(_dataV[k]);
+                _dataK[k] = std::move(key);
+                _dataV[k] = std::move(value);
                 i = k;
                 left = i * 2;
                 right = i * 2 + 1;
@@ -76,18 +82,20 @@ namespace bpf
     template <typename K, typename V, template <typename> typename HeapFunc>
     inline PriorityQueue<K, V, HeapFunc>::PriorityQueue(const fsize maxsize)
         : _maxSize(maxsize)
-        , _tailPtr(1)
+        , _tailPtr(0)
         , _count(0)
-        , _data(maxsize > 0 ? (maxsize + 1) : 8)
+        , _dataK(maxsize > 0 ? (maxsize + 1) : 8)
+        , _dataV(maxsize > 0 ? (maxsize + 1) : 8)
     {
     }
 
     template <typename K, typename V, template <typename> typename HeapFunc>
     PriorityQueue<K, V, HeapFunc>::PriorityQueue(const std::initializer_list<Entry>& lst)
         : _maxSize(0)
-        , _tailPtr(1)
+        , _tailPtr(0)
         , _count(0)
-        , _data(8)
+        , _dataK(8)
+        , _dataV(8)
     {
         for (auto& elem : lst)
             Push(elem.Key, elem.Value);
@@ -98,19 +106,21 @@ namespace bpf
     {
         if (_maxSize == 0)
         {
-            if (_tailPtr + 1 >= _data.Size())
-                _data.Resize(_data.Size() * 2);
+            if (_tailPtr + 1 >= _dataK.Size())
+            {
+                _dataK.Resize(_dataK.Size() * 2);
+                _dataV.Resize(_dataV.Size() * 2);
+            }
         }
         else
         {
-            if (_tailPtr + 1 >= _data.Size())
+            if (_tailPtr + 1 >= _dataK.Size())
                 --_tailPtr;
         }
-        Entry newVal;
-        newVal.Priority = priority;
-        newVal.Value = element;
-        _data[_tailPtr] = newVal;
+        _dataK[_tailPtr + 1] = key;
+        _dataV[_tailPtr + 1] = value;
         //Bubble up
+        BubbleUp(_tailPtr + 1);
         ++_tailPtr;
         ++_count;
     }
@@ -120,19 +130,21 @@ namespace bpf
 	{
         if (_maxSize == 0)
         {
-            if (_tailPtr + 1 >= _data.Size())
-                _data.Resize(_data.Size() * 2);
+            if (_tailPtr + 1 >= _dataK.Size())
+            {
+                _dataK.Resize(_dataK.Size() * 2);
+                _dataV.Resize(_dataV.Size() * 2);
+            }
         }
         else
         {
-            if (_tailPtr + 1 >= _data.Size())
-                --_tailPtr;
+            if (_tailPtr + 1 >= _dataK.Size())
+                throw IndexException(_tailPtr);
         }
-        Entry newVal;
-        newVal.Priority = priority;
-        newVal.Value = std::move(element);
-        _data[_tailPtr] = newVal;
+        _dataK[_tailPtr + 1] = key;
+        _dataV[_tailPtr + 1] = std::move(value);
         //Bubble up
+        BubbleUp(_tailPtr + 1);
         ++_tailPtr;
         ++_count;
     }
@@ -140,10 +152,15 @@ namespace bpf
     template <typename K, typename V, template <typename> typename HeapFunc>
     V PriorityQueue<K, V, HeapFunc>::Pop()
     {
-        T v = std::move(_data[1]);
-        _data[1] = std::move(_data[_tailPtr]);
+        if (_count == 0)
+            throw IndexException(0);
+        V v = std::move(_dataV[1]);
+        _dataV[1] = std::move(_dataV[_tailPtr]);
+        _dataK[1] = std::move(_dataK[_tailPtr]);
         //Sink down
+        SinkDown(1);
         --_tailPtr;
+        --_count;
         return (std::move(v));
     }
 }

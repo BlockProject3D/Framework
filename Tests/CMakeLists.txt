@@ -49,6 +49,7 @@ set(SOURCES
     src/Tuple.cpp
     src/Stack.cpp
     src/Queue.cpp
+    src/PriorityQueue.cpp
 )
 
 bp_setup_program(${PROJECT_NAME} include)
