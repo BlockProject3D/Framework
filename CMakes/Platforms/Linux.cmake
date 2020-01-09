@@ -1,4 +1,3 @@
-set(BP_PLATFORM_DEF "LINUX")
 set(BP_SYMBOL_IMPORT_MACRO "__attribute__((visibility(\"default\")))")
 set(BP_SYMBOL_EXPORT_MACRO ${BP_SYMBOL_IMPORT_MACRO})
 set(BP_EXTENSION_DYNAMIC ".so")
@@ -7,6 +6,8 @@ set(BP_EXTENSION_LIB ".so")
 set(BP_LIBRARY_PREFIX "lib")
 
 function(bp_target_created name)
+    target_compile_definitions(${name} PRIVATE "LINUX")
+
     get_target_property(target_type ${name} TYPE)
     if (target_type STREQUAL "EXECUTABLE")
         set_target_properties(${name} PROPERTIES
