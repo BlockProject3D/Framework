@@ -8,7 +8,7 @@ macro(bp_setup_module name apimacro)
 
     target_compile_definitions(${name} PRIVATE "${BP_API_MACRO}=${BP_SYMBOL_EXPORT_MACRO}")
     # Attempt at fixing templates problems under MSVC 2017
-    #target_compile_definitions(${name} PRIVATE "BP_TPL_API=${BP_SYMBOL_EXPORT_MACRO}")
+    target_compile_definitions(${name} PRIVATE "BP_TPL_API=${BP_SYMBOL_EXPORT_MACRO}")
 
     if (NOT ${name} STREQUAL "BPFramework")
         bp_add_module(${name} "BPFramework")
@@ -35,17 +35,3 @@ function(bp_add_module targetname modulename)
     target_link_libraries(${targetname} PRIVATE debug ${BIN_DEBUG})
     target_link_libraries(${targetname} PRIVATE optimized ${BIN_RELEASE})
 endfunction(bp_add_module)
-
-#function(bp_add_framework name)
-#    include(${BP_FRAMEWORK_SRC_DIR}/BPFramework.cmake)
-    
-    # Add definitions
-#    target_compile_definitions(${name} PRIVATE "BPF_API=${BP_SYMBOL_IMPORT_MACRO}")
-    # Attempt at fixing templates problems under MSVC 2017
-#    target_compile_definitions(${name} PRIVATE "BP_TPL_API=${BP_SYMBOL_EXPORT_MACRO}")
-
-    # Add includes and libs
-#    target_include_directories(${name} PRIVATE ${INCLUDE_DIR})
-#    target_link_libraries(${name} PRIVATE debug ${BIN_DEBUG})
-#    target_link_libraries(${name} PRIVATE optimized ${BIN_RELEASE})
-#endfunction(bp_add_framework)
