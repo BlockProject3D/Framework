@@ -88,6 +88,8 @@ set(SOURCES
     ./include/Framework/List.impl.hpp
     ./include/Framework/HashMap.hpp
     ./include/Framework/HashMap.impl.hpp
+    ./include/Framework/Map.hpp
+    ./include/Framework/Map.impl.hpp
     ./include/Framework/Object.hpp
     ./include/Framework/ObjectFactory.hpp
     ./include/Framework/IObjectConstructor.hpp

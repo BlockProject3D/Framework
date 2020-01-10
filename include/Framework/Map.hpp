@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2019, BlockProject
 //
 // All rights reserved.
 //
@@ -29,17 +29,13 @@
 #pragma once
 #include <initializer_list>
 #include "Framework/Types.hpp"
+#include "Framework/Stack.hpp"
 #include "Framework/Iterator.hpp"
-#include "Framework/IndexException.hpp"
-#include "Framework/Hash.hpp"
 
 namespace bpf
 {
-    constexpr fint HASH_MAP_INIT_BUF_SIZE = 2;
-    constexpr float HASH_MAP_LIMIT_UNTIL_EXTEND = 0.5f;
-
-    template <typename K, typename V, typename HashOp = Hash<K>>
-    class BP_TPL_API HashMap
+    template <typename K, typename V, template <typename T> typename Greater = >
+    class BP_TPL_API Map
     {
     public:
         struct BP_TPL_API Entry
@@ -49,84 +45,91 @@ namespace bpf
         };
 
     private:
-        enum BP_TPL_API EntryState
+        struct BP_TPL_API Node
         {
-            ENTRY_STATE_INSTANCE_DELETE,
-            ENTRY_STATE_NON_EXISTANT,
-            ENTRY_STATE_OCCUPIED
-        };
-
-        struct BP_TPL_API Data
-        {
-            fsize Hash;
-            EntryState State;
+            Node *Left;
+            Node *Right;
+            Node *Parent;
             Entry KeyVal;
+            fisize Height;
         };
 
     public:
-        class BP_TPL_API Iterator : public IIterator<typename HashMap<K, V, HashOp>::Iterator, Entry>
+        class BP_TPL_API Iterator : public IIterator<typename Map<K, V>::Iterator, Entry>
         {
-        protected:
-            Data *_data;
-            fsize MaxSize;
-			fsize MinSize;
-            fsize CurID;
-            void SearchNextEntry();
-            void SearchPrevEntry();
+        private:
+            Node *_root;
+            Node *_fixedRoot;
+            Node *_curNode;
+            Stack<Node *> _stack;
+            Stack<Node *> _backStack;
+            void ResetIterator();
 
         public:
-			Iterator(Data *data, fsize start, fsize size, const bool reverse = false);
+            Iterator(Node *root, bool begin);
             Iterator &operator++();
-			Iterator &operator--();
+            Iterator &operator--();
             inline const Entry &operator*() const
             {
-                return (_data[CurID].KeyVal);
+                return (_curNode->KeyVal);
             }
             inline const Entry *operator->() const
             {
-                return (&_data[CurID].KeyVal);
+                return (&_curNode->KeyVal);
             }
             inline bool operator==(const Iterator &other) const
             {
-                return (CurID == other.CurID);
+                return (_curNode == other._curNode);
             }
             inline bool operator!=(const Iterator &other) const
             {
-                return (CurID != other.CurID);
+                return (_curNode != other._curNode);
             }
-
-			friend class HashMap<K, V, HashOp>;
         };
 
-        class BP_TPL_API ReverseIterator final : public Iterator
+        class BP_TPL_API ReverseIterator : public IIterator<typename Map<K, V>::Iterator, Entry>
         {
-        public:
-            inline ReverseIterator(Data *data, fsize start, fsize size)
-                : Iterator(data, start, size, true)
-            {
-            }
-			ReverseIterator &operator++();
-			ReverseIterator &operator--();
+        private:
+            Node *_root;
+            Node *_fixedRoot;
+            Node *_curNode;
+            Stack<Node *> _stack;
+            Stack<Node *> _backStack;
+            void ResetIterator();
 
-			friend class HashMap<K, V, HashOp>;
+        public:
+            ReverseIterator(Node *root, bool begin);
+            ReverseIterator &operator++();
+            ReverseIterator &operator--();
+            inline const Entry &operator*() const
+            {
+                return (_curNode->KeyVal);
+            }
+            inline const Entry *operator->() const
+            {
+                return (&_curNode->KeyVal);
+            }
+            inline bool operator==(const Iterator &other) const
+            {
+                return (_curNode == other._curNode);
+            }
+            inline bool operator!=(const Iterator &other) const
+            {
+                return (_curNode != other._curNode);
+            }
         };
 
     private:
-        Data *_data;
-        fsize CurSize;
-        fsize ElemCount;
-
-        void TryExtend(); //Checks and extends the hash table by the multiplier
-        fsize QuadraticSearch(fsize hkey) const;
-        fsize QuadraticInsert(fsize hkey);
+        Node *_root;
+        fsize _count;
 
     public:
-        HashMap();
-		HashMap(const HashMap &other);
-		HashMap(HashMap &&other);
-		HashMap(const std::initializer_list<Entry> &entries);
-        ~HashMap();
-      
+        Map();
+        Map(const Map &other);
+        Map(Map &&other);
+        Map(const std::initializer_list<Entry> &entries);
+        ~Map();
+
         /**
          * Adds a new element in this hash map, replaces if key already exists
          * @param key the key of the element
@@ -135,69 +138,69 @@ namespace bpf
         void Add(const K &key, const V &value);
 
         void Add(const K &key, V &&value);
-      
+
         /**
          * Removes an element from the hash table
          * @param key the key of the element to remove
          */
         void RemoveAt(const K &key);
-		void RemoveAt(Iterator &pos);
-		void RemoveAt(Iterator &&pos);
+        void RemoveAt(Iterator &pos);
+        void RemoveAt(Iterator &&pos);
 
-		void Swap(const Iterator &a, const Iterator &b);
+        void Swap(const Iterator &a, const Iterator &b);
 
-		void Clear();
+        void Clear();
 
-		/**
-		 * Removes an element by value
-		 * @param value the value to search for
-		 * @param all wether to remove all occurances or just the first one
-		 */
-		void Remove(const V &value, const bool all = true);
+        /**
+         * Removes an element by value
+         * @param value the value to search for
+         * @param all wether to remove all occurances or just the first one
+         */
+        void Remove(const V &value, const bool all = true);
 
         /**
          * Returns the element at the specified key, if no key exists in this hash table, throws
          * @param key the key of the element to return
          */
         const V &operator[](const K &key) const;
-        
+
         V &operator[](const K &key);
 
-		HashMap &operator=(const HashMap &other);
-		HashMap &operator=(HashMap &&other);
-      
+        Map &operator=(const Map &other);
+        Map &operator=(Map &&other);
+
         /**
          * Returns true if the specified key exists, false otherwise
          * @param key the key to check
          */
         bool HasKey(const K &key) const;
-      
+
         /**
          * Returns the size of this hash table, that means the element count
          */
         inline fsize Size() const
         {
-            return (ElemCount);
+            return (_count);
         }
-        
+
         inline Iterator begin() const
         {
-            return (Iterator(_data, 0, CurSize));
+            return (Iterator(_root, true));
         }
         inline Iterator end() const
         {
-            return (Iterator(_data, CurSize, CurSize));
+            return (Iterator(_root, false));
         }
 
         inline ReverseIterator rbegin() const
         {
-            return (ReverseIterator(_data, CurSize - 1, CurSize));
+            return (ReverseIterator(_root, true));
         }
         inline ReverseIterator rend() const
         {
-            return (ReverseIterator(_data, (fsize)-1, CurSize));
+            return (ReverseIterator(_root, false));
         }
     };
-};
+}
 
-#include "Framework/HashMap.impl.hpp"
+#include "Framework/Map.impl.hpp"
