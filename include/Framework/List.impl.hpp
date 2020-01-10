@@ -386,13 +386,14 @@ namespace bpf
     }
 
     template <typename T>
+    template <template <typename> typename Equal>
     void List<T>::Remove(const T &elem, const bool all)
     {
         ListNode<T> *cur = _first;
 
         while (cur)
         {
-            if (cur->Data == elem)
+            if (Equal<T>::Eval(cur->Data, elem))
             {
                 ListNode<T> *toRM = cur;
                 cur = (all) ? cur->Next : Null;

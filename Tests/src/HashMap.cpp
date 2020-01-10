@@ -146,6 +146,8 @@ TEST(HashMap, Remove)
 	EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'0': 0, '1': 3, '2': 7, '3': 0}");
 	lst.Remove(0);
 	EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'1': 3, '2': 7}");
+    lst.Remove<bpf::ops::Less>(7);
+    EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'2': 7}");
 }
 
 TEST(HashMap, RemoveAt)

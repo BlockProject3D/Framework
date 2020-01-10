@@ -32,6 +32,7 @@
 #include "Framework/Iterator.hpp"
 #include "Framework/IndexException.hpp"
 #include "Framework/Hash.hpp"
+#include "Framework/ContainerUtilities.hpp"
 
 namespace bpf
 {
@@ -152,7 +153,9 @@ namespace bpf
 		 * Removes an element by value
 		 * @param value the value to search for
 		 * @param all wether to remove all occurances or just the first one
+         * @tparam Equal the equal operator to use for comparing values
 		 */
+        template <template <typename> typename Equal = bpf::ops::Equal>
 		void Remove(const V &value, const bool all = true);
 
         /**

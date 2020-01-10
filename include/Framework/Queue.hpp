@@ -27,88 +27,108 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/ArrayList.hpp"
-#include "Framework/StackException.hpp"
+#include "Framework/Array.hpp"
 
 namespace bpf
 {
     template <typename T>
-    class BP_TPL_API Stack
+    class BP_TPL_API Queue
     {
     private:
         fsize _maxSize;
-        ArrayList<T> _data;
+        fsize _headPtr;
+        fsize _tailPtr;
+        fsize _count;
+        Array<T> _data;
 
     public:
-        explicit Stack(const fsize maxsize = 0);
-        Stack(const std::initializer_list<T> &lst);
+        explicit Queue(const fsize maxsize = 0);
+        Queue(const std::initializer_list<T> &lst);
 
-        inline Stack(const Stack<T> &other)
+        inline Queue(const Queue<T> &other)
             : _maxSize(other._maxSize)
+            , _headPtr(other._headPtr)
+            , _tailPtr(other._tailPtr)
+            , _count(other._count)
             , _data(other._data)
         {
         }
 
-        inline Stack(Stack<T> &&other)
+        inline Queue(Queue<T> &&other)
             : _maxSize(other._maxSize)
+            , _headPtr(other._headPtr)
+            , _tailPtr(other._tailPtr)
+            , _count(other._count)
             , _data(std::move(other._data))
         {
+            other._headPtr = 0;
+            other._tailPtr = 0;
+            other._count = 0;
         }
 
-        inline Stack<T> &operator=(const Stack<T> &other)
+        inline Queue<T> &operator=(const Queue<T> &other)
         {
             _maxSize = other._maxSize;
+            _headPtr = other._headPtr;
+            _tailPtr = other._tailPtr;
+            _count = other._count;
             _data = other._data;
             return (*this);
         }
 
-        inline Stack<T> &operator=(Stack<T> &&other)
+        inline Queue<T> &operator=(Queue<T> &&other)
         {
             _maxSize = other._maxSize;
+            _headPtr = other._headPtr;
+            _tailPtr = other._tailPtr;
+            _count = other._count;
             _data = std::move(other._data);
+            other._headPtr = 0;
+            other._tailPtr = 0;
+            other._count = 0;
             return (*this);
         }
 
 		/**
-		 * Pushes an element on the stack
+		 * Pushes an element on the queue
 		 */
 		void Push(const T &element);
 
         /**
-         * Pushes an element on the stack
+         * Pushes an element on the queue
          */
         void Push(T &&element);
 
         /**
-         * Extracts the top of the stack
+         * Extracts the top of the queue
          */
         T Pop();
 
         /**
-         * Returns the top of the stack
+         * Returns the top of the queue
          */
         inline T &Top()
         {
             if (Size() <= 0)
                 throw IndexException(0);
-            return (_data.Last());
+            return (_data[_headPtr]);
         }
 
         /**
-         * Returns the top of the stack
+         * Returns the top of the queue
          */
         inline const T &Top() const
         {
             if (Size() <= 0)
                 throw IndexException(0);
-            return (_data.Last());
+            return (_data[_headPtr]);
         }
 
         inline fsize Size() const
         {
-            return (_data.Size());
+            return (_count);
         }
     };
 };
 
-#include "Framework/Stack.impl.hpp"
+#include "Framework/Queue.impl.hpp"

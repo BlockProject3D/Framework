@@ -31,42 +31,90 @@
 namespace bpf
 {
     template <typename T>
-    inline Stack<T>::Stack(const fsize maxsize)
+    inline Queue<T>::Queue(const fsize maxsize)
         : _maxSize(maxsize)
+        , _headPtr(0)
+        , _tailPtr(0)
+        , _count(0)
+        , _data(maxsize > 0 ? maxsize : 8)
     {
     }
 
     template <typename T>
-    Stack<T>::Stack(const std::initializer_list<T>& lst)
+    Queue<T>::Queue(const std::initializer_list<T>& lst)
         : _maxSize(0)
+        , _headPtr(0)
+        , _tailPtr(0)
+        , _count(0)
+        , _data(8)
     {
         for (auto& elem : lst)
             Push(elem);
     }
 
     template <typename T>
-    void Stack<T>::Push(const T &element)
+    void Queue<T>::Push(const T &element)
     {
-        if (_maxSize > 0 && _data.Size() >= _maxSize)
-            throw StackOverflowException(_maxSize);
-        _data.Add(element);
+        if (_maxSize == 0)
+        {
+            if (_count == 0)
+            {
+                _headPtr = 0;
+                _tailPtr = 0;
+            }
+            if (_tailPtr + 1 >= _data.Size())
+                _data.Resize(_data.Size() * 2);
+            _data[_tailPtr++] = element;
+            ++_count;
+        }
+        else
+        {
+            if (_tailPtr >= _maxSize)
+            {
+                _tailPtr = 0;
+                --_count;
+            }
+            _data[_tailPtr++] = element;
+            ++_count;
+        }
     }
 
 	template <typename T>
-	void Stack<T>::Push(T &&element)
+	void Queue<T>::Push(T &&element)
 	{
-        if (_maxSize > 0 && _data.Size() >= _maxSize)
-            throw StackOverflowException(_maxSize);
-        _data.Add(std::move(element));
+        if (_maxSize == 0)
+        {
+            if (_count == 0)
+            {
+                _headPtr = 0;
+                _tailPtr = 0;
+            }
+            if (_tailPtr + 1 >= _data.Size())
+                _data.Resize(_data.Size() * 2);
+            _data[_tailPtr++] = std::move(element);
+            ++_count;
+        }
+        else
+        {
+            if (_tailPtr >= _maxSize)
+            {
+                _tailPtr = 0;
+                _count = 0;
+            }
+            _data[_tailPtr++] = std::move(element);
+            ++_count;
+        }
     }
 
     template <typename T>
-    T Stack<T>::Pop()
+    T Queue<T>::Pop()
     {
-        if (_data.Size() == 0)
-            throw StackUnderflowException();
-        auto ref = std::move(_data.Last());
-        _data.RemoveLast();
-        return (std::move(ref));
+        if (_count == 0)
+            throw IndexException(0);
+        auto elem = std::move(_data[_headPtr++]);
+        --_count;
+        if (_maxSize > 0 && _headPtr >= _maxSize)
+            _headPtr = 0;
+        return (std::move(elem));
     }
 }

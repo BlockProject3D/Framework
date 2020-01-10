@@ -28,6 +28,7 @@
 
 #pragma once
 #include "Framework/Array.hpp"
+#include "Framework/ContainerUtilities.hpp"
 
 namespace bpf
 {
@@ -43,12 +44,12 @@ namespace bpf
 		using ReverseIterator = typename Array<T>::ReverseIterator;
 
         inline ArrayList()
-            : _curid(0), _arr(16)
+            : _curid(0), _arr(8)
         {
         }
 
 		inline ArrayList(const std::initializer_list<T> &lst)
-			: _curid(0), _arr(16)
+			: _curid(0), _arr(8)
 		{
 			for (auto& elem : lst)
 				Add(elem);
@@ -94,7 +95,28 @@ namespace bpf
 			return (_arr[_curid - 1]);
 		}
 
-		inline T &operator[](const fsize id) const
+        inline const T &First() const
+        {
+            if (_curid == 0)
+                throw IndexException(0);
+            return (_arr.First());
+        }
+
+        inline const T &Last() const
+        {
+            if (_curid == 0)
+                throw IndexException(0);
+            return (_arr[_curid - 1]);
+        }
+
+		inline T &operator[](const fsize id)
+		{
+			if (id >= _curid)
+				throw IndexException(static_cast<fisize>(id));
+			return (_arr[id]);
+		}
+
+		inline const T &operator[](const fsize id) const
 		{
 			if (id >= _curid)
 				throw IndexException(static_cast<fisize>(id));
@@ -124,24 +146,30 @@ namespace bpf
         void RemoveAt(const fsize pos);
 		void RemoveAt(Iterator &pos)
 		{
-			RemoveAt(pos._curid);
+			RemoveAt(pos.ArrayPos());
 		}
 		void RemoveAt(Iterator &&pos)
 		{
-			RemoveAt(pos._curid);
+			RemoveAt(pos.ArrayPos());
 		}
 
+        /**
+         * Removes occurences of an element fron the list
+         * @param elem the element to search for
+         * @param all wether or not to remove all occurences or just the first one
+         * @tparam Equal the equal operator to use for comparing values
+         */
+        template <template <typename> typename Equal = bpf::ops::Equal>
         void Remove(const T &elem, const bool all = true);
 
 		inline void Clear()
 		{
-			while (Size() > 0)
-				RemoveLast();
+			_curid = 0;
 		}
 
         inline void RemoveLast()
         {
-            RemoveAt(_curid - 1);
+            --_curid;
         }
         
         inline fsize Size() const
@@ -149,9 +177,11 @@ namespace bpf
             return (_curid);
         }
 
-		inline const Array<T> &ToArray() const
+		inline Array<T> ToArray() const
 		{
-			return (_arr);
+			Array<T> arr = _arr;
+			arr.Resize(_curid);
+			return (arr);
 		}
 
         /**

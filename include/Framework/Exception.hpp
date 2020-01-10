@@ -40,7 +40,7 @@ namespace bpf
         /**
          * Returns exception type
          */
-        inline virtual const char *GetType() const noexcept
+        inline virtual const char *Type() const noexcept
         {
             return ("GenericException");
         }

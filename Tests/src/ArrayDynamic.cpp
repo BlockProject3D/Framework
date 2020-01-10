@@ -61,6 +61,10 @@ TEST(ArrayDynamic, Indexer)
 	EXPECT_EQ(lst1[0], 0);
 	EXPECT_EQ(lst1[1], 3);
 	EXPECT_EQ(lst1[2], 7);
+	EXPECT_THROW(lst1[3], bpf::IndexException);
+	EXPECT_THROW(lst1[678], bpf::IndexException);
+	EXPECT_THROW(lst1[(bpf::fsize) - 1], bpf::IndexException);
+	EXPECT_THROW(lst1[(bpf::fsize) - 465], bpf::IndexException);
 	const auto &lst = lst1;
 	EXPECT_THROW(lst[3], bpf::IndexException);
 	EXPECT_THROW(lst[678], bpf::IndexException);
@@ -256,7 +260,7 @@ TEST(ArrayDynamic, Swap_3)
 
 TEST(ArrayDynamic, Swap_4)
 {
-	bpf::Array<bpf::UniquePtr<int>> lst;
+	bpf::Array<bpf::UniquePtr<int>> lst(2);
 
 	lst[0] = bpf::MakeUnique<int>(0);
 	lst[1] = bpf::MakeUnique<int>(7);
@@ -287,6 +291,7 @@ TEST(ArrayDynamic, Realloc)
 	arr[0] = 1;
 	arr[1] = 3;
 	arr[2] = 6;
+	arr.Resize(4);
 	arr[3] = 100;
 	EXPECT_EQ(arr[0], 1);
 	EXPECT_EQ(arr[1], 3);
@@ -305,13 +310,12 @@ TEST(ArrayDynamic, ReallocForbidThrow)
 	EXPECT_EQ(arr[0], 1);
 	EXPECT_EQ(arr[1], 3);
 	EXPECT_EQ(arr[2], 6);
-
 	EXPECT_THROW(test[3], bpf::IndexException);
 }
 
 TEST(ArrayDynamic, ReadWrite_NonCopy_2)
 {
-    bpf::Array<bpf::UniquePtr<int>> arr;
+    bpf::Array<bpf::UniquePtr<int>> arr(2);
     arr[0] = bpf::MakeUnique<int>(32);
     arr[1] = bpf::MakeUnique<int>(42);
     EXPECT_EQ(*arr[0], 32);
@@ -323,7 +327,7 @@ TEST(ArrayDynamic, ReadWrite_NonCopy_2)
 
 static void Test_ReadWrite_NonCopy_MemLeak()
 {
-    bpf::Array<bpf::UniquePtr<int>> arr;
+    bpf::Array<bpf::UniquePtr<int>> arr(2);
     arr[0] = bpf::MakeUnique<int>(32);
     arr[1] = bpf::MakeUnique<int>(42);
     EXPECT_EQ(*arr[0], 32);
@@ -345,6 +349,7 @@ static void Test_CopyMoveObj_MemLeak()
 {
 	bpf::Array<bpf::String> lst = { "a", "b", "c" };
 
+	lst.Resize(4);
 	lst[3] = "d";
 	bpf::Array<bpf::String> cpy = lst;
 	EXPECT_EQ(lst.Size(), cpy.Size());
@@ -353,6 +358,7 @@ static void Test_CopyMoveObj_MemLeak()
 	EXPECT_EQ(lst.Size(), 0);
 	EXPECT_EQ(mv.Size(), 4);
 	EXPECT_EQ(cpy.Size(), 4);
+	cpy.Resize(5);
 	cpy[4] = "e";
 	EXPECT_EQ(cpy.Size(), 5);
 	EXPECT_EQ(mv.Size(), 4);
