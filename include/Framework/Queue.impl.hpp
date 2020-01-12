@@ -53,6 +53,14 @@ namespace bpf
     }
 
     template <typename T>
+    void Queue<T>::Clear()
+    {
+        _headPtr = 0;
+        _tailPtr = 0;
+        _count = 0;
+    }
+
+    template <typename T>
     void Queue<T>::Push(const T &element)
     {
         if (_maxSize == 0)

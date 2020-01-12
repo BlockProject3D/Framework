@@ -102,6 +102,13 @@ namespace bpf
     }
 
     template <typename K, typename V, template <typename> typename HeapFunc>
+    void PriorityQueue<K, V, HeapFunc>::Clear()
+    {
+        _tailPtr = 0;
+        _count = 0;
+    }
+
+    template <typename K, typename V, template <typename> typename HeapFunc>
     void PriorityQueue<K, V, HeapFunc>::Push(const K &key, const V &value)
     {
         if (_maxSize == 0)

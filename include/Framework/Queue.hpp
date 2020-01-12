@@ -89,6 +89,8 @@ namespace bpf
             return (*this);
         }
 
+        void Clear();
+
 		/**
 		 * Pushes an element on the queue
 		 */

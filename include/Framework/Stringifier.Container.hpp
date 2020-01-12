@@ -32,6 +32,7 @@
 #include "Framework/List.hpp"
 #include "Framework/ArrayList.hpp"
 #include "Framework/HashMap.hpp"
+#include "Framework/Map.hpp"
 
 namespace bpf
 {
@@ -92,11 +93,32 @@ namespace bpf
 		}
 	};
 
-	template <typename K, typename V>
-	class String::Stringifier<HashMap<K, V>>
+	template <typename K, typename V, typename HashOp>
+	class String::Stringifier<HashMap<K, V, HashOp>>
 	{
 	public:
-		inline static String Stringify(const HashMap<K, V> &map)
+		inline static String Stringify(const HashMap<K, V, HashOp> &map)
+		{
+			String res = "{";
+			fsize i = 0;
+
+			for (auto &entry : map)
+			{
+				res += String('\'') + String::ValueOf(entry.Key) + "': " + String::ValueOf(entry.Value);
+				if (i < map.Size() - 1)
+					res += ", ";
+				++i;
+			}
+			res += "}";
+			return (res);
+		}
+	};
+
+	template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+	class String::Stringifier<Map<K, V, Greater, Less>>
+	{
+	public:
+		inline static String Stringify(const Map<K, V, Greater, Less> &map)
 		{
 			String res = "{";
 			fsize i = 0;

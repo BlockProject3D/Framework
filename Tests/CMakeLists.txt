@@ -43,6 +43,7 @@ set(SOURCES
     src/List.cpp
     src/ArrayList.cpp
     src/HashMap.cpp
+    src/Map.cpp
     src/ArrayDynamic.cpp
     src/ArrayStatic.cpp
     src/BaseConvert.cpp

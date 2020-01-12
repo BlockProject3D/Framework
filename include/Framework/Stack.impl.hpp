@@ -45,6 +45,12 @@ namespace bpf
     }
 
     template <typename T>
+    void Stack<T>::Clear()
+    {
+        _data.Clear();
+    }
+
+    template <typename T>
     void Stack<T>::Push(const T &element)
     {
         if (_maxSize > 0 && _data.Size() >= _maxSize)

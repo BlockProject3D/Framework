@@ -31,10 +31,12 @@
 #include "Framework/Types.hpp"
 #include "Framework/Stack.hpp"
 #include "Framework/Iterator.hpp"
+#include "Framework/ContainerUtilities.hpp"
+#include "Framework/IndexException.hpp"
 
 namespace bpf
 {
-    template <typename K, typename V, template <typename T> typename Greater = >
+    template <typename K, typename V, template <typename T> typename Greater = ops::Greater, template <typename T> typename Less = ops::Less>
     class BP_TPL_API Map
     {
     public:
@@ -55,7 +57,7 @@ namespace bpf
         };
 
     public:
-        class BP_TPL_API Iterator : public IIterator<typename Map<K, V>::Iterator, Entry>
+        class BP_TPL_API Iterator : public IIterator<typename Map<K, V, Greater, Less>::Iterator, Entry>
         {
         private:
             Node *_root;
@@ -66,7 +68,7 @@ namespace bpf
             void ResetIterator();
 
         public:
-            Iterator(Node *root, bool begin);
+            Iterator(Node *root, Node *start);
             Iterator &operator++();
             Iterator &operator--();
             inline const Entry &operator*() const
@@ -85,9 +87,11 @@ namespace bpf
             {
                 return (_curNode != other._curNode);
             }
+
+            friend class Map<K, V, Greater, Less>;
         };
 
-        class BP_TPL_API ReverseIterator : public IIterator<typename Map<K, V>::Iterator, Entry>
+        class BP_TPL_API ReverseIterator : public IIterator<typename Map<K, V, Greater, Less>::ReverseIterator, Entry>
         {
         private:
             Node *_root;
@@ -98,7 +102,7 @@ namespace bpf
             void ResetIterator();
 
         public:
-            ReverseIterator(Node *root, bool begin);
+            ReverseIterator(Node *root, Node *start);
             ReverseIterator &operator++();
             ReverseIterator &operator--();
             inline const Entry &operator*() const
@@ -109,11 +113,11 @@ namespace bpf
             {
                 return (&_curNode->KeyVal);
             }
-            inline bool operator==(const Iterator &other) const
+            inline bool operator==(const ReverseIterator &other) const
             {
                 return (_curNode == other._curNode);
             }
-            inline bool operator!=(const Iterator &other) const
+            inline bool operator!=(const ReverseIterator &other) const
             {
                 return (_curNode != other._curNode);
             }
@@ -122,6 +126,16 @@ namespace bpf
     private:
         Node *_root;
         fsize _count;
+        fisize Height(Node *node);
+        fisize Balance(Node *node);
+        void LeftRotate(Node *node);
+        void RightRotate(Node *node);
+        void InsertNode(const K &key, Node *newNode);
+        void RemoveNode(Node *node);
+        Node *FindMin(Node *node);
+        void SwapKeyVal(Node *a, Node *b);
+        void SwapVal(Node *a, Node *b);
+        Node *FindNode(const K &key) const;
 
     public:
         Map();
@@ -155,7 +169,9 @@ namespace bpf
          * Removes an element by value
          * @param value the value to search for
          * @param all wether to remove all occurances or just the first one
+         * @tparam Equal the equal operator to use for comparing values
          */
+        template <template <typename> typename Equal = bpf::ops::Equal>
         void Remove(const V &value, const bool all = true);
 
         /**
@@ -163,6 +179,9 @@ namespace bpf
          * @param key the key of the element to return
          */
         const V &operator[](const K &key) const;
+
+        Iterator FindMin();
+        Iterator FindMax();
 
         V &operator[](const K &key);
 
@@ -173,7 +192,10 @@ namespace bpf
          * Returns true if the specified key exists, false otherwise
          * @param key the key to check
          */
-        bool HasKey(const K &key) const;
+        inline bool HasKey(const K &key) const
+        {
+            return (FindNode(key) == Null ? false : true);
+        }
 
         /**
          * Returns the size of this hash table, that means the element count
@@ -185,20 +207,20 @@ namespace bpf
 
         inline Iterator begin() const
         {
-            return (Iterator(_root, true));
+            return (Iterator(_root, (Node *)1));
         }
         inline Iterator end() const
         {
-            return (Iterator(_root, false));
+            return (Iterator(_root, Null));
         }
 
         inline ReverseIterator rbegin() const
         {
-            return (ReverseIterator(_root, true));
+            return (ReverseIterator(_root, (Node *)1));
         }
         inline ReverseIterator rend() const
         {
-            return (ReverseIterator(_root, false));
+            return (ReverseIterator(_root, Null));
         }
     };
 }

@@ -668,3 +668,12 @@ TEST(String, Reverse)
 	str = "abcd  ef";
 	EXPECT_STREQ(*str.Reverse(), "fe  dcba");
 }
+
+TEST(String, Chinese)
+{
+    bpf::String str = "你好，我是清华大学的留学生";
+
+    EXPECT_EQ(str.Len(), 13);
+    EXPECT_EQ(str.Size(), 39);
+    EXPECT_STREQ(*str.Sub(str.IndexOf("我是") + 2), "清华大学的留学生");
+}

@@ -28,15 +28,157 @@
 
 namespace bpf
 {
-    template <typename K, typename V>
-    Map<K, V>::Map()
+    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    Map<K, V, Greater, Less>::Iterator::Iterator(Node *root, Node *start)
+        : _root(root)
+        , _fixedRoot(Null)
+        , _curNode(Null)
+    {
+        ResetIterator();
+        if (start != (Node *)1)
+        {
+            while (_curNode != start)
+                operator++();
+        }
+    }
+
+    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    void Map<K, V, Greater, Less>::Iterator::ResetIterator()
+    {
+        _fixedRoot = Null;
+        _curNode = Null;
+        _stack.Clear();
+        _backStack.Clear();
+        Node *nd = _root;
+        while (nd != Null)
+        {
+            _stack.Push(nd);
+            nd = nd->Left;
+        }
+        operator++();
+        if (_curNode == _root)
+            _fixedRoot = _curNode;
+        else
+            _fixedRoot = _curNode->Parent;
+    }
+
+    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    typename Map<K, V, Greater, Less>::Iterator &Map<K, V, Greater, Less>::Iterator::operator++()
+    {
+        if (_curNode != Null)
+            _backStack.Push(_curNode);
+        if (_stack.Size() == 0)
+        {
+            _curNode = Null;
+            return (*this);
+        }
+        Node *cpy = _stack.Pop();
+        _curNode = cpy;
+        cpy = cpy->Right;
+        while (cpy != Null)
+        {
+            _stack.Push(cpy);
+            cpy = cpy->Left;
+        }
+        return (*this);
+    }
+
+    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    typename Map<K, V, Greater, Less>::Iterator &Map<K, V, Greater, Less>::Iterator::operator--()
+    {
+        if (_backStack.Size() == 0)
+            return (*this);
+        if (_curNode == _fixedRoot)
+        {
+            ResetIterator();
+            return (*this);
+        }
+        if (_curNode != Null)
+            _stack.Push(_curNode);
+        _curNode = _backStack.Pop();
+        return (*this);
+    }
+
+    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    Map<K, V, Greater, Less>::ReverseIterator::ReverseIterator(Node *root, Node *start)
+        : _root(root)
+        , _fixedRoot(Null)
+        , _curNode(Null)
+    {
+        ResetIterator();
+        if (start != (Node *)1)
+        {
+            while (_curNode != start)
+                operator++();
+        }
+    }
+
+    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    void Map<K, V, Greater, Less>::ReverseIterator::ResetIterator()
+    {
+        _fixedRoot = Null;
+        _curNode = Null;
+        _stack.Clear();
+        _backStack.Clear();
+        Node *nd = _root;
+        while (nd != Null)
+        {
+            _stack.Push(nd);
+            nd = nd->Right;
+        }
+        operator++();
+        if (_curNode == _root)
+            _fixedRoot = _curNode;
+        else
+            _fixedRoot = _curNode->Parent;
+    }
+
+    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    typename Map<K, V, Greater, Less>::ReverseIterator &Map<K, V, Greater, Less>::ReverseIterator::operator++()
+    {
+        if (_curNode != Null)
+            _backStack.Push(_curNode);
+        if (_stack.Size() == 0)
+        {
+            _curNode = Null;
+            return (*this);
+        }
+        Node *cpy = _stack.Pop();
+        _curNode = cpy;
+        cpy = cpy->Left;
+        while (cpy != Null)
+        {
+            _stack.Push(cpy);
+            cpy = cpy->Right;
+        }
+        return (*this);
+    }
+
+    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    typename Map<K, V, Greater, Less>::ReverseIterator &Map<K, V, Greater, Less>::ReverseIterator::operator--()
+    {
+        if (_backStack.Size() == 0)
+            return (*this);
+        if (_curNode == _fixedRoot)
+        {
+            ResetIterator();
+            return (*this);
+        }
+        if (_curNode != Null)
+            _stack.Push(_curNode);
+        _curNode = _backStack.Pop();
+        return (*this);
+    }
+
+    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    Map<K, V, Greater, Less>::Map()
         : _root(Null)
         , _count(0)
     {
     }
 
-    template <typename K, typename V>
-    Map<K, V>::Map(const Map &other)
+    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    Map<K, V, Greater, Less>::Map(const Map &other)
         : _root(Null)
         , _count(0)
     {
@@ -44,8 +186,8 @@ namespace bpf
             Add(entry.Key, entry.Value);
     }
 
-    template <typename K, typename V>
-    Map<K, V>::Map(Map &&other)
+    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    Map<K, V, Greater, Less>::Map(Map &&other)
         : _root(other._root)
         , _count(other._count)
     {
@@ -53,8 +195,8 @@ namespace bpf
         other._count = 0;
     }
 
-    template <typename K, typename V>
-    Map<K, V>::Map(const std::initializer_list<Entry> &entries)
+    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    Map<K, V, Greater, Less>::Map(const std::initializer_list<Entry> &entries)
         : _root(Null)
         , _count(0)
     {
@@ -62,14 +204,14 @@ namespace bpf
             Add(entry.Key, entry.Value);
     }
 
-    template <typename K, typename V>
-    Map<K, V>::~Map()
+    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    Map<K, V, Greater, Less>::~Map()
     {
         Clear();
     }
 
-    template <typename K, typename V>
-    void Map<K, V>::Clear()
+    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    void Map<K, V, Greater, Less>::Clear()
     {
         if (_root == Null)
             return;
@@ -89,33 +231,97 @@ namespace bpf
         _count = 0;
     }
 
-    template <typename K, typename V>
-    Map<K, V> &Map<K, V>::operator=(const Map &other)
+    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    Map<K, V, Greater, Less> &Map<K, V, Greater, Less>::operator=(const Map &other)
     {
         Clear();
         for (auto &entry : other)
             Add(entry.Key, entry.Value);
+        return (*this);
     }
 
-    template <typename K, typename V>
-    Map<K, V> &Map<K, V>::operator=(Map &&other)
+    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    Map<K, V, Greater, Less> &Map<K, V, Greater, Less>::operator=(Map &&other)
     {
         Clear();
         _root = other._root;
         _count = other._count;
         other._root = Null;
         other._count = 0;
+        return (*this);
     }
 
-    template <typename K, typename V>
-    void Map<K, V>::Add(const K &key, const V &value)
+    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    fisize Map<K, V, Greater, Less>::Height(Node *node)
     {
-        Node *newNode = new Node();
+        return (node != Null ? node->Height : 0);
+    }
 
-        newNode->KeyVal.Key = key;
-        newNode->KeyVal.Value = value;
-        newNode->Height = 1;
-        //BST standard add
+    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    fisize Map<K, V, Greater, Less>::Balance(Node *node)
+    {
+        return (node != Null ? Height(node->Left) - Height(node->Right) : 0);
+    }
+
+    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    void Map<K, V, Greater, Less>::LeftRotate(Node *node)
+    {
+        Node *nd = node->Right;
+        node->Right = nd->Left;
+        if (nd->Left != Null)
+            nd->Left->Parent = node;
+        nd->Parent = node->Parent;
+        if (node->Parent == Null)
+            _root = nd;
+        else if (node->Parent->Left == node)
+            node->Parent->Left = nd;
+        else
+            node->Parent->Right = nd;
+        nd->Left = node;
+        node->Parent = nd;
+        if (Height(node->Left) > Height(node->Right))
+            node->Height = 1 + Height(node->Left);
+        else
+            node->Height = 1 + Height(node->Right);
+        if (Height(nd->Left) > Height(nd->Right))
+            nd->Height = 1 + Height(nd->Left);
+        else
+            nd->Height = 1 + Height(nd->Right);
+    }
+
+    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    void Map<K, V, Greater, Less>::RightRotate(Node *node)
+    {
+        Node *nd = node->Left;
+        node->Left = nd->Right;
+        if (nd->Right != Null)
+            nd->Right->Parent = node;
+        nd->Parent = node->Parent;
+        if (node->Parent == Null)
+            _root = nd;
+        else if (node->Parent->Right == node)
+            node->Parent->Right = nd;
+        else
+            node->Parent->Left = nd;
+        nd->Right = node;
+        node->Parent = nd;
+        if (Height(node->Left) > Height(node->Right))
+            node->Height = 1 + Height(node->Left);
+        else
+            node->Height = 1 + Height(node->Right);
+        if (Height(nd->Left) > Height(nd->Right))
+            nd->Height = 1 + Height(nd->Left);
+        else
+            nd->Height = 1 + Height(nd->Right);
+    }
+
+    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    void Map<K, V, Greater, Less>::InsertNode(const K &key, Node *newNode)
+    {
+        /* Data structure augmentation */
+        newNode->Height = 1; //Every new node is a leaf
+
+        /* BST standard add */
         if (_root == Null)
         {
             newNode->Left = Null;
@@ -128,13 +334,315 @@ namespace bpf
         Node *parent = Null;
         while (cur != Null)
         {
+            parent = cur;
+            if (Greater<K>::Eval(key, cur->KeyVal.Key))
+            {
+                cur = cur->Right;
+                lastdir = 1;
+            }
+            else
+            {
+                cur = cur->Left;
+                lastdir = 0;
+            }
+        }
+        newNode->Parent = parent;
+        if (lastdir == 1)
+            parent->Right = newNode;
+        else
+            parent->Left = newNode;
 
+        /* AVL Tree property */
+        while (parent != Null)
+        {
+            if (Height(parent->Left) > Height(parent->Right))
+                parent->Height = 1 + Height(parent->Left);
+            else
+                parent->Height = 1 + Height(parent->Right);
+            if (Balance(parent) > 1 && Less<K>::Eval(key, parent->Left->KeyVal.Key))
+                RightRotate(parent);
+            if (Balance(parent) > 1 && Greater<K>::Eval(key, parent->Left->KeyVal.Key))
+            {
+                LeftRotate(parent->Left);
+                RightRotate(parent);
+            }
+            if (Balance(parent) < -1 && Greater<K>::Eval(key, parent->Right->KeyVal.Key))
+                LeftRotate(parent);
+            if (Balance(parent) < -1 && Less<K>::Eval(key, parent->Right->KeyVal.Key))
+            {
+                RightRotate(parent->Right);
+                LeftRotate(parent);
+            }
+            parent = parent->Parent;
         }
     }
 
-    template <typename K, typename V>
-    void Map<K, V>::Add(const K &key, V &&value)
+    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    typename Map<K, V, Greater, Less>::Node *Map<K, V, Greater, Less>::FindMin(Node *node)
     {
+        while (node != Null && node->Left != Null)
+            node = node->Left;
+        return (node);
+    }
 
+    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    void Map<K, V, Greater, Less>::SwapKeyVal(Node *a, Node *b)
+    {
+        K tmp = std::move(a->KeyVal.Key);
+        V tmp1 = std::move(a->KeyVal.Value);
+
+        a->KeyVal.Key = std::move(b->KeyVal.Key);
+        a->KeyVal.Value = std::move(b->KeyVal.Value);
+        b->KeyVal.Key = std::move(tmp);
+        b->KeyVal.Value = std::move(tmp1);
+    }
+
+    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    void Map<K, V, Greater, Less>::SwapVal(Node *a, Node *b)
+    {
+        V tmp = std::move(a->KeyVal.Value);
+
+        a->KeyVal.Value = std::move(b->KeyVal.Value);
+        b->KeyVal.Value = std::move(tmp);
+    }
+
+    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    void Map<K, V, Greater, Less>::RemoveNode(Node *node)
+    {
+        /* Data structure augmentation */
+        Node *parent = node;
+
+        /* BST standard remove */
+        if (node->Left == Null && node->Right == Null) // Case 1 node has no children, delete the node
+        {
+            if (node == _root)
+            {
+                delete node;
+                _root = Null;
+                return;
+            }
+            if (node->Parent->Left == node)
+                node->Parent->Left = Null;
+            else
+                node->Parent->Right = Null;
+            parent = parent->Parent;
+            delete node;
+        }
+        else if (node->Left != Null && node->Right != Null) // Case 3 node has two children, find min in right sub tree then swap and finally remove
+        {
+            Node *nd = FindMin(node->Right);
+            SwapKeyVal(nd, node);
+            if (nd->Parent->Left == nd)
+                nd->Parent->Left = Null;
+            else
+                nd->Parent->Right = Null;
+            delete nd;
+        }
+        else // Case 2 node has one child
+        {
+            if (node == _root)
+            {
+                if (_root->Left != Null)
+                    _root = _root->Left;
+                else
+                    _root = _root->Right;
+                parent = _root;
+            }
+            if (node->Parent->Left == node)
+            {
+                if (node->Left != Null)
+                {
+                    node->Parent->Left = node->Left;
+                    node->Left->Parent = node->Parent;
+                    parent = node->Left;
+                }
+                else
+                {
+                    node->Parent->Left = node->Right;
+                    node->Right->Parent = node->Parent;
+                    parent = node->Right;
+                }
+            }
+            else
+            {
+                if (node->Left != Null)
+                {
+                    node->Parent->Right = node->Left;
+                    node->Left->Parent = node->Parent;
+                    parent = node->Left;
+                }
+                else
+                {
+                    node->Parent->Right = node->Right;
+                    node->Right->Parent = node->Parent;
+                    parent = node->Right;
+                }
+                delete node;
+            }
+        }
+
+        /* AVL Tree property */
+        while (parent != Null)
+        {
+            if (Height(parent->Left) > Height(parent->Right))
+                parent->Height = 1 + Height(parent->Left);
+            else
+                parent->Height = 1 + Height(parent->Right);
+            if (Balance(parent) > 1 && Balance(parent->Left) >= 0)
+                RightRotate(parent);
+            if (Balance(parent) > 1 && Balance(parent->Left) < 0)
+            {
+                LeftRotate(parent->Left);
+                RightRotate(parent);
+            }
+            if (Balance(parent) < -1 && Balance(parent->Right) <= 0)
+                LeftRotate(parent);
+            if (Balance(parent) < -1 && Balance(parent->Right) > 0)
+            {
+                RightRotate(parent->Right);
+                LeftRotate(parent);
+            }
+            parent = parent->Parent;
+        }
+    }
+
+    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    void Map<K, V, Greater, Less>::Add(const K &key, const V &value)
+    {
+        Node *newNode = new Node();
+
+        newNode->KeyVal.Key = key;
+        newNode->KeyVal.Value = value;
+
+        InsertNode(key, newNode);
+        ++_count;
+    }
+
+    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    void Map<K, V, Greater, Less>::Add(const K &key, V &&value)
+    {
+        Node *newNode = new Node();
+
+        newNode->KeyVal.Key = key;
+        newNode->KeyVal.Value = std::move(value);
+
+        InsertNode(key, newNode);
+        ++_count;
+    }
+
+    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    typename Map<K, V, Greater, Less>::Node *Map<K, V, Greater, Less>::FindNode(const K &key) const
+    {
+        Node *nd = _root;
+
+        while (nd != Null)
+        {
+            if (Greater<K>::Eval(key, nd->KeyVal.Key))
+                nd = nd->Right;
+            else if (Less<K>::Eval(key, nd->KeyVal.Key))
+                nd = nd->Left;
+            else
+                break;
+        }
+        return (nd);
+    }
+
+    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    void Map<K, V, Greater, Less>::RemoveAt(const K &key)
+    {
+        Node *nd = FindNode(key);
+
+        if (nd != Null)
+        {
+            RemoveNode(nd);
+            --_count;
+        }
+    }
+
+    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    void Map<K, V, Greater, Less>::RemoveAt(Iterator &pos)
+    {
+        Iterator cpy = pos;
+
+        if (cpy._curNode != Null)
+        {
+            if (cpy._curNode == _root)
+                pos = Iterator(Null, Null);
+            else
+                ++pos;
+            RemoveNode(cpy._curNode);
+            --_count;
+            if (pos._root != Null)
+                pos = Iterator(_root, pos._curNode);
+        }
+    }
+
+    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    void Map<K, V, Greater, Less>::RemoveAt(Iterator &&pos)
+    {
+        Iterator cpy = pos;
+
+        ++pos;
+        if (cpy._curNode != Null)
+        {
+            if (cpy._curNode == _root)
+                pos = Iterator(Null, Null);
+            else
+                ++pos;
+            RemoveNode(cpy._curNode);
+            --_count;
+            if (pos._root != Null)
+                pos = Iterator(_root, pos._curNode);
+        }
+    }
+
+    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    void Map<K, V, Greater, Less>::Swap(const Iterator &a, const Iterator &b)
+    {
+        if (a._curNode == Null || b._curNode == Null)
+            return;
+        SwapVal(a._curNode, b._curNode);
+    }
+
+    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <template <typename> typename Equal>
+    void Map<K, V, Greater, Less>::Remove(const V &value, const bool all)
+    {
+        for (auto &entry : *this)
+        {
+            if (Equal<V>::Eval(entry.Value, value))
+            {
+                RemoveAt(entry.Key);
+                if (!all)
+                    return;
+            }
+        }
+    }
+
+    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    const V &Map<K, V, Greater, Less>::operator[](const K &key) const
+    {
+        Node *nd = FindNode(key);
+
+        if (nd == Null)
+            throw bpf::IndexException(0);
+        return (nd->KeyVal.Value);
+    }
+
+    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    V &Map<K, V, Greater, Less>::operator[](const K &key)
+    {
+        Node *nd = FindNode(key);
+
+        if (nd == Null)
+        {
+            Node *newNode = new Node();
+
+            newNode->KeyVal.Key = key;
+            InsertNode(key, newNode);
+            ++_count;
+            return (newNode->KeyVal.Value);
+        }
+        return (nd->KeyVal.Value);
     }
 }
