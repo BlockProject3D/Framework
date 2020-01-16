@@ -114,7 +114,7 @@ namespace bpf
 		}
 	};
 
-	template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+	template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
 	class String::Stringifier<Map<K, V, Greater, Less>>
 	{
 	public:
