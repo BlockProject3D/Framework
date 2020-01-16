@@ -250,7 +250,10 @@ namespace bpf
             return (LastNode()->Data);
         }
 
-        fsize Size() const;
+        inline fsize Size() const noexcept
+        {
+            return (_count);
+        }
 
         void Clear();
 

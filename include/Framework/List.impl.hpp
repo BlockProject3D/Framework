@@ -422,12 +422,6 @@ namespace bpf
     }
 
     template <typename T>
-    inline fsize List<T>::Size() const
-    {
-        return (_count);
-    }
-
-    template <typename T>
     inline const T &List<T>::operator[](fsize const id) const
     {
         ListNode<T> *elem = GetNode(id);
