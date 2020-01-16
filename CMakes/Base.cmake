@@ -35,7 +35,7 @@ if (CMAKE_COMPILER_IS_GNUCC)
 endif (CMAKE_COMPILER_IS_GNUCC)
 
 if (MSVC)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3")
 endif (MSVC)
 
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
