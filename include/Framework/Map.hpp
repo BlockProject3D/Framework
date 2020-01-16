@@ -36,7 +36,7 @@
 
 namespace bpf
 {
-    template <typename K, typename V, template <typename T> typename Greater = ops::Greater, template <typename T> typename Less = ops::Less>
+    template <typename K, typename V, template <typename T> class Greater = ops::Greater, template <typename T> class Less = ops::Less>
     class BP_TPL_API Map
     {
     public:

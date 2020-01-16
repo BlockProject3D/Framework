@@ -28,7 +28,7 @@
 
 namespace bpf
 {
-    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     Map<K, V, Greater, Less>::Iterator::Iterator(Node *root, Node *start)
         : _root(root)
         , _fixedRoot(Null)
@@ -42,7 +42,7 @@ namespace bpf
         }
     }
 
-    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     void Map<K, V, Greater, Less>::Iterator::ResetIterator()
     {
         _fixedRoot = Null;
@@ -62,7 +62,7 @@ namespace bpf
             _fixedRoot = _curNode->Parent;
     }
 
-    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     typename Map<K, V, Greater, Less>::Iterator &Map<K, V, Greater, Less>::Iterator::operator++()
     {
         if (_curNode != Null)
@@ -83,7 +83,7 @@ namespace bpf
         return (*this);
     }
 
-    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     typename Map<K, V, Greater, Less>::Iterator &Map<K, V, Greater, Less>::Iterator::operator--()
     {
         if (_backStack.Size() == 0)
@@ -99,7 +99,7 @@ namespace bpf
         return (*this);
     }
 
-    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     Map<K, V, Greater, Less>::ReverseIterator::ReverseIterator(Node *root, Node *start)
         : _root(root)
         , _fixedRoot(Null)
@@ -113,7 +113,7 @@ namespace bpf
         }
     }
 
-    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     void Map<K, V, Greater, Less>::ReverseIterator::ResetIterator()
     {
         _fixedRoot = Null;
@@ -133,7 +133,7 @@ namespace bpf
             _fixedRoot = _curNode->Parent;
     }
 
-    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     typename Map<K, V, Greater, Less>::ReverseIterator &Map<K, V, Greater, Less>::ReverseIterator::operator++()
     {
         if (_curNode != Null)
@@ -154,7 +154,7 @@ namespace bpf
         return (*this);
     }
 
-    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     typename Map<K, V, Greater, Less>::ReverseIterator &Map<K, V, Greater, Less>::ReverseIterator::operator--()
     {
         if (_backStack.Size() == 0)
@@ -170,14 +170,14 @@ namespace bpf
         return (*this);
     }
 
-    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     Map<K, V, Greater, Less>::Map()
         : _root(Null)
         , _count(0)
     {
     }
 
-    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     Map<K, V, Greater, Less>::Map(const Map &other)
         : _root(Null)
         , _count(0)
@@ -186,7 +186,7 @@ namespace bpf
             Add(entry.Key, entry.Value);
     }
 
-    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     Map<K, V, Greater, Less>::Map(Map &&other)
         : _root(other._root)
         , _count(other._count)
@@ -195,7 +195,7 @@ namespace bpf
         other._count = 0;
     }
 
-    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     Map<K, V, Greater, Less>::Map(const std::initializer_list<Entry> &entries)
         : _root(Null)
         , _count(0)
@@ -204,13 +204,13 @@ namespace bpf
             Add(entry.Key, entry.Value);
     }
 
-    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     Map<K, V, Greater, Less>::~Map()
     {
         Clear();
     }
 
-    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     void Map<K, V, Greater, Less>::Clear()
     {
         if (_root == Null)
@@ -231,7 +231,7 @@ namespace bpf
         _count = 0;
     }
 
-    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     Map<K, V, Greater, Less> &Map<K, V, Greater, Less>::operator=(const Map &other)
     {
         Clear();
@@ -240,7 +240,7 @@ namespace bpf
         return (*this);
     }
 
-    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     Map<K, V, Greater, Less> &Map<K, V, Greater, Less>::operator=(Map &&other)
     {
         Clear();
@@ -251,19 +251,19 @@ namespace bpf
         return (*this);
     }
 
-    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     fisize Map<K, V, Greater, Less>::Height(Node *node)
     {
         return (node != Null ? node->Height : 0);
     }
 
-    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     fisize Map<K, V, Greater, Less>::Balance(Node *node)
     {
         return (node != Null ? Height(node->Left) - Height(node->Right) : 0);
     }
 
-    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     void Map<K, V, Greater, Less>::LeftRotate(Node *node)
     {
         Node *nd = node->Right;
@@ -289,7 +289,7 @@ namespace bpf
             nd->Height = 1 + Height(nd->Right);
     }
 
-    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     void Map<K, V, Greater, Less>::RightRotate(Node *node)
     {
         Node *nd = node->Left;
@@ -315,7 +315,7 @@ namespace bpf
             nd->Height = 1 + Height(nd->Right);
     }
 
-    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     void Map<K, V, Greater, Less>::InsertNode(const K &key, Node *newNode)
     {
         /* Data structure augmentation */
@@ -377,7 +377,7 @@ namespace bpf
         }
     }
 
-    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     typename Map<K, V, Greater, Less>::Node *Map<K, V, Greater, Less>::FindMin(Node *node)
     {
         while (node != Null && node->Left != Null)
@@ -385,7 +385,7 @@ namespace bpf
         return (node);
     }
 
-    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     void Map<K, V, Greater, Less>::SwapKeyVal(Node *a, Node *b)
     {
         K tmp = std::move(a->KeyVal.Key);
@@ -397,7 +397,7 @@ namespace bpf
         b->KeyVal.Value = std::move(tmp1);
     }
 
-    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     void Map<K, V, Greater, Less>::SwapVal(Node *a, Node *b)
     {
         V tmp = std::move(a->KeyVal.Value);
@@ -406,7 +406,7 @@ namespace bpf
         b->KeyVal.Value = std::move(tmp);
     }
 
-    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     void Map<K, V, Greater, Less>::RemoveNode(Node *node)
     {
         /* Data structure augmentation */
@@ -506,7 +506,7 @@ namespace bpf
         }
     }
 
-    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     void Map<K, V, Greater, Less>::Add(const K &key, const V &value)
     {
         Node *newNode = new Node();
@@ -518,7 +518,7 @@ namespace bpf
         ++_count;
     }
 
-    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     void Map<K, V, Greater, Less>::Add(const K &key, V &&value)
     {
         Node *newNode = new Node();
@@ -530,7 +530,7 @@ namespace bpf
         ++_count;
     }
 
-    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     typename Map<K, V, Greater, Less>::Node *Map<K, V, Greater, Less>::FindNode(const K &key) const
     {
         Node *nd = _root;
@@ -547,7 +547,7 @@ namespace bpf
         return (nd);
     }
 
-    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     void Map<K, V, Greater, Less>::RemoveAt(const K &key)
     {
         Node *nd = FindNode(key);
@@ -559,7 +559,7 @@ namespace bpf
         }
     }
 
-    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     void Map<K, V, Greater, Less>::RemoveAt(Iterator &pos)
     {
         Iterator cpy = pos;
@@ -577,7 +577,7 @@ namespace bpf
         }
     }
 
-    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     void Map<K, V, Greater, Less>::RemoveAt(Iterator &&pos)
     {
         Iterator cpy = pos;
@@ -596,7 +596,7 @@ namespace bpf
         }
     }
 
-    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     void Map<K, V, Greater, Less>::Swap(const Iterator &a, const Iterator &b)
     {
         if (a._curNode == Null || b._curNode == Null)
@@ -604,7 +604,7 @@ namespace bpf
         SwapVal(a._curNode, b._curNode);
     }
 
-    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     template <template <typename> class Equal>
     void Map<K, V, Greater, Less>::Remove(const V &value, const bool all)
     {
@@ -619,7 +619,7 @@ namespace bpf
         }
     }
 
-    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     const V &Map<K, V, Greater, Less>::operator[](const K &key) const
     {
         Node *nd = FindNode(key);
@@ -629,7 +629,7 @@ namespace bpf
         return (nd->KeyVal.Value);
     }
 
-    template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     V &Map<K, V, Greater, Less>::operator[](const K &key)
     {
         Node *nd = FindNode(key);
