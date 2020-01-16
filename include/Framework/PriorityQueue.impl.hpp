@@ -30,7 +30,7 @@
 
 namespace bpf
 {
-    template <typename K, typename V, template <typename> typename HeapFunc>
+    template <typename K, typename V, template <typename> class HeapFunc>
     void PriorityQueue<K, V, HeapFunc>::BubbleUp(fsize i)
     {
         fsize parent = i / 2;
@@ -48,7 +48,7 @@ namespace bpf
         }
     }
 
-    template <typename K, typename V, template <typename> typename HeapFunc>
+    template <typename K, typename V, template <typename> class HeapFunc>
     void PriorityQueue<K, V, HeapFunc>::SinkDown(fsize i)
     {
         fsize left = i * 2;
@@ -79,7 +79,7 @@ namespace bpf
         }
     }
 
-    template <typename K, typename V, template <typename> typename HeapFunc>
+    template <typename K, typename V, template <typename> class HeapFunc>
     inline PriorityQueue<K, V, HeapFunc>::PriorityQueue(const fsize maxsize)
         : _maxSize(maxsize)
         , _tailPtr(0)
@@ -89,7 +89,7 @@ namespace bpf
     {
     }
 
-    template <typename K, typename V, template <typename> typename HeapFunc>
+    template <typename K, typename V, template <typename> class HeapFunc>
     PriorityQueue<K, V, HeapFunc>::PriorityQueue(const std::initializer_list<Entry>& lst)
         : _maxSize(0)
         , _tailPtr(0)
@@ -101,14 +101,14 @@ namespace bpf
             Push(elem.Key, elem.Value);
     }
 
-    template <typename K, typename V, template <typename> typename HeapFunc>
+    template <typename K, typename V, template <typename> class HeapFunc>
     void PriorityQueue<K, V, HeapFunc>::Clear()
     {
         _tailPtr = 0;
         _count = 0;
     }
 
-    template <typename K, typename V, template <typename> typename HeapFunc>
+    template <typename K, typename V, template <typename> class HeapFunc>
     void PriorityQueue<K, V, HeapFunc>::Push(const K &key, const V &value)
     {
         if (_maxSize == 0)
@@ -132,7 +132,7 @@ namespace bpf
         ++_count;
     }
 
-    template <typename K, typename V, template <typename> typename HeapFunc>
+    template <typename K, typename V, template <typename> class HeapFunc>
 	void PriorityQueue<K, V, HeapFunc>::Push(const K &key, V &&value)
 	{
         if (_maxSize == 0)
@@ -156,7 +156,7 @@ namespace bpf
         ++_count;
     }
 
-    template <typename K, typename V, template <typename> typename HeapFunc>
+    template <typename K, typename V, template <typename> class HeapFunc>
     V PriorityQueue<K, V, HeapFunc>::Pop()
     {
         if (_count == 0)
