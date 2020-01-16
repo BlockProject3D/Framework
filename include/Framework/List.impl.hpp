@@ -386,7 +386,7 @@ namespace bpf
     }
 
     template <typename T>
-    template <template <typename> typename Equal>
+    template <template <typename> class Equal>
     void List<T>::Remove(const T &elem, const bool all)
     {
         ListNode<T> *cur = _first;

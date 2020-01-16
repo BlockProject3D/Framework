@@ -605,7 +605,7 @@ namespace bpf
     }
 
     template <typename K, typename V, template <typename T> typename Greater, template <typename T> typename Less>
-    template <template <typename> typename Equal>
+    template <template <typename> class Equal>
     void Map<K, V, Greater, Less>::Remove(const V &value, const bool all)
     {
         for (auto &entry : *this)

@@ -341,7 +341,7 @@ namespace bpf
 	}
 
 	template <typename K, typename V, typename HashOp>
-    template <template <typename> typename Equal>
+    template <template <typename> class Equal>
 	void HashMap<K, V, HashOp>::Remove(const V &value, const bool all)
 	{
 		for (auto &entry : *this)

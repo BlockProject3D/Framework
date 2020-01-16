@@ -171,7 +171,7 @@ namespace bpf
          * @param all wether to remove all occurances or just the first one
          * @tparam Equal the equal operator to use for comparing values
          */
-        template <template <typename> typename Equal = bpf::ops::Equal>
+        template <template <typename> class Equal = bpf::ops::Equal>
         void Remove(const V &value, const bool all = true);
 
         /**
