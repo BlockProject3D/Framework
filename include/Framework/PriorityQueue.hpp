@@ -33,7 +33,7 @@
 
 namespace bpf
 {
-    template <typename K, typename V, template <typename> typename HeapFunc = MaxHeap>
+    template <typename K, typename V, template <typename> class HeapFunc = MaxHeap>
     class BP_TPL_API PriorityQueue
     {
     public:
