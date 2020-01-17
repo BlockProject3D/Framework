@@ -69,7 +69,7 @@ TEST(PriorityQueue, Push_Pop_Limited)
     EXPECT_THROW(queue.Pop(), bpf::IndexException);
 }
 
-TEST(PriorityQueue, Push_Pop_Unlimited)
+TEST(PriorityQueue, Push_Pop_Unlimited_1)
 {
     bpf::PriorityQueue<int, int, bpf::MinHeap> queue;
 
@@ -86,6 +86,24 @@ TEST(PriorityQueue, Push_Pop_Unlimited)
     EXPECT_EQ(queue.Pop(), 42);
     EXPECT_THROW(queue.Pop(), bpf::IndexException);
 }
+
+TEST(PriorityQueue, Push_Pop_Unlimited_2)
+{
+    bpf::PriorityQueue<int, int, bpf::MinHeap> queue;
+
+    queue.Push(1, 1);
+    queue.Push(2, 2);
+    queue.Push(3, 3);
+    queue.Push(4, 4);
+    queue.Push(5, 5);
+    queue.Push(6, 6);
+    queue.Push(7, 7);
+    queue.Push(8, 8);
+    queue.Push(9, 9);
+    queue.Push(10, 10);
+    EXPECT_EQ(queue.Size(), 10);
+}
+
 
 TEST(PriorityQueue, Push_Pop_NonCopy)
 {

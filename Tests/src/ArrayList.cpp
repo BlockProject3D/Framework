@@ -55,7 +55,7 @@ TEST(ArrayList, Creation_List)
 	EXPECT_EQ(lst[2], 7);
 }
 
-TEST(ArrayList, Add)
+TEST(ArrayList, Add_1)
 {
 	const int i = 12;
 	bpf::ArrayList<int> lst = { i, 2 };
@@ -66,6 +66,22 @@ TEST(ArrayList, Add)
 	lst.Add(i);
 	EXPECT_EQ(lst.Size(), 4);
 	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[12, 2, 3, 12]");
+}
+
+TEST(ArrayList, Add_2)
+{
+	bpf::ArrayList<int> lst = { 1, 2 };
+
+	lst.Add(3);
+	lst.Add(4);
+	lst.Add(5);
+	lst.Add(6);
+	lst.Add(7);
+	lst.Add(8);
+	lst.Add(9);
+	lst.Add(10);
+	EXPECT_EQ(lst.Size(), 10);
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]");
 }
 
 TEST(ArrayList, Indexer)

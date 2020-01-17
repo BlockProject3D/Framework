@@ -67,7 +67,7 @@ TEST(Queue, Push_Pop_Limited)
     EXPECT_THROW(queue.Pop(), bpf::IndexException);
 }
 
-TEST(Queue, Push_Pop_Unlimited)
+TEST(Queue, Push_Pop_Unlimited_1)
 {
     bpf::Queue<int> queue;
 
@@ -85,6 +85,23 @@ TEST(Queue, Push_Pop_Unlimited)
     EXPECT_EQ(queue.Pop(), -1);
     EXPECT_EQ(queue.Pop(), 1);
     EXPECT_THROW(queue.Pop(), bpf::IndexException);
+}
+
+TEST(Queue, Push_Pop_Unlimited_2)
+{
+    bpf::Queue<int> queue;
+
+    queue.Push(1);
+    queue.Push(2);
+    queue.Push(3);
+    queue.Push(4);
+    queue.Push(5);
+    queue.Push(6);
+    queue.Push(7);
+    queue.Push(8);
+    queue.Push(9);
+    queue.Push(10);
+    EXPECT_EQ(queue.Size(), 10);
 }
 
 TEST(Queue, Push_Pop_NonCopy)

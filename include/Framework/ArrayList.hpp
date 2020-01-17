@@ -125,11 +125,15 @@ namespace bpf
 
         inline void Add(const T &elem)
         {
+			if (_curid + 1 >= _arr.Size())
+				_arr.Resize(_arr.Size() * 2);
             _arr[_curid++] = elem;
         }
 
 		inline void Add(T &&elem)
 		{
+			if (_curid + 1 >= _arr.Size())
+				_arr.Resize(_arr.Size() * 2);
 			_arr[_curid++] = std::move(elem);
 		}
 

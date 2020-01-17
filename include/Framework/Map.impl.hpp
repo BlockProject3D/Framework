@@ -31,8 +31,6 @@ namespace bpf
     template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     Map<K, V, Greater, Less>::Iterator::Iterator(Node *root, Node *start)
         : _root(root)
-        , _fixedRoot(Null)
-        , _curNode(Null)
     {
         ResetIterator();
         if (start != (Node *)1)
@@ -102,8 +100,6 @@ namespace bpf
     template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     Map<K, V, Greater, Less>::ReverseIterator::ReverseIterator(Node *root, Node *start)
         : _root(root)
-        , _fixedRoot(Null)
-        , _curNode(Null)
     {
         ResetIterator();
         if (start != (Node *)1)

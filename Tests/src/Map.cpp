@@ -63,7 +63,7 @@ TEST(Map, Creation_List)
 	EXPECT_EQ(lst[2], 7);
 }
 
-TEST(Map, Add)
+TEST(Map, Add_1)
 {
 	const int i = 12;
 	bpf::Map<int, int> lst = { { 0, i }, { 1, 2 } };
@@ -74,6 +74,34 @@ TEST(Map, Add)
 	lst.Add(3, i);
 	EXPECT_EQ(lst.Size(), 4);
 	EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'0': 12, '1': 2, '2': 3, '3': 12}");
+}
+
+TEST(Map, Add_2)
+{
+	bpf::Map<int, int> lst = { { 0, 0 }, { 1, 1 } };
+
+	lst.Add(2, 2);
+	lst.Add(3, 3);
+	lst.Add(-2, -2);
+	lst.Add(-1, -1);
+	EXPECT_EQ(lst.Size(), 6);
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'-2': -2, '-1': -1, '0': 0, '1': 1, '2': 2, '3': 3}");
+}
+
+TEST(Map, Add_3)
+{
+	bpf::Map<int, int> lst = { { 0, 0 }, { 1, 1 } };
+
+	lst.Add(2, 2);
+	lst.Add(3, 3);
+	lst.Add(-2, -2);
+	lst.Add(-1, -1);
+	lst.Add(5, 5);
+	lst.Add(4, 4);
+	lst.Add(7, 7);
+	lst.Add(6, 6);
+  	EXPECT_EQ(lst.Size(), 10);
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'-2': -2, '-1': -1, '0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7}");
 }
 
 TEST(Map, Indexer)
