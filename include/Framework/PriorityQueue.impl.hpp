@@ -122,7 +122,7 @@ namespace bpf
         else
         {
             if (_tailPtr + 1 >= _dataK.Size())
-                --_tailPtr;
+                throw IndexException(_tailPtr);
         }
         _dataK[_tailPtr + 1] = key;
         _dataV[_tailPtr + 1] = value;

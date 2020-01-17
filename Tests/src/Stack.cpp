@@ -44,6 +44,21 @@ TEST(Stack, Creation)
     EXPECT_EQ(stack.Size(), 3);
 }
 
+TEST(Stack, Move)
+{
+    bpf::Stack<int> stack(8);
+
+    stack.Push(0);
+    stack.Push(42);
+    stack.Push(-1);
+
+    auto mv = std::move(stack);
+
+    EXPECT_EQ(mv.Top(), -1);
+    EXPECT_EQ(mv.Size(), 3);
+    EXPECT_EQ(stack.Size(), 0);
+}
+
 TEST(Stack, Creation_List)
 {
     bpf::Stack<int> stack = { 0, 42, -1 };
@@ -63,6 +78,8 @@ TEST(Stack, Push_Pop_Limited)
     EXPECT_EQ(stack.Top(), -1);
     EXPECT_EQ(stack.Size(), 3);
     EXPECT_THROW(stack.Push(1), bpf::StackOverflowException);
+    const int i = 2;
+    EXPECT_THROW(stack.Push(i), bpf::StackOverflowException);
     EXPECT_EQ(stack.Pop(), -1);
     EXPECT_EQ(stack.Pop(), 42);
     EXPECT_EQ(stack.Pop(), 0);

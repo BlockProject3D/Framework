@@ -44,6 +44,21 @@ TEST(PriorityQueue, Creation)
     EXPECT_EQ(queue.Size(), 3);
 }
 
+TEST(PriorityQueue, Move)
+{
+    bpf::PriorityQueue<int, int, bpf::MinHeap> queue(8);
+
+    queue.Push(0, 0);
+    queue.Push(42, 42);
+    queue.Push(-1, -1);
+
+    auto mv = std::move(queue);
+
+    EXPECT_EQ(mv.Top(), -1);
+    EXPECT_EQ(mv.Size(), 3);
+    EXPECT_EQ(queue.Size(), 0);
+}
+
 TEST(PriorityQueue, Creation_List)
 {
     bpf::PriorityQueue<int, int, bpf::MinHeap> queue = { { 0, 0 }, { 42, 42 }, { -1, -1 } };
@@ -63,10 +78,13 @@ TEST(PriorityQueue, Push_Pop_Limited)
     EXPECT_EQ(queue.Top(), -1);
     EXPECT_EQ(queue.Size(), 3);
     EXPECT_THROW(queue.Push(1, 1), bpf::IndexException);
+    const int i = 2;
+    EXPECT_THROW(queue.Push(i, i), bpf::IndexException);
     EXPECT_EQ(queue.Pop(), -1);
     EXPECT_EQ(queue.Pop(), 0);
     EXPECT_EQ(queue.Pop(), 42);
     EXPECT_THROW(queue.Pop(), bpf::IndexException);
+    EXPECT_THROW(queue.Top(), bpf::IndexException);
 }
 
 TEST(PriorityQueue, Push_Pop_Unlimited_1)
@@ -104,6 +122,17 @@ TEST(PriorityQueue, Push_Pop_Unlimited_2)
     EXPECT_EQ(queue.Size(), 10);
 }
 
+TEST(PriorityQueue, Push_Pop_Unlimited_3)
+{
+    bpf::PriorityQueue<int, int, bpf::MinHeap> queue;
+
+    for (int i = 0; i != 10; ++i)
+    {
+        const int j = i;
+        queue.Push(j, j);
+    }
+    EXPECT_EQ(queue.Size(), 10);
+}
 
 TEST(PriorityQueue, Push_Pop_NonCopy)
 {

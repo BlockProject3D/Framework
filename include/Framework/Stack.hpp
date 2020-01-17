@@ -91,8 +91,6 @@ namespace bpf
          */
         inline T &Top()
         {
-            if (Size() <= 0)
-                throw IndexException(0);
             return (_data.Last());
         }
 

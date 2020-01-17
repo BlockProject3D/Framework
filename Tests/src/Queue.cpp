@@ -44,6 +44,21 @@ TEST(Queue, Creation)
     EXPECT_EQ(queue.Size(), 3);
 }
 
+TEST(Queue, Move)
+{
+    bpf::Queue<int> queue(8);
+
+    queue.Push(0);
+    queue.Push(42);
+    queue.Push(-1);
+
+    auto mv = std::move(queue);
+
+    EXPECT_EQ(mv.Top(), 0);
+    EXPECT_EQ(mv.Size(), 3);
+    EXPECT_EQ(queue.Size(), 0);
+}
+
 TEST(Queue, Creation_List)
 {
     bpf::Queue<int> queue = { 0, 42, -1 };
@@ -52,7 +67,7 @@ TEST(Queue, Creation_List)
     EXPECT_EQ(queue.Size(), 3);
 }
 
-TEST(Queue, Push_Pop_Limited)
+TEST(Queue, Push_Pop_Limited_1)
 {
     bpf::Queue<int> queue(3);
 
@@ -65,6 +80,24 @@ TEST(Queue, Push_Pop_Limited)
     queue.Push(1);
     EXPECT_EQ(queue.Pop(), 1);
     EXPECT_THROW(queue.Pop(), bpf::IndexException);
+    EXPECT_THROW(queue.Top(), bpf::IndexException);
+}
+
+TEST(Queue, Push_Pop_Limited_2)
+{
+    bpf::Queue<int> queue(3);
+
+    queue.Push(0);
+    queue.Push(42);
+    queue.Push(-1);
+
+    EXPECT_EQ(queue.Top(), 0);
+    EXPECT_EQ(queue.Size(), 3);
+    EXPECT_EQ(queue.Pop(), 0);
+    EXPECT_EQ(queue.Pop(), 42);
+    EXPECT_EQ(queue.Pop(), -1);
+    EXPECT_THROW(queue.Pop(), bpf::IndexException);
+    EXPECT_THROW(queue.Top(), bpf::IndexException);
 }
 
 TEST(Queue, Push_Pop_Unlimited_1)
@@ -101,6 +134,42 @@ TEST(Queue, Push_Pop_Unlimited_2)
     queue.Push(8);
     queue.Push(9);
     queue.Push(10);
+    EXPECT_EQ(queue.Size(), 10);
+}
+
+TEST(Queue, Push_Pop_Unlimited_3)
+{
+    bpf::Queue<int> queue;
+    const int a = 0;
+    const int b = 42;
+    const int c = -1;
+    const int d = 1;
+
+    queue.Push(a);
+    queue.Push(b);
+    queue.Push(c);
+
+    EXPECT_EQ(queue.Top(), 0);
+    EXPECT_EQ(queue.Size(), 3);
+    queue.Push(d);
+    EXPECT_EQ(queue.Size(), 4);
+    EXPECT_EQ(queue.Top(), 0);
+    EXPECT_EQ(queue.Pop(), 0);
+    EXPECT_EQ(queue.Pop(), 42);
+    EXPECT_EQ(queue.Pop(), -1);
+    EXPECT_EQ(queue.Pop(), 1);
+    EXPECT_THROW(queue.Pop(), bpf::IndexException);
+}
+
+TEST(Queue, Push_Pop_Unlimited_4)
+{
+    bpf::Queue<int> queue;
+
+    for (int i = 0; i != 10; ++i)
+    {
+        const int j = i;
+        queue.Push(j);
+    }
     EXPECT_EQ(queue.Size(), 10);
 }
 

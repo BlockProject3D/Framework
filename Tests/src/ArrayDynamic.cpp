@@ -292,6 +292,7 @@ TEST(ArrayDynamic, Realloc)
 	arr[1] = 3;
 	arr[2] = 6;
 	arr.Resize(4);
+	arr.Resize(4);
 	arr[3] = 100;
 	EXPECT_EQ(arr[0], 1);
 	EXPECT_EQ(arr[1], 3);

@@ -45,13 +45,23 @@ TEST(ArrayStatic, Creation)
 	EXPECT_EQ(arr[2], 6);
 }
 
-TEST(ArrayStatic, Creation_List)
+TEST(ArrayStatic, Creation_List_1)
 {
 	bpf::Array<int, 3> lst = { 0, 3, 7 };
 
 	EXPECT_EQ(lst[0], 0);
 	EXPECT_EQ(lst[1], 3);
 	EXPECT_EQ(lst[2], 7);
+}
+
+TEST(ArrayStatic, Creation_List_2)
+{
+	bpf::Array<int, 3> lst = { 0, 3, 7, 8 };
+
+	EXPECT_EQ(lst[0], 0);
+	EXPECT_EQ(lst[1], 3);
+	EXPECT_EQ(lst[2], 7);
+	EXPECT_THROW(lst[3], bpf::IndexException);
 }
 
 TEST(ArrayStatic, Indexer)
@@ -65,6 +75,8 @@ TEST(ArrayStatic, Indexer)
 	EXPECT_THROW(lst[678], bpf::IndexException);
 	EXPECT_THROW(lst[(bpf::fsize) - 1], bpf::IndexException);
 	EXPECT_THROW(lst[(bpf::fsize) - 465], bpf::IndexException);
+	const auto &ref = lst;
+	EXPECT_THROW(ref[(bpf::fsize) - 465], bpf::IndexException);
 }
 
 TEST(ArrayStatic, FirstLast)

@@ -94,7 +94,7 @@ namespace bpf
 		for (auto& elem : lst)
 		{
 			_arr[i++] = elem;
-			if (i > I)
+			if (i >= I)
 				break;
 		}
 	}
