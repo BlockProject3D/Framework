@@ -58,8 +58,6 @@ namespace bpf
                     return;
             }
         }
-        if (Equal<T>::Eval(_arr[0], elem))
-            RemoveAt((fsize)0);
     }
 
 	template <typename T>
