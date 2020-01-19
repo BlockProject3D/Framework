@@ -250,7 +250,7 @@ TEST(List, Insert_2)
 	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[2, -1, 0, 5, 4, 3, 7, 0, 10, -2]");
 	lst.Insert(lst.Size() - 1, 11);
 	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[2, -1, 0, 5, 4, 3, 7, 0, 10, 11, -2]");
-	lst.Insert(lst.Size(), i);
+	lst.Insert(lst.Size(), -2);
 	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[2, -1, 0, 5, 4, 3, 7, 0, 10, 11, -2, -2]");
 }
 
