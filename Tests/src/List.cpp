@@ -142,7 +142,7 @@ TEST(List, Remove)
     EXPECT_STREQ(*bpf::String::ValueOf(lst), "[7]");
 }
 
-TEST(List, RemoveAt)
+TEST(List, RemoveAt_1)
 {
 	bpf::List<int> lst = { 0, 3, 7, 0 };
 
@@ -163,6 +163,28 @@ TEST(List, RemoveAt)
 	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 3, 0]");
 	it = lst.end();
 	lst.RemoveAt(it);
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 3, 0]");
+}
+
+TEST(List, RemoveAt_2)
+{
+	bpf::List<int> lst = { 0, 3, 7, 0 };
+
+	lst.RemoveAt(2);
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 3, 0]");
+	lst.RemoveAt(++lst.begin());
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 0]");
+	lst.RemoveAt(lst.begin());
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0]");
+	EXPECT_NE(lst.begin(), lst.end());
+	lst.RemoveAt(--lst.end());
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[]");
+	lst = { 0, 3, 7, 0 };
+	lst.RemoveAt(--(--lst.end()));
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 3, 0]");
+	lst.RemoveAt(lst.end());
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 3, 0]");
+	lst.RemoveAt(lst.end());
 	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 3, 0]");
 }
 
@@ -276,6 +298,53 @@ TEST(List, Insert_4)
 	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[-2, -1, 0, 5, 4, 3, 7, 0, 10, 11, 2]");
 	lst.Insert(lst.Size(), i);
 	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[-2, -1, 0, 5, 4, 3, 7, 0, 10, 11, 2, -2]");
+}
+
+TEST(List, Insert_5)
+{
+	bpf::List<int> lst = { 0, 3, 7, 0 };
+	const int a = 4;
+	const int b = 5;
+	const int c = -1;
+	const int d = -2;
+	const int e = 2;
+	const int f = 10;
+	const int g = 11;
+
+	lst.Insert(1, a);
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 4, 3, 7, 0]");
+	lst.Insert(++lst.begin(), b);
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 5, 4, 3, 7, 0]");
+	lst.Insert(lst.begin(), c);
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[-1, 0, 5, 4, 3, 7, 0]");
+	lst.Insert(0, d);
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[-2, -1, 0, 5, 4, 3, 7, 0]");
+	lst.Insert(lst.end(), e);
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[-2, -1, 0, 5, 4, 3, 7, 0, 2]");
+	lst.Insert(--lst.end(), f);
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[-2, -1, 0, 5, 4, 3, 7, 0, 10, 2]");
+	lst.Insert(lst.Size() - 1, g);
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[-2, -1, 0, 5, 4, 3, 7, 0, 10, 11, 2]");
+	lst.Insert(lst.Size(), d);
+	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[-2, -1, 0, 5, 4, 3, 7, 0, 10, 11, 2, -2]");
+}
+
+TEST(List, Insert_6)
+{
+	bpf::List<int> lst;
+	const int a = 4;
+
+	lst.Insert(0, a);
+	EXPECT_EQ(4, lst[0]);
+	lst.Clear();
+	lst.Insert(0, 4);
+	EXPECT_EQ(4, lst[0]);
+	lst.Clear();
+	lst.Insert(lst.begin(), a);
+	EXPECT_EQ(4, lst[0]);
+	lst.Clear();
+	lst.Insert(lst.begin(), 4);
+	EXPECT_EQ(4, lst[0]);
 }
 
 TEST(List, Iterator)

@@ -80,7 +80,7 @@ namespace bpf
             if (_tailPtr >= _maxSize)
             {
                 _tailPtr = 0;
-                --_count;
+                _count = 0;
             }
             _data[_tailPtr++] = element;
             ++_count;
