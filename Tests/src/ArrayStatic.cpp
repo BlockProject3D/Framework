@@ -35,230 +35,263 @@
 
 TEST(ArrayStatic, Creation)
 {
-	auto arr = bpf::Array<int, 3>();
+    auto arr = bpf::Array<int, 3>();
 
-	arr[0] = 1;
-	arr[1] = 3;
-	arr[2] = 6;
-	EXPECT_EQ(arr[0], 1);
-	EXPECT_EQ(arr[1], 3);
-	EXPECT_EQ(arr[2], 6);
+    arr[0] = 1;
+    arr[1] = 3;
+    arr[2] = 6;
+    EXPECT_EQ(arr[0], 1);
+    EXPECT_EQ(arr[1], 3);
+    EXPECT_EQ(arr[2], 6);
 }
 
 TEST(ArrayStatic, Creation_List_1)
 {
-	bpf::Array<int, 3> lst = { 0, 3, 7 };
+    bpf::Array<int, 3> lst = { 0, 3, 7 };
 
-	EXPECT_EQ(lst[0], 0);
-	EXPECT_EQ(lst[1], 3);
-	EXPECT_EQ(lst[2], 7);
+    EXPECT_EQ(lst[0], 0);
+    EXPECT_EQ(lst[1], 3);
+    EXPECT_EQ(lst[2], 7);
 }
 
 TEST(ArrayStatic, Creation_List_2)
 {
-	bpf::Array<int, 3> lst = { 0, 3, 7, 8 };
+    bpf::Array<int, 3> lst = { 0, 3, 7, 8 };
 
-	EXPECT_EQ(lst[0], 0);
-	EXPECT_EQ(lst[1], 3);
-	EXPECT_EQ(lst[2], 7);
-	EXPECT_THROW(lst[3], bpf::IndexException);
+    EXPECT_EQ(lst[0], 0);
+    EXPECT_EQ(lst[1], 3);
+    EXPECT_EQ(lst[2], 7);
+    EXPECT_THROW(lst[3], bpf::IndexException);
 }
 
 TEST(ArrayStatic, Indexer)
 {
-	bpf::Array<int, 3> lst = { 0, 3, 7 };
+    bpf::Array<int, 3> lst = { 0, 3, 7 };
 
-	EXPECT_EQ(lst[0], 0);
-	EXPECT_EQ(lst[1], 3);
-	EXPECT_EQ(lst[2], 7);
-	EXPECT_THROW(lst[3], bpf::IndexException);
-	EXPECT_THROW(lst[678], bpf::IndexException);
-	EXPECT_THROW(lst[(bpf::fsize) - 1], bpf::IndexException);
-	EXPECT_THROW(lst[(bpf::fsize) - 465], bpf::IndexException);
-	const auto &ref = lst;
-	EXPECT_THROW(ref[(bpf::fsize) - 465], bpf::IndexException);
+    EXPECT_EQ(lst[0], 0);
+    EXPECT_EQ(lst[1], 3);
+    EXPECT_EQ(lst[2], 7);
+    EXPECT_THROW(lst[3], bpf::IndexException);
+    EXPECT_THROW(lst[678], bpf::IndexException);
+    EXPECT_THROW(lst[(bpf::fsize) - 1], bpf::IndexException);
+    EXPECT_THROW(lst[(bpf::fsize) - 465], bpf::IndexException);
+    const auto &ref = lst;
+    EXPECT_THROW(ref[(bpf::fsize) - 465], bpf::IndexException);
 }
 
-TEST(ArrayStatic, FirstLast)
+TEST(ArrayStatic, FirstLast_1)
 {
-	bpf::Array<int, 3> lst = { 0, 3, 7 };
+    bpf::Array<int, 3> lst = { 0, 3, 7 };
 
-	EXPECT_EQ(lst.First(), 0);
-	EXPECT_EQ(lst.Last(), 7);
-	lst = {};
-	EXPECT_EQ(lst.First(), 0);
-	EXPECT_EQ(lst.Last(), 0);
+    EXPECT_EQ(lst.First(), 0);
+    EXPECT_EQ(lst.Last(), 7);
+    lst = {};
+    EXPECT_EQ(lst.First(), 0);
+    EXPECT_EQ(lst.Last(), 0);
+}
+
+TEST(ArrayStatic, FirstLast_2)
+{
+    bpf::Array<int, 2> lst = { 0, 1 };
+    const auto &cref = lst;
+    bpf::Array<int, 0> lst1;
+    const auto &cref1 = lst1;
+
+    EXPECT_EQ(lst.First(), 0);
+    EXPECT_EQ(lst.Last(), 1);
+    EXPECT_EQ(cref.First(), 0);
+    EXPECT_EQ(cref.Last(), 1);
+    EXPECT_THROW(lst1.First(), bpf::IndexException);
+    EXPECT_THROW(lst1.Last(), bpf::IndexException);
+    EXPECT_THROW(cref1.First(), bpf::IndexException);
+    EXPECT_THROW(cref1.Last(), bpf::IndexException);
 }
 
 TEST(ArrayStatic, Copy_1)
 {
-	bpf::Array<int, 3> lst = { 0, 3, 7 };
+    bpf::Array<int, 3> lst = { 0, 3, 7 };
 
-	auto copy = lst;
-	EXPECT_EQ(lst[0], 0);
-	EXPECT_EQ(lst[1], 3);
-	EXPECT_EQ(lst[2], 7);
-	EXPECT_EQ(copy[0], 0);
-	EXPECT_EQ(copy[1], 3);
-	EXPECT_EQ(copy[2], 7);
+    auto copy = lst;
+    EXPECT_EQ(lst[0], 0);
+    EXPECT_EQ(lst[1], 3);
+    EXPECT_EQ(lst[2], 7);
+    EXPECT_EQ(copy[0], 0);
+    EXPECT_EQ(copy[1], 3);
+    EXPECT_EQ(copy[2], 7);
 }
 
 TEST(ArrayStatic, Copy_2)
 {
-	auto arr = bpf::Array<int, 3>();
+    auto arr = bpf::Array<int, 3>();
 
-	arr[0] = 1;
-	arr[1] = 3;
-	arr[2] = 6;
-	EXPECT_EQ(arr[0], 1);
-	EXPECT_EQ(arr[1], 3);
-	EXPECT_EQ(arr[2], 6);
-	auto copy = arr;
-	EXPECT_EQ(copy[0], 1);
-	EXPECT_EQ(copy[1], 3);
-	EXPECT_EQ(copy[2], 6);
+    arr[0] = 1;
+    arr[1] = 3;
+    arr[2] = 6;
+    EXPECT_EQ(arr[0], 1);
+    EXPECT_EQ(arr[1], 3);
+    EXPECT_EQ(arr[2], 6);
+    auto copy = arr;
+    EXPECT_EQ(copy[0], 1);
+    EXPECT_EQ(copy[1], 3);
+    EXPECT_EQ(copy[2], 6);
 }
 
-TEST(ArrayStatic, Iterator)
+TEST(ArrayStatic, Iterator_1)
 {
-	bpf::Array<int, 4> lst = { 0, 3, 7, 0 };
+    bpf::Array<int, 4> lst = { 0, 3, 7, 0 };
 
-	auto it = lst.begin();
-	++it;
-	--it;
-	EXPECT_EQ(it, lst.begin());
-	--it;
-	++it;
-	EXPECT_EQ(it, ++lst.begin());
-	it = lst.end();
-	--it;
-	++it;
-	EXPECT_EQ(it, lst.end());
-	++it;
-	--it;
-	EXPECT_EQ(it, --lst.end());
+    auto it = lst.begin();
+    ++it;
+    --it;
+    EXPECT_EQ(it, lst.begin());
+    --it;
+    ++it;
+    EXPECT_EQ(it, ++lst.begin());
+    it = lst.end();
+    --it;
+    ++it;
+    EXPECT_EQ(it, lst.end());
+    ++it;
+    --it;
+    EXPECT_EQ(it, --lst.end());
 }
 
-TEST(ArrayStatic, ReverseIterator)
+TEST(ArrayStatic, Iterator_2)
 {
-	bpf::Array<int, 4> lst = { 0, 3, 7, 0 };
+    bpf::Array<bpf::String, 3> lst = { "a", "b", "c" };
 
-	auto it = lst.rbegin();
-	++it;
-	--it;
-	EXPECT_EQ(it, lst.rbegin());
-	--it;
-	++it;
-	EXPECT_EQ(it, ++lst.rbegin());
-	it = lst.rend();
-	--it;
-	++it;
-	EXPECT_EQ(it, lst.rend());
-	++it;
-	--it;
-	EXPECT_EQ(it, --lst.rend());
+    EXPECT_EQ(lst.begin()->Size(), 1);
+    EXPECT_EQ(lst.begin()->ByteAt(0), 'a');
+}
+
+TEST(ArrayStatic, ReverseIterator_1)
+{
+    bpf::Array<int, 4> lst = { 0, 3, 7, 0 };
+
+    auto it = lst.rbegin();
+    ++it;
+    --it;
+    EXPECT_EQ(it, lst.rbegin());
+    --it;
+    ++it;
+    EXPECT_EQ(it, ++lst.rbegin());
+    it = lst.rend();
+    --it;
+    ++it;
+    EXPECT_EQ(it, lst.rend());
+    ++it;
+    --it;
+    EXPECT_EQ(it, --lst.rend());
+}
+
+TEST(ArrayStatic, ReverseIterator_2)
+{
+    bpf::Array<bpf::String, 3> lst = { "a", "b", "c" };
+
+    EXPECT_EQ(lst.rbegin()->Size(), 1);
+    EXPECT_EQ(lst.rbegin()->ByteAt(0), 'c');
 }
 
 TEST(ArrayStatic, IterateForward_Test1)
 {
-	int res = 0;
-	bpf::Array<int, 3> lst = { 0, 3, 7 };
+    int res = 0;
+    bpf::Array<int, 3> lst = { 0, 3, 7 };
 
-	for (auto &i : lst)
-		res += i;
-	EXPECT_EQ(res, 10);
+    for (auto &i : lst)
+        res += i;
+    EXPECT_EQ(res, 10);
 }
 
 TEST(ArrayStatic, IterateForward_Test2)
 {
-	bpf::String res = bpf::String::Empty;
-	bpf::Array<bpf::String, 5> lst = { "a", "b", "c", "d", "e" };
+    bpf::String res = bpf::String::Empty;
+    bpf::Array<bpf::String, 5> lst = { "a", "b", "c", "d", "e" };
 
-	for (auto &i : lst)
-		res += i;
-	EXPECT_STREQ(*res, "abcde");
+    for (auto &i : lst)
+        res += i;
+    EXPECT_STREQ(*res, "abcde");
 }
 
 TEST(ArrayStatic, IterateBackward_Test1)
 {
-	int res = 0;
-	bpf::Array<int, 3> lst = { 0, 3, 7 };
+    int res = 0;
+    bpf::Array<int, 3> lst = { 0, 3, 7 };
 
-	for (auto &i : bpf::Reverse(lst))
-		res += i;
-	EXPECT_EQ(res, 10);
+    for (auto &i : bpf::Reverse(lst))
+        res += i;
+    EXPECT_EQ(res, 10);
 }
 
 TEST(ArrayStatic, IterateBackward_Test2)
 {
-	bpf::String res = bpf::String::Empty;
-	bpf::Array<bpf::String, 5> lst = { "a", "b", "c", "d", "e" };
+    bpf::String res = bpf::String::Empty;
+    bpf::Array<bpf::String, 5> lst = { "a", "b", "c", "d", "e" };
 
-	for (auto &i : bpf::Reverse(lst))
-		res += i;
-	EXPECT_STREQ(*res, "edcba");
+    for (auto &i : bpf::Reverse(lst))
+        res += i;
+    EXPECT_STREQ(*res, "edcba");
 }
 
 TEST(ArrayStatic, ReadWrite_NonCopy_1)
 {
-	bpf::Array<bpf::UniquePtr<int>, 1> lst;
+    bpf::Array<bpf::UniquePtr<int>, 1> lst;
 
-	lst[0] = bpf::MakeUnique<int>(32);
-	for (auto &it : lst)
-		EXPECT_EQ(*it, 32);
-	EXPECT_EQ(*lst[0], 32);
-	*lst[0] = 42;
-	EXPECT_EQ(*lst[0], 42);
+    lst[0] = bpf::MakeUnique<int>(32);
+    for (auto &it : lst)
+        EXPECT_EQ(*it, 32);
+    EXPECT_EQ(*lst[0], 32);
+    *lst[0] = 42;
+    EXPECT_EQ(*lst[0], 42);
 }
 
 TEST(ArrayStatic, Swap_1)
 {
-	bpf::Array<int, 3> lst = { 0, 3, 7 };
+    bpf::Array<int, 3> lst = { 0, 3, 7 };
 
-	lst.Swap(lst.begin(), --(--lst.end()));
-	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[3, 0, 7]");
+    lst.Swap(lst.begin(), --(--lst.end()));
+    EXPECT_STREQ(*bpf::String::ValueOf(lst), "[3, 0, 7]");
 }
 
 TEST(ArrayStatic, Swap_2)
 {
-	bpf::Array<int, 3> lst = { 0, 3, 7 };
+    bpf::Array<int, 3> lst = { 0, 3, 7 };
 
-	lst.Swap(++lst.begin(), --lst.end());
-	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 7, 3]");
+    lst.Swap(++lst.begin(), --lst.end());
+    EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 7, 3]");
 }
 
 TEST(ArrayStatic, Swap_3)
 {
-	bpf::Array<int, 2> lst = { 0, 7 };
+    bpf::Array<int, 2> lst = { 0, 7 };
 
-	lst.Swap(lst.begin(), --lst.end());
-	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[7, 0]");
+    lst.Swap(lst.begin(), --lst.end());
+    EXPECT_STREQ(*bpf::String::ValueOf(lst), "[7, 0]");
 }
 
 TEST(ArrayStatic, Swap_4)
 {
-	bpf::Array<bpf::UniquePtr<int>, 2> lst;
+    bpf::Array<bpf::UniquePtr<int>, 2> lst;
 
-	lst[0] = bpf::MakeUnique<int>(0);
-	lst[1] = bpf::MakeUnique<int>(7);
-	lst.Swap(lst.begin(), --lst.end());
+    lst[0] = bpf::MakeUnique<int>(0);
+    lst[1] = bpf::MakeUnique<int>(7);
+    lst.Swap(lst.begin(), --lst.end());
 }
 
 TEST(ArrayStatic, Swap_Err_1)
 {
-	bpf::Array<bpf::UniquePtr<int>, 1> lst;
+    bpf::Array<bpf::UniquePtr<int>, 1> lst;
 
-	lst.Swap(lst.begin(), --lst.end());
+    lst.Swap(lst.begin(), --lst.end());
 }
 
 TEST(ArrayStatic, Swap_Err_2)
 {
-	bpf::Array<int, 2> lst = { 0, 7 };
+    bpf::Array<int, 2> lst = { 0, 7 };
 
-	lst.Swap(lst.begin(), lst.begin());
-	lst.Swap(lst.end(), lst.end());
-	lst.Swap(--lst.end(), --lst.end());
-	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 7]");
+    lst.Swap(lst.begin(), lst.begin());
+    lst.Swap(lst.end(), lst.end());
+    lst.Swap(--lst.end(), --lst.end());
+    EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 7]");
 }
 
 TEST(ArrayStatic, ReadWrite_NonCopy_2)
@@ -295,22 +328,22 @@ TEST(ArrayStatic, ReadWrite_NonCopy_MemLeak)
 
 static void Test_CopyMoveObj_MemLeak()
 {
-	bpf::Array<bpf::String, 5> lst = { "a", "b", "c" };
+    bpf::Array<bpf::String, 5> lst = { "a", "b", "c" };
 
-	lst[3] = "d";
-	bpf::Array<bpf::String, 5> cpy = lst;
-	EXPECT_EQ(lst.Size(), cpy.Size());
-	EXPECT_EQ(cpy.Size(), 5);
-	cpy[4] = "e";
-	EXPECT_EQ(cpy.Size(), 5);
-	EXPECT_STREQ(*bpf::String::ValueOf(lst), "[a, b, c, d, ]");
-	EXPECT_STREQ(*bpf::String::ValueOf(cpy), "[a, b, c, d, e]");
+    lst[3] = "d";
+    bpf::Array<bpf::String, 5> cpy = lst;
+    EXPECT_EQ(lst.Size(), cpy.Size());
+    EXPECT_EQ(cpy.Size(), 5);
+    cpy[4] = "e";
+    EXPECT_EQ(cpy.Size(), 5);
+    EXPECT_STREQ(*bpf::String::ValueOf(lst), "[a, b, c, d, ]");
+    EXPECT_STREQ(*bpf::String::ValueOf(cpy), "[a, b, c, d, e]");
 }
 
 TEST(ArrayStatic, Test_CopyMoveObj_MemLeak)
 {
-	bpf::fsize cur = bpf::Memory::GetAllocCount();
+    bpf::fsize cur = bpf::Memory::GetAllocCount();
 
-	Test_CopyMoveObj_MemLeak();
-	EXPECT_EQ(cur, bpf::Memory::GetAllocCount());
+    Test_CopyMoveObj_MemLeak();
+    EXPECT_EQ(cur, bpf::Memory::GetAllocCount());
 }
