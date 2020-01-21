@@ -254,6 +254,76 @@ namespace bpf
 	}
 
     template <typename T>
+    void List<T>::Merge(ListNode<T> **startl1, ListNode<T> **endl1, ListNode<T> **startr1, ListNode<T> **endr1)
+    {
+        if ((*startl1)->Data > (*startr1)->Data)
+        {
+            std::swap(*startl1, *startr1);
+            std::swap(*endl1, *endr1);
+        }
+
+        ListNode<T> *startl = *startl1;
+        ListNode<T> *endl = *endl1;
+        ListNode<T> *startr = *startr1;
+        ListNode<T> *endr = *endr1;
+        ListNode<T> *endrnext = (*endr1)->Next;
+        while (startl != endl && startr != endrnext)
+        {
+            if (startl->Next->Data > startr->Data)
+            {
+                ListNode<T> *tmp = startr->Next;
+                startr->Next = startl->Next;
+                startl->Next = startr;
+                startr = tmp;
+            }
+            startl = startl->Next;
+        }
+        if (startl == endl)
+            startl->Next = startr;
+        else
+            *endr1 = *endl1;
+    }
+
+    template <typename T>
+    void List<T>::MergeSort()
+    {
+        ListNode<T> *curNode;
+        ListNode<T> *startl;
+        ListNode<T> *startr;
+        ListNode<T> *endl;
+        ListNode<T> *endr;
+
+        for (fsize sz = 1; sz < _count; sz *= 2)
+        {
+            startl = _first;
+            while (startl != Null)
+            {
+                bool first = false;
+                if (startl == _first)
+                    first = true;
+                endl = startl;
+                for (fsize i = 0; endl->Next != Null && i != sz - 1; ++i)
+                    endl = endl->Next;
+                startr = endl->Next;
+                if (startr == Null)
+                    break;
+                endr = startr;
+                for (fsize i = 0; endr->Next != Null && i != sz - 1; ++i)
+                    endr = endr->Next;
+                ListNode<T> *cpy = endr->Next; // Get a hold on the start for the next partitions before Merge function destroys it...
+                Merge(&startl, &endl, &startr, &endr);
+                if (first)
+                    _first = startl;
+                else
+                    curNode->Next = startl;
+                curNode = endr;
+                startl = cpy;
+            }
+            curNode->Next = startl;
+        }
+    }
+
+    template <typename T>
     ListNode<T> *List<T>::Partition(ListNode<T> *start, ListNode<T> *end)
     {
 		ListNode<T> *x = end;
@@ -286,8 +356,22 @@ namespace bpf
     {
         if (Size() <= 0)
             return;
-		if (!stable)
-			QuickSort(_first, _last);
+        if (!stable)
+            QuickSort(_first, _last);
+        else
+        {
+            MergeSort();
+            /* Re-chain the broken list */
+            ListNode<T> *cur = _first;
+            ListNode<T> *last = Null;
+            while (cur != Null)
+            {
+                cur->Prev = last;
+                last = cur;
+                cur = cur->Next;
+            }
+            _last = last;
+        }
     }
 
 	template <typename T>

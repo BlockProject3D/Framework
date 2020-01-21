@@ -159,7 +159,8 @@ namespace bpf
 
         ListNode<T> *Partition(ListNode<T> *start, ListNode<T> *end);
         void QuickSort(ListNode<T> *start, ListNode<T> *end);
-		void MergeSort();
+        void Merge(ListNode<T> **startl, ListNode<T> **endl, ListNode<T> **startr, ListNode<T> **endr);
+        void MergeSort();
         void RemoveNode(ListNode<T> *toRM);
 		void Swap(ListNode<T>* a, ListNode<T>* b);
 		ListNode<T>* GetNode(fsize id) const;
