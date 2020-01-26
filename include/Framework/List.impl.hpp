@@ -254,21 +254,21 @@ namespace bpf
     }
 
     template <typename T>
+    template <template <typename> class Comparator>
     void List<T>::Merge(Node **startl1, Node **endl1, Node **startr1, Node **endr1)
     {
-        if ((*startl1)->Data > (*startr1)->Data)
+        if (Comparator<T>::Eval((*startr1)->Data, (*startl1)->Data))
         {
             std::swap(*startl1, *startr1);
             std::swap(*endl1, *endr1);
         }
-
         Node *startl = *startl1;
         Node *endl = *endl1;
         Node *startr = *startr1;
         Node *endrnext = (*endr1)->Next;
         while (startl != endl && startr != endrnext)
         {
-            if (startl->Next->Data > startr->Data)
+            if (Comparator<T>::Eval(startr->Data, startl->Next->Data))
             {
                 Node *tmp = startr->Next;
                 startr->Next = startl->Next;
@@ -284,6 +284,7 @@ namespace bpf
     }
 
     template <typename T>
+    template <template <typename> class Comparator>
     void List<T>::MergeSort()
     {
         Node *curNode;
@@ -310,7 +311,7 @@ namespace bpf
                 for (fsize i = 0; endr->Next != Null && i != sz - 1; ++i)
                     endr = endr->Next;
                 Node *cpy = endr->Next; // Get a hold on the start for the next partitions before Merge function destroys it...
-                Merge(&startl, &endl, &startr, &endr);
+                Merge<Comparator>(&startl, &endl, &startr, &endr);
                 if (first)
                     _first = startl;
                 else
@@ -323,43 +324,46 @@ namespace bpf
     }
 
     template <typename T>
+    template <template <typename> class Comparator>
     typename List<T>::Node *List<T>::Partition(Node *start, Node *end)
     {
         Node *x = end;
-        Node *iter = start->Prev;
+        Node *iter = start;
         for (Node *j = start; j != end; j = j->Next)
         {
-            if (j->Data <= x->Data)
+            if (Comparator<T>::Eval(j->Data, x->Data))
             {
-                iter = (iter == Null) ? start : iter->Next;
                 Swap(iter, j);
+                iter = iter->Next;
             }
         }
-        Swap(iter->Next, end);
-        return (iter->Next);
+        Swap(iter, end);
+        return (iter);
     }
 
     template <typename T>
+    template <template <typename> class Comparator>
     void List<T>::QuickSort(Node *start, Node *end)
     {
         if (end != Null && start != end && start != end->Next)
         {
-            Node *res = Partition(start, end);
-            QuickSort(start, res->Prev);
-            QuickSort(res->Next, end);
+            Node *res = Partition<Comparator>(start, end);
+            QuickSort<Comparator>(start, res->Prev);
+            QuickSort<Comparator>(res->Next, end);
         }
     }
 
     template <typename T>
+    template <template <typename> class Comparator>
     void List<T>::Sort(const bool stable) //TODO: Adapt to use different sorting functions
     {
-        if (Size() <= 0)
+        if (Size() == 0 || Size() == 1)
             return;
         if (!stable)
-            QuickSort(_first, _last);
+            QuickSort<Comparator>(_first, _last);
         else
         {
-            MergeSort();
+            MergeSort<Comparator>();
             /* Re-chain the broken list */
             Node *cur = _first;
             Node *last = Null;

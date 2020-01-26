@@ -523,22 +523,84 @@ TEST(ArrayList, Swap_Err_2)
     EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 7]");
 }
 
-/*TEST(ArrayList, Sort_1)
+TEST(ArrayList, Sort_Unstable_1)
 {
-        bpf::ArrayList<int> lst;
+    bpf::ArrayList<int> lst;
 
-        lst.Add(0);
-        lst.Add(7);
-        lst.Add(3);
-        lst.Add(9);
-        lst.Add(1);
-        lst.Add(-67);
-        lst.Add(-1);
-        lst.Add(-5);
-        lst.Add(0);
-        lst.Sort();
-        EXPECT_STREQ(*bpf::String::ValueOf(lst), "[-67, -5, -1, 0, 0, 1, 3, 7, 9]");
-}*/
+    lst.Add(0);
+    lst.Add(7);
+    lst.Add(3);
+    lst.Add(9);
+    lst.Add(1);
+    lst.Add(-67);
+    lst.Add(-1);
+    lst.Add(-5);
+    lst.Add(0);
+    lst.Sort();
+    EXPECT_STREQ(*bpf::String::ValueOf(lst), "[-67, -5, -1, 0, 0, 1, 3, 7, 9]");
+}
+
+TEST(ArrayList, Sort_Stable_1)
+{
+    bpf::ArrayList<int> lst;
+
+    lst.Add(0);
+    lst.Add(7);
+    lst.Add(3);
+    lst.Add(9);
+    lst.Add(1);
+    lst.Add(-67);
+    lst.Add(-1);
+    lst.Add(-5);
+    lst.Add(0);
+    lst.Sort(true);
+    EXPECT_STREQ(*bpf::String::ValueOf(lst), "[-67, -5, -1, 0, 0, 1, 3, 7, 9]");
+}
+
+TEST(ArrayList, Sort_Unstable_2)
+{
+    bpf::ArrayList<int> lst;
+
+    lst.Add(0);
+    lst.Add(7);
+    lst.Add(3);
+    lst.Add(9);
+    lst.Add(1);
+    lst.Add(-67);
+    lst.Add(-1);
+    lst.Add(-5);
+    lst.Add(0);
+    lst.Sort<bpf::ops::Greater>();
+    EXPECT_STREQ(*bpf::String::ValueOf(lst), "[9, 7, 3, 1, 0, 0, -1, -5, -67]");
+}
+
+TEST(ArrayList, Sort_Stable_2)
+{
+    bpf::ArrayList<int> lst;
+
+    lst.Add(0);
+    lst.Add(7);
+    lst.Add(3);
+    lst.Add(9);
+    lst.Add(1);
+    lst.Add(-67);
+    lst.Add(-1);
+    lst.Add(-5);
+    lst.Add(0);
+    lst.Sort<bpf::ops::Greater>(true);
+    EXPECT_STREQ(*bpf::String::ValueOf(lst), "[9, 7, 3, 1, 0, 0, -1, -5, -67]");
+}
+
+TEST(ArrayList, Sort_Err)
+{
+    bpf::ArrayList<int> lst;
+    lst.Sort();
+    EXPECT_EQ(lst.Size(), 0);
+    lst = { 0 };
+    lst.Sort();
+    EXPECT_EQ(lst.Size(), 1);
+    EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0]");
+}
 
 static void Test_CopyMoveObj_MemLeak()
 {

@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -38,62 +38,78 @@ namespace bpf
     private:
         fsize _curid;
         Array<T> _arr;
+        template <template <typename> class Comparator>
+        fsize Partition(fsize start, fsize end);
+        template <template <typename> class Comparator>
+        void QuickSort(fsize start, fsize end);
+        template <template <typename> class Comparator>
+        void Merge(const Array<T> &a, Array<T> &c, const fsize start, const fsize mid, const fsize end);
+        template <template <typename> class Comparator>
+        void MergeSort();
 
     public:
-		using Iterator = typename Array<T>::Iterator;
-		using ReverseIterator = typename Array<T>::ReverseIterator;
+        using Iterator = typename Array<T>::Iterator;
+        using ReverseIterator = typename Array<T>::ReverseIterator;
 
-        inline ArrayList()
-            : _curid(0), _arr(8)
+        /**
+         * Constructs a new ArrayList
+         * @param preallocsize initial number of items to pre-allocate
+         */
+        inline ArrayList(const fsize preallocsize = 8)
+            : _curid(0), _arr(preallocsize)
         {
         }
 
-		inline ArrayList(const std::initializer_list<T> &lst)
-			: _curid(0), _arr(8)
-		{
-			for (auto& elem : lst)
-				Add(elem);
-		}
+        /**
+         * Constructs an ArrayList from an existing initializer list
+         * @param lst the initial list of items to add to this new ArrayList
+         */
+        inline ArrayList(const std::initializer_list<T> &lst)
+            : _curid(0), _arr(8)
+        {
+            for (auto &elem : lst)
+                Add(elem);
+        }
 
-		inline ArrayList(const ArrayList<T> &other)
-			: _curid(other._curid), _arr(other._arr)
-		{
-		}
+        inline ArrayList(const ArrayList<T> &other)
+            : _curid(other._curid), _arr(other._arr)
+        {
+        }
 
-		inline ArrayList(ArrayList<T> &&other)
-			: _curid(other._curid), _arr(std::move(other._arr))
-		{
-			other._curid = 0;
-		}
+        inline ArrayList(ArrayList<T> &&other)
+            : _curid(other._curid), _arr(std::move(other._arr))
+        {
+            other._curid = 0;
+        }
 
-		inline ArrayList<T> &operator=(const ArrayList<T> &other)
-		{
-			_curid = other._curid;
-			_arr = other._arr;
-			return (*this);
-		}
+        inline ArrayList<T> &operator=(const ArrayList<T> &other)
+        {
+            _curid = other._curid;
+            _arr = other._arr;
+            return (*this);
+        }
 
-		inline ArrayList<T> &operator=(ArrayList<T> &&other)
-		{
-			_curid = other._curid;
-			_arr = std::move(other._arr);
-			other._curid = 0;
-			return (*this);
-		}
+        inline ArrayList<T> &operator=(ArrayList<T> &&other)
+        {
+            _curid = other._curid;
+            _arr = std::move(other._arr);
+            other._curid = 0;
+            return (*this);
+        }
 
-		inline T& First()
-		{
-			if (_curid == 0)
-				throw IndexException(0);
-			return (_arr.First());
-		}
+        inline T &First()
+        {
+            if (_curid == 0)
+                throw IndexException(0);
+            return (_arr.First());
+        }
 
-		inline T& Last()
-		{
-			if (_curid == 0)
-				throw IndexException(0);
-			return (_arr[_curid - 1]);
-		}
+        inline T &Last()
+        {
+            if (_curid == 0)
+                throw IndexException(0);
+            return (_arr[_curid - 1]);
+        }
 
         inline const T &First() const
         {
@@ -109,53 +125,53 @@ namespace bpf
             return (_arr[_curid - 1]);
         }
 
-		inline T &operator[](const fsize id)
-		{
-			if (id >= _curid)
-				throw IndexException(static_cast<fisize>(id));
-			return (_arr[id]);
-		}
+        inline T &operator[](const fsize id)
+        {
+            if (id >= _curid)
+                throw IndexException(static_cast<fisize>(id));
+            return (_arr[id]);
+        }
 
-		inline const T &operator[](const fsize id) const
-		{
-			if (id >= _curid)
-				throw IndexException(static_cast<fisize>(id));
-			return (_arr[id]);
-		}
+        inline const T &operator[](const fsize id) const
+        {
+            if (id >= _curid)
+                throw IndexException(static_cast<fisize>(id));
+            return (_arr[id]);
+        }
 
         inline void Add(const T &elem)
         {
-			if (_curid + 1 >= _arr.Size())
-				_arr.Resize(_arr.Size() * 2);
+            if (_curid + 1 >= _arr.Size())
+                _arr.Resize(_arr.Size() * 2);
             _arr[_curid++] = elem;
         }
 
-		inline void Add(T &&elem)
-		{
-			if (_curid + 1 >= _arr.Size())
-				_arr.Resize(_arr.Size() * 2);
-			_arr[_curid++] = std::move(elem);
-		}
+        inline void Add(T &&elem)
+        {
+            if (_curid + 1 >= _arr.Size())
+                _arr.Resize(_arr.Size() * 2);
+            _arr[_curid++] = std::move(elem);
+        }
 
-		inline void Swap(const Iterator &a, const Iterator &b)
-		{
-			_arr.Swap(a, b);
-		}
+        inline void Swap(const Iterator &a, const Iterator &b)
+        {
+            _arr.Swap(a, b);
+        }
 
-		void Insert(const fsize pos, const T &elem);
-		void Insert(const fsize pos, T &&elem);
-		void Insert(const Iterator &pos, const T &elem);
-		void Insert(const Iterator &pos, T &&elem);
+        void Insert(const fsize pos, const T &elem);
+        void Insert(const fsize pos, T &&elem);
+        void Insert(const Iterator &pos, const T &elem);
+        void Insert(const Iterator &pos, T &&elem);
 
         void RemoveAt(const fsize pos);
-		void RemoveAt(Iterator &pos)
-		{
-			RemoveAt(pos.ArrayPos());
-		}
-		void RemoveAt(Iterator &&pos)
-		{
-			RemoveAt(pos.ArrayPos());
-		}
+        void RemoveAt(Iterator &pos)
+        {
+            RemoveAt(pos.ArrayPos());
+        }
+        void RemoveAt(Iterator &&pos)
+        {
+            RemoveAt(pos.ArrayPos());
+        }
 
         /**
          * Removes occurences of an element fron the list
@@ -166,27 +182,30 @@ namespace bpf
         template <template <typename> class Equal = bpf::ops::Equal>
         void Remove(const T &elem, const bool all = true);
 
-		inline void Clear()
-		{
-			_curid = 0;
-		}
+        inline void Clear()
+        {
+            _curid = 0;
+        }
 
         inline void RemoveLast()
         {
             --_curid;
         }
-        
+
         inline fsize Size() const
         {
             return (_curid);
         }
 
-		inline Array<T> ToArray() const
-		{
-			Array<T> arr = _arr;
-			arr.Resize(_curid);
-			return (arr);
-		}
+        inline Array<T> ToArray() const
+        {
+            Array<T> arr = _arr;
+            arr.Resize(_curid);
+            return (arr);
+        }
+
+        template <template <typename> class Comparator = bpf::ops::Less>
+        void Sort(const bool stable = false);
 
         /**
          * Returns an iterator to the begining of the array
@@ -203,23 +222,23 @@ namespace bpf
         {
             return (Iterator(*_arr, _curid, _curid));
         }
-		
-		/**
-		 * Returns a reverse iterator to the begining of the array
-		 */
-		inline ReverseIterator rbegin() const
-		{
-			return (ReverseIterator(*_arr, _curid, _curid - 1));
-		}
 
-		/**
-		 * Returns a reverse iterator to the end of the array
-		 */
-		inline ReverseIterator rend() const
-		{
-			return (ReverseIterator(*_arr, _curid, (fsize)-1));
-		}
-	};
+        /**
+         * Returns a reverse iterator to the begining of the array
+         */
+        inline ReverseIterator rbegin() const
+        {
+            return (ReverseIterator(*_arr, _curid, _curid - 1));
+        }
+
+        /**
+         * Returns a reverse iterator to the end of the array
+         */
+        inline ReverseIterator rend() const
+        {
+            return (ReverseIterator(*_arr, _curid, (fsize)-1));
+        }
+    };
 }
 
 #include "Framework/ArrayList.impl.hpp"

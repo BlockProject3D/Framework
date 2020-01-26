@@ -155,9 +155,13 @@ namespace bpf
         Node *_last;
         fsize _count;
 
+        template <template <typename> class Comparator>
         Node *Partition(Node *start, Node *end);
+        template <template <typename> class Comparator>
         void QuickSort(Node *start, Node *end);
+        template <template <typename> class Comparator>
         void Merge(Node **startl, Node **endl, Node **startr, Node **endr);
+        template <template <typename> class Comparator>
         void MergeSort();
         void RemoveNode(Node *toRM);
         void Swap(Node *a, Node *b);
@@ -217,6 +221,7 @@ namespace bpf
 
         void RemoveLast();
 
+        template <template <typename> class Comparator = bpf::ops::Less>
         void Sort(const bool stable = false);
 
         inline T &First()
