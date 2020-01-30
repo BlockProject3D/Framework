@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -30,27 +30,27 @@
 
 namespace bpf
 {
-	template <typename K, typename V, typename HashOp>
-	HashMap<K, V, HashOp>::Iterator::Iterator(Data *data, fsize start, fsize size, const bool reverse)
-		: _data(data)
-		, MaxSize(size)
-		, CurID(start)
-	{
-		if (reverse)
-		{
-			SearchPrevEntry();
-			MaxSize = CurID;
-		}
-		else
-		{
-			fsize old = CurID;
-			CurID = 0;
-			SearchNextEntry();
-			MinSize = CurID;
-			CurID = old;
-			SearchNextEntry();
-		}
-	}
+    template <typename K, typename V, typename HashOp>
+    HashMap<K, V, HashOp>::Iterator::Iterator(Data *data, fsize start, fsize size, const bool reverse)
+        : _data(data)
+        , MaxSize(size)
+        , CurID(start)
+    {
+        if (reverse)
+        {
+            SearchPrevEntry();
+            MaxSize = CurID;
+        }
+        else
+        {
+            fsize old = CurID;
+            CurID = 0;
+            SearchNextEntry();
+            MinSize = CurID;
+            CurID = old;
+            SearchNextEntry();
+        }
+    }
 
     template <typename K, typename V, typename HashOp>
     void HashMap<K, V, HashOp>::Iterator::SearchNextEntry()
@@ -67,51 +67,51 @@ namespace bpf
     }
 
     template <typename K, typename V, typename HashOp>
-	typename HashMap<K, V, HashOp>::ReverseIterator &HashMap<K, V, HashOp>::ReverseIterator::operator++()
+    typename HashMap<K, V, HashOp>::ReverseIterator &HashMap<K, V, HashOp>::ReverseIterator::operator++()
     {
-		if (Iterator::CurID != (fsize)-1)
-		{
-			--Iterator::CurID;
-			Iterator::SearchPrevEntry();
-		}
-		return (*this);
+        if (Iterator::CurID != (fsize)-1)
+        {
+            --Iterator::CurID;
+            Iterator::SearchPrevEntry();
+        }
+        return (*this);
     }
 
     template <typename K, typename V, typename HashOp>
-	typename HashMap<K, V, HashOp>::ReverseIterator &HashMap<K, V, HashOp>::ReverseIterator::operator--()
+    typename HashMap<K, V, HashOp>::ReverseIterator &HashMap<K, V, HashOp>::ReverseIterator::operator--()
     {
-		if (Iterator::CurID < Iterator::MaxSize)
-		{
-			++Iterator::CurID;
-			Iterator::SearchNextEntry();
-		}
-		return (*this);
+        if (Iterator::CurID < Iterator::MaxSize)
+        {
+            ++Iterator::CurID;
+            Iterator::SearchNextEntry();
+        }
+        return (*this);
     }
 
     template <typename K, typename V, typename HashOp>
-	typename HashMap<K, V, HashOp>::Iterator &HashMap<K, V, HashOp>::Iterator::operator++()
+    typename HashMap<K, V, HashOp>::Iterator &HashMap<K, V, HashOp>::Iterator::operator++()
     {
-		if (CurID < MaxSize)
-		{
-			++CurID;
-			SearchNextEntry();
-		}
-		return (*this);
-    }
-    
-    template <typename K, typename V, typename HashOp>
-	typename HashMap<K, V, HashOp>::Iterator &HashMap<K, V, HashOp>::Iterator::operator--()
-    {
-		if (CurID > MinSize)
-		{
-			--CurID;
-			SearchPrevEntry();
-		}
-		return (*this);
+        if (CurID < MaxSize)
+        {
+            ++CurID;
+            SearchNextEntry();
+        }
+        return (*this);
     }
 
     template <typename K, typename V, typename HashOp>
-	HashMap<K, V, HashOp>::HashMap()
+    typename HashMap<K, V, HashOp>::Iterator &HashMap<K, V, HashOp>::Iterator::operator--()
+    {
+        if (CurID > MinSize)
+        {
+            --CurID;
+            SearchPrevEntry();
+        }
+        return (*this);
+    }
+
+    template <typename K, typename V, typename HashOp>
+    HashMap<K, V, HashOp>::HashMap()
         : _data(new Data[HASH_MAP_INIT_BUF_SIZE])
         , CurSize(HASH_MAP_INIT_BUF_SIZE)
         , ElemCount(0)
@@ -120,70 +120,87 @@ namespace bpf
         _data[1].State = ENTRY_STATE_NON_EXISTANT;
     }
 
-	template <typename K, typename V, typename HashOp>
-	HashMap<K, V, HashOp>::HashMap(const std::initializer_list<Entry> &entries)
-		: _data(new Data[HASH_MAP_INIT_BUF_SIZE])
-		, CurSize(HASH_MAP_INIT_BUF_SIZE)
-		, ElemCount(0)
-	{
-		_data[0].State = ENTRY_STATE_NON_EXISTANT;
-		_data[1].State = ENTRY_STATE_NON_EXISTANT;
-		for (auto &entry : entries)
-			Add(entry.Key, entry.Value);
-	}
-
-	template <typename K, typename V, typename HashOp>
-	HashMap<K, V, HashOp>::HashMap(const HashMap &other)
-		: _data(new Data[HASH_MAP_INIT_BUF_SIZE])
-		, CurSize(HASH_MAP_INIT_BUF_SIZE)
-		, ElemCount(0)
-	{
-		_data[0].State = ENTRY_STATE_NON_EXISTANT;
-		_data[1].State = ENTRY_STATE_NON_EXISTANT;
-		for (auto &entry : other)
-			Add(entry.Key, entry.Value);
-	}
-
-	template <typename K, typename V, typename HashOp>
-	HashMap<K, V, HashOp> &HashMap<K, V, HashOp>::operator=(const HashMap &other)
-	{
-		delete[] _data;
-		_data = new Data[HASH_MAP_INIT_BUF_SIZE];
-		_data[0].State = ENTRY_STATE_NON_EXISTANT;
-		_data[1].State = ENTRY_STATE_NON_EXISTANT;
-		CurSize = HASH_MAP_INIT_BUF_SIZE;
-		ElemCount = 0;
-		for (auto &entry : other)
-			Add(entry.Key, entry.Value);
-		return (*this);
-	}
-
-	template <typename K, typename V, typename HashOp>
-	HashMap<K, V, HashOp>::HashMap(HashMap &&other)
-		: _data(other._data)
-		, CurSize(other.CurSize)
-		, ElemCount(other.ElemCount)
-	{
-		other._data = Null;
-		other.CurSize = 0;
-		other.ElemCount = 0;
-	}
-
-	template <typename K, typename V, typename HashOp>
-	HashMap<K, V, HashOp> &HashMap<K, V, HashOp>::operator=(HashMap &&other)
-	{
-		delete[] _data;
-		_data = other._data;
-		CurSize = other.CurSize;
-		ElemCount = other.ElemCount;
-		other._data = Null;
-		other.CurSize = 0;
-		other.ElemCount = 0;
-		return (*this);
-	}
+    template <typename K, typename V, typename HashOp>
+    HashMap<K, V, HashOp>::HashMap(const std::initializer_list<Entry> &entries)
+        : _data(new Data[HASH_MAP_INIT_BUF_SIZE])
+        , CurSize(HASH_MAP_INIT_BUF_SIZE)
+        , ElemCount(0)
+    {
+        _data[0].State = ENTRY_STATE_NON_EXISTANT;
+        _data[1].State = ENTRY_STATE_NON_EXISTANT;
+        for (auto &entry : entries)
+            Add(entry.Key, entry.Value);
+    }
 
     template <typename K, typename V, typename HashOp>
-	HashMap<K, V, HashOp>::~HashMap()
+    HashMap<K, V, HashOp>::HashMap(const HashMap &other)
+        : _data(new Data[HASH_MAP_INIT_BUF_SIZE])
+        , CurSize(HASH_MAP_INIT_BUF_SIZE)
+        , ElemCount(0)
+    {
+        _data[0].State = ENTRY_STATE_NON_EXISTANT;
+        _data[1].State = ENTRY_STATE_NON_EXISTANT;
+        for (auto &entry : other)
+            Add(entry.Key, entry.Value);
+    }
+
+    template <typename K, typename V, typename HashOp>
+    HashMap<K, V, HashOp> &HashMap<K, V, HashOp>::operator=(const HashMap &other)
+    {
+        delete[] _data;
+        _data = new Data[HASH_MAP_INIT_BUF_SIZE];
+        _data[0].State = ENTRY_STATE_NON_EXISTANT;
+        _data[1].State = ENTRY_STATE_NON_EXISTANT;
+        CurSize = HASH_MAP_INIT_BUF_SIZE;
+        ElemCount = 0;
+        for (auto &entry : other)
+            Add(entry.Key, entry.Value);
+        return (*this);
+    }
+
+    template <typename K, typename V, typename HashOp>
+    HashMap<K, V, HashOp> HashMap<K, V, HashOp>::operator+(const HashMap<K, V, HashOp> &other) const
+    {
+        HashMap<K, V, HashOp> cpy = *this;
+
+        for (const auto &elem : other)
+            cpy.Add(elem.Key, elem.Value);
+        return (cpy);
+    }
+
+    template <typename K, typename V, typename HashOp>
+    void HashMap<K, V, HashOp>::operator+=(const HashMap<K, V, HashOp> &other)
+    {
+        for (const auto &elem : other)
+            Add(elem.Key, elem.Value);
+    }
+
+    template <typename K, typename V, typename HashOp>
+    HashMap<K, V, HashOp>::HashMap(HashMap &&other)
+        : _data(other._data)
+        , CurSize(other.CurSize)
+        , ElemCount(other.ElemCount)
+    {
+        other._data = Null;
+        other.CurSize = 0;
+        other.ElemCount = 0;
+    }
+
+    template <typename K, typename V, typename HashOp>
+    HashMap<K, V, HashOp> &HashMap<K, V, HashOp>::operator=(HashMap &&other)
+    {
+        delete[] _data;
+        _data = other._data;
+        CurSize = other.CurSize;
+        ElemCount = other.ElemCount;
+        other._data = Null;
+        other.CurSize = 0;
+        other.ElemCount = 0;
+        return (*this);
+    }
+
+    template <typename K, typename V, typename HashOp>
+    HashMap<K, V, HashOp>::~HashMap()
     {
         delete[] _data;
     }
@@ -196,16 +213,16 @@ namespace bpf
             Data *olddata = _data;
             CurSize <<= 1;
             _data = new Data[CurSize];
-            for (fsize i = 0 ; i < CurSize; ++i)
+            for (fsize i = 0; i < CurSize; ++i)
                 _data[i].State = ENTRY_STATE_NON_EXISTANT;
-            for (fsize i = 0 ; i < CurSize >> 1 ; ++i)
+            for (fsize i = 0; i < CurSize >> 1; ++i)
             {
                 if (olddata[i].State == ENTRY_STATE_OCCUPIED)
                 {
                     fsize id = QuadraticInsert(olddata[i].Hash);
                     if (id != (fsize)-1)
                     {
-						_data[id].KeyVal.Key = std::move(olddata[i].KeyVal.Key);
+                        _data[id].KeyVal.Key = std::move(olddata[i].KeyVal.Key);
                         _data[id].KeyVal.Value = std::move(olddata[i].KeyVal.Value);
                     }
                 }
@@ -217,11 +234,11 @@ namespace bpf
     template <typename K, typename V, typename HashOp>
     fsize HashMap<K, V, HashOp>::QuadraticSearch(fsize hkey) const
     {
-        for (fsize i = 0 ; i < CurSize ; ++i)
+        for (fsize i = 0; i < CurSize; ++i)
         {
             fsize index = (hkey + ((i * i + i) / 2)) % CurSize;
-			if (_data[index].State == ENTRY_STATE_NON_EXISTANT)
-				break;
+            if (_data[index].State == ENTRY_STATE_NON_EXISTANT)
+                break;
             if (_data[index].State == ENTRY_STATE_OCCUPIED && _data[index].Hash == hkey)
                 return (index);
         }
@@ -231,11 +248,11 @@ namespace bpf
     template <typename K, typename V, typename HashOp>
     fsize HashMap<K, V, HashOp>::QuadraticInsert(fsize hkey)
     {
-        for (fsize i = 0 ; i < CurSize ; ++i)
+        for (fsize i = 0; i < CurSize; ++i)
         {
             fsize index = (hkey + ((i * i + i) / 2)) % CurSize;
             if (_data[index].State == ENTRY_STATE_NON_EXISTANT
-				|| _data[index].State == ENTRY_STATE_INSTANCE_DELETE)
+                || _data[index].State == ENTRY_STATE_INSTANCE_DELETE)
             {
                 _data[index].Hash = hkey;
                 _data[index].State = ENTRY_STATE_OCCUPIED;
@@ -252,12 +269,12 @@ namespace bpf
 
         TryExtend();
         fsize idx = QuadraticSearch(hkey);
-		if (idx == (fsize)-1)
-		{
-			idx = QuadraticInsert(hkey);
-			if (idx != (fsize)-1)
-				++ElemCount;
-		}
+        if (idx == (fsize)-1)
+        {
+            idx = QuadraticInsert(hkey);
+            if (idx != (fsize)-1)
+                ++ElemCount;
+        }
         if (idx != (fsize)-1)
         {
             _data[idx].KeyVal.Value = value;
@@ -272,13 +289,13 @@ namespace bpf
 
         TryExtend();
         fsize idx = QuadraticSearch(hkey);
-		if (idx == (fsize)-1)
-		{
-			idx = QuadraticInsert(hkey);
-			if (idx != (fsize)-1)
-				++ElemCount;
-		}
-		if (idx != (fsize)-1)
+        if (idx == (fsize)-1)
+        {
+            idx = QuadraticInsert(hkey);
+            if (idx != (fsize)-1)
+                ++ElemCount;
+        }
+        if (idx != (fsize)-1)
         {
             _data[idx].KeyVal.Value = std::move(value);
             _data[idx].KeyVal.Key = key;
@@ -297,63 +314,63 @@ namespace bpf
         }
     }
 
-	template <typename K, typename V, typename HashOp>
-	void HashMap<K, V, HashOp>::RemoveAt(Iterator &pos)
-	{
-		auto cur = pos;
+    template <typename K, typename V, typename HashOp>
+    void HashMap<K, V, HashOp>::RemoveAt(Iterator &pos)
+    {
+        auto cur = pos;
 
-		++pos;
-		if (cur.CurID < CurSize && _data[cur.CurID].State == ENTRY_STATE_OCCUPIED)
-			RemoveAt(cur->Key);
-	}
+        ++pos;
+        if (cur.CurID < CurSize && _data[cur.CurID].State == ENTRY_STATE_OCCUPIED)
+            RemoveAt(cur->Key);
+    }
 
-	template <typename K, typename V, typename HashOp>
-	void HashMap<K, V, HashOp>::RemoveAt(Iterator &&pos)
-	{
-		auto cur = pos;
+    template <typename K, typename V, typename HashOp>
+    void HashMap<K, V, HashOp>::RemoveAt(Iterator &&pos)
+    {
+        auto cur = pos;
 
-		++pos;
-		if (cur.CurID < CurSize && _data[cur.CurID].State == ENTRY_STATE_OCCUPIED)
-			RemoveAt(cur->Key);
-	}
+        ++pos;
+        if (cur.CurID < CurSize && _data[cur.CurID].State == ENTRY_STATE_OCCUPIED)
+            RemoveAt(cur->Key);
+    }
 
-	template <typename K, typename V, typename HashOp>
-	void HashMap<K, V, HashOp>::Swap(const Iterator &a, const Iterator &b)
-	{
-		if (a.CurID >= CurSize || b.CurID >= CurSize
-			|| _data[a.CurID].State != ENTRY_STATE_OCCUPIED
-			|| _data[b.CurID].State != ENTRY_STATE_OCCUPIED)
-			return;
-		auto v = std::move(this->operator[](a->Key));
-		this->operator[](a->Key) = std::move(this->operator[](b->Key));
-		this->operator[](b->Key) = std::move(v);
-	}
+    template <typename K, typename V, typename HashOp>
+    void HashMap<K, V, HashOp>::Swap(const Iterator &a, const Iterator &b)
+    {
+        if (a.CurID >= CurSize || b.CurID >= CurSize
+            || _data[a.CurID].State != ENTRY_STATE_OCCUPIED
+            || _data[b.CurID].State != ENTRY_STATE_OCCUPIED)
+            return;
+        auto v = std::move(this->operator[](a->Key));
+        this->operator[](a->Key) = std::move(this->operator[](b->Key));
+        this->operator[](b->Key) = std::move(v);
+    }
 
-	template <typename K, typename V, typename HashOp>
-	void HashMap<K, V, HashOp>::Clear()
-	{
-		delete[] _data;
-		_data = new Data[HASH_MAP_INIT_BUF_SIZE];
-		CurSize = HASH_MAP_INIT_BUF_SIZE;
-		ElemCount = 0;
-		_data[0].State = ENTRY_STATE_NON_EXISTANT;
-		_data[1].State = ENTRY_STATE_NON_EXISTANT;
-	}
+    template <typename K, typename V, typename HashOp>
+    void HashMap<K, V, HashOp>::Clear()
+    {
+        delete[] _data;
+        _data = new Data[HASH_MAP_INIT_BUF_SIZE];
+        CurSize = HASH_MAP_INIT_BUF_SIZE;
+        ElemCount = 0;
+        _data[0].State = ENTRY_STATE_NON_EXISTANT;
+        _data[1].State = ENTRY_STATE_NON_EXISTANT;
+    }
 
-	template <typename K, typename V, typename HashOp>
+    template <typename K, typename V, typename HashOp>
     template <template <typename> class Equal>
-	void HashMap<K, V, HashOp>::Remove(const V &value, const bool all)
-	{
-		for (auto &entry : *this)
-		{
-			if (Equal<V>::Eval(entry.Value, value))
-			{
-				RemoveAt(entry.Key);
-				if (!all)
-					return;
-			}
-		}
-	}
+    void HashMap<K, V, HashOp>::Remove(const V &value, const bool all)
+    {
+        for (auto &entry : *this)
+        {
+            if (Equal<V>::Eval(entry.Value, value))
+            {
+                RemoveAt(entry.Key);
+                if (!all)
+                    return;
+            }
+        }
+    }
 
     template <typename K, typename V, typename HashOp>
     const V &HashMap<K, V, HashOp>::operator[](const K &key) const
@@ -377,7 +394,7 @@ namespace bpf
             if (idx == (fsize)-1)
                 throw bpf::IndexException((fint)idx);
             _data[idx].KeyVal.Key = key;
-			++ElemCount;
+            ++ElemCount;
         }
         return (_data[idx].KeyVal.Value);
     }

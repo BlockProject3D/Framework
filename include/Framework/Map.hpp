@@ -130,7 +130,7 @@ namespace bpf
         fisize Balance(Node *node);
         void LeftRotate(Node *node);
         void RightRotate(Node *node);
-        void InsertNode(const K &key, Node *newNode);
+        Node *InsertNode(const K &key);
         void RemoveNode(Node *node);
         Node *FindMin(Node *node);
         void SwapKeyVal(Node *a, Node *b);
@@ -187,6 +187,10 @@ namespace bpf
 
         Map &operator=(const Map &other);
         Map &operator=(Map &&other);
+
+        Map operator+(const Map &other) const;
+
+        void operator+=(const Map &other);
 
         /**
          * Returns true if the specified key exists, false otherwise

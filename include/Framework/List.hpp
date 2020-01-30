@@ -200,6 +200,10 @@ namespace bpf
          */
         const T &operator[](const fsize id) const;
 
+        List<T> operator+(const List<T> &other) const;
+
+        void operator+=(const List<T> &other);
+
         /**
          * Removes an element at specified position in the list
          * @param pos the position of the element

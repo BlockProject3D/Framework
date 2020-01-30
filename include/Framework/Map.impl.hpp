@@ -248,6 +248,23 @@ namespace bpf
     }
 
     template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
+    Map<K, V, Greater, Less> Map<K, V, Greater, Less>::operator+(const Map<K, V, Greater, Less> &other) const
+    {
+        Map<K, V, Greater, Less> cpy = *this;
+
+        for (const auto &elem : other)
+            cpy.Add(elem.Key, elem.Value);
+        return (cpy);
+    }
+
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
+    void Map<K, V, Greater, Less>::operator+=(const Map<K, V, Greater, Less> &other)
+    {
+        for (const auto &elem : other)
+            Add(elem.Key, elem.Value);
+    }
+
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     fisize Map<K, V, Greater, Less>::Height(Node *node)
     {
         return (node != Null ? node->Height : 0);
@@ -312,18 +329,23 @@ namespace bpf
     }
 
     template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
-    void Map<K, V, Greater, Less>::InsertNode(const K &key, Node *newNode)
+    typename Map<K, V, Greater, Less>::Node *Map<K, V, Greater, Less>::InsertNode(const K &key)
     {
-        /* Data structure augmentation */
-        newNode->Height = 1; //Every new node is a leaf
+        Node *newNode;
 
         /* BST standard add */
         if (_root == Null)
         {
+            newNode = new Node();
+            newNode->KeyVal.Key = key;
+            /* Data structure augmentation */
+            newNode->Height = 1; //Every new node is a leaf
             newNode->Left = Null;
             newNode->Right = Null;
+            newNode->Parent = Null;
             _root = newNode;
-            return;
+            ++_count;
+            return (newNode);
         }
         Node *cur = _root;
         int lastdir = 0; //0 is left 1 is right
@@ -336,12 +358,19 @@ namespace bpf
                 cur = cur->Right;
                 lastdir = 1;
             }
-            else
+            else if (Less<K>::Eval(key, cur->KeyVal.Key))
             {
                 cur = cur->Left;
                 lastdir = 0;
             }
+            else // Equal = replace node value
+                return (cur);
         }
+        ++_count;
+        newNode = new Node();
+        newNode->KeyVal.Key = key;
+        /* Data structure augmentation */
+        newNode->Height = 1; //Every new node is a leaf
         newNode->Parent = parent;
         if (lastdir == 1)
             parent->Right = newNode;
@@ -371,6 +400,7 @@ namespace bpf
             }
             parent = parent->Parent;
         }
+        return (newNode);
     }
 
     template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
@@ -505,25 +535,17 @@ namespace bpf
     template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     void Map<K, V, Greater, Less>::Add(const K &key, const V &value)
     {
-        Node *newNode = new Node();
+        Node *newNode = InsertNode(key);
 
-        newNode->KeyVal.Key = key;
         newNode->KeyVal.Value = value;
-
-        InsertNode(key, newNode);
-        ++_count;
     }
 
     template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     void Map<K, V, Greater, Less>::Add(const K &key, V &&value)
     {
-        Node *newNode = new Node();
+        Node *newNode = InsertNode(key);
 
-        newNode->KeyVal.Key = key;
         newNode->KeyVal.Value = std::move(value);
-
-        InsertNode(key, newNode);
-        ++_count;
     }
 
     template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
@@ -632,11 +654,7 @@ namespace bpf
 
         if (nd == Null)
         {
-            Node *newNode = new Node();
-
-            newNode->KeyVal.Key = key;
-            InsertNode(key, newNode);
-            ++_count;
+            Node *newNode = InsertNode(key);
             return (newNode->KeyVal.Value);
         }
         return (nd->KeyVal.Value);

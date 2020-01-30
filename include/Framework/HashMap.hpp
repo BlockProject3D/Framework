@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -70,15 +70,15 @@ namespace bpf
         protected:
             Data *_data;
             fsize MaxSize;
-			fsize MinSize;
+            fsize MinSize;
             fsize CurID;
             void SearchNextEntry();
             void SearchPrevEntry();
 
         public:
-			Iterator(Data *data, fsize start, fsize size, const bool reverse = false);
+            Iterator(Data *data, fsize start, fsize size, const bool reverse = false);
             Iterator &operator++();
-			Iterator &operator--();
+            Iterator &operator--();
             inline const Entry &operator*() const
             {
                 return (_data[CurID].KeyVal);
@@ -96,7 +96,7 @@ namespace bpf
                 return (CurID != other.CurID);
             }
 
-			friend class HashMap<K, V, HashOp>;
+            friend class HashMap<K, V, HashOp>;
         };
 
         class BP_TPL_API ReverseIterator final : public Iterator
@@ -106,10 +106,10 @@ namespace bpf
                 : Iterator(data, start, size, true)
             {
             }
-			ReverseIterator &operator++();
-			ReverseIterator &operator--();
+            ReverseIterator &operator++();
+            ReverseIterator &operator--();
 
-			friend class HashMap<K, V, HashOp>;
+            friend class HashMap<K, V, HashOp>;
         };
 
     private:
@@ -123,11 +123,11 @@ namespace bpf
 
     public:
         HashMap();
-		HashMap(const HashMap &other);
-		HashMap(HashMap &&other);
-		HashMap(const std::initializer_list<Entry> &entries);
+        HashMap(const HashMap &other);
+        HashMap(HashMap &&other);
+        HashMap(const std::initializer_list<Entry> &entries);
         ~HashMap();
-      
+
         /**
          * Adds a new element in this hash map, replaces if key already exists
          * @param key the key of the element
@@ -136,45 +136,49 @@ namespace bpf
         void Add(const K &key, const V &value);
 
         void Add(const K &key, V &&value);
-      
+
         /**
          * Removes an element from the hash table
          * @param key the key of the element to remove
          */
         void RemoveAt(const K &key);
-		void RemoveAt(Iterator &pos);
-		void RemoveAt(Iterator &&pos);
+        void RemoveAt(Iterator &pos);
+        void RemoveAt(Iterator &&pos);
 
-		void Swap(const Iterator &a, const Iterator &b);
+        void Swap(const Iterator &a, const Iterator &b);
 
-		void Clear();
+        void Clear();
 
-		/**
-		 * Removes an element by value
-		 * @param value the value to search for
-		 * @param all wether to remove all occurances or just the first one
+        /**
+         * Removes an element by value
+         * @param value the value to search for
+         * @param all wether to remove all occurances or just the first one
          * @tparam Equal the equal operator to use for comparing values
-		 */
+         */
         template <template <typename> class Equal = bpf::ops::Equal>
-		void Remove(const V &value, const bool all = true);
+        void Remove(const V &value, const bool all = true);
 
         /**
          * Returns the element at the specified key, if no key exists in this hash table, throws
          * @param key the key of the element to return
          */
         const V &operator[](const K &key) const;
-        
+
         V &operator[](const K &key);
 
-		HashMap &operator=(const HashMap &other);
-		HashMap &operator=(HashMap &&other);
-      
+        HashMap &operator=(const HashMap &other);
+        HashMap &operator=(HashMap &&other);
+
+        HashMap operator+(const HashMap &other) const;
+
+        void operator+=(const HashMap &other);
+
         /**
          * Returns true if the specified key exists, false otherwise
          * @param key the key to check
          */
         bool HasKey(const K &key) const;
-      
+
         /**
          * Returns the size of this hash table, that means the element count
          */
@@ -182,7 +186,7 @@ namespace bpf
         {
             return (ElemCount);
         }
-        
+
         inline Iterator begin() const
         {
             return (Iterator(_data, 0, CurSize));

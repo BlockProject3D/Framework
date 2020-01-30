@@ -83,6 +83,18 @@ TEST(List, Indexer)
     EXPECT_THROW(ref[(bpf::fsize) - 465], bpf::IndexException);
 }
 
+TEST(List, Concatenate)
+{
+    bpf::List<int> lst = { 0, 3, 7 };
+    bpf::List<int> lst1 = { 0, 3, 7 };
+
+    auto concatenated = lst + lst1;
+    EXPECT_STREQ(*bpf::String::ValueOf(concatenated), "[0, 3, 7, 0, 3, 7]");
+    lst1 += lst;
+    EXPECT_STREQ(*bpf::String::ValueOf(lst1), "[0, 3, 7, 0, 3, 7]");
+    EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 3, 7]");
+}
+
 TEST(List, FirstLast_1)
 {
     bpf::List<int> lst;

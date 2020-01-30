@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -95,6 +95,23 @@ namespace bpf
         for (auto &elem : other)
             Add(elem);
         return (*this);
+    }
+
+    template <typename T>
+    List<T> List<T>::operator+(const List<T> &other) const
+    {
+        List<T> cpy = *this;
+
+        for (const auto &elem : other)
+            cpy.Add(elem);
+        return (cpy);
+    }
+
+    template <typename T>
+    void List<T>::operator+=(const List<T> &other)
+    {
+        for (const auto &elem : other)
+            Add(elem);
     }
 
     template <typename T>

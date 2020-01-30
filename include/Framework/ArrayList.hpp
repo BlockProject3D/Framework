@@ -97,6 +97,10 @@ namespace bpf
             return (*this);
         }
 
+        ArrayList<T> operator+(const ArrayList<T> &other) const;
+
+        void operator+=(const ArrayList<T> &other);
+
         inline T &First()
         {
             if (_curid == 0)
