@@ -31,7 +31,7 @@
 namespace bpf
 {
     template <typename K, typename V, typename HashOp>
-    HashMap<K, V, HashOp>::Iterator::Iterator(Data *data, fsize start, fsize size, const bool reverse)
+    HashMap<K, V, HashOp>::Iterator::Iterator(Node *data, fsize start, fsize size, const bool reverse)
         : _data(data)
         , MaxSize(size)
         , CurID(start)
@@ -112,7 +112,7 @@ namespace bpf
 
     template <typename K, typename V, typename HashOp>
     HashMap<K, V, HashOp>::HashMap()
-        : _data(new Data[HASH_MAP_INIT_BUF_SIZE])
+        : _data(new Node[HASH_MAP_INIT_BUF_SIZE])
         , CurSize(HASH_MAP_INIT_BUF_SIZE)
         , ElemCount(0)
     {
@@ -122,7 +122,7 @@ namespace bpf
 
     template <typename K, typename V, typename HashOp>
     HashMap<K, V, HashOp>::HashMap(const std::initializer_list<Entry> &entries)
-        : _data(new Data[HASH_MAP_INIT_BUF_SIZE])
+        : _data(new Node[HASH_MAP_INIT_BUF_SIZE])
         , CurSize(HASH_MAP_INIT_BUF_SIZE)
         , ElemCount(0)
     {
@@ -134,7 +134,7 @@ namespace bpf
 
     template <typename K, typename V, typename HashOp>
     HashMap<K, V, HashOp>::HashMap(const HashMap &other)
-        : _data(new Data[HASH_MAP_INIT_BUF_SIZE])
+        : _data(new Node[HASH_MAP_INIT_BUF_SIZE])
         , CurSize(HASH_MAP_INIT_BUF_SIZE)
         , ElemCount(0)
     {
@@ -148,7 +148,7 @@ namespace bpf
     HashMap<K, V, HashOp> &HashMap<K, V, HashOp>::operator=(const HashMap &other)
     {
         delete[] _data;
-        _data = new Data[HASH_MAP_INIT_BUF_SIZE];
+        _data = new Node[HASH_MAP_INIT_BUF_SIZE];
         _data[0].State = ENTRY_STATE_NON_EXISTANT;
         _data[1].State = ENTRY_STATE_NON_EXISTANT;
         CurSize = HASH_MAP_INIT_BUF_SIZE;
@@ -210,9 +210,9 @@ namespace bpf
     {
         if ((float)ElemCount / (float)CurSize >= HASH_MAP_LIMIT_UNTIL_EXTEND)
         {
-            Data *olddata = _data;
+            Node *olddata = _data;
             CurSize <<= 1;
-            _data = new Data[CurSize];
+            _data = new Node[CurSize];
             for (fsize i = 0; i < CurSize; ++i)
                 _data[i].State = ENTRY_STATE_NON_EXISTANT;
             for (fsize i = 0; i < CurSize >> 1; ++i)
@@ -350,7 +350,7 @@ namespace bpf
     void HashMap<K, V, HashOp>::Clear()
     {
         delete[] _data;
-        _data = new Data[HASH_MAP_INIT_BUF_SIZE];
+        _data = new Node[HASH_MAP_INIT_BUF_SIZE];
         CurSize = HASH_MAP_INIT_BUF_SIZE;
         ElemCount = 0;
         _data[0].State = ENTRY_STATE_NON_EXISTANT;
@@ -358,18 +358,51 @@ namespace bpf
     }
 
     template <typename K, typename V, typename HashOp>
-    template <template <typename> class Equal>
+    template <template <typename> class Comparator>
     void HashMap<K, V, HashOp>::Remove(const V &value, const bool all)
     {
         for (auto &entry : *this)
         {
-            if (Equal<V>::Eval(entry.Value, value))
+            if (Comparator<V>::Eval(entry.Value, value))
             {
                 RemoveAt(entry.Key);
                 if (!all)
                     return;
             }
         }
+    }
+
+    template <typename K, typename V, typename HashOp>
+    typename HashMap<K, V, HashOp>::Iterator HashMap<K, V, HashOp>::FindByKey(const K &key)
+    {
+        fsize idx = QuadraticSearch(HashOp::HashCode(key));
+
+        if (idx == (fsize)-1)
+            return (Iterator(_data, CurSize, CurSize));
+        return (Iterator(_data, idx, CurSize));
+    }
+
+    template <typename K, typename V, typename HashOp>
+    template <template <typename> class Comparator>
+    typename HashMap<K, V, HashOp>::Iterator HashMap<K, V, HashOp>::FindByValue(const V &val)
+    {
+        for (auto &it = begin() ; it != end() ; ++it)
+        {
+            if (Comparator<V>::Eval(it->Value, val))
+                return (it);
+        }
+        return (Iterator(_data, CurSize, CurSize));
+    }
+
+    template <typename K, typename V, typename HashOp>
+    typename HashMap<K, V, HashOp>::Iterator HashMap<K, V, HashOp>::Find(const std::function<bool(Iterator it)> &comparator)
+    {
+        for (auto &it = begin(); it != end(); ++it)
+        {
+            if (comparator(it))
+                return (it);
+        }
+        return (Iterator(_data, CurSize, CurSize));
     }
 
     template <typename K, typename V, typename HashOp>

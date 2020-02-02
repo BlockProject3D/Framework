@@ -67,12 +67,12 @@ namespace bpf
     }
 
     template <typename T>
-    template <template <typename> class Equal>
+    template <template <typename> class Comparator>
     void ArrayList<T>::Remove(const T &elem, const bool all)
     {
         for (fsize i = 0; i < _curid; ++i)
         {
-            if (Equal<T>::Eval(_arr[i], elem))
+            if (Comparator<T>::Eval(_arr[i], elem))
             {
                 RemoveAt(i);
                 if (!all)
@@ -235,5 +235,42 @@ namespace bpf
             QuickSort<Comparator>(0, _curid - 1);
         else
             MergeSort<Comparator>();
+    }
+
+    template <typename T>
+    typename ArrayList<T>::Iterator ArrayList<T>::FindByKey(const fsize pos)
+    {
+        if (pos >= _curid)
+            return (Iterator(*_arr, _curid, _curid));
+        return (Iterator(*_arr, _curid, pos));
+    }
+
+    template <typename T>
+    template <template <typename> class Comparator>
+    typename ArrayList<T>::Iterator ArrayList<T>::FindByValue(const T &val)
+    {
+        fsize pos = 0;
+
+        for (auto &elem : *this)
+        {
+            if (Comparator<T>::Eval(elem, val))
+                return (Iterator(*_arr, _curid, pos));
+            ++pos;
+        }
+        return (Iterator(*_arr, _curid, _curid));
+    }
+
+    template <typename T>
+    typename ArrayList<T>::Iterator ArrayList<T>::Find(const std::function<bool(const fsize pos, const T &val)> &comparator)
+    {
+        fsize pos = 0;
+
+        for (auto &elem : *this)
+        {
+            if (comparator(pos, elem))
+                return (Iterator(*_arr, _curid, pos));
+            ++pos;
+        }
+        return (Iterator(*_arr, _curid, _curid));
     }
 }

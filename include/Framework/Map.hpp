@@ -27,6 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include <functional>
 #include <initializer_list>
 #include "Framework/Types.hpp"
 #include "Framework/Stack.hpp"
@@ -46,7 +47,6 @@ namespace bpf
             V Value;
         };
 
-    private:
         struct BP_TPL_API Node
         {
             Node *Left;
@@ -169,10 +169,17 @@ namespace bpf
          * Removes an element by value
          * @param value the value to search for
          * @param all wether to remove all occurances or just the first one
-         * @tparam Equal the equal operator to use for comparing values
+         * @tparam Comparator the comparision operator to use for comparing values
          */
-        template <template <typename> class Equal = bpf::ops::Equal>
+        template <template <typename> class Comparator = bpf::ops::Equal>
         void Remove(const V &value, const bool all = true);
+
+        Iterator FindByKey(const K &key);
+
+        template <template <typename> class Comparator = bpf::ops::Equal>
+        Iterator FindByValue(const V &val);
+
+        Iterator Find(const std::function<int(const Node &node)> &comparator);
 
         /**
          * Returns the element at the specified key, if no key exists in this hash table, throws

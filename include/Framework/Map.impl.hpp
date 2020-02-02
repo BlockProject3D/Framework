@@ -623,12 +623,12 @@ namespace bpf
     }
 
     template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
-    template <template <typename> class Equal>
+    template <template <typename> class Comparator>
     void Map<K, V, Greater, Less>::Remove(const V &value, const bool all)
     {
         for (auto &entry : *this)
         {
-            if (Equal<V>::Eval(entry.Value, value))
+            if (Comparator<V>::Eval(entry.Value, value))
             {
                 RemoveAt(entry.Key);
                 if (!all)
@@ -658,5 +658,75 @@ namespace bpf
             return (newNode->KeyVal.Value);
         }
         return (nd->KeyVal.Value);
+    }
+
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
+    typename Map<K, V, Greater, Less>::Iterator Map<K, V, Greater, Less>::FindByKey(const K &key)
+    {
+        Node *nd = FindNode(key);
+
+        if (nd == _root)
+            return (Iterator(_root, (Node *)1));
+        else
+            return (Iterator(_root, nd));
+    }
+
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
+    template <template <typename> class Comparator>
+    typename Map<K, V, Greater, Less>::Iterator Map<K, V, Greater, Less>::FindByValue(const V &val)
+    {
+        for (auto &it = begin(); it != end(); ++it)
+        {
+            if (Comparator<V>::Eval(it->Value, val))
+                return (it);
+        }
+        return (Iterator(_root, Null));
+    }
+
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
+    typename Map<K, V, Greater, Less>::Iterator Map<K, V, Greater, Less>::Find(const std::function<int(const Node &node)> &comparator)
+    {
+        Node *nd = _root;
+
+        while (nd != Null)
+        {
+            int res = comparator(*nd);
+            if (res < 0)
+                nd = nd->Left;
+            else if (res > 0)
+                nd = nd->Right;
+            else
+                break;
+        }
+        if (nd == _root)
+            return (Iterator(_root, (Node *)1));
+        else
+            return (Iterator(_root, nd));
+    }
+
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
+    typename Map<K, V, Greater, Less>::Iterator Map<K, V, Greater, Less>::FindMin()
+    {
+        Node *node = _root;
+
+        while (node != Null && node->Left != Null)
+            node = node->Left;
+        if (node == _root)
+            return (Iterator(_root, (Node *)1));
+        else
+            return (Iterator(_root, node));
+    }
+
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
+    typename Map<K, V, Greater, Less>::Iterator Map<K, V, Greater, Less>::FindMax()
+    {
+        Node *node = _root;
+
+        while (node != Null && node->Right != Null)
+            node = node->Right;
+        if (node == _root)
+            return (Iterator(_root, (Node *)1));
+        else
+            return (Iterator(_root, node));
     }
 }

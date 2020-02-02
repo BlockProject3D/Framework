@@ -27,7 +27,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include <functional>
 #include <initializer_list>
+#include "Framework/ContainerUtilities.hpp"
 #include "Framework/Iterator.hpp"
 #include "Framework/Types.hpp"
 #include "Framework/TypeInfo.hpp"
@@ -205,6 +207,13 @@ namespace bpf
             return (_arr[id]);
         }
 
+        Iterator FindByKey(const fsize pos);
+
+        template <template <typename> class Comparator = bpf::ops::Equal>
+        Iterator FindByValue(const T &val);
+
+        Iterator Find(const std::function<bool(const fsize pos, const T &val)> &comparator);
+
         /**
          * Returns an iterator to the begining of the array
          */
@@ -379,6 +388,13 @@ namespace bpf
          * @param newSize the new array size
          */
         void Resize(const fsize newSize);
+
+        Iterator FindByKey(const fsize pos);
+
+        template <template <typename> class Comparator = bpf::ops::Equal>
+        Iterator FindByValue(const T &val);
+
+        Iterator Find(const std::function<bool(const fsize pos, const T& val)> &comparator);
 
         inline T &First()
         {

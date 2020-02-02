@@ -28,7 +28,6 @@
 
 #pragma once
 #include "Framework/Array.hpp"
-#include "Framework/ContainerUtilities.hpp"
 
 namespace bpf
 {
@@ -181,10 +180,17 @@ namespace bpf
          * Removes occurences of an element fron the list
          * @param elem the element to search for
          * @param all wether or not to remove all occurences or just the first one
-         * @tparam Equal the equal operator to use for comparing values
+         * @tparam Comparator the comparision operator to use for comparing values
          */
-        template <template <typename> class Equal = bpf::ops::Equal>
+        template <template <typename> class Comparator = bpf::ops::Equal>
         void Remove(const T &elem, const bool all = true);
+
+        Iterator FindByKey(const fsize pos);
+
+        template <template <typename> class Comparator = bpf::ops::Equal>
+        Iterator FindByValue(const T &val);
+
+        Iterator Find(const std::function<bool(const fsize pos, const T &val)> &comparator);
 
         inline void Clear()
         {

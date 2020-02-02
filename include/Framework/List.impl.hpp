@@ -478,14 +478,14 @@ namespace bpf
     }
 
     template <typename T>
-    template <template <typename> class Equal>
+    template <template <typename> class Comparator>
     void List<T>::Remove(const T &elem, const bool all)
     {
         Node *cur = _first;
 
         while (cur)
         {
-            if (Equal<T>::Eval(cur->Data, elem))
+            if (Comparator<T>::Eval(cur->Data, elem))
             {
                 Node *toRM = cur;
                 cur = (all) ? cur->Next : Null;
@@ -521,5 +521,44 @@ namespace bpf
         if (elem == Null)
             throw IndexException((fint)id);
         return (elem->Data);
+    }
+
+    template <typename T>
+    typename List<T>::Iterator List<T>::FindByKey(const fsize pos)
+    {
+        Node *elem = GetNode(pos);
+        return (Iterator(elem, _last));
+    }
+
+    template <typename T>
+    template <template <typename> class Comparator>
+    typename List<T>::Iterator List<T>::FindByValue(const T &val)
+    {
+        Node *cur = _first;
+
+        while (cur)
+        {
+            if (Comparator<T>::Eval(cur->Data, val))
+                return (Iterator(cur, _last));
+            else
+                cur = cur->Next;
+        }
+        return (Iterator(Null, _last));
+    }
+
+    template <typename T>
+    typename List<T>::Iterator List<T>::Find(const std::function<bool(const fsize pos, const T &val)> &comparator)
+    {
+        Node *cur = _first;
+        fsize pos = 0;
+
+        while (cur)
+        {
+            if (comparator(pos, cur->Data))
+                return (Iterator(cur, _last));
+            cur = cur->Next;
+            ++pos;
+        }
+        return (Iterator(Null, _last));
     }
 }

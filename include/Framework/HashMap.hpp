@@ -27,6 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include <functional>
 #include <initializer_list>
 #include "Framework/Types.hpp"
 #include "Framework/Iterator.hpp"
@@ -42,22 +43,19 @@ namespace bpf
     template <typename K, typename V, typename HashOp = Hash<K>>
     class BP_TPL_API HashMap
     {
-    public:
+    private:
         struct BP_TPL_API Entry
         {
             K Key;
             V Value;
         };
-
-    private:
         enum BP_TPL_API EntryState
         {
             ENTRY_STATE_INSTANCE_DELETE,
             ENTRY_STATE_NON_EXISTANT,
             ENTRY_STATE_OCCUPIED
         };
-
-        struct BP_TPL_API Data
+        struct BP_TPL_API Node
         {
             fsize Hash;
             EntryState State;
@@ -68,7 +66,7 @@ namespace bpf
         class BP_TPL_API Iterator : public IIterator<typename HashMap<K, V, HashOp>::Iterator, Entry>
         {
         protected:
-            Data *_data;
+            Node *_data;
             fsize MaxSize;
             fsize MinSize;
             fsize CurID;
@@ -76,7 +74,7 @@ namespace bpf
             void SearchPrevEntry();
 
         public:
-            Iterator(Data *data, fsize start, fsize size, const bool reverse = false);
+            Iterator(Node *data, fsize start, fsize size, const bool reverse = false);
             Iterator &operator++();
             Iterator &operator--();
             inline const Entry &operator*() const
@@ -102,7 +100,7 @@ namespace bpf
         class BP_TPL_API ReverseIterator final : public Iterator
         {
         public:
-            inline ReverseIterator(Data *data, fsize start, fsize size)
+            inline ReverseIterator(Node *data, fsize start, fsize size)
                 : Iterator(data, start, size, true)
             {
             }
@@ -113,7 +111,7 @@ namespace bpf
         };
 
     private:
-        Data *_data;
+        Node *_data;
         fsize CurSize;
         fsize ElemCount;
 
@@ -153,10 +151,17 @@ namespace bpf
          * Removes an element by value
          * @param value the value to search for
          * @param all wether to remove all occurances or just the first one
-         * @tparam Equal the equal operator to use for comparing values
+         * @tparam Comparator the comparision operator to use for comparing values
          */
-        template <template <typename> class Equal = bpf::ops::Equal>
+        template <template <typename> class Comparator = bpf::ops::Equal>
         void Remove(const V &value, const bool all = true);
+
+        Iterator FindByKey(const K &key);
+
+        template <template <typename> class Comparator = bpf::ops::Equal>
+        Iterator FindByValue(const V &val);
+
+        Iterator Find(const std::function<bool(Iterator it)> &comparator);
 
         /**
          * Returns the element at the specified key, if no key exists in this hash table, throws
