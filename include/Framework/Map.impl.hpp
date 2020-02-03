@@ -672,7 +672,7 @@ namespace bpf
     template <template <typename> class Comparator>
     typename Map<K, V, Greater, Less>::Iterator Map<K, V, Greater, Less>::FindByValue(const V &val)
     {
-        for (auto &it = begin(); it != end(); ++it)
+        for (auto it = begin(); it != end(); ++it)
         {
             if (Comparator<V>::Eval(it->Value, val))
                 return (it);
