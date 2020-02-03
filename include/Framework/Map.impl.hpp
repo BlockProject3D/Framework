@@ -665,10 +665,7 @@ namespace bpf
     {
         Node *nd = FindNode(key);
 
-        if (nd == _root)
-            return (Iterator(_root, (Node *)1));
-        else
-            return (Iterator(_root, nd));
+        return (Iterator(_root, nd));
     }
 
     template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
@@ -698,10 +695,7 @@ namespace bpf
             else
                 break;
         }
-        if (nd == _root)
-            return (Iterator(_root, (Node *)1));
-        else
-            return (Iterator(_root, nd));
+        return (Iterator(_root, nd));
     }
 
     template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
@@ -711,10 +705,7 @@ namespace bpf
 
         while (node != Null && node->Left != Null)
             node = node->Left;
-        if (node == _root)
-            return (Iterator(_root, (Node *)1));
-        else
-            return (Iterator(_root, node));
+        return (Iterator(_root, node));
     }
 
     template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
@@ -724,9 +715,6 @@ namespace bpf
 
         while (node != Null && node->Right != Null)
             node = node->Right;
-        if (node == _root)
-            return (Iterator(_root, (Node *)1));
-        else
-            return (Iterator(_root, node));
+        return (Iterator(_root, node));
     }
 }

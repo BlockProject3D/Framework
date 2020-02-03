@@ -113,6 +113,32 @@ TEST(Map, Indexer)
     EXPECT_EQ(lst[2], 7);
 }
 
+TEST(Map, FindByKey)
+{
+    bpf::Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 } };
+
+    EXPECT_EQ(lst.begin(), lst.FindByKey(0));
+    EXPECT_EQ(--lst.end(), lst.FindByKey(2));
+    EXPECT_EQ(lst.end(), lst.FindByKey(3));
+}
+
+TEST(Map, FindByValue)
+{
+    bpf::Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 } };
+
+    EXPECT_EQ(lst.begin(), lst.FindByValue(0));
+    EXPECT_EQ(--lst.end(), lst.FindByValue(7));
+    EXPECT_EQ(--lst.end(), lst.FindByValue<bpf::ops::Greater>(3));
+    EXPECT_EQ(lst.end(), lst.FindByValue(42));
+}
+
+TEST(Map, Find)
+{
+    bpf::Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 } };
+
+    EXPECT_EQ(++lst.begin(), lst.Find([](const bpf::Map<int, int>::Node &nd) { return (1 - nd.KeyVal.Key); }));
+}
+
 TEST(Map, Concatenate)
 {
     bpf::Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 } };

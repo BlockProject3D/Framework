@@ -232,10 +232,10 @@ namespace bpf
         for (auto &elem : *this)
         {
             if (comparator(pos, elem))
-                return (Iterator(*_arr, pos));
+                return (Iterator(_arr, pos));
             ++pos;
         }
-        return (Iterator(*_arr, I));
+        return (Iterator(_arr, I));
     }
 
     template <typename T>
@@ -246,9 +246,9 @@ namespace bpf
         for (auto &elem : *this)
         {
             if (comparator(pos, elem))
-                return (Iterator(*_arr, _size, pos));
+                return (Iterator(_arr, _size, pos));
             ++pos;
         }
-        return (Iterator(*_arr, _size, _size));
+        return (Iterator(_arr, _size, _size));
     }
 }

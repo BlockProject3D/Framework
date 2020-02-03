@@ -79,6 +79,32 @@ TEST(ArrayStatic, Indexer)
     EXPECT_THROW(ref[(bpf::fsize) - 465], bpf::IndexException);
 }
 
+TEST(ArrayStatic, FindByKey)
+{
+    bpf::Array<int, 3> lst = { 0, 3, 7 };
+
+    EXPECT_EQ(lst.begin(), lst.FindByKey(0));
+    EXPECT_EQ(--lst.end(), lst.FindByKey(2));
+    EXPECT_EQ(lst.end(), lst.FindByKey(3));
+}
+
+TEST(ArrayStatic, FindByValue)
+{
+    bpf::Array<int, 3> lst = { 0, 3, 7 };
+
+    EXPECT_EQ(lst.begin(), lst.FindByValue(0));
+    EXPECT_EQ(--lst.end(), lst.FindByValue(7));
+    EXPECT_EQ(--lst.end(), lst.FindByValue<bpf::ops::Greater>(3));
+    EXPECT_EQ(lst.end(), lst.FindByValue(42));
+}
+
+TEST(ArrayStatic, Find)
+{
+    bpf::Array<int, 3> lst = { 0, 3, 7 };
+
+    EXPECT_EQ(++lst.begin(), lst.Find([](bpf::fsize pos, const int &val) { return (val == 3); }));
+}
+
 TEST(ArrayStatic, FirstLast_1)
 {
     bpf::Array<int, 3> lst = { 0, 3, 7 };

@@ -93,6 +93,32 @@ TEST(HashMap, Indexer)
     EXPECT_EQ(lst[2], 7);
 }
 
+TEST(HashMap, FindByKey)
+{
+    bpf::HashMap<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 } };
+
+    EXPECT_EQ(lst.begin(), lst.FindByKey(0));
+    EXPECT_EQ(--lst.end(), lst.FindByKey(2));
+    EXPECT_EQ(lst.end(), lst.FindByKey(3));
+}
+
+TEST(HashMap, FindByValue)
+{
+    bpf::HashMap<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 } };
+
+    EXPECT_EQ(lst.begin(), lst.FindByValue(0));
+    EXPECT_EQ(--lst.end(), lst.FindByValue(7));
+    EXPECT_EQ(--lst.end(), lst.FindByValue<bpf::ops::Greater>(3));
+    EXPECT_EQ(lst.end(), lst.FindByValue(42));
+}
+
+TEST(HashMap, Find)
+{
+    bpf::HashMap<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 } };
+
+    EXPECT_EQ(++lst.begin(), lst.Find([](bpf::HashMap<int, int>::Iterator it) { return (it->Value == 3); }));
+}
+
 TEST(HashMap, Concatenate)
 {
     bpf::HashMap<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 } };
