@@ -386,7 +386,7 @@ namespace bpf
     template <template <typename> class Comparator>
     typename HashMap<K, V, HashOp>::Iterator HashMap<K, V, HashOp>::FindByValue(const V &val)
     {
-        for (auto &it = begin() ; it != end() ; ++it)
+        for (auto it = begin() ; it != end() ; ++it)
         {
             if (Comparator<V>::Eval(it->Value, val))
                 return (it);
@@ -397,7 +397,7 @@ namespace bpf
     template <typename K, typename V, typename HashOp>
     typename HashMap<K, V, HashOp>::Iterator HashMap<K, V, HashOp>::Find(const std::function<bool(Iterator it)> &comparator)
     {
-        for (auto &it = begin(); it != end(); ++it)
+        for (auto it = begin(); it != end(); ++it)
         {
             if (comparator(it))
                 return (it);
