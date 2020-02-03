@@ -406,6 +406,22 @@ namespace bpf
     }
 
     template <typename K, typename V, typename HashOp>
+    bool HashMap<K, V, HashOp>::operator==(const HashMap<K, V, HashOp> &other)
+    {
+        if (ElemCount != other.ElemCount)
+            return (false);
+        Iterator it = begin();
+
+        while (it != end())
+        {
+            if (!other.HasKey(it->Key) || other[it->Key] != it->Value)
+                return (false);
+            ++it;
+        }
+        return (true);
+    }
+
+    template <typename K, typename V, typename HashOp>
     const V &HashMap<K, V, HashOp>::operator[](const K &key) const
     {
         fsize idx = QuadraticSearch(HashOp::HashCode(key));

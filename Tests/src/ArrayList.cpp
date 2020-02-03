@@ -125,6 +125,21 @@ TEST(ArrayList, Find)
     EXPECT_EQ(++lst.begin(), lst.Find([](bpf::fsize pos, const int &val) { return (val == 3); }));
 }
 
+TEST(ArrayList, Equal)
+{
+    bpf::ArrayList<int> lst = { 0, 3, 7 };
+    bpf::ArrayList<int> lst1 = { 0, 3, 7 };
+    bpf::ArrayList<int> lst2 = { 0, 3 };
+    bpf::ArrayList<int> lst3 = { 0, 3, 4 };
+
+    EXPECT_TRUE(lst == lst1);
+    EXPECT_FALSE(lst != lst1);
+    EXPECT_FALSE(lst == lst2);
+    EXPECT_TRUE(lst != lst2);
+    EXPECT_FALSE(lst == lst3);
+    EXPECT_TRUE(lst != lst3);
+}
+
 TEST(ArrayList, Concatenate)
 {
     bpf::ArrayList<int> lst = { 0, 3, 7 };

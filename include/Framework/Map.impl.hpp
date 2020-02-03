@@ -717,4 +717,20 @@ namespace bpf
             node = node->Right;
         return (Iterator(_root, node));
     }
+
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
+    bool Map<K, V, Greater, Less>::operator==(const Map<K, V, Greater, Less> &other)
+    {
+        if (_count != other._count)
+            return (false);
+        Iterator it = begin();
+
+        while (it != end())
+        {
+            if (!other.HasKey(it->Key) || other[it->Key] != it->Value)
+                return (false);
+            ++it;
+        }
+        return (true);
+    }
 }

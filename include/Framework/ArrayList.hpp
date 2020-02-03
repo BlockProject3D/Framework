@@ -96,6 +96,13 @@ namespace bpf
             return (*this);
         }
 
+        bool operator==(const ArrayList<T> &other);
+
+        inline bool operator!=(const ArrayList<T> &other)
+        {
+            return (!operator==(other));
+        }
+
         ArrayList<T> operator+(const ArrayList<T> &other) const;
 
         void operator+=(const ArrayList<T> &other);

@@ -119,6 +119,21 @@ TEST(HashMap, Find)
     EXPECT_EQ(++lst.begin(), lst.Find([](bpf::HashMap<int, int>::Iterator it) { return (it->Value == 3); }));
 }
 
+TEST(HashMap, Equal)
+{
+    bpf::HashMap<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 } };
+    bpf::HashMap<int, int> lst1 = { { 0, 0 }, { 1, 3 }, { 2, 7 } };
+    bpf::HashMap<int, int> lst2 = { { 0, 0 }, { 1, 3 } };
+    bpf::HashMap<int, int> lst3 = { { 0, 0 }, { 1, 3 }, { 2, 4 } };
+
+    EXPECT_TRUE(lst == lst1);
+    EXPECT_FALSE(lst != lst1);
+    EXPECT_FALSE(lst == lst2);
+    EXPECT_TRUE(lst != lst2);
+    EXPECT_FALSE(lst == lst3);
+    EXPECT_TRUE(lst != lst3);
+}
+
 TEST(HashMap, Concatenate)
 {
     bpf::HashMap<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 } };

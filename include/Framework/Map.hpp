@@ -174,6 +174,13 @@ namespace bpf
         template <template <typename> class Comparator = bpf::ops::Equal>
         void Remove(const V &value, const bool all = true);
 
+        bool operator==(const Map<K, V, Greater, Less> &other);
+
+        inline bool operator!=(const Map<K, V, Greater, Less> &other)
+        {
+            return (!operator==(other));
+        }
+
         Iterator FindByKey(const K &key);
 
         template <template <typename> class Comparator = bpf::ops::Equal>

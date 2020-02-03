@@ -273,4 +273,17 @@ namespace bpf
         }
         return (Iterator(*_arr, _curid, _curid));
     }
+
+    template <typename T>
+    bool ArrayList<T>::operator==(const ArrayList<T> &other)
+    {
+        if (_curid != other._curid)
+            return (false);
+        for (fsize i = 0; i != _curid; ++i)
+        {
+            if (_arr[i] != other._arr[i])
+                return (false);
+        }
+        return (true);
+    }
 }

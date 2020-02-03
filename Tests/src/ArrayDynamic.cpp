@@ -98,6 +98,21 @@ TEST(ArrayDynamic, Find)
     EXPECT_EQ(++lst.begin(), lst.Find([](bpf::fsize pos, const int &val) { return (val == 3); }));
 }
 
+TEST(ArrayDynamic, Equal)
+{
+    bpf::Array<int> lst = { 0, 3, 7 };
+    bpf::Array<int> lst1 = { 0, 3, 7 };
+    bpf::Array<int> lst2 = { 0, 3 };
+    bpf::Array<int> lst3 = { 0, 3, 4 };
+
+    EXPECT_TRUE(lst == lst1);
+    EXPECT_FALSE(lst != lst1);
+    EXPECT_FALSE(lst == lst2);
+    EXPECT_TRUE(lst != lst2);
+    EXPECT_FALSE(lst == lst3);
+    EXPECT_TRUE(lst != lst3);
+}
+
 TEST(ArrayDynamic, FirstLast_1)
 {
     bpf::Array<int> lst = { 0, 3, 7 };

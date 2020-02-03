@@ -561,4 +561,21 @@ namespace bpf
         }
         return (Iterator(Null, _last));
     }
+
+    template <typename T>
+    bool List<T>::operator==(const List<T> &other)
+    {
+        if (_count != other._count)
+            return (false);
+        Node *cur = _first;
+        Node *cur1 = other._first;
+        while (cur != Null)
+        {
+            if (cur->Data != cur1->Data)
+                return (false);
+            cur = cur->Next;
+            cur1 = cur1->Next;
+        }
+        return (true);
+    }
 }

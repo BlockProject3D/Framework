@@ -105,6 +105,18 @@ TEST(ArrayStatic, Find)
     EXPECT_EQ(++lst.begin(), lst.Find([](bpf::fsize pos, const int &val) { return (val == 3); }));
 }
 
+TEST(ArrayStatic, Equal)
+{
+    bpf::Array<int, 3> lst = { 0, 3, 7 };
+    bpf::Array<int, 3> lst1 = { 0, 3, 7 };
+    bpf::Array<int, 3> lst2 = { 0, 3 };
+
+    EXPECT_TRUE(lst == lst1);
+    EXPECT_FALSE(lst != lst1);
+    EXPECT_FALSE(lst == lst2);
+    EXPECT_TRUE(lst != lst2);
+}
+
 TEST(ArrayStatic, FirstLast_1)
 {
     bpf::Array<int, 3> lst = { 0, 3, 7 };

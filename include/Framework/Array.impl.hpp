@@ -251,4 +251,28 @@ namespace bpf
         }
         return (Iterator(_arr, _size, _size));
     }
+
+    template <typename T>
+    bool Array<T>::operator==(const Array<T> &other)
+    {
+        if (_size != other._size)
+            return (false);
+        for (fsize i = 0 ; i != _size ; ++i)
+        {
+            if (_arr[i] != other._arr[i])
+                return (false);
+        }
+        return (true);
+    }
+
+    template <typename T, fsize I>
+    bool Array<T, I>::operator==(const Array<T, I> &other)
+    {
+        for (fsize i = 0; i != I; ++i)
+        {
+            if (_arr[i] != other._arr[i])
+                return (false);
+        }
+        return (true);
+    }
 }

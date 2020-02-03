@@ -207,6 +207,13 @@ namespace bpf
             return (_arr[id]);
         }
 
+        bool operator==(const Array<T, I> &other);
+
+        inline bool operator!=(const Array<T, I> &other)
+        {
+            return (!operator==(other));
+        }
+
         Iterator FindByKey(const fsize pos);
 
         template <template <typename> class Comparator = bpf::ops::Equal>
@@ -388,6 +395,13 @@ namespace bpf
          * @param newSize the new array size
          */
         void Resize(const fsize newSize);
+
+        bool operator==(const Array<T> &other);
+
+        inline bool operator!=(const Array<T> &other)
+        {
+            return (!operator==(other));
+        }
 
         Iterator FindByKey(const fsize pos);
 

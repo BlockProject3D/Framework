@@ -109,6 +109,21 @@ TEST(List, Find)
     EXPECT_EQ(++lst.begin(), lst.Find([](bpf::fsize pos, const int &val) { return (val == 3); }));
 }
 
+TEST(List, Equal)
+{
+    bpf::List<int> lst = { 0, 3, 7 };
+    bpf::List<int> lst1 = { 0, 3, 7 };
+    bpf::List<int> lst2 = { 0, 3 };
+    bpf::List<int> lst3 = { 0, 3, 4 };
+
+    EXPECT_TRUE(lst == lst1);
+    EXPECT_FALSE(lst != lst1);
+    EXPECT_FALSE(lst == lst2);
+    EXPECT_TRUE(lst != lst2);
+    EXPECT_FALSE(lst == lst3);
+    EXPECT_TRUE(lst != lst3);
+}
+
 TEST(List, Concatenate)
 {
     bpf::List<int> lst = { 0, 3, 7 };

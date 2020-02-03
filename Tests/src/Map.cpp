@@ -139,6 +139,29 @@ TEST(Map, Find)
     EXPECT_EQ(++lst.begin(), lst.Find([](const bpf::Map<int, int>::Node &nd) { return (1 - nd.KeyVal.Key); }));
 }
 
+TEST(Map, FindMinMax)
+{
+    bpf::Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 } };
+
+    EXPECT_EQ(lst.FindMin()->Key, 0);
+    EXPECT_EQ(lst.FindMax()->Key, 2);
+}
+
+TEST(Map, Equal)
+{
+    bpf::Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 } };
+    bpf::Map<int, int> lst1 = { { 0, 0 }, { 1, 3 }, { 2, 7 } };
+    bpf::Map<int, int> lst2 = { { 0, 0 }, { 1, 3 } };
+    bpf::Map<int, int> lst3 = { { 0, 0 }, { 1, 3 }, { 2, 4 } };
+
+    EXPECT_TRUE(lst == lst1);
+    EXPECT_FALSE(lst != lst1);
+    EXPECT_FALSE(lst == lst2);
+    EXPECT_TRUE(lst != lst2);
+    EXPECT_FALSE(lst == lst3);
+    EXPECT_TRUE(lst != lst3);
+}
+
 TEST(Map, Concatenate)
 {
     bpf::Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 } };

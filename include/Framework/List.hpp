@@ -204,6 +204,13 @@ namespace bpf
 
         void operator+=(const List<T> &other);
 
+        bool operator==(const List<T> &other);
+
+        inline bool operator!=(const List<T> &other)
+        {
+            return (!operator==(other));
+        }
+
         /**
          * Removes an element at specified position in the list
          * @param pos the position of the element
