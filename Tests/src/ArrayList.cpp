@@ -143,14 +143,14 @@ TEST(ArrayList, Equal)
 
 TEST(ArrayList, Concatenate)
 {
-    bpf::ArrayList<int> lst = { 0, 3, 7 };
-    bpf::ArrayList<int> lst1 = { 0, 3, 7 };
+    bpf::ArrayList<int> lst = { 0, 3, 7, 4 };
+    bpf::ArrayList<int> lst1 = { 0, 3, 7, 4, 8 };
 
     auto concatenated = lst + lst1;
-    EXPECT_STREQ(*bpf::String::ValueOf(concatenated), "[0, 3, 7, 0, 3, 7]");
+    EXPECT_STREQ(*bpf::String::ValueOf(concatenated), "[0, 3, 7, 4, 0, 3, 7, 4, 8]");
     lst1 += lst;
-    EXPECT_STREQ(*bpf::String::ValueOf(lst1), "[0, 3, 7, 0, 3, 7]");
-    EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 3, 7]");
+    EXPECT_STREQ(*bpf::String::ValueOf(lst1), "[0, 3, 7, 4, 8, 0, 3, 7, 4]");
+    EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 3, 7, 4]");
 }
 
 TEST(ArrayList, FirstLast_1)
