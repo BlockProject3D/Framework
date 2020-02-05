@@ -91,6 +91,10 @@ TEST(HashMap, Indexer)
     EXPECT_EQ(lst[0], 0);
     EXPECT_EQ(lst[1], 3);
     EXPECT_EQ(lst[2], 7);
+    const auto &lst1 = lst;
+    EXPECT_THROW(lst1[-1], bpf::IndexException);
+    lst[-1] = 42;
+    EXPECT_EQ(lst1[-1], 42);
 }
 
 TEST(HashMap, FindByKey)
@@ -117,6 +121,7 @@ TEST(HashMap, Find)
     bpf::HashMap<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 } };
 
     EXPECT_EQ(++lst.begin(), lst.Find([](bpf::HashMap<int, int>::Iterator it) { return (it->Value == 3); }));
+    EXPECT_EQ(lst.end(), lst.Find([](bpf::HashMap<int, int>::Iterator it) { return (it->Value == 42); }));
 }
 
 TEST(HashMap, Equal)
@@ -203,7 +208,7 @@ TEST(HashMap, Remove)
     EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'2': 7}");
 }
 
-TEST(HashMap, RemoveAt)
+TEST(HashMap, RemoveAt_1)
 {
     bpf::HashMap<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
 
@@ -215,6 +220,26 @@ TEST(HashMap, RemoveAt)
     lst.RemoveAt(it);
     EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'3': 0}");
     EXPECT_NE(it, lst.end());
+    lst.RemoveAt(--lst.end());
+    EXPECT_STREQ(*bpf::String::ValueOf(lst), "{}");
+    lst = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
+    lst.RemoveAt(--(--lst.end()));
+    EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'0': 0, '1': 3, '3': 0}");
+    lst.RemoveAt(lst.end());
+    EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'0': 0, '1': 3, '3': 0}");
+}
+
+TEST(HashMap, RemoveAt_2)
+{
+    bpf::HashMap<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
+
+    lst.RemoveAt(2);
+    EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'0': 0, '1': 3, '3': 0}");
+    lst.RemoveAt(++lst.begin());
+    EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'0': 0, '3': 0}");
+    lst.RemoveAt(lst.begin());
+    EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'3': 0}");
+    EXPECT_NE(lst.begin(), lst.end());
     lst.RemoveAt(--lst.end());
     EXPECT_STREQ(*bpf::String::ValueOf(lst), "{}");
     lst = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };

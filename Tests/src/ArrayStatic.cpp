@@ -103,6 +103,7 @@ TEST(ArrayStatic, Find)
     bpf::Array<int, 3> lst = { 0, 3, 7 };
 
     EXPECT_EQ(++lst.begin(), lst.Find([](bpf::fsize pos, const int &val) { return (val == 3); }));
+    EXPECT_EQ(lst.end(), lst.Find([](bpf::fsize pos, const int &val) { return (val == 42); }));
 }
 
 TEST(ArrayStatic, Equal)

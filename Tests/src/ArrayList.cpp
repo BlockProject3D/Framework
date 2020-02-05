@@ -123,6 +123,7 @@ TEST(ArrayList, Find)
     bpf::ArrayList<int> lst = { 0, 3, 7 };
 
     EXPECT_EQ(++lst.begin(), lst.Find([](bpf::fsize pos, const int &val) { return (val == 3); }));
+    EXPECT_EQ(lst.end(), lst.Find([](bpf::fsize pos, const int &val) { return (val == 42); }));
 }
 
 TEST(ArrayList, Equal)

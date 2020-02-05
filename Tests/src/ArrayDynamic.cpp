@@ -96,6 +96,7 @@ TEST(ArrayDynamic, Find)
     bpf::Array<int> lst = { 0, 3, 7 };
 
     EXPECT_EQ(++lst.begin(), lst.Find([](bpf::fsize pos, const int &val) { return (val == 3); }));
+    EXPECT_EQ(lst.end(), lst.Find([](bpf::fsize pos, const int &val) { return (val == 42); }));
 }
 
 TEST(ArrayDynamic, Equal)
