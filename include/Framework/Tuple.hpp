@@ -88,13 +88,13 @@ namespace bpf
             Arg arg;
 
         public:
-			inline Elem()
-			{
-			}
+            inline Elem()
+            {
+            }
 
-			inline Elem(Arg &&a) : arg(std::forward<Arg>(a))
-			{
-			}
+            explicit inline Elem(Arg &&a) : arg(std::forward<Arg>(a))
+            {
+            }
 
             inline Arg &Get()
             {
@@ -117,13 +117,13 @@ namespace bpf
             template <fsize I>
             using ElemType = typename Chooser<I, Args...>::type;
 
-			inline Impl() : Elem<N, Args>()...
-			{
-			}
+            inline Impl() : Elem<N, Args>()...
+            {
+            }
 
-			inline Impl(Args &&... args) : Elem<N, Args>(std::forward<Args &&>(args))...
-			{
-			}
+            explicit inline Impl(Args &&... args) : Elem<N, Args>(std::forward<Args &&>(args))...
+            {
+            }
 
             template <fsize I>
             inline ElemType<I> &Get()
@@ -156,15 +156,15 @@ namespace bpf
         typename __internal_tp::Range<0, sizeof...(Args), __internal_tp::Sizes<>>::type, Args...>
     {
     public:
-		inline Tuple() : __internal_tp::Impl<
-			typename __internal_tp::Range<0, sizeof...(Args), __internal_tp::Sizes<>>::type, Args...>()
-		{
-		}
+        inline Tuple()
+            : __internal_tp::Impl<typename __internal_tp::Range<0, sizeof...(Args), __internal_tp::Sizes<>>::type, Args...>()
+        {
+        }
 
-		inline Tuple(Args &&... args) : __internal_tp::Impl<
-			typename __internal_tp::Range<0, sizeof...(Args), __internal_tp::Sizes<>>::type, Args...>(std::forward<Args &&>(args)...)
-		{
-		}
+        explicit inline Tuple(Args &&... args)
+            : __internal_tp::Impl<typename __internal_tp::Range<0, sizeof...(Args), __internal_tp::Sizes<>>::type, Args...>(std::forward<Args &&>(args)...)
+        {
+        }
 
         constexpr fsize Size() const
         {
