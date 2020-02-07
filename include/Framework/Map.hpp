@@ -225,7 +225,7 @@ namespace bpf
 
         inline Iterator begin() const
         {
-            return (Iterator(_root, (Node *)1));
+            return (Iterator(_root, reinterpret_cast<Node *>(1)));
         }
         inline Iterator end() const
         {
@@ -234,7 +234,7 @@ namespace bpf
 
         inline ReverseIterator rbegin() const
         {
-            return (ReverseIterator(_root, (Node *)1));
+            return (ReverseIterator(_root, reinterpret_cast<Node *>(1)));
         }
         inline ReverseIterator rend() const
         {

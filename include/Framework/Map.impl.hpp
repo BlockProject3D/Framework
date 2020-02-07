@@ -33,7 +33,7 @@ namespace bpf
         : _root(root)
     {
         ResetIterator();
-        if (start != (Node *)1)
+        if (start != reinterpret_cast<Node *>(1))
         {
             while (_curNode != start)
                 operator++();
@@ -102,7 +102,7 @@ namespace bpf
         : _root(root)
     {
         ResetIterator();
-        if (start != (Node *)1)
+        if (start != reinterpret_cast<Node *>(1))
         {
             while (_curNode != start)
                 operator++();
