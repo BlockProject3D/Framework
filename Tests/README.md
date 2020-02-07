@@ -1,11 +1,11 @@
 # BPF.Tests
 Framework test tool
 
-This repository contains unit tests using Google Test.
+This repository contains unit tests using Google Test.  
 The application is used to test reliability and usability of BlockProject Framework.
 
 ## Building
-Requirements :
+Requirements:
 -   CMake for every platforms
 -   Visual Studio 2015/2017 for windows builds
 -   GCC or Clang for Linux and Mac builds
@@ -32,7 +32,7 @@ Requirements :
 -   Copy the dylib/so/dll of the Framework binary inside of ${CMAKE_CURRENT_BINARY_DIR}/<target type either Debug or Release>
 
 ### Windows
-This is a console based application, consider running it from inside of PowerShell, GitBash or CMD
+This is a console based application, consider running it from inside of PowerShell, GitBash or CMD.
 
 ### Linux / Mac
-This is a console based application, consider running it from inside of your favorite Terminal Emulator
+This is a console based application, consider running it from inside of your favorite Terminal Emulator.
