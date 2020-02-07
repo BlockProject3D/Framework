@@ -1,4 +1,4 @@
-set(BP_PLATFORM_DEF "MAC")
+#set(BP_PLATFORM_DEF "MAC")
 set(BP_SYMBOL_IMPORT_MACRO "__attribute__((visibility(\"default\")))")
 set(BP_SYMBOL_EXPORT_MACRO ${BP_SYMBOL_IMPORT_MACRO})
 set(BP_EXTENSION_DYNAMIC ".dylib")
@@ -7,6 +7,8 @@ set(BP_EXTENSION_LIB ".dylib")
 set(BP_LIBRARY_PREFIX "lib")
 
 function(bp_target_created name)
+    target_compile_definitions(${name} PRIVATE "MAC")
+
     get_target_property(target_type ${name} TYPE)
     if (target_type STREQUAL "EXECUTABLE")
         set_target_properties(${name} PROPERTIES

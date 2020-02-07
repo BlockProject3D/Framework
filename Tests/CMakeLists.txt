@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.10)
-project(TestProgFramework)
+project(BPF.Tests)
 
-include("${CMAKE_CURRENT_SOURCE_DIR}/../CMakes/Framework.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/../CMakes/Program.cmake")
 
 configure_file(CMakeLists.in.txt googletest-download/CMakeLists.txt)
 execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
     RESULT_VARIABLE result
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download)
 if (result)
     message(FATAL_ERROR "CMake step for googletest failed: ${result}")
 endif (result)

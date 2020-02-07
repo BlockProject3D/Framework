@@ -74,7 +74,7 @@ macro(bp_setup_target name mainincdir)
     #set(BP_NAME ${name})
     target_include_directories(${name} PRIVATE ${mainincdir})
     #target_include_directories(${name} PRIVATE ${BP_INCLUDES})
-    target_compile_definitions(${name} PRIVATE ${BP_PLATFORM_DEF})
+    #target_compile_definitions(${name} PRIVATE ${BP_PLATFORM_DEF})
     if (COVERAGE)
         target_compile_options(${name}
             PRIVATE
