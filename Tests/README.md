@@ -1,7 +1,8 @@
-# TestProgFramework
-Framework test environment
+# BPF.Tests
+Framework test tool
 
-This repository contains unit tests, with the help of the Google Test library, used to test reliability and usability of the BlockProject 3D Framework.
+This repository contains unit tests using Google Test.
+The application is used to test reliability and usability of BlockProject Framework.
 
 ## Building
 Requirements :
@@ -9,27 +10,25 @@ Requirements :
   - Visual Studio 2015/2017 for windows builds
   - GCC or Clang for Linux and Mac builds
   - C++11 compliant compiler
-  - Already built Framework Debug and/or Release binarries under \<this repository folder\>/../FrameworkRemake.
-	The directory name is important due to the hardcoded CMake include in this repository.
+  - Already built Framework Debug and/or Release binarries under \<this repository folder\>/../.
 
 ### Windows
 Under GitBash / PowerShell
   - mkdir build
   - cd build
   - cmake -G "Visual Studio 15 Win64" ..
-  - Open Visual Studio and build from there (for some reasons cmake -build . prefers to build GTest instead of the application) or run MSBuild
+  - cmake --build .
 
 ### Linux / Mac
 Under bash / other shells
   - mkdir build
   - cd build
   - cmake -G "Unix Makefiles" ..
-  - make (for some reasons cmake -build . prefers to build GTest instead of the application)
+  - cmake --build .
 
 ## Running
 Requirements :
-  - Already built Framework Debug and/or Release binarries under \<this repository folder\>/../FrameworkRemake.
-	The directory name is important due to the hardcoded CMake include in this repository
+  - Already built Framework Debug and/or Release binarries under \<this repository folder\>/../.
   - Copy the dylib/so/dll of the Framework binary inside of ${CMAKE_CURRENT_BINARY_DIR}/<target type either Debug or Release>
 
 ### Windows
