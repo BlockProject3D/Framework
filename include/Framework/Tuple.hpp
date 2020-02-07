@@ -27,6 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/Types.hpp"
 
 namespace bpf
 {
@@ -87,6 +88,14 @@ namespace bpf
             Arg arg;
 
         public:
+            inline Elem()
+            {
+            }
+
+            explicit inline Elem(Arg &&a) : arg(std::forward<Arg>(a))
+            {
+            }
+
             inline Arg &Get()
             {
                 return (arg);
@@ -107,6 +116,14 @@ namespace bpf
         public:
             template <fsize I>
             using ElemType = typename Chooser<I, Args...>::type;
+
+            inline Impl() : Elem<N, Args>()...
+            {
+            }
+
+            explicit inline Impl(Args &&... args) : Elem<N, Args>(std::forward<Args &&>(args))...
+            {
+            }
 
             template <fsize I>
             inline ElemType<I> &Get()
@@ -139,6 +156,16 @@ namespace bpf
         typename __internal_tp::Range<0, sizeof...(Args), __internal_tp::Sizes<>>::type, Args...>
     {
     public:
+        inline Tuple()
+            : __internal_tp::Impl<typename __internal_tp::Range<0, sizeof...(Args), __internal_tp::Sizes<>>::type, Args...>()
+        {
+        }
+
+        explicit inline Tuple(Args &&... args)
+            : __internal_tp::Impl<typename __internal_tp::Range<0, sizeof...(Args), __internal_tp::Sizes<>>::type, Args...>(std::forward<Args &&>(args)...)
+        {
+        }
+
         constexpr fsize Size() const
         {
             return (sizeof...(Args));

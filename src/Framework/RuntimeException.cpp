@@ -31,7 +31,7 @@
 using namespace bpf;
 
 RuntimeException::RuntimeException(const String &type, const String &message) noexcept
-    : Type(type + "Exception"), Message(message)
+    : _type(type + "Exception"), _message(message)
 {
 }
 

@@ -26,82 +26,50 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <cassert>
-#include <iostream>
-#include <gtest/gtest.h>
-#include <Framework/String.hpp>
-#include <Framework/Array.hpp>
-#include <Framework/Memory/Memory.hpp>
+#pragma once
+#include "Framework/Types.hpp"
+#include "Framework/Exception.hpp"
 
-TEST(Array, Init)
+namespace bpf
 {
-	auto arr = bpf::Array<int>(3);
+    class BPF_API StackOverflowException final : public Exception
+    {
+    private:
+        fisize _size;
 
-	arr[0] = 1;
-	arr[1] = 3;
-	arr[2] = 6;
-	EXPECT_EQ(arr[0], 1);
-	EXPECT_EQ(arr[1], 3);
-	EXPECT_EQ(arr[2], 6);
-}
+    public:
+        explicit inline StackOverflowException(const fisize size) noexcept
+            : Exception()
+            , _size(size)
+        {
+        }
 
-TEST(Array, Realloc)
-{
-	auto arr = bpf::Array<int>(3);
+        fisize Size() const noexcept
+        {
+            return (_size);
+        }
 
-	arr[0] = 1;
-	arr[1] = 3;
-	arr[2] = 6;
-	arr[3] = 100;
-	EXPECT_EQ(arr[0], 1);
-	EXPECT_EQ(arr[1], 3);
-	EXPECT_EQ(arr[2], 6);
-	EXPECT_EQ(arr[3], 100);
-}
+        const char *Type() const noexcept
+        {
+            return ("StackOverflow");
+        }
 
-TEST(Array, ReallocForbidThrow)
-{
-	auto arr = bpf::Array<int>(3);
-	const auto &test = arr;
+        //void Log(Framework::FLogger &logger) const;
+    };
 
-	arr[0] = 1;
-	arr[1] = 3;
-	arr[2] = 6;
-	EXPECT_EQ(arr[0], 1);
-	EXPECT_EQ(arr[1], 3);
-	EXPECT_EQ(arr[2], 6);
+	class BPF_API StackUnderflowException final : public Exception
+	{
+	public:
+		explicit inline StackUnderflowException() noexcept
+			: Exception()
+		{
+		}
 
-	EXPECT_THROW(test[3], bpf::IndexException);
-}
+		const char *Type() const noexcept
+		{
+			return ("StackUnderflow");
+		}
 
-TEST(Array, ReadWrite_NonCopy)
-{
-    bpf::Array<bpf::UniquePtr<int>> arr;
-    arr[0] = bpf::MakeUnique<int>(32);
-    arr[1] = bpf::MakeUnique<int>(42);
-    EXPECT_EQ(*arr[0], 32);
-    EXPECT_EQ(*arr[1], 42);
-    *arr[0] = 42;
-    for (auto &it : arr)
-        EXPECT_EQ(*it, 42);
-}
-
-static void Test_ReadWrite_NonCopy_MemLeak()
-{
-    bpf::Array<bpf::UniquePtr<int>> arr;
-    arr[0] = bpf::MakeUnique<int>(32);
-    arr[1] = bpf::MakeUnique<int>(42);
-    EXPECT_EQ(*arr[0], 32);
-    EXPECT_EQ(*arr[1], 42);
-    *arr[0] = 42;
-    for (auto &it : arr)
-        EXPECT_EQ(*it, 42);
-}
-
-TEST(Array, ReadWrite_NonCopy_MemLeak)
-{
-    bpf::fsize cur = bpf::Memory::GetAllocCount();
-
-    Test_ReadWrite_NonCopy_MemLeak();
-    EXPECT_EQ(cur, bpf::Memory::GetAllocCount());
+		//void Log(Framework::FLogger &logger) const;
+	};
 }

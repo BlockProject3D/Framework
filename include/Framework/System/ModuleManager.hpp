@@ -32,7 +32,7 @@
 #include <map>
 #include "Framework/System/Module.hpp"
 #include "Framework/System/IModuleInterface.hpp"
-#include "Framework/Map.hpp"
+#include "Framework/HashMap.hpp"
 #include "Framework/List.hpp"
 
 # ifdef WINDOWS
@@ -83,7 +83,7 @@ namespace bpf
     {
     private:
         bpf::List<ModuleEntry *> ModuleList;
-        bpf::Map<const char *, ModuleEntry *> ModuleMap;
+        bpf::HashMap<const char *, ModuleEntry *> ModuleMap;
 
         void UnloadModule(ModuleEntry *entry);
     public:

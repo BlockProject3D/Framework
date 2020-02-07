@@ -33,6 +33,7 @@
 #include "Framework/EvalException.hpp"
 #include "Framework/IndexException.hpp"
 #include "Framework/BinUtils.hpp"
+#include "Framework/ArrayList.hpp"
 
 using namespace bpf;
 
@@ -489,9 +490,8 @@ bool String::IsNumeric() const
 
 Array<String> String::Explode(const char c) const
 {
-    Array<String> l;
-	int k = 0;
     String cur;
+	ArrayList<String> l;
 
     for (fsize i = 0 ; i < StrLen ; i++)
     {
@@ -499,21 +499,20 @@ Array<String> String::Explode(const char c) const
             cur += Data[i];
         else if (cur != String::Empty)
         {
-            l[k++] = cur;
+            l.Add(cur);
             cur = String::Empty;
         }
     }
     if (cur != String::Empty)
-		l[k++] = cur;
-    return (l);
+		l.Add(cur);
+    return (l.ToArray());
 }
 
 Array<String> String::ExplodeIgnore(const char c, const char ignore) const
 {
     String cur;
-	fsize k = 0;
     bool ign = false;
-	Array<String> l;
+	ArrayList<String> l;
 
     for (fsize i = 0 ; i < StrLen ; i++)
     {
@@ -523,20 +522,19 @@ Array<String> String::ExplodeIgnore(const char c, const char ignore) const
             cur += Data[i];
         else if (cur != String::Empty)
         {
-            l[k++] = cur;
+            l.Add(cur);
             cur = String::Empty;
         }
     }
     if (cur != String::Empty)
-		l[k++] = cur;
-    return (l);
+		l.Add(cur);
+    return (l.ToArray());
 }
 
 Array<String> String::Explode(const String &str) const
 {
     String cur;
-	fsize k = 0;
-    Array<String> l;
+    ArrayList<String> l;
 
     for (fsize i = 0 ; i < StrLen ; ++i)
     {
@@ -544,21 +542,20 @@ Array<String> String::Explode(const String &str) const
             cur += Data[i];
         else if (cur != String::Empty && my_strstr(str.Data, Data + i))
         {
-			l[k++] = cur;
+			l.Add(cur);
             cur = String::Empty;
         }
     }
     if (cur != String::Empty)
-		l[k++] = cur;
-    return (l);
+		l.Add(cur);
+    return (l.ToArray());
 }
 
 Array<String> String::ExplodeIgnore(const String &str, const String &ignore) const
 {
     String cur;
-	fsize k = 0;
     bool ign = false;
-	Array<String> l;
+	ArrayList<String> l;
 
     for (fsize i = 0 ; i < StrLen ; ++i)
     {
@@ -568,20 +565,19 @@ Array<String> String::ExplodeIgnore(const String &str, const String &ignore) con
             cur += Data[i];
         else if (cur != String::Empty && my_strstr(str.Data, Data + i))
         {
-			l[k++] = cur;
+			l.Add(cur);
             cur = String::Empty;
         }
     }
     if (cur != String::Empty)
-		l[k++] = cur;
-    return (l);
+		l.Add(cur);
+    return (l.ToArray());
 }
 
 Array<String> String::ExplodeOr(const String &str) const
 {
     String cur;
-	fsize k = 0;
-	Array<String> l;
+	ArrayList<String> l;
 
     for (fsize i = 0; i < StrLen; i++)
     {
@@ -589,13 +585,13 @@ Array<String> String::ExplodeOr(const String &str) const
             cur += Data[i];
         else if (cur != String::Empty)
         {
-			l[k++] = cur;
+			l.Add(cur);
             cur = String::Empty;
         }
     }
     if (cur != String::Empty)
-		l[k++] = cur;
-    return (l);
+		l.Add(cur);
+    return (l.ToArray());
 }
 
 bool String::StartsWith(const String &other) const

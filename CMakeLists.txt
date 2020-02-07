@@ -86,6 +86,8 @@ set(SOURCES
     ./include/Framework/Iterator.hpp
     ./include/Framework/List.hpp
     ./include/Framework/List.impl.hpp
+    ./include/Framework/HashMap.hpp
+    ./include/Framework/HashMap.impl.hpp
     ./include/Framework/Map.hpp
     ./include/Framework/Map.impl.hpp
     ./include/Framework/Object.hpp
@@ -98,9 +100,15 @@ set(SOURCES
     ./include/Framework/Exception.hpp
     ./include/Framework/RuntimeException.hpp
     ./include/Framework/IndexException.hpp
+    ./include/Framework/StackException.hpp
     ./include/Framework/EvalException.hpp
     ./include/Framework/Stack.hpp
     ./include/Framework/Stack.impl.hpp
+    ./include/Framework/Queue.hpp
+    ./include/Framework/Queue.impl.hpp
+    ./include/Framework/PriorityQueue.hpp
+    ./include/Framework/PriorityQueue.impl.hpp
+    ./include/Framework/ContainerUtilities.hpp
     ./include/Framework/String.hpp
     ./include/Framework/MathEval.hpp
     ./include/Framework/MathEval.impl.hpp

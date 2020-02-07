@@ -42,9 +42,15 @@ set(SOURCES
     src/Quaternion.cpp
     src/List.cpp
     src/ArrayList.cpp
+    src/HashMap.cpp
     src/Map.cpp
-    src/Array.cpp
+    src/ArrayDynamic.cpp
+    src/ArrayStatic.cpp
     src/BaseConvert.cpp
+    src/Tuple.cpp
+    src/Stack.cpp
+    src/Queue.cpp
+    src/PriorityQueue.cpp
 )
 
 bp_setup_program(${PROJECT_NAME} include)

@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -42,11 +42,11 @@ namespace bpf
     private:
         char *Data;
         fsize StrLen;
-		fsize UnicodeLen;
+        fsize UnicodeLen;
 
         void CopyString(const char *src, char *dest, const fsize len) const;
-		fsize CalcUnicodeLen(const char *str, const fsize len) const;
-		fsize CalcStartFromUnicode(const fsize start) const;
+        fsize CalcUnicodeLen(const char *str, const fsize len) const;
+        fsize CalcStartFromUnicode(const fsize start) const;
         static uint8 CalcCharIncrement(const char c);
         void MakeSized(String &str, const fsize len) const;
     public:
@@ -54,10 +54,10 @@ namespace bpf
         class Stringifier
         {
         public:
-			inline static String Stringify(const T& obj)
-			{
-				return (obj);
-			}
+            inline static String Stringify(const T &obj)
+            {
+                return (obj);
+            }
         };
 
         /**
@@ -122,7 +122,7 @@ namespace bpf
          * Returns a new string from concatenation of this + other
          */
         String operator+(const fchar other) const;
-        
+
         /**
          * Appends a string at the end of this string
          */
@@ -203,9 +203,9 @@ namespace bpf
          * Returns the number of characters in this string
          */
         inline fisize Len() const
-	{
-	    return (UnicodeLen);
-	}
+        {
+            return (UnicodeLen);
+        }
 
         /**
          * Returns the size in bytes of this string
@@ -232,46 +232,46 @@ namespace bpf
          */
         String ToLower() const;
 
-		/**
-		 * Returns a copy of this string reversed
-		 */
-		String Reverse() const;
+        /**
+         * Returns a copy of this string reversed
+         */
+        String Reverse() const;
 
         /**
          * Returns the index of the first occurence of str in this
          */
-		fisize IndexOf(const String &str) const;
+        fisize IndexOf(const String &str) const;
 
         /**
          * Returns the index of the last occurence of str in this
          */
-		fisize LastIndexOf(const String &str) const;
+        fisize LastIndexOf(const String &str) const;
 
         /**
          * Returns the index of the first occurence of c in this
          */
-		fisize IndexOf(const char c) const;
+        fisize IndexOf(const char c) const;
 
         /**
          * Returns the index of the last occurence of c in this
          */
-		fisize LastIndexOf(const char c) const;
+        fisize LastIndexOf(const char c) const;
 
-		/**
-		 * Returns the index of the first occurence of c in this
-		 */
-		inline fisize IndexOf(const fchar c) const
-		{
-			return (IndexOf(UTF8(c)));
-		}
+        /**
+         * Returns the index of the first occurence of c in this
+         */
+        inline fisize IndexOf(const fchar c) const
+        {
+            return (IndexOf(UTF8(c)));
+        }
 
-		/**
-		 * Returns the index of the last occurence of c in this
-		 */
-		inline fisize LastIndexOf(const fchar c) const
-		{
-			return (LastIndexOf(UTF8(c)));
-		}
+        /**
+         * Returns the index of the last occurence of c in this
+         */
+        inline fisize LastIndexOf(const fchar c) const
+        {
+            return (LastIndexOf(UTF8(c)));
+        }
 
         /**
          * Splits this string using a delimiter
@@ -358,10 +358,10 @@ namespace bpf
          * @param format the given format
          */
         template <typename ...Args>
-        inline static String Format(const String &format, Args&&...)
-      	{
+        inline static String Format(const String &format, Args &&...)
+        {
             return (format);
-      	}
+        }
 
         //TODO : Add precision support
         //TODO : Add support for center alignment
@@ -372,12 +372,12 @@ namespace bpf
          * @param format the given format
          */
         template <typename T, typename ...Args>
-        static String Format(const String &format, T &&t, Args&&... args)
+        static String Format(const String &format, T &&t, Args &&... args)
         {
             String res;
 
             fisize i = format.IndexOf('[');
-			fisize j = format.IndexOf(']');
+            fisize j = format.IndexOf(']');
             if (i > -1 && j > -1 && format.Sub(i - 1, i) != "\\")
             {
                 res += format.Sub(0, i);
@@ -393,8 +393,8 @@ namespace bpf
                     data = data.Sub(0, maxn);
                 else if (data.Len() < maxn)
                 {
-					fisize remain = maxn - data.Len();
-                    for (int k = 0 ; k < remain ; ++k)
+                    fisize remain = maxn - data.Len();
+                    for (int k = 0; k < remain; ++k)
                     {
                         if (left)
                             data += leading;
@@ -430,42 +430,42 @@ namespace bpf
         {
             return (ValueOf((void *)val));
         }
-        
+
         /**
          * Converts a signed integer 32 bits to it's string representation
          */
         static String ValueOf(fint i);
-        
+
         /**
          * Converts an unsigned integer 32 bits to it's string representation
          */
         static String ValueOf(uint32 i);
-        
+
         /**
          * Converts an unsigned integer 64 bits to it's string representation
          */
         static String ValueOf(uint64 i);
-        
+
         /**
          * Converts a signed integer 64 bits to it's string representation
          */
         static String ValueOf(int64 i);
-        
+
         /**
          * Converts a float to it's string representation
          */
         static String ValueOf(float f);
-        
+
         /**
          * Converts a double to it's string representation
          */
         static String ValueOf(double d);
-        
+
         /**
          * Converts a raw pointer to it's string representation
          */
         static String ValueOf(void *ptr);
-        
+
         /**
          * Converts a signed integer 8 bits to it's string representation
          */
@@ -473,7 +473,7 @@ namespace bpf
         {
             return (ValueOf(static_cast<int>(i)));
         }
-        
+
         /**
          * Converts an unsigned integer 8 bits to it's string representation
          */
@@ -481,7 +481,7 @@ namespace bpf
         {
             return (ValueOf(static_cast<int>(i)));
         }
-        
+
         /**
          * Converts a signed integer 16 bits to it's string representation
          */
@@ -489,7 +489,7 @@ namespace bpf
         {
             return (ValueOf(static_cast<int>(i)));
         }
-        
+
         /**
          * Converts an unsigned integer 16 bits to it's string representation
          */
@@ -497,7 +497,7 @@ namespace bpf
         {
             return (ValueOf(static_cast<int>(i)));
         }
-        
+
         /**
          * Converts a low-level C string to a high level string
          */
