@@ -474,7 +474,7 @@ namespace bpf
                     _root = _root->Right;
                 parent = _root;
             }
-            if (node->Parent->Left == node)
+            else if (node->Parent->Left == node)
             {
                 if (node->Left != Null)
                 {
