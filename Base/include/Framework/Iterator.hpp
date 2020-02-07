@@ -26,8 +26,7 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef ITERATOR_H_
-# define ITERATOR_H_
+#pragma once
 
 namespace bpf
 {
@@ -41,8 +40,8 @@ namespace bpf
     {
     public:
         virtual ~IIterator() {}
-        virtual void operator++() = 0;
-        virtual void operator--() = 0;
+        virtual IIterator &operator++() = 0;
+        virtual IIterator &operator--() = 0;
         virtual const T &operator*() const = 0;
         virtual const T *operator->() const = 0;
         virtual bool operator==(const C &other) const = 0;
@@ -76,5 +75,3 @@ namespace bpf
         return (ReverseAdapter<C>(container));
     }
 };
-
-#endif /* !ITERATOR_H_ */

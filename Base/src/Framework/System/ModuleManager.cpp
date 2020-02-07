@@ -75,6 +75,6 @@ void ModuleManager::UnloadModule(const char *vname)
         return;
     ModuleEntry *md = ModuleMap[vname];
     ModuleList.Remove(md);
-    ModuleMap.Remove(vname);
+    ModuleMap.RemoveAt(vname);
     UnloadModule(md);
 }

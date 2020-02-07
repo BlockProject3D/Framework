@@ -44,12 +44,12 @@ namespace bpf
         {
         }
 
-        fisize GetID() const noexcept
+        fisize Id() const noexcept
         {
             return (ID);
         }
 
-        const char *GetType() const noexcept
+        const char *Type() const noexcept
         {
             return ("Index");
         }

@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2019, BlockProject
 //
 // All rights reserved.
 //
@@ -27,17 +27,64 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Exception.hpp"
 
 namespace bpf
 {
-    class BPF_API MemoryException final : public Exception
+    namespace ops
     {
-    public:
-        inline MemoryException() {}
-        inline const char *Type() const noexcept override
+        template <typename T>
+        class Less
         {
-            return ("Memory");
-        }
-    };
-}
+        public:
+            inline static bool Eval(const T &a, const T &b)
+            {
+                return (a < b);
+            }
+        };
+
+        template <typename T>
+        class Greater
+        {
+        public:
+            inline static bool Eval(const T &a, const T &b)
+            {
+                return (a > b);
+            }
+        };
+
+        template <typename T>
+        class LessOrEqual
+        {
+        public:
+            inline static bool Eval(const T &a, const T &b)
+            {
+                return (a <= b);
+            }
+        };
+
+        template <typename T>
+        class GreaterOrEqual
+        {
+        public:
+            inline static bool Eval(const T &a, const T &b)
+            {
+                return (a >= b);
+            }
+        };
+
+        template <typename T>
+        class Equal
+        {
+        public:
+            inline static bool Eval(const T &a, const T &b)
+            {
+                return (a == b);
+            }
+        };
+    }
+
+    template <typename T>
+    using MinHeap = ops::LessOrEqual<T>;
+    template <typename T>
+    using MaxHeap = ops::GreaterOrEqual<T>;
+};

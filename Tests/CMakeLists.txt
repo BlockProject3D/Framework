@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.10)
-project(TestProgFramework)
+project(BPF.Tests)
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/../CMakes/Program.cmake")
 
 configure_file(CMakeLists.in.txt googletest-download/CMakeLists.txt)
 execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
     RESULT_VARIABLE result
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download)
 if (result)
     message(FATAL_ERROR "CMake step for googletest failed: ${result}")
 endif (result)
@@ -42,9 +42,15 @@ set(SOURCES
     src/Quaternion.cpp
     src/List.cpp
     src/ArrayList.cpp
+    src/HashMap.cpp
     src/Map.cpp
-    src/Array.cpp
+    src/ArrayDynamic.cpp
+    src/ArrayStatic.cpp
     src/BaseConvert.cpp
+    src/Tuple.cpp
+    src/Stack.cpp
+    src/Queue.cpp
+    src/PriorityQueue.cpp
 )
 
 bp_setup_program(${PROJECT_NAME} include)

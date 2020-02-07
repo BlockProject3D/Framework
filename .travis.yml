@@ -47,9 +47,8 @@ jobs:
       env:
         - BP_CP_CMD="cp build/Debug/libBPFramework.so Tests/build/Debug/"
         - BP_TEST_RUN_CMD="./Debug/TestProgFramework"
-        - secure: "rCtaFMlu/gCpq8wdzSHmsDk0j6tu/vuBtnlR4pAX0CT9GGT/0Vy9ucATTAkrwIkdWe6gIavwMbOw/In190ABwDdnccKfnZZGVjowq4CWYn+nPdTm6N5AZl4K22HDaEF8SPZ3eVfztLvPGuqXvqfRjEjWIjo7cHpkI5T9dW27UnmHOUJOGI+RR13xPswrCmxeP10aAUJVLrl6vUPJEzyV6Cgibsr+hVOwDWOHk849ofGdIRgrMJfhpwMTuu28IDMNwQvMfIGGa4YD7pD8JNqZUd8M7XxCu6zR3q0PfQRuOxoDYC+UIJzZzDQwT1RMHwxdy29j1sfL4ZW7Q0fUtnOGXdTCLxX0SAm2VdX+MwxKPdIn9hVf9ECKur/bqpo2zube2qteD0P4nlQQFGhBmIctrKGVyQIf0Y62KlvJbZ5/CkcLXvlXbdzwmB0CoFrE04X584JxPWvogTtqlr3QxdIHqylQ4X0HIkIArR2IEDQnYlWQQxS+vVEGiK9Nxi9t/ITdS5WVOgiQh56r06eRYxf3FHSOs5XGDpM8sPSoNbv/jfk58dwT19jbOSPV3wdscqLfFvwFMo6xac99oyragB5Hlk4DnPm2/r5Svpci78EyDKSJIR03azNhGADez6YBDd0j30sIEEhGgt4njb3qpBN0TNR6+t9jGhLQuNCZ8rli5yc="
       before_install:
-        - sudo apt-get install -y gcovr
+        - sudo apt-get install -y lcov
       script:
         - mkdir build && cd build
         - cmake .. -DCOVERAGE=1 > /dev/null
@@ -59,9 +58,8 @@ jobs:
         - cmake --build . --target TestProgFramework > /dev/null
         - cd ../../ && eval $BP_CP_CMD && cd Tests/build
         - eval $BP_TEST_RUN_CMD > /dev/null && cd ../../
-        - gcovr -r .
-        - mkdir cout
-        - gcovr -r . --html --html-details -o cout/index.html
-        - gcovr -r . -o cout/main.txt
-        - git clone https://github.com/BlockProject3D/GCovrToCodacy.git
-        - python3 GCovrToCodacy/coverage_parser.py cout $CODACY_PROJECT_TOKEN $TRAVIS_COMMIT
+        - lcov --capture --directory . --output-file coverage.info
+        - lcov --remove coverage.info '/usr/*' --output-file coverage.info
+        - lcov --remove coverage.info '*/gtest/*' --output-file coverage.info
+        - lcov --remove coverage.info '*Tests/*' --output-file coverage.info
+        - bash <(curl -s https://codecov.io/bash) -f coverage.info || echo "Codecov did not collect coverage reports"

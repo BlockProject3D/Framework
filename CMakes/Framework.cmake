@@ -10,9 +10,9 @@ macro(bp_setup_module name apimacro)
     # Attempt at fixing templates problems under MSVC 2017
     target_compile_definitions(${name} PRIVATE "BP_TPL_API=${BP_SYMBOL_EXPORT_MACRO}")
 
-    if (NOT ${name} STREQUAL "BPFramework")
-        bp_add_module(${name} "BPFramework")
-    endif (NOT ${name} STREQUAL "BPFramework")
+    if (NOT ${name} STREQUAL "BPF")
+        bp_add_module(${name} "BPF")
+    endif (NOT ${name} STREQUAL "BPF")
 
     bp_setup_target(${name} include ${SOURCES})
     file(WRITE ${CMAKE_CURRENT_LIST_DIR}/../${name}.cmake

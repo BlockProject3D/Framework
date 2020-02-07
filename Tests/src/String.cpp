@@ -550,7 +550,7 @@ TEST(String, SubLenUTF8)
 
 TEST(String, Format_Test1)
 {
-    bpf::Array<bpf::String> arr;
+    bpf::Array<bpf::String> arr(2);
     arr[0] = "this is a test";
     arr[1] = "yay";
     bpf::String formatted = bpf::String::Format("[16,right, ]\t[16,right, ]\t[]\t[]", -42, 42.42, 42000, arr);
@@ -579,7 +579,7 @@ TEST(String, ValueOf)
     EXPECT_STREQ(*bpf::String::ValueOf((bpf::uint64)999999999), "999999999");
     EXPECT_STREQ(*bpf::String::ValueOf((bpf::int64)-999999999), "-999999999");
     EXPECT_STREQ(*bpf::String::ValueOf((bpf::uint32)4000000000), "4000000000");
-    bpf::Array<bpf::String> arr;
+    bpf::Array<bpf::String> arr(2);
     arr[0] = "this is a test";
     arr[1] = "yay";
     EXPECT_STREQ(*bpf::String::ValueOf(arr), "[this is a test, yay]");
@@ -667,4 +667,13 @@ TEST(String, Reverse)
 	EXPECT_STREQ(*str.Reverse(), "");
 	str = "abcd  ef";
 	EXPECT_STREQ(*str.Reverse(), "fe  dcba");
+}
+
+TEST(String, Chinese)
+{
+    bpf::String str = "你好，我是清华大学的留学生";
+
+    EXPECT_EQ(str.Len(), 13);
+    EXPECT_EQ(str.Size(), 39);
+    EXPECT_STREQ(*str.Sub(str.IndexOf("我是") + 2), "清华大学的留学生");
 }
