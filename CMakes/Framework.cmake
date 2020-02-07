@@ -1,5 +1,19 @@
 include("${CMAKE_CURRENT_LIST_DIR}/Base.cmake")
 
+function(bp_write_module_descriptor name)
+    message("Writing module descriptor \"${name}.cmake\"...")
+    get_filename_component(PRJ_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLUTE)
+    file(RELATIVE_PATH REL_SRC_DIR ${PRJ_ROOT} ${CMAKE_CURRENT_SOURCE_DIR})
+    file(RELATIVE_PATH REL_BIN_DIR ${PRJ_ROOT} ${CMAKE_BINARY_DIR})
+    file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/../${name}.cmake
+        "set(INCLUDE_DIR \"${REL_SRC_DIR}/include\")\n"
+        "set(BIN_DEBUG \"${REL_BIN_DIR}/Debug/${BP_LIBRARY_PREFIX}${name}${BP_EXTENSION_LIB}\")\n"
+        "set(BIN_RELEASE \"${REL_BIN_DIR}/Release/${BP_LIBRARY_PREFIX}${name}${BP_EXTENSION_LIB}\")\n"
+        "set(ROOT \"${REL_SRC_DIR}\")\n"
+        "set(API_MACRO \"${BP_API_MACRO}\")\n"
+    )
+endfunction(bp_write_module_descriptor)
+
 macro(bp_setup_module name apimacro)
     #Replace API macro by the correct one
     set(BP_API_MACRO ${apimacro})
@@ -15,23 +29,29 @@ macro(bp_setup_module name apimacro)
     endif (NOT ${name} STREQUAL "BPF")
 
     bp_setup_target(${name} include ${SOURCES})
-    file(WRITE ${CMAKE_CURRENT_LIST_DIR}/../${name}.cmake
-        "set(INCLUDE_DIR \"${CMAKE_CURRENT_SOURCE_DIR}/include\")\n"
-        "set(BIN_DEBUG \"${CMAKE_BINARY_DIR}/Debug/${BP_LIBRARY_PREFIX}${name}${BP_EXTENSION_LIB}\")\n"
-        "set(BIN_RELEASE \"${CMAKE_BINARY_DIR}/Release/${BP_LIBRARY_PREFIX}${name}${BP_EXTENSION_LIB}\")\n"
-        "set(ROOT \"${CMAKE_CURRENT_SOURCE_DIR}\")\n"
-        "set(API_MACRO \"${BP_API_MACRO}\")\n"
-    )
+
+    bp_write_module_descriptor(${name})
 endmacro(bp_setup_module)
 
 function(bp_add_module targetname modulename)
-    include(${CMAKE_CURRENT_LIST_DIR}/../${modulename}.cmake)
-    
+    set(MD_DESC "")
+    set(MD_PATH "")
+    foreach (PATH ${BP_MODULE_PATH})
+        if (EXISTS "${PATH}/${modulename}.cmake")
+            set(MD_DESC "${PATH}/${modulename}.cmake")
+            set(MD_PATH "${PATH}")
+        endif (EXISTS "${PATH}/${modulename}.cmake")
+    endforeach (PATH ${BP_MODULE_PATH})
+    if (MD_DESC STREQUAL "")
+        message(FATAL_ERROR "Module ${modulename} could not be found in module path; did you forget to update BP_MODULE_PATH?")
+    endif (MD_DESC STREQUAL "")
+    include(${MD_DESC})
+
     # Add definitions
     target_compile_definitions(${targetname} PRIVATE "${API_MACRO}=${BP_SYMBOL_IMPORT_MACRO}")
 
     # Add includes and libs
-    target_include_directories(${targetname} PRIVATE ${INCLUDE_DIR})
-    target_link_libraries(${targetname} PRIVATE debug ${BIN_DEBUG})
-    target_link_libraries(${targetname} PRIVATE optimized ${BIN_RELEASE})
+    target_include_directories(${targetname} PRIVATE "${MD_PATH}/${INCLUDE_DIR}")
+    target_link_libraries(${targetname} PRIVATE debug "${MD_PATH}/${BIN_DEBUG}")
+    target_link_libraries(${targetname} PRIVATE optimized "${MD_PATH}/${BIN_RELEASE}")
 endfunction(bp_add_module)
