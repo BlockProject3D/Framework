@@ -60,13 +60,13 @@ static void PrintVector(const bpf::Vector4<T> &other)
     std::cout << "V4(" << other.X << ", " << other.Y << ", " << other.Z << ", " << other.W <<")" << std::endl;
 }
 
-template <typename T, bpf::fsize X, bpf::fsize Y>
-static void ExpectMatrixEq(const bpf::Matrix<T, Y, X> &mat, const bpf::Matrix<T, Y, X> &mat1)
+template <typename T, bpf::fsize N, bpf::fsize M>
+static void ExpectMatrixEq(const bpf::Matrix<T, N, M> &mat, const bpf::Matrix<T, N, M> &mat1)
 {
-    for (bpf::fsize y = 0; y != Y; ++y)
+    for (bpf::fsize y = 0; y != N; ++y)
     {
-        for (bpf::fsize x = 0; x != X; ++x)
-            EXPECT_EQ(mat(x, y), mat1(x, y));
+        for (bpf::fsize x = 0; x != M; ++x)
+            EXPECT_EQ(mat(y, x), mat1(y, x));
     }
 }
 
@@ -102,12 +102,12 @@ TEST(MatrixStatic, Create_Test1)
     ExpectMatrixEq(mat, mat1);
     mat(0, 0) = 1;
     mat(1, 1) = 1;
-    mat(2, 1) = 1;
-    mat(2, 0) = 3;
+    mat(1, 2) = 1;
+    mat(0, 2) = 3;
     mat1(0, 0) = 1;
     mat1(1, 1) = 1;
-    mat1(2, 1) = 1;
-    mat1(2, 0) = 3;
+    mat1(1, 2) = 1;
+    mat1(0, 2) = 3;
     ExpectMatrixEq(mat, mat1);
 }
 
@@ -140,8 +140,8 @@ TEST(MatrixStatic, Transpose_NonSquare)
 
     mat(0, 0) = 1;
     mat(1, 1) = 1;
-    mat(2, 1) = 1;
-    mat(2, 0) = 3;
+    mat(1, 2) = 1;
+    mat(0, 2) = 3;
     ExpectMatrixEq(mat.Transpose(), mat1);
 }
 
@@ -162,9 +162,9 @@ TEST(MatrixStatic, SwapRows_Square)
     //4 0 1
     //0 1 2
     //1 0 3
-    mat(2, 0) = 3;
-    mat(2, 1) = 2;
-    mat(0, 2) = 4;
+    mat(0, 2) = 3;
+    mat(1, 2) = 2;
+    mat(2, 0) = 4;
     mat.SwapRows(0, 2);
     ExpectMatrixEq(mat, mat1);
 }
@@ -185,8 +185,8 @@ TEST(MatrixStatic, SwapRows_NonSquare)
     //1 0 3
     mat(0, 0) = 1;
     mat(1, 1) = 1;
-    mat(2, 0) = 3;
-    mat(2, 1) = 2;
+    mat(0, 2) = 3;
+    mat(1, 2) = 2;
     mat.SwapRows(0, 1);
     ExpectMatrixEq(mat, mat1);
 }
@@ -208,9 +208,9 @@ TEST(MatrixStatic, SwapColumns_Square)
     //3 0 1
     //2 1 0
     //1 0 4
-    mat(2, 0) = 3;
-    mat(2, 1) = 2;
-    mat(0, 2) = 4;
+    mat(0, 2) = 3;
+    mat(1, 2) = 2;
+    mat(2, 0) = 4;
     mat.SwapColumns(0, 2);
     ExpectMatrixEq(mat, mat1);
 }
@@ -231,8 +231,8 @@ TEST(MatrixStatic, SwapColumns_NonSquare)
     //1 0 2
     mat(0, 0) = 1;
     mat(1, 1) = 1;
-    mat(2, 0) = 3;
-    mat(2, 1) = 2;
+    mat(0, 2) = 3;
+    mat(1, 2) = 2;
     mat.SwapColumns(0, 1);
     ExpectMatrixEq(mat, mat1);
 }

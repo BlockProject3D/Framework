@@ -27,6 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include <utility>
 #undef minor //FUCK YOU LINUX
 #undef major //FUCK YOU LINUX
 
@@ -48,19 +49,19 @@ namespace bpf
         return (res);
     }
 
-    template <typename T, fsize M, fsize N>
+    template <typename T, fsize N, fsize M>
     template <fsize P>
-    Matrix<T, M, P> Matrix<T, M, N>::operator*(const Matrix<T, N, P> &other) const
+    Matrix<T, N, P> Matrix<T, N, M>::operator*(const Matrix<T, M, P> &other) const
     {
-        Matrix<T, M, P> mat;
+        Matrix<T, N, P> mat;
 
-        for (fsize i = 0; i != M; ++i)
+        for (fsize i = 0; i != N; ++i)
         {
             for (fsize j = 0; j != P; ++j)
             {
                 T res = 0;
-                for (fsize k = 0; k != N; ++k)
-                    res += _arr[i * N + k] * other._arr[k * P + j];
+                for (fsize k = 0; k != M; ++k)
+                    res += _arr[i * M + k] * other._arr[k * P + j];
                 mat._arr[i * P + j] = res;
             }
         }
@@ -85,15 +86,15 @@ namespace bpf
         return (mat);
     }
     
-    template <typename T, fsize M, fsize N>
-    Matrix<T, N, M> Matrix<T, M, N>::Transpose() const
+    template <typename T, fsize N, fsize M>
+    Matrix<T, M, N> Matrix<T, N, M>::Transpose() const
     {
-        Matrix<T, N, M> res;
+        Matrix<T, M, N> res;
 
-        for (fsize x = 0; x != N; ++x)
+        for (fsize x = 0; x != M; ++x)
         {
-            for (fsize y = 0; y != M; ++y)
-                res(y, x) = operator()(x, y);
+            for (fsize y = 0; y != N; ++y)
+                res(x, y) = operator()(y, x);
         }
         return (res);
     }
@@ -101,28 +102,24 @@ namespace bpf
     template <typename T, fsize N>
     Matrix<T, N, N> Matrix<T, N, N>::Transpose() const
     {
-        Matrix<T, N, N> res = *this;
+        Matrix<T, N, N> res;
 
         for (fsize x = 0; x != N; ++x)
         {
             for (fsize y = 0; y != N; ++y)
-            {
-                T copy = res(y, x);
-                res(y, x) = res(x, y);
-                res(x, y) = copy;
-            }
+                res(x, y) = operator()(y, x);
         }
         return (res);
     }
 
-    template <typename T, fsize M, fsize N>
-    void Matrix<T, M, N>::SwapRows(const fsize rowa, const fsize rowb)
+    template <typename T, fsize N, fsize M>
+    void Matrix<T, N, M>::SwapRows(const fsize rowa, const fsize rowb)
     {
-        for (fsize x = 0; x != N; ++x)
+        for (fsize x = 0; x != M; ++x)
         {
-            T copy = operator()(x, rowa);
-            operator()(x, rowa) = operator()(x, rowb);
-            operator()(x, rowb) = copy;
+            T tmp = std::move(operator()(rowa, x));
+            operator()(rowa, x) = std::move(operator()(rowb, x));
+            operator()(rowb, x) = std::move(tmp);
         }
     }
 
@@ -131,20 +128,20 @@ namespace bpf
     {
         for (fsize x = 0; x != N; ++x)
         {
-            T copy = operator()(x, rowa);
-            operator()(x, rowa) = operator()(x, rowb);
-            operator()(x, rowb) = copy;
+            T tmp = std::move(operator()(rowa, x));
+            operator()(rowa, x) = std::move(operator()(rowb, x));
+            operator()(rowb, x) = std::move(tmp);
         }
     }
-    
-    template <typename T, fsize M, fsize N>
-    void Matrix<T, M, N>::SwapColumns(const fsize cola, const fsize colb)
+
+    template <typename T, fsize N, fsize M>
+    void Matrix<T, N, M>::SwapColumns(const fsize cola, const fsize colb)
     {
-        for (fsize x = 0; x != M; ++x)
+        for (fsize x = 0; x != N; ++x)
         {
-            T copy = operator()(cola, x);
-            operator()(cola, x) = operator()(colb, x);
-            operator()(colb, x) = copy;
+            T tmp = std::move(operator()(x, cola));
+            operator()(x, cola) = std::move(operator()(x, colb));
+            operator()(x, colb) = std::move(tmp);
         }
     }
     
@@ -153,9 +150,9 @@ namespace bpf
     {
         for (fsize x = 0; x != N; ++x)
         {
-            T copy = operator()(cola, x);
-            operator()(cola, x) = operator()(colb, x);
-            operator()(colb, x) = copy;
+            T tmp = std::move(operator()(x, cola));
+            operator()(x, cola) = std::move(operator()(x, colb));
+            operator()(x, colb) = std::move(tmp);
         }
     }
 
@@ -222,48 +219,50 @@ namespace bpf
     }
     
     template <typename T>
-    Matrix<T>::Matrix(const fsize m, const fsize n)
-        : _arr(new T[m * n])
-        , _m(m)
+    Matrix<T>::Matrix(const fsize n, const fsize m)
+        : _arr(new T[n * m])
         , _n(n)
+        , _m(m)
     {
-        std::memset(_arr, 0, m * n * sizeof(T));
+        std::memset(_arr, 0, n * m * sizeof(T));
     }
     
     template <typename T>
-    Matrix<T>::Matrix(const fsize m, const fsize n, const std::initializer_list<T> &lst)
-        : _arr(new T[m * n])
-        , _m(m)
+    Matrix<T>::Matrix(const fsize n, const fsize m, const std::initializer_list<T> &lst)
+        : _arr(new T[n * m])
         , _n(n)
+        , _m(m)
     {
-        std::memcpy(_arr, lst.begin(), m * n * sizeof(T));
+        std::memcpy(_arr, lst.begin(), n * m * sizeof(T));
     }
     
     template <typename T>
-    Matrix<T>::Matrix(const fsize m, const fsize n, const T *mat)
-        : _arr(new T[m * n])
-        , _m(m)
+    Matrix<T>::Matrix(const fsize n, const fsize m, const T *mat)
+        : _arr(new T[n * m])
         , _n(n)
+        , _m(m)
     {
-        std::memcpy(_arr, mat, m * n * sizeof(T));
+        std::memcpy(_arr, mat, n * m * sizeof(T));
     }
     
     template <typename T>
     Matrix<T>::Matrix(const Matrix<T> &other)
-        : _arr(new T[other._m * other._n])
-        , _m(other._m)
+        : _arr(new T[other._n * other._m])
         , _n(other._n)
+        , _m(other._m)
     {
-        std::memcpy(_arr, other._arr, _m * _n * sizeof(T));
+        std::memcpy(_arr, other._arr, _n * _m * sizeof(T));
     }
     
     template <typename T>
     Matrix<T>::Matrix(Matrix<T> &&other)
         : _arr(other._arr)
-        , _m(other._m)
         , _n(other._n)
+        , _m(other._m)
     {
         other._arr = Null;
+        other._n = 0;
+        other._m = 0;
     }
     
     template <typename T>
@@ -277,38 +276,47 @@ namespace bpf
     {
         if (_arr != Null)
             delete[] _arr;
-        _m = other._m;
         _n = other._n;
-        _arr = new T[_m * _n];
-        std::memcpy(_arr, other._arr, _m * _n * sizeof(T));
+        _m = other._m;
+        _arr = new T[_n * _m];
+        std::memcpy(_arr, other._arr, _n * _m * sizeof(T));
     }
-    
+
     template <typename T>
     Matrix<T> &Matrix<T>::operator=(Matrix<T> &&other)
     {
         if (_arr != Null)
             delete[] _arr;
-        _m = other._m;
         _n = other._n;
+        _m = other._m;
         _arr = other._arr;
         other._arr = Null;
+        other._n = 0;
+        other._m = 0;
     }
-    
+
     template <typename T>
-    void Matrix<T>::SetIdentity()
+    Matrix<T> Matrix<T>::Identity(const fsize n)
     {
-        if (_m != _n)
-            throw MatrixException();
-        for (fsize y = 0; y != _m; ++y)
+        Matrix<T> m(n, n);
+
+        for (fsize y = 0; y != n; ++y)
         {
-            for (fsize x = 0; x != _n; ++x)
+            for (fsize x = 0; x != n; ++x)
             {
                 if (x == y)
-                    operator()(x, y) = 1;
+                    m(y, x) = 1;
             }
         }
+        return (m);
     }
-    
+
+    template <typename T>
+    Matrix<T> Matrix<T>::Zero(const fsize n, const fsize m)
+    {
+        return (Matrix<T>(n, m == 0 ? n : m));
+    }
+
     template <typename T>
     Matrix<T> Matrix<T>::Invert() const
     {
@@ -381,18 +389,18 @@ namespace bpf
     template <typename T>
     Matrix<T> Matrix<T>::operator*(const Matrix<T> &other) const
     {
-        if (_n != other._m)
+        if (_m != other._n)
             throw MatrixException();
-        Matrix<T> mat(_m, other._n);
+        Matrix<T> mat(_n, other._m);
 
-        for (fsize i = 0; i != _m; ++i)
+        for (fsize i = 0; i != _n; ++i)
         {
-            for (fsize j = 0; j != other._n; ++j)
+            for (fsize j = 0; j != other._m; ++j)
             {
                 T res = 0;
-                for (fsize k = 0; k != _n; ++k)
-                    res += _arr[i * _n + k] * other._arr[k * other._n + j];
-                mat._arr[i * other._n + j] = res;
+                for (fsize k = 0; k != _m; ++k)
+                    res += _arr[i * _m + k] * other._arr[k * other._m + j];
+                mat._arr[i * other._m + j] = res;
             }
         }
         return (mat);
@@ -401,12 +409,12 @@ namespace bpf
     template <typename T>
     Matrix<T> Matrix<T>::Transpose() const
     {
-        Matrix<T> res(_n, _m);
+        Matrix<T> res(_m, _n);
 
-        for (fsize x = 0; x != _n; ++x)
+        for (fsize x = 0; x != _m; ++x)
         {
-            for (fsize y = 0; y != _m; ++y)
-                res(y, x) = operator()(x, y);
+            for (fsize y = 0; y != _n; ++y)
+                res(x, y) = operator()(y, x);
         }
         return (res);
     }
@@ -414,22 +422,22 @@ namespace bpf
     template <typename T>
     void Matrix<T>::SwapRows(const fsize rowa, const fsize rowb)
     {
-        for (fsize x = 0; x != _n; ++x)
+        for (fsize x = 0; x != _m; ++x)
         {
-            T copy = operator()(x, rowa);
-            operator()(x, rowa) = operator()(x, rowb);
-            operator()(x, rowb) = copy;
+            T tmp = std::move(operator()(rowa, x));
+            operator()(rowa, x) = std::move(operator()(rowb, x));
+            operator()(rowb, x) = std::move(tmp);
         }
     }
     
     template <typename T>
     void Matrix<T>::SwapColumns(const fsize cola, const fsize colb)
     {
-        for (fsize x = 0; x != _m; ++x)
+        for (fsize x = 0; x != _n; ++x)
         {
-            T copy = operator()(cola, x);
-            operator()(cola, x) = operator()(colb, x);
-            operator()(colb, x) = copy;
+            T tmp = std::move(operator()(x, cola));
+            operator()(x, cola) = std::move(operator()(x, colb));
+            operator()(x, colb) = std::move(tmp);
         }
     }
 }
