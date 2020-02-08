@@ -22,8 +22,9 @@ function(bp_fixheaderlist lst)
     set(${lst} "${listVar}" PARENT_SCOPE)
 endfunction(bp_fixheaderlist)
 
-set(BP_FRAMEWORK_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/../")
-set(BP_BASICS_CMAKE_SELF ${CMAKE_CURRENT_LIST_DIR})
+set(BP_MODULE_PATH "")
+list(APPEND BP_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../")
+
 set(PLATFORM "Auto" CACHE STRING "Platform name")
 option(RELEASE "Enable release build" OFF)
 option(COVERAGE "Enable coverage" OFF)
@@ -67,7 +68,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/Release)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/Release)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DBUILD_DEBUG")
 
-include("${BP_BASICS_CMAKE_SELF}/Platforms/${PLATFORM}.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/Platforms/${PLATFORM}.cmake")
 
 #Setup the main target name=name of target mainincdir=main include directory
 macro(bp_setup_target name mainincdir)
