@@ -43,7 +43,7 @@ jobs:
         - mkdir build && cd build
         - cmake .. -DCOVERAGE=1 > /dev/null
         - cmake --build . > /dev/null
-        - eval $BP_TEST_RUN_CMD > /dev/null && cd ../../
+        - eval $BP_TEST_RUN_CMD > /dev/null && cd ../
         - lcov --capture --directory . --output-file coverage.info
         - lcov --remove coverage.info '/usr/*' --output-file coverage.info
         - lcov --remove coverage.info '*/gtest/*' --output-file coverage.info
