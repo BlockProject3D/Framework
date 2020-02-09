@@ -186,11 +186,11 @@ namespace bpf
     }
 
     template <typename T, fsize I>
-    T Vector<T, I>::DistanceSquarred(const Vector &other) const
+    T Vector<T, I>::DistanceSquared(const Vector &other) const
     {
         auto dist = other - *this;
 
-        return (dist.NormSquarred());
+        return (dist.NormSquared());
     }
 
     template <typename T, fsize I>
@@ -204,7 +204,7 @@ namespace bpf
     }
 
     template <typename T, fsize I>
-    T Vector<T, I>::NormSquarred() const
+    T Vector<T, I>::NormSquared() const
     {
         T res = DefaultOf<T>();
 
@@ -414,11 +414,11 @@ namespace bpf
     }
 
     template <typename T>
-    T Vector<T>::DistanceSquarred(const Vector &other) const
+    T Vector<T>::DistanceSquared(const Vector &other) const
     {
         auto dist = other - *this;
 
-        return (dist.NormSquarred());
+        return (dist.NormSquared());
     }
 
     template <typename T>
@@ -432,7 +432,7 @@ namespace bpf
     }
 
     template <typename T>
-    T Vector<T>::NormSquarred() const
+    T Vector<T>::NormSquared() const
     {
         T res = DefaultOf<T>();
 

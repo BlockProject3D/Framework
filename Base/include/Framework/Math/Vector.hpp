@@ -120,9 +120,9 @@ namespace bpf
 
         T Dot(const Vector &other) const;
         T Distance(const Vector &other) const;
-        T DistanceSquarred(const Vector &other) const;
+        T DistanceSquared(const Vector &other) const;
         T Norm() const;
-        T NormSquarred() const;
+        T NormSquared() const;
         void Normalize();
 
         inline const T *operator*() const
@@ -232,9 +232,9 @@ namespace bpf
 
         T Dot(const Vector &other) const;
         T Distance(const Vector &other) const;
-        T DistanceSquarred(const Vector &other) const;
+        T DistanceSquared(const Vector &other) const;
         T Norm() const;
-        T NormSquarred() const;
+        T NormSquared() const;
         void Normalize();
 
         inline const T *operator*() const
