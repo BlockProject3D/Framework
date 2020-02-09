@@ -85,14 +85,14 @@ namespace bpf
 
         inline T &operator()(const fsize l)
         {
-            if (l > I)
+            if (l >= I)
                 throw IndexException((fisize)l);
             return (_arr[l]);
         }
 
         inline const T &operator()(const fsize l) const
         {
-            if (l > I)
+            if (l >= I)
                 throw IndexException((fisize)l);
             return (_arr[l]);
         }
@@ -134,6 +134,8 @@ namespace bpf
         {
             return (_arr);
         }
+
+        static Vector Lerp(const Vector &v, const Vector &v1, const T t);
     };
 
     template <typename T>
@@ -195,14 +197,14 @@ namespace bpf
 
         inline T &operator()(const fsize l)
         {
-            if (l > _l)
+            if (l >= _l)
                 throw IndexException((fisize)l);
             return (_arr[l]);
         }
 
         inline const T &operator()(const fsize l) const
         {
-            if (l > _l)
+            if (l >= _l)
                 throw IndexException((fisize)l);
             return (_arr[l]);
         }
@@ -244,6 +246,8 @@ namespace bpf
         {
             return (_arr);
         }
+
+        static Vector Lerp(const Vector &v, const Vector &v1, const T t);
     };
 
     template <typename T, fsize I>

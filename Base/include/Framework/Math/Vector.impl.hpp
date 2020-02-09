@@ -220,6 +220,16 @@ namespace bpf
             _arr[i] /= norm;
     }
 
+    template <typename T, fsize I>
+    static Vector<T, I> Vector<T, I>::Lerp(const Vector &v, const Vector &v1, const T t)
+    {
+        auto res = Vector();
+
+        for (fsize i = 0; i != I; ++i)
+            res(i) = Math::Lerp(v(i), v1(i), t);
+        return (res);
+    }
+
     template <typename T>
     Vector<T>::Vector(const std::initializer_list<T> &lst)
         : _arr(new T[lst.size()])
@@ -434,5 +444,17 @@ namespace bpf
 
         for (fsize i = 0; i != _l; ++i)
             _arr[i] /= norm;
+    }
+
+    template <typename T>
+    static Vector<T> Vector<T>::Lerp(const Vector &v, const Vector &v1, const T t)
+    {
+        if (v._l != v._l)
+            throw MatrixException();
+        auto res = Vector(v._l);
+
+        for (fsize i = 0; i != I; ++i)
+            res(i) = Math::Lerp(v(i), v1(i), t);
+        return (res);
     }
 }
