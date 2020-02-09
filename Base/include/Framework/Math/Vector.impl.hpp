@@ -44,6 +44,7 @@ namespace bpf
     {
         for (fsize i = 0; i != I; ++i)
             _arr[i] = other._arr[i];
+        return (*this);
     }
 
     template <typename T, fsize I>
@@ -51,6 +52,7 @@ namespace bpf
     {
         for (fsize i = 0; i != I; ++i)
             _arr[i] = std::move(other._arr[i]);
+        return (*this);
     }
 
     template <typename T, fsize I>
@@ -249,6 +251,7 @@ namespace bpf
         _arr = new T[_l];
         for (fsize i = 0; i != _l; ++i)
             _arr[i] = other._arr[i];
+        return (*this);
     }
 
     template <typename T>
@@ -259,6 +262,7 @@ namespace bpf
         _l = other._l;
         other._arr = Null;
         other._l = 0;
+        return (*this);
     }
 
     template <typename T>
