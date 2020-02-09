@@ -27,6 +27,49 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include <utility>
+#include <initializer_list>
+#include "Framework/Types.hpp"
+#include "Framework/IndexException.hpp"
+
+namespace bpf
+{
+    template <typename T, fsize I = 0>
+    class Vector
+    {
+    private:
+        T _arr[I];
+
+    public:
+        explicit inline Vector(T &&... args)
+            : _arr(std::forward<Args &&>(args)...)
+        {
+        }
+
+        Vector(const std::initializer_list<T> &lst);
+
+        inline T &operator()(const fsize l)
+        {
+            if (l > I)
+                throw IndexException((fisize)l);
+            return (_arr[l]);
+        }
+
+        inline const T &operator()(const fsize l) const
+        {
+            if (l > I)
+                throw IndexException((fisize)l);
+            return (_arr[l]);
+        }
+
+        Vector operator+(const Vector &other);
+        Vector operator-(const Vector &other);
+        Vector operator*(const Vector &other);
+        Vector operator*(const T &other);
+        Vector operator/(const Vector &other);
+    };
+}
+
 #include "Framework/Math/Vector2.hpp"
 #include "Framework/Math/Vector3.hpp"
 #include "Framework/Math/Vector4.hpp"
