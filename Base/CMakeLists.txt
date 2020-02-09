@@ -30,6 +30,7 @@ set(SOURCES
     ./include/Framework/Math/Vector3.hpp
     ./include/Framework/Math/Vector3.impl.hpp
     ./include/Framework/Math/Vector4.hpp
+    ./include/Framework/Math/Vector4.impl.hpp
     ./include/Framework/Math/Matrix2.hpp
     ./include/Framework/Math/Matrix3.hpp
     ./include/Framework/Math/Matrix4.hpp
