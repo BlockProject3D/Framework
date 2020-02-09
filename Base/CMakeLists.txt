@@ -26,6 +26,7 @@ set(SOURCES
     ./include/Framework/Math/Vector.hpp
     ./include/Framework/Math/Vector.impl.hpp
     ./include/Framework/Math/Vector2.hpp
+    ./include/Framework/Math/Vector2.impl.hpp
     ./include/Framework/Math/Vector3.hpp
     ./include/Framework/Math/Vector4.hpp
     ./include/Framework/Math/Matrix2.hpp
