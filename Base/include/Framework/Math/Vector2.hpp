@@ -83,6 +83,7 @@ namespace bpf
         {
             X = other.X;
             Y = other.Y;
+            return (*this);
         }
 
         inline Vector &operator=(Vector &&other)
