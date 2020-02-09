@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -30,23 +30,58 @@
 #include <utility>
 #include <initializer_list>
 #include "Framework/Types.hpp"
+#include "Framework/TypeInfo.hpp"
 #include "Framework/IndexException.hpp"
+#include "Framework/Math/Math.hpp"
 
 namespace bpf
 {
     template <typename T, fsize I = 0>
-    class Vector
+    class BP_TPL_API Vector
     {
     private:
         T _arr[I];
 
     public:
-        explicit inline Vector(T &&... args)
+        static const Vector Zero;
+        static const Vector Identity;
+
+        template <typename ...Args>
+        explicit inline Vector(Args &&... args)
             : _arr(std::forward<Args &&>(args)...)
         {
         }
 
+        inline Vector()
+        {
+            for (fsize i = 0; i != I; ++i)
+                _arr[i] = DefaultOf<T>();
+        }
+
+        explicit inline Vector(const T val)
+        {
+            for (fsize i = 0; i != I; ++i)
+                _arr[i] = val;
+        }
+
         Vector(const std::initializer_list<T> &lst);
+
+        inline Vector(const Vector &other)
+        {
+            for (fsize i = 0; i != I; ++i)
+                _arr[i] = other._arr[i];
+        }
+
+        inline Vector(Vector &&other)
+        {
+            for (fsize i = 0; i != I; ++i)
+                _arr[i] = std::move(other._arr[i]);
+        }
+
+        constexpr inline fsize Dim() const noexcept
+        {
+            return (I);
+        }
 
         inline T &operator()(const fsize l)
         {
@@ -62,14 +97,163 @@ namespace bpf
             return (_arr[l]);
         }
 
-        Vector operator+(const Vector &other);
-        Vector operator-(const Vector &other);
-        Vector operator*(const Vector &other);
-        Vector operator*(const T &other);
-        Vector operator/(const Vector &other);
+        Vector &operator=(const Vector &other);
+        Vector &operator=(Vector &&other);
+
+        Vector operator+(const Vector &other) const;
+        Vector operator-(const Vector &other) const;
+        Vector operator*(const Vector &other) const;
+        Vector operator/(const Vector &other) const;
+
+        Vector operator*(const T other) const;
+        Vector operator/(const T other) const;
+
+        void operator+=(const Vector &other);
+        void operator-=(const Vector &other);
+        void operator*=(const Vector &other);
+        void operator/=(const Vector &other);
+
+        void operator*=(const T other);
+        void operator/=(const T other);
+
+        Vector operator-() const;
+
+        T Dot(const Vector &other) const;
+        T Distance(const Vector &other) const;
+        T DistanceSquarred(const Vector &other) const;
+        T Norm() const;
+        T NormSquarred() const;
+        void Normalize();
+
+        inline const T *operator*() const
+        {
+            return (_arr);
+        }
+
+        inline T *operator*()
+        {
+            return (_arr);
+        }
     };
+
+    template <typename T>
+    class BP_TPL_API Vector<T, 0>
+    {
+    private:
+        T *_arr;
+        fsize _l;
+
+    public:
+        inline static Vector Zero(const fsize l)
+        {
+            return (Vector(l))
+        }
+
+        inline static Vector Identity(const fsize l)
+        {
+            return (Vector(l, (T)1))
+        }
+
+        explicit inline Vector(const fsize l)
+            : _arr(new T[l])
+            , _l(l)
+        {
+            for (fsize i = 0; i != l; ++i)
+                _arr[i] = DefaultOf<T>();
+        }
+
+        inline Vector(const fsize l, const T val)
+            : _arr(new T[l])
+            , _l(l)
+        {
+            for (fsize i = 0; i != l; ++i)
+                _arr[i] = val;
+        }
+
+        Vector(const std::initializer_list<T> &lst);
+
+        inline Vector(const Vector &other)
+            : _arr(new T[other._l])
+            , _l(other._l)
+        {
+            for (fsize i = 0; i != l; ++i)
+                _arr[i] = other._arr[i];
+        }
+
+        inline Vector(Vector &&other)
+            : _arr(other._arr)
+            , _l(other._l)
+        {
+            other._arr = Null;
+            other._l = 0;
+        }
+
+        inline fsize Dim() const noexcept
+        {
+            return (_l);
+        }
+
+        inline T &operator()(const fsize l)
+        {
+            if (l > _l)
+                throw IndexException((fisize)l);
+            return (_arr[l]);
+        }
+
+        inline const T &operator()(const fsize l) const
+        {
+            if (l > _l)
+                throw IndexException((fisize)l);
+            return (_arr[l]);
+        }
+
+        Vector &operator=(const Vector &other);
+        Vector &operator=(Vector &&other);
+
+        Vector operator+(const Vector &other) const;
+        Vector operator-(const Vector &other) const;
+        Vector operator*(const Vector &other) const;
+        Vector operator/(const Vector &other) const;
+
+        Vector operator*(const T other) const;
+        Vector operator/(const T other) const;
+
+        void operator+=(const Vector &other);
+        void operator-=(const Vector &other);
+        void operator*=(const Vector &other);
+        void operator/=(const Vector &other);
+
+        void operator*=(const T other);
+        void operator/=(const T other);
+
+        Vector operator-() const;
+
+        T Dot(const Vector &other) const;
+        T Distance(const Vector &other) const;
+        T DistanceSquarred(const Vector &other) const;
+        T Norm() const;
+        T NormSquarred() const;
+        void Normalize();
+
+        inline const T *operator*() const
+        {
+            return (_arr);
+        }
+
+        inline T *operator*()
+        {
+            return (_arr);
+        }
+    };
+
+    template <typename T, fsize I>
+    const Vector<T, I> Vector<T, I>::Zero = Vector<T, I>();
+
+    template <typename T, fsize I>
+    const Vector<T, I> Vector<T, I>::Identity = Vector<T, I>((T)1);
 }
 
+#include "Framework/Math/Vector.impl.hpp"
 #include "Framework/Math/Vector2.hpp"
 #include "Framework/Math/Vector3.hpp"
 #include "Framework/Math/Vector4.hpp"

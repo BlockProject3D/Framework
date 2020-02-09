@@ -87,7 +87,7 @@ namespace bpf
 
         inline T Distance(const Vector3<T> &other) const
         {
-            Vector3<T> v(Math::Abs(other.X - X), Math::Abs(other.Y - Y), Math::Abs(other.Z - Z));
+            Vector3<T> v(Math::Abs(other.X - X), Math::Abs(other.Y - Y), Math::Abs(other.Z - Z)); //TODO : What the f*** did I do here?! Check Vector2/4!
             return (v.Length());
         }
 

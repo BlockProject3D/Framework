@@ -24,6 +24,7 @@ set(SOURCES
     ./include/Framework/IO/Stringifier.IO.hpp
     ./include/Framework/Math/Triangle.hpp
     ./include/Framework/Math/Vector.hpp
+    ./include/Framework/Math/Vector.impl.hpp
     ./include/Framework/Math/Vector2.hpp
     ./include/Framework/Math/Vector3.hpp
     ./include/Framework/Math/Vector4.hpp
