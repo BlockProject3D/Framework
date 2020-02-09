@@ -44,12 +44,6 @@ namespace bpf
         {
         }
 
-        inline Vector(const Vector2<T> &other)
-            : X(other.X)
-            , Y(other.Y)
-        {
-        }
-
         inline Vector()
             : X(0)
             , Y(0)
@@ -215,7 +209,7 @@ namespace bpf
     template <typename T>
     const Vector<T, 2> Vector<T, 2>::Zero = Vector();
     template <typename T>
-    const Vector<T, 2> Vector<T, 2>::Identity = Vector(1);
+    const Vector<T, 2> Vector<T, 2>::Identity = Vector((T)1);
 }
 
 #include "Framework/Math/Vector2.impl.hpp"
