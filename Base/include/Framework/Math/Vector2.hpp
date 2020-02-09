@@ -208,7 +208,7 @@ namespace bpf
     };
 
     template <typename T>
-    const Vector<T, 2> Vector<T, 2>::Zero = Vector();
+    const Vector<T, 2> Vector<T, 2>::Zero = Vector((T)0);
     template <typename T>
     const Vector<T, 2> Vector<T, 2>::Identity = Vector((T)1);
 }

@@ -148,7 +148,7 @@ namespace bpf
     public:
         inline static Vector Zero(const fsize l)
         {
-            return (Vector(l))
+            return (Vector(l, (T)0))
         }
 
         inline static Vector Identity(const fsize l)
@@ -251,7 +251,7 @@ namespace bpf
     };
 
     template <typename T, fsize I>
-    const Vector<T, I> Vector<T, I>::Zero = Vector<T, I>();
+    const Vector<T, I> Vector<T, I>::Zero = Vector<T, I>((T)0);
 
     template <typename T, fsize I>
     const Vector<T, I> Vector<T, I>::Identity = Vector<T, I>((T)1);
