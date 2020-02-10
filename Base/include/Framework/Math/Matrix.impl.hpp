@@ -77,7 +77,7 @@ namespace bpf
         {
             T res = 0;
             for (fsize k = 0; k < N; ++k)
-                res += other(k) * data[i * N + k];
+                res += other(k) * _arr[i * N + k];
             res(i) = res;
         }
         return (res);
@@ -449,7 +449,7 @@ namespace bpf
         {
             T res = 0;
             for (fsize k = 0; k < _n; ++k)
-                res += other(k) * data[i * _n + k];
+                res += other(k) * _arr[i * _n + k];
             res(i) = res;
         }
         return (res);

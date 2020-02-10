@@ -483,7 +483,7 @@ namespace bpf
         //    throw MatrixException();
         auto res = Vector(v._l);
 
-        for (fsize i = 0; i != I; ++i)
+        for (fsize i = 0; i != v._l; ++i)
             res(i) = Math::Lerp(v(i), v1(i), t);
         return (res);
     }
