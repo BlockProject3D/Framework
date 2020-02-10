@@ -151,12 +151,12 @@ namespace bpf
     public:
         inline static Vector Zero(const fsize l)
         {
-            return (Vector(l, (T)0))
+            return (Vector(l, (T)0));
         }
 
         inline static Vector Identity(const fsize l)
         {
-            return (Vector(l, (T)1))
+            return (Vector(l, (T)1));
         }
 
         inline Vector(const Vector &other, const T val)
@@ -190,7 +190,7 @@ namespace bpf
             : _arr(new T[other._l])
             , _l(other._l)
         {
-            for (fsize i = 0; i != l; ++i)
+            for (fsize i = 0; i != _l; ++i)
                 _arr[i] = other._arr[i];
         }
 

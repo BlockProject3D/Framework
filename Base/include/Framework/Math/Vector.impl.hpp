@@ -170,7 +170,7 @@ namespace bpf
     template <typename T, fsize I>
     bool Vector<T, I>::operator==(const Vector &other) const
     {
-        for (fsize i = 0; i != N)
+        for (fsize i = 0; i != I; ++i)
         {
             T diff = Math::Abs(_arr[i] - other(i));
             if (diff >= (T)0.00001)
@@ -280,8 +280,8 @@ namespace bpf
     template <typename T>
     Vector<T> Vector<T>::operator+(const Vector &other) const
     {
-        if (_l != other._l)
-            throw MatrixException();
+        //if (_l != other._l)
+        //    throw MatrixException();
         auto res = *this;
 
         for (fsize i = 0; i != _l; ++i)
@@ -292,8 +292,8 @@ namespace bpf
     template <typename T>
     Vector<T> Vector<T>::operator-(const Vector &other) const
     {
-        if (_l != other._l)
-            throw MatrixException();
+        //if (_l != other._l)
+        //    throw MatrixException();
         auto res = *this;
 
         for (fsize i = 0; i != _l; ++i)
@@ -304,8 +304,8 @@ namespace bpf
     template <typename T>
     Vector<T> Vector<T>::operator*(const Vector &other) const
     {
-        if (_l != other._l)
-            throw MatrixException();
+        //if (_l != other._l)
+        //    throw MatrixException();
         auto res = *this;
 
         for (fsize i = 0; i != _l; ++i)
@@ -316,8 +316,8 @@ namespace bpf
     template <typename T>
     Vector<T> Vector<T>::operator/(const Vector &other) const
     {
-        if (_l != other._l)
-            throw MatrixException();
+        //if (_l != other._l)
+        //    throw MatrixException();
         auto res = *this;
 
         for (fsize i = 0; i != _l; ++i)
@@ -348,8 +348,8 @@ namespace bpf
     template <typename T>
     void Vector<T>::operator+=(const Vector &other)
     {
-        if (_l != other._l)
-            throw MatrixException();
+        //if (_l != other._l)
+        //    throw MatrixException();
         for (fsize i = 0; i != _l; ++i)
             _arr[i] += other(i);
     }
@@ -357,8 +357,8 @@ namespace bpf
     template <typename T>
     void Vector<T>::operator-=(const Vector &other)
     {
-        if (_l != other._l)
-            throw MatrixException();
+        //if (_l != other._l)
+        //    throw MatrixException();
         for (fsize i = 0; i != _l; ++i)
             _arr[i] -= other(i);
     }
@@ -366,8 +366,8 @@ namespace bpf
     template <typename T>
     void Vector<T>::operator*=(const Vector &other)
     {
-        if (_l != other._l)
-            throw MatrixException();
+        //if (_l != other._l)
+        //    throw MatrixException();
         for (fsize i = 0; i != _l; ++i)
             _arr[i] *= other(i);
     }
@@ -375,8 +375,8 @@ namespace bpf
     template <typename T>
     void Vector<T>::operator/=(const Vector &other)
     {
-        if (_l != other._l)
-            throw MatrixException();
+        //if (_l != other._l)
+        //    throw MatrixException();
         for (fsize i = 0; i != _l; ++i)
             _arr[i] /= other(i);
     }
@@ -408,9 +408,9 @@ namespace bpf
     template <typename T>
     bool Vector<T, 0>::operator==(const Vector &other) const
     {
-        if (_l != other._l)
-            throw MatrixException();
-        for (fsize i = 0; i != _l)
+        //if (_l != other._l)
+        //    throw MatrixException();
+        for (fsize i = 0; i != _l; ++i)
         {
             T diff = Math::Abs(_arr[i] - other(i));
             if (diff >= (T)0.00001)
@@ -422,8 +422,8 @@ namespace bpf
     template <typename T>
     T Vector<T>::Dot(const Vector &other) const
     {
-        if (_l != other._l)
-            throw MatrixException();
+        //if (_l != other._l)
+        //    throw MatrixException();
         T res = DefaultOf<T>();
 
         for (fsize i = 0; i != _l; ++i)
@@ -479,8 +479,8 @@ namespace bpf
     template <typename T>
     Vector<T> Vector<T>::Lerp(const Vector &v, const Vector &v1, const T t)
     {
-        if (v._l != v._l)
-            throw MatrixException();
+        //if (v._l != v._l)
+        //    throw MatrixException();
         auto res = Vector(v._l);
 
         for (fsize i = 0; i != I; ++i)
