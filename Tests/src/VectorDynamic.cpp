@@ -26,55 +26,8 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
+#include <cassert>
+#include <iostream>
+#include <gtest/gtest.h>
+#include <Framework/Math/Vector.hpp>
 
-namespace bpf
-{
-    template <typename T>
-    Vector<T, 2>::Vector(const std::initializer_list<T> &lst)
-    {
-        fsize i = 0;
-
-        for (auto &elem : lst)
-        {
-            switch (i)
-            {
-            case 0:
-                X = elem;
-                break;
-            case 1:
-                Y = elem;
-                break;
-            }
-            ++i;
-        }
-    }
-
-    template <typename T>
-    T &Vector<T, 2>::operator()(const fsize l)
-    {
-        switch (l)
-        {
-        case 0:
-            return (X);
-        case 1:
-            return (Y);
-        default:
-            throw IndexException((fisize)l);
-        }
-    }
-
-    template <typename T>
-    const T &Vector<T, 2>::operator()(const fsize l) const
-    {
-        switch (l)
-        {
-        case 0:
-            return (X);
-        case 1:
-            return (Y);
-        default:
-            throw IndexException((fisize)l);
-        }
-    }
-}

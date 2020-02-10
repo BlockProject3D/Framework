@@ -52,6 +52,7 @@ namespace bpf
                 W = elem;
                 break;
             }
+            ++i;
         }
     }
 

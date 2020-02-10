@@ -46,12 +46,6 @@ namespace bpf
         static const Vector Zero;
         static const Vector Identity;
 
-        template <typename ...Args>
-        explicit inline Vector(Args &&... args)
-            : _arr(std::forward<Args &&>(args)...)
-        {
-        }
-
         inline Vector()
         {
             for (fsize i = 0; i != I; ++i)
@@ -68,7 +62,7 @@ namespace bpf
         {
             for (fsize i = 0; i != I - 1; ++i)
                 _arr[i] = other(i);
-            other(I - 1) = val;
+            _arr[I - 1] = val;
         }
 
         Vector(const std::initializer_list<T> &lst);

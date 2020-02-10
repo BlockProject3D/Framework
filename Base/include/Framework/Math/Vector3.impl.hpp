@@ -49,6 +49,7 @@ namespace bpf
                 Z = elem;
                 break;
             }
+            ++i;
         }
     }
 
