@@ -389,7 +389,7 @@ TEST(MatrixStatic, Multiply_Vec4)
     ExpectVectorEq(res, expected);
 }
 
-TEST(MatrixStatic, HomogeneousCoords_2D)
+/*TEST(MatrixStatic, HomogeneousCoords_2D)
 {
     bpf::Matrix3f mat = bpf::Matrix3f::Identity;
     bpf::Matrix3f expected = {
@@ -414,4 +414,4 @@ TEST(MatrixStatic, HomogeneousCoords_3D)
 
     mat.Translate(bpf::Vector3<float>(2, 2, 2));
     ExpectMatrixEq(mat, expected);
-}
+}*/

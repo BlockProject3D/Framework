@@ -198,6 +198,14 @@ namespace bpf
             Y /= v;
         }
 
+        inline bool operator==(const Vector &other) const
+        {
+            T diffx = Math::Abs(X - other.X);
+            T diffy = Math::Abs(Y - other.Y);
+
+            return (diffx <= (T)0.00001 && diffy <= (T)0.00001);
+        }
+
         inline static Vector Lerp(const Vector &v, const Vector &v1, const T t)
         {
             return (Vector(Math::Lerp(v.X, v1.X, t), Math::Lerp(v.Y, v1.Y, t)));

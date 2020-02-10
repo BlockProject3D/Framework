@@ -46,7 +46,7 @@ namespace bpf
     public:
         inline Transform()
             : _pos(Vector3f::Zero)
-            , _scale(Vector3f::Unit)
+            , _scale(Vector3f::Identity)
             , _quat(Quatf::Identity)
             , _mat(Matrix4f::Identity)
         {
@@ -58,7 +58,7 @@ namespace bpf
         {
             RebuildMatrix();
         }
-        explicit inline Transform(const Vector3f &pos, const Vector3f &scale = Vector3f::Unit,
+        explicit inline Transform(const Vector3f &pos, const Vector3f &scale = Vector3f::Identity,
                          const Quatf &q = Quatf::Identity)
             : _pos(pos)
             , _scale(scale)

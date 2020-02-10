@@ -66,7 +66,7 @@ namespace bpf
             return (Y);
         case 2:
             return (Z);
-        case 2:
+        case 3:
             return (W);
         default:
             throw IndexException((fisize)l);

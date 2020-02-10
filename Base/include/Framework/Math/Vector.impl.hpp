@@ -168,6 +168,18 @@ namespace bpf
     }
 
     template <typename T, fsize I>
+    bool Vector<T, I>::operator==(const Vector &other) const
+    {
+        for (fsize i = 0; i != N)
+        {
+            T diff = Math::Abs(_arr[i] - other(i));
+            if (diff >= (T)0.00001)
+                return (false);
+        }
+        return (true);
+    }
+
+    template <typename T, fsize I>
     T Vector<T, I>::Dot(const Vector &other) const
     {
         T res = DefaultOf<T>();
@@ -223,7 +235,7 @@ namespace bpf
     }
 
     template <typename T, fsize I>
-    static Vector<T, I> Vector<T, I>::Lerp(const Vector &v, const Vector &v1, const T t)
+    Vector<T, I> Vector<T, I>::Lerp(const Vector &v, const Vector &v1, const T t)
     {
         auto res = Vector();
 
@@ -394,6 +406,20 @@ namespace bpf
     }
 
     template <typename T>
+    bool Vector<T, 0>::operator==(const Vector &other) const
+    {
+        if (_l != other._l)
+            throw MatrixException();
+        for (fsize i = 0; i != _l)
+        {
+            T diff = Math::Abs(_arr[i] - other(i));
+            if (diff >= (T)0.00001)
+                return (false);
+        }
+        return (true);
+    }
+
+    template <typename T>
     T Vector<T>::Dot(const Vector &other) const
     {
         if (_l != other._l)
@@ -451,7 +477,7 @@ namespace bpf
     }
 
     template <typename T>
-    static Vector<T> Vector<T>::Lerp(const Vector &v, const Vector &v1, const T t)
+    Vector<T> Vector<T>::Lerp(const Vector &v, const Vector &v1, const T t)
     {
         if (v._l != v._l)
             throw MatrixException();

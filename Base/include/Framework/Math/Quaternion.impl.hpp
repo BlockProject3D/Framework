@@ -31,7 +31,7 @@
 namespace bpf
 {
     template <typename T>
-    Quat<T>::Quat(const Vector3<T> &euler)
+    Quat<T>::Quat(const Vector<T, 3> &euler)
     {
         T cr = Math::Cos(euler.X / (T)2);
         T cp = Math::Cos(euler.Y / (T)2);
@@ -47,7 +47,7 @@ namespace bpf
     }
 
     template <typename T>
-    Quat<T>::Quat(const Vector3<T> &from, const Vector3<T> &to)
+    Quat<T>::Quat(const Vector<T, 3> &from, const Vector<T, 3> &to)
     {
         Vector3<T> a = from.Cross(to);
 
@@ -58,7 +58,7 @@ namespace bpf
     }
 
     template <typename T>
-    Quat<T>::Quat(const Vector3<T> &axis, const T ang)
+    Quat<T>::Quat(const Vector<T, 3> &axis, const T ang)
         : X(axis.X * Math::Sin((ang / (T)2)))
         , Y(axis.Y * Math::Sin((ang / (T)2)))
         , Z(axis.Z * Math::Sin((ang / (T)2)))
@@ -68,7 +68,7 @@ namespace bpf
     }
 
     template <typename T>
-    Vector3<T> Quat<T>::Rotate(const Vector3<T> &v) const
+    Vector<T, 3> Quat<T>::Rotate(const Vector<T, 3> &v) const
     {
         Quat<T> p(0, v.X, v.Y, v.Z);
         Quat<T> pprime = Invert() * p * *this;
@@ -77,9 +77,9 @@ namespace bpf
     }
 
     template <typename T>
-    Matrix4<T> Quat<T>::ToMatrix() const
+    Matrix<T, 4, 4> Quat<T>::ToMatrix() const
     {
-        Matrix4<T> mat = {
+        Matrix<T, 4, 4> mat = {
             W * W + X * X - Y * Y - Z * Z, 2 * X * Y - 2 * W * Z, 2 * X * Z + 2 * W * Y, 0,
             2 * X * Y + 2 * W * Z, W * W - X * X + Y * Y - Z * Z, 2 * Y * Z - 2 * W * X, 0,
             2 * X * Z - 2 * W * Y, 2 * Y * Z + 2 * W * X, W * W - X * X - Y * Y + Z * Z, 0,
@@ -104,10 +104,10 @@ namespace bpf
     template <typename T>
     bool Quat<T>::operator==(const Quat<T> &other) const
     {
-        T diffx = X - other.X;
-        T diffy = Y - other.Y;
-        T diffz = Z - other.Z;
-        T diffw = W - other.W;
+        T diffx = Math::Abs(X - other.X);
+        T diffy = Math::Abs(Y - other.Y);
+        T diffz = Math::Abs(Z - other.Z);
+        T diffw = Math::Abs(W - other.W);
 
         return (diffx < (T)0.00001 && diffy < (T)0.00001
                 && diffz < (T)0.00001 && diffw < (T)0.00001);
@@ -153,13 +153,13 @@ namespace bpf
     }
 
     template <typename T>
-    Vector3<T> Quat<T>::ToEulerAngles() const
+    Vector<T, 3> Quat<T>::ToEulerAngles() const
     {
         T roll = Math::ArcTan2(2 * Y * W + 2 * X * Z, 1 - 2 * Y * Y - 2 * Z * Z);
         T pitch = Math::ArcTan2(2 * X * W + 2 * Y * Z, 1 - 2 * X * X - 2 * Z * Z);
         T yaw = Math::ArcSin(2 * X * Y + 2 * Z * W);
 
-        return (Vector3<T>(pitch, yaw, roll));
+        return (Vector<T, 3>(pitch, yaw, roll));
     }
 
     template <typename T>

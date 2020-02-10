@@ -46,6 +46,13 @@ namespace bpf
         {
         }
 
+        inline Vector(const Vector<T, 2> &other, const T val)
+            : X(other.X)
+            , Y(other.Y)
+            , Z(val)
+        {
+        }
+
         inline Vector()
             : X(DefaultOf<T>())
             , Y(DefaultOf<T>())
@@ -216,6 +223,15 @@ namespace bpf
         inline Vector Cross(const Vector &other) const
         {
             return (Vector(Y * other.Z - Z * other.Y, Z * other.X - X * other.Z, X * other.Y - Y * other.X));
+        }
+
+        inline bool operator==(const Vector &other) const
+        {
+            T diffx = Math::Abs(X - other.X);
+            T diffy = Math::Abs(Y - other.Y);
+            T diffz = Math::Abs(Z - other.Z);
+
+            return (diffx <= (T)0.00001 && diffy <= (T)0.00001 && diffz <= (T)0.00001);
         }
 
         inline static Vector Lerp(const Vector &v, const Vector &v1, const T t)

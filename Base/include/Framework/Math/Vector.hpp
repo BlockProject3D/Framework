@@ -64,6 +64,13 @@ namespace bpf
                 _arr[i] = val;
         }
 
+        inline Vector(const Vector<T, I - 1> &other, const T val)
+        {
+            for (fsize i = 0; i != I - 1; ++i)
+                _arr[i] = other(i);
+            other(I - 1) = val;
+        }
+
         Vector(const std::initializer_list<T> &lst);
 
         inline Vector(const Vector &other)
@@ -118,6 +125,8 @@ namespace bpf
 
         Vector operator-() const;
 
+        bool operator==(const Vector &other) const;
+
         T Dot(const Vector &other) const;
         T Distance(const Vector &other) const;
         T DistanceSquared(const Vector &other) const;
@@ -154,6 +163,15 @@ namespace bpf
         inline static Vector Identity(const fsize l)
         {
             return (Vector(l, (T)1))
+        }
+
+        inline Vector(const Vector &other, const T val)
+            : _arr(new T[other._l + 1])
+            , _l(other._l + 1)
+        {
+            for (fsize i = 0; i != other._l; ++i)
+                _arr[i] = other(i);
+            other(_l - 1) = val;
         }
 
         explicit inline Vector(const fsize l)
@@ -230,6 +248,8 @@ namespace bpf
 
         Vector operator-() const;
 
+        bool operator==(const Vector &other) const;
+
         T Dot(const Vector &other) const;
         T Distance(const Vector &other) const;
         T DistanceSquared(const Vector &other) const;
@@ -264,6 +284,12 @@ namespace bpf
 
 namespace bpf
 {
+    template <typename T>
+    using Vector2 = Vector<T, 2>;
+    template <typename T>
+    using Vector3 = Vector<T, 3>;
+    template <typename T>
+    using Vector4 = Vector<T, 4>;
     using Vector2f = Vector2<float>;
     using Vector3f = Vector3<float>;
     using Vector4f = Vector4<float>;

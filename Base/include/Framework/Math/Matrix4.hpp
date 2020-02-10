@@ -26,7 +26,7 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
+/*#pragma once
 #include "Framework/Math/Matrix.hpp"
 #include "Framework/Math/Vector3.hpp"
 #include "Framework/Math/Vector4.hpp"
@@ -79,23 +79,14 @@ namespace bpf
 
         void Translate(const Vector3<T> &v);
         
-        /**
-         * WARNING : In radians !
-         */
         void RotateYaw(const T ang);
 
-        /**
-         * WARNING : In radians !
-         */
         void RotatePitch(const T ang);
         
-        /**
-         * WARNING : In radians !
-         */
         void RotateRoll(const T ang);
         void Scale(const Vector3<T> &v);
         Vector4<T> operator*(const Vector4<T> &other) const;
     };
 }
 
-#include "Framework/Math/Matrix4.impl.hpp"
+#include "Framework/Math/Matrix4.impl.hpp"*/

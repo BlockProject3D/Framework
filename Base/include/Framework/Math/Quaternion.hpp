@@ -72,43 +72,43 @@ namespace bpf
          * WARNING : Angles are expressed in radians
          * @param euler euler angles X = Pitch, Y = Yaw, Z = Roll
          */
-        explicit Quat(const Vector3<T> &euler);
+        explicit Quat(const Vector<T, 3> &euler);
 
         /**
          * Constructs a quaternion from the rotation between two vectors
          * @param from first vector
          * @param to second vector
          */
-        Quat(const Vector3<T> &from, const Vector3<T> &to);
+        Quat(const Vector<T, 3> &from, const Vector<T, 3> &to);
 
         /**
          * Constructs a quaternion from axis angle
          * WARNING : Angle is expressed in radians
          */
-        Quat(const Vector3<T> &axis, const T ang);
+        Quat(const Vector<T, 3> &axis, const T ang);
 
         /**
          * Rotates the given vector by this quaternion
          * @param v the vector to rotate
          */
-        Vector3<T> Rotate(const Vector3<T> &v) const;
+        Vector<T, 3> Rotate(const Vector<T, 3> &v) const;
 
-        inline Vector3<T> Up() const
+        inline Vector<T, 3> Up() const
         {
             return (Rotate(Vector3<T>::Up));
         }
 
-        inline Vector3<T> Forward() const
+        inline Vector<T, 3> Forward() const
         {
             return (Rotate(Vector3<T>::Forward));
         }
 
-        inline Vector3<T> Right() const
+        inline Vector<T, 3> Right() const
         {
             return (Rotate(Vector3<T>::Right));
         }
 
-        Matrix4<T> ToMatrix() const;
+        Matrix<T, 4, 4> ToMatrix() const;
 
         inline Quat<T> Invert() const
         {
@@ -131,7 +131,7 @@ namespace bpf
         }
 
         bool operator==(const Quat<T> &other) const;
-        
+
         inline Quat<T> &operator=(const Quat<T> &other)
         {
             X = other.X;
@@ -168,14 +168,14 @@ namespace bpf
          * Returns the euler angles representation of that quaternion
          * WARNING : Angles are expressed in radians
          */
-        Vector3<T> ToEulerAngles() const;
+        Vector<T, 3> ToEulerAngles() const;
 
         /**
          * Returns the axis of that quaternion
          */
-        inline Vector3<T> GetAxis() const
+        inline Vector<T, 3> GetAxis() const
         {
-            return (Vector3<T>(X, Y, Z));
+            return (Vector<T, 3>(X, Y, Z));
         }
 
         /**

@@ -68,6 +68,22 @@ namespace bpf
         return (mat);
     }
 
+    template <typename T, fsize N, fsize M>
+    Vector<T, N> Matrix<T, N, M>::operator*(const Vector<T, N> &other) const
+    {
+        Vector<T, N> res;
+
+        for (fsize i = 0; i < N; ++i)
+        {
+            T res = 0;
+            for (fsize k = 0; k < N; ++k)
+                res += other(k) * data[i * N + k];
+            res(i) = res;
+        }
+        return (res);
+
+    }
+
     template <typename T, fsize N>
     Matrix<T, N, N> Matrix<T, N, N>::operator*(const Matrix<T, N, N> &other) const
     {
@@ -85,7 +101,23 @@ namespace bpf
         }
         return (mat);
     }
-    
+
+    template <typename T, fsize N>
+    Vector<T, N> Matrix<T, N, N>::operator*(const Vector<T, N> &other) const
+    {
+        Vector<T, N> asda;
+
+        for (fsize i = 0; i < N; ++i)
+        {
+            T res = 0;
+            for (fsize k = 0; k < N; ++k)
+                res += other(k) * _arr[i * N + k];
+            asda(i) = res;
+        }
+        return (asda);
+
+    }
+
     template <typename T, fsize N, fsize M>
     Matrix<T, M, N> Matrix<T, N, M>::Transpose() const
     {
@@ -405,7 +437,24 @@ namespace bpf
         }
         return (mat);
     }
-    
+
+    template <typename T>
+    Vector<T> Matrix<T>::operator*(const Vector<T> &other) const
+    {
+        if (_n != other.Dim())
+            throw MatrixException();
+        Vector<T> res;
+
+        for (fsize i = 0; i < _n; ++i)
+        {
+            T res = 0;
+            for (fsize k = 0; k < _n; ++k)
+                res += other(k) * data[i * _n + k];
+            res(i) = res;
+        }
+        return (res);
+    }
+
     template <typename T>
     Matrix<T> Matrix<T>::Transpose() const
     {

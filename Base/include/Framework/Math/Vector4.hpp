@@ -48,6 +48,14 @@ namespace bpf
         {
         }
 
+        inline Vector(const Vector<T, 3> &other, const T val)
+            : X(other.X)
+            , Y(other.Y)
+            , Z(other.Z)
+            , W(val)
+        {
+        }
+
         inline Vector()
             : X(DefaultOf<T>())
             , Y(DefaultOf<T>())
@@ -228,6 +236,16 @@ namespace bpf
             W /= v;
         }
 
+        inline bool operator==(const Vector &other) const
+        {
+            T diffx = Math::Abs(X - other.X);
+            T diffy = Math::Abs(Y - other.Y);
+            T diffz = Math::Abs(Z - other.Z);
+            T diffw = Math::Abs(W - other.W);
+
+            return (diffx <= (T)0.00001 && diffy <= (T)0.00001 && diffz <= (T)0.00001 && diffw <= (T)0.00001);
+        }
+
         inline static Vector Lerp(const Vector &v, const Vector &v1, const T t)
         {
             return (Vector(Math::Lerp(v.X, v1.X, t), Math::Lerp(v.Y, v1.Y, t), Math::Lerp(v.Z, v1.Z, t), Math::Lerp(v.W, v1.W, t)));
@@ -243,4 +261,4 @@ namespace bpf
     const Vector<T, 4> Vector<T, 4>::Identity = Vector((T)1);
 }
 
-#include "Framework/Math/Vector4.impl.h"
+#include "Framework/Math/Vector4.impl.hpp"
