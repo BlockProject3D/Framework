@@ -51,6 +51,8 @@ set(SOURCES
     src/Stack.cpp
     src/Queue.cpp
     src/PriorityQueue.cpp
+    src/VectorStatic.cpp
+    src/VectorDynamic.cpp
 )
 
 bp_setup_program(${PROJECT_NAME} include)
