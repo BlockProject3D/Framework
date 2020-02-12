@@ -42,6 +42,9 @@ set(SOURCES
     ./include/Framework/Math/Quaternion.impl.hpp
     ./include/Framework/Math/Matrix.hpp
     ./include/Framework/Math/Matrix.impl.hpp
+    ./include/Framework/Math/IncompatibleMatrixSizeException.hpp
+    ./include/Framework/Math/NonSquareMatrixException.hpp
+    ./include/Framework/Math/NonInvertibleMatrixException.hpp
     ./include/Framework/Math/Transform.hpp
     ./include/Framework/Math/Triangle.hpp
     ./include/Framework/Math/Math.hpp

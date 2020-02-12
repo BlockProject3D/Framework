@@ -31,6 +31,10 @@
 #undef minor //FUCK YOU LINUX
 #undef major //FUCK YOU LINUX
 
+#include "Framework/Math/IncompatibleMatrixSizeException.hpp"
+#include "Framework/Math/NonInvertibleMatrixException.hpp"
+#include "Framework/Math/NonSquareMatrixException.hpp"
+
 namespace bpf
 {
     template <typename T, fsize N>
@@ -196,7 +200,7 @@ namespace bpf
         Matrix<T, N, N> res;
 
         if (det == 0)
-            throw MatrixException();
+            throw NonInvertibleMatrixException();
         det = (T)1 / det;
         for (fsize j = 0; j != N; ++j)
         {
@@ -353,13 +357,13 @@ namespace bpf
     Matrix<T> Matrix<T>::Invert() const
     {
         if (_m != _n)
-            throw MatrixException();
+            throw NonSquareMatrixException();
         T det = GetDeterminant();
         Matrix<T> minor(_n - 1, _n - 1);
         Matrix<T> res(_n, _n);
 
         if (det == 0)
-            throw MatrixException();
+            throw NonInvertibleMatrixException();
         det = (T)1 / det;
         for (fsize j = 0; j != _n; ++j)
         {
@@ -378,7 +382,7 @@ namespace bpf
     T Matrix<T>::GetDeterminant() const
     {
         if (_m != _n)
-            throw MatrixException();
+            throw NonSquareMatrixException();
         if (_n == 1)
             return (operator()(0, 0));
         T det = 0;
@@ -399,7 +403,7 @@ namespace bpf
         fsize rowi = 0;
 
         if (_m != _n)
-            throw MatrixException();
+            throw NonSquareMatrixException();
         for (fsize i = 0; i != _n; ++i)
         {
             if (i != row)
@@ -422,7 +426,7 @@ namespace bpf
     Matrix<T> Matrix<T>::operator*(const Matrix<T> &other) const
     {
         if (_m != other._n)
-            throw MatrixException();
+            throw IncompatibleMatrixSizeException((fisize)_m, (fisize)other._n);
         Matrix<T> mat(_n, other._m);
 
         for (fsize i = 0; i != _n; ++i)
@@ -442,7 +446,7 @@ namespace bpf
     Vector<T> Matrix<T>::operator*(const Vector<T> &other) const
     {
         if (_n != other.Dim())
-            throw MatrixException();
+            throw IncompatibleMatrixSizeException((fisize)_n, (fisize)other.Dim());
         Vector<T> res;
 
         for (fsize i = 0; i < _n; ++i)

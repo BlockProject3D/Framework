@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -35,15 +35,6 @@
 
 namespace bpf
 {
-    class BPF_API MatrixException : public Exception
-    {
-    public:
-        inline virtual const char *GetType() const noexcept
-        {
-            return ("MatrixException");
-        }
-    };
-
     template <typename T, fsize N = 0, fsize M = 0>
     class BP_TPL_API Matrix
     {
