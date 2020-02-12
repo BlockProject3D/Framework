@@ -169,6 +169,11 @@ namespace bpf
                 _arr[i] = std::move(other._arr[i]);
         }
 
+        inline constexpr fsize Order() const noexcept
+        {
+            return (N);
+        }
+
         inline Matrix<T, N, N> &operator=(const Matrix<T, N, N> &other)
         {
             for (fsize i = 0; i != N * N; ++i)
