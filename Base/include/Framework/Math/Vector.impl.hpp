@@ -173,7 +173,7 @@ namespace bpf
         for (fsize i = 0; i != I; ++i)
         {
             T diff = Math::Abs(_arr[i] - other(i));
-            if (diff >= (T)0.00001)
+            if (diff >= Math::Epsilon<T>())
                 return (false);
         }
         return (true);
@@ -413,7 +413,7 @@ namespace bpf
         for (fsize i = 0; i != _l; ++i)
         {
             T diff = Math::Abs(_arr[i] - other(i));
-            if (diff >= (T)0.00001)
+            if (diff >= Math::Epsilon<T>())
                 return (false);
         }
         return (true);

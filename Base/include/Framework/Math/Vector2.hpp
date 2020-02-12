@@ -203,7 +203,7 @@ namespace bpf
             T diffx = Math::Abs(X - other.X);
             T diffy = Math::Abs(Y - other.Y);
 
-            return (diffx <= (T)0.00001 && diffy <= (T)0.00001);
+            return (diffx <= Math::Epsilon<T>() && diffy <= Math::Epsilon<T>());
         }
 
         inline static Vector Lerp(const Vector &v, const Vector &v1, const T t)

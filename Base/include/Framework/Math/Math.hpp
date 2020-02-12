@@ -51,6 +51,15 @@ namespace bpf
         static constexpr float Pi = 3.141592654f;
 
         /**
+         * Returns a very small value to represent acceptable rounding errors for various types
+         */
+        template <typename T>
+        inline constexpr static T Epsilon()
+        {
+            return ((T)0);
+        }
+
+        /**
          * Absolute value
          * @param val value to convert to absolute value
          */
@@ -356,5 +365,23 @@ namespace bpf
     inline long double Math::ArcTan2(const long double y, const long double x)
     {
         return (atan2l(y, x));
+    }
+
+    template <>
+    inline constexpr float Math::Epsilon()
+    {
+        return (0.00001f);
+    }
+
+    template <>
+    inline constexpr double Math::Epsilon()
+    {
+        return (0.0000001);
+    }
+
+    template <>
+    inline constexpr long double Math::Epsilon()
+    {
+        return (0.0000001);
     }
 }
