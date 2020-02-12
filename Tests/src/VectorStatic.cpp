@@ -566,6 +566,7 @@ TEST(VectorStatic, Operators_4)
     identity *= 2;
     EXPECT_EQ(identity, Vector5f(2));
     EXPECT_EQ(-identity, Vector5f(-2));
+    EXPECT_FALSE(Vector5f::Identity == Vector5f::Zero);
 }
 
 TEST(VectorStatic, Norm_4)
