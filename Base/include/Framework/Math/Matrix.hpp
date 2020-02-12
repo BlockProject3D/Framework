@@ -106,7 +106,12 @@ namespace bpf
             return (_arr[l * M + c]);
         }
 
-        inline const T *operator*() const
+        inline const T *operator*() const noexcept
+        {
+            return (_arr);
+        }
+
+        inline T *operator*() noexcept
         {
             return (_arr);
         }
@@ -202,7 +207,12 @@ namespace bpf
             return (_arr[l * N + c]);
         }
 
-        inline const T *operator*() const
+        inline const T *operator*() const noexcept
+        {
+            return (_arr);
+        }
+
+        inline T *operator*() noexcept
         {
             return (_arr);
         }
@@ -326,7 +336,12 @@ namespace bpf
             return (_arr[l * _m + c]);
         }
 
-        inline const T *operator*() const
+        inline const T *operator*() const noexcept
+        {
+            return (_arr);
+        }
+
+        inline T *operator*() noexcept
         {
             return (_arr);
         }

@@ -128,12 +128,12 @@ namespace bpf
         T NormSquared() const;
         void Normalize();
 
-        inline const T *operator*() const
+        inline const T *operator*() const noexcept
         {
             return (_arr);
         }
 
-        inline T *operator*()
+        inline T *operator*() noexcept
         {
             return (_arr);
         }
@@ -251,12 +251,12 @@ namespace bpf
         T NormSquared() const;
         void Normalize();
 
-        inline const T *operator*() const
+        inline const T *operator*() const noexcept
         {
             return (_arr);
         }
 
-        inline T *operator*()
+        inline T *operator*() noexcept
         {
             return (_arr);
         }
