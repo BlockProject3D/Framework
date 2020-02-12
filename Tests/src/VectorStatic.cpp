@@ -116,6 +116,35 @@ TEST(VectorStatic, Distance_1)
     EXPECT_EQ(v1.Distance(v1), 0);
     EXPECT_GT(v1.Distance(v2), 1.4);
     EXPECT_LT(v1.Distance(v2), 1.5);
+    EXPECT_EQ(v1.DistanceSquared(v1), 0);
+    EXPECT_EQ(v1.DistanceSquared(v2), 2);
+}
+
+TEST(VectorStatic, Normalize_1)
+{
+    auto v1 = bpf::Vector2f::Identity;
+
+    v1.Normalize();
+    EXPECT_LT(1 - v1.Norm(), 0.00001f); //TODO : Update to Math::Epsilon
+}
+
+TEST(VectorStatic, Dot_1)
+{
+    auto v1 = bpf::Vector2f::Zero;
+    auto v2 = bpf::Vector2f::Identity;
+    auto v3 = bpf::Vector2f(2);
+
+    EXPECT_EQ(v1.Dot(v2), 0);
+    EXPECT_EQ(v2.Dot(v3), 4);
+}
+
+TEST(VectorStatic, Lerp_1)
+{
+    auto v1 = bpf::Vector2f::Zero;
+    auto v2 = bpf::Vector2f::Identity;
+    auto lerp = bpf::Vector2f::Lerp(v1, v2, 0.5f);
+
+    EXPECT_EQ(lerp, bpf::Vector2f(0.5f));
 }
 
 TEST(VectorStatic, CopyMove_1)
@@ -214,6 +243,62 @@ TEST(VectorStatic, Operators_2)
     identity *= 2;
     EXPECT_EQ(identity, bpf::Vector3f(2));
     EXPECT_EQ(-identity, bpf::Vector3f(-2));
+}
+
+TEST(VectorStatic, Norm_2)
+{
+    auto vec = bpf::Vector3f(2);
+
+    EXPECT_EQ(vec.NormSquared(), 12);
+    EXPECT_GT(vec.Norm(), 3.4);
+    EXPECT_LT(vec.Norm(), 3.5);
+}
+
+TEST(VectorStatic, Distance_2)
+{
+    auto v1 = bpf::Vector3f::Identity;
+    auto v2 = bpf::Vector3f(2);
+
+    EXPECT_EQ(v1.Distance(v1), 0);
+    EXPECT_GT(v1.Distance(v2), 1.7);
+    EXPECT_LT(v1.Distance(v2), 1.8);
+    EXPECT_EQ(v1.DistanceSquared(v1), 0);
+    EXPECT_EQ(v1.DistanceSquared(v2), 3);
+}
+
+TEST(VectorStatic, Normalize_2)
+{
+    auto v1 = bpf::Vector3f::Identity;
+
+    v1.Normalize();
+    EXPECT_LT(1 - v1.Norm(), 0.00001f); //TODO : Update to Math::Epsilon
+}
+
+TEST(VectorStatic, Dot_2)
+{
+    auto v1 = bpf::Vector3f::Zero;
+    auto v2 = bpf::Vector3f::Identity;
+    auto v3 = bpf::Vector3f(2);
+
+    EXPECT_EQ(v1.Dot(v2), 0);
+    EXPECT_EQ(v2.Dot(v3), 6);
+}
+
+TEST(VectorStatic, Lerp_2)
+{
+    auto v1 = bpf::Vector3f::Zero;
+    auto v2 = bpf::Vector3f::Identity;
+    auto lerp = bpf::Vector3f::Lerp(v1, v2, 0.5f);
+
+    EXPECT_EQ(lerp, bpf::Vector3f(0.5f));
+}
+
+TEST(VectorStatic, Cross)
+{
+    auto v1 = bpf::Vector3f::Zero;
+    auto v2 = bpf::Vector3f::Identity;
+
+    EXPECT_EQ(v1.Cross(v2), bpf::Vector3f::Zero);
 }
 
 TEST(VectorStatic, CopyMove_2)
@@ -323,6 +408,52 @@ TEST(VectorStatic, Operators_3)
     identity *= 2;
     EXPECT_EQ(identity, bpf::Vector4f(2));
     EXPECT_EQ(-identity, bpf::Vector4f(-2));
+}
+
+TEST(VectorStatic, Norm_3)
+{
+    auto vec = bpf::Vector4f(2);
+
+    EXPECT_EQ(vec.NormSquared(), 16);
+    EXPECT_EQ(vec.Norm(), 4);
+}
+
+TEST(VectorStatic, Distance_3)
+{
+    auto v1 = bpf::Vector4f::Identity;
+    auto v2 = bpf::Vector4f(2);
+
+    EXPECT_EQ(v1.Distance(v1), 0);
+    EXPECT_EQ(v1.Distance(v2), 2);
+    EXPECT_EQ(v1.DistanceSquared(v1), 0);
+    EXPECT_EQ(v1.DistanceSquared(v2), 4);
+}
+
+TEST(VectorStatic, Normalize_3)
+{
+    auto v1 = bpf::Vector4f::Identity;
+
+    v1.Normalize();
+    EXPECT_LT(1 - v1.Norm(), 0.00001f); //TODO : Update to Math::Epsilon
+}
+
+TEST(VectorStatic, Dot_3)
+{
+    auto v1 = bpf::Vector4f::Zero;
+    auto v2 = bpf::Vector4f::Identity;
+    auto v3 = bpf::Vector4f(2);
+
+    EXPECT_EQ(v1.Dot(v2), 0);
+    EXPECT_EQ(v2.Dot(v3), 8);
+}
+
+TEST(VectorStatic, Lerp_3)
+{
+    auto v1 = bpf::Vector4f::Zero;
+    auto v2 = bpf::Vector4f::Identity;
+    auto lerp = bpf::Vector4f::Lerp(v1, v2, 0.5f);
+
+    EXPECT_EQ(lerp, bpf::Vector4f(0.5f));
 }
 
 TEST(VectorStatic, CopyMove_3)
@@ -435,6 +566,54 @@ TEST(VectorStatic, Operators_4)
     identity *= 2;
     EXPECT_EQ(identity, Vector5f(2));
     EXPECT_EQ(-identity, Vector5f(-2));
+}
+
+TEST(VectorStatic, Norm_4)
+{
+    auto vec = Vector5f(2);
+
+    EXPECT_EQ(vec.NormSquared(), 20);
+    EXPECT_GT(vec.Norm(), 4.4);
+    EXPECT_LT(vec.Norm(), 4.5);
+}
+
+TEST(VectorStatic, Distance_4)
+{
+    auto v1 = Vector5f::Identity;
+    auto v2 = Vector5f(2);
+
+    EXPECT_EQ(v1.Distance(v1), 0);
+    EXPECT_GT(v1.Distance(v2), 2.2);
+    EXPECT_LT(v1.Distance(v2), 2.3);
+    EXPECT_EQ(v1.DistanceSquared(v1), 0);
+    EXPECT_EQ(v1.DistanceSquared(v2), 5);
+}
+
+TEST(VectorStatic, Normalize_4)
+{
+    auto v1 = Vector5f::Identity;
+
+    v1.Normalize();
+    EXPECT_LT(1 - v1.Norm(), 0.00001f); //TODO : Update to Math::Epsilon
+}
+
+TEST(VectorStatic, Dot_4)
+{
+    auto v1 = Vector5f::Zero;
+    auto v2 = Vector5f::Identity;
+    auto v3 = Vector5f(2);
+
+    EXPECT_EQ(v1.Dot(v2), 0);
+    EXPECT_EQ(v2.Dot(v3), 10);
+}
+
+TEST(VectorStatic, Lerp_4)
+{
+    auto v1 = Vector5f::Zero;
+    auto v2 = Vector5f::Identity;
+    auto lerp = Vector5f::Lerp(v1, v2, 0.5f);
+
+    EXPECT_EQ(lerp, Vector5f(0.5f));
 }
 
 TEST(VectorStatic, CopyMove_4)
