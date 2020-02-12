@@ -165,7 +165,7 @@ namespace bpf
         {
             for (fsize i = 0; i != other._l; ++i)
                 _arr[i] = other(i);
-            other(_l - 1) = val;
+            _arr[_l - 1] = val;
         }
 
         explicit inline Vector(const fsize l)

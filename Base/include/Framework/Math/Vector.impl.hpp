@@ -27,6 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/Math/IncompatibleMatrixSizeException.hpp"
 
 namespace bpf
 {
@@ -479,8 +480,8 @@ namespace bpf
     template <typename T>
     Vector<T> Vector<T>::Lerp(const Vector &v, const Vector &v1, const T t)
     {
-        if (_l != other._l)
-            throw IncompatibleMatrixSizeException((fisize)_l, (fisize)other._l);
+        if (v._l != v1._l)
+            throw IncompatibleMatrixSizeException((fisize)v._l, (fisize)v1._l);
         auto res = Vector(v._l);
 
         for (fsize i = 0; i != v._l; ++i)
