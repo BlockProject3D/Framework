@@ -72,10 +72,23 @@ namespace bpf
                 _arr[i] = other._arr[i];
         }
 
+        inline Matrix(Matrix<T, N, M> &&other)
+        {
+            for (fsize i = 0; i != N * M; ++i)
+                _arr[i] = std::move(other._arr[i]);
+        }
+
         inline Matrix<T, N, M> &operator=(const Matrix<T, N, M> &other)
         {
             for (fsize i = 0; i != N * M; ++i)
                 _arr[i] = other._arr[i];
+            return (*this);
+        }
+
+        inline Matrix<T, N, M> &operator=(Matrix<T, N, M> &&other)
+        {
+            for (fsize i = 0; i != N * M; ++i)
+                _arr[i] = std::move(other._arr[i]);
             return (*this);
         }
 
@@ -150,10 +163,23 @@ namespace bpf
                 _arr[i] = other._arr[i];
         }
 
+        inline Matrix(Matrix<T, N, N> &&other)
+        {
+            for (fsize i = 0; i != N * N; ++i)
+                _arr[i] = std::move(other._arr[i]);
+        }
+
         inline Matrix<T, N, N> &operator=(const Matrix<T, N, N> &other)
         {
             for (fsize i = 0; i != N * N; ++i)
                 _arr[i] = other._arr[i];
+            return (*this);
+        }
+
+        inline Matrix<T, N, N> &operator=(Matrix<T, N, N> &&other)
+        {
+            for (fsize i = 0; i != N * N; ++i)
+                _arr[i] = std::move(other._arr[i]);
             return (*this);
         }
 
