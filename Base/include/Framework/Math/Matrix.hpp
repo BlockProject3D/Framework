@@ -44,27 +44,38 @@ namespace bpf
     public:
         inline Matrix()
         {
-            std::memset(_arr, 0, N * M * sizeof(T));
+            for (fsize i = 0; i != N * M; ++i)
+                _arr[i] = DefaultOf<T>();
+        }
+
+        explicit inline Matrix(const T val)
+        {
+            for (fsize i = 0; i != N * M; ++i)
+                _arr[i] = val;
         }
 
         inline Matrix(const std::initializer_list<T> &lst)
         {
-            std::memcpy(_arr, lst.begin(), N * M * sizeof(T));
-        }
+            fsize i = 0;
 
-        inline Matrix(const T *mat)
-        {
-            std::memcpy(_arr, mat, N * M * sizeof(T));
+            for (auto &elem : lst)
+            {
+                if (i >= N * M)
+                    break;
+                _arr[i++] = elem;
+            }
         }
 
         inline Matrix(const Matrix<T, N, M> &other)
         {
-            std::memcpy(_arr, other._arr, N * M * sizeof(T));
+            for (fsize i = 0; i != N * M; ++i)
+                _arr[i] = other._arr[i];
         }
 
         inline Matrix<T, N, M> &operator=(const Matrix<T, N, M> &other)
         {
-            std::memcpy(_arr, other._arr, N * M * sizeof(T));
+            for (fsize i = 0; i != N * M; ++i)
+                _arr[i] = other._arr[i];
             return (*this);
         }
 
@@ -107,30 +118,42 @@ namespace bpf
         T _arr[N * N];
 
         static Matrix<T, N, N> GenIdentity();
+
     public:
         inline Matrix()
         {
-            std::memset(_arr, 0, N * N * sizeof(T));
+            for (fsize i = 0; i != N * N; ++i)
+                _arr[i] = DefaultOf<T>();
+        }
+
+        explicit inline Matrix(const T val)
+        {
+            for (fsize i = 0; i != N * N; ++i)
+                _arr[i] = val;
         }
 
         inline Matrix(const std::initializer_list<T> &lst)
         {
-            std::memcpy(_arr, lst.begin(), N * N * sizeof(T));
-        }
+            fsize i = 0;
 
-        inline Matrix(const T *mat)
-        {
-            std::memcpy(_arr, mat, N * N * sizeof(T));
+            for (auto &elem : lst)
+            {
+                if (i >= N * N)
+                    break;
+                _arr[i++] = elem;
+            }
         }
 
         inline Matrix(const Matrix<T, N, N> &other)
         {
-            std::memcpy(_arr, other._arr, N * N * sizeof(T));
+            for (fsize i = 0; i != N * N; ++i)
+                _arr[i] = other._arr[i];
         }
 
         inline Matrix<T, N, N> &operator=(const Matrix<T, N, N> &other)
         {
-            std::memcpy(_arr, other._arr, N * N * sizeof(T));
+            for (fsize i = 0; i != N * N; ++i)
+                _arr[i] = other._arr[i];
             return (*this);
         }
 
@@ -192,8 +215,8 @@ namespace bpf
         {
         }
 
-        inline Matrix(const T *mat)
-            : _arr(*mat)
+        explicit inline Matrix(const T val)
+            : _arr(val)
         {
         }
 
@@ -241,7 +264,7 @@ namespace bpf
 
         Matrix(const fsize n, const fsize m);
         Matrix(const fsize n, const fsize m, const std::initializer_list<T> &lst);
-        Matrix(const fsize n, const fsize m, const T *mat);
+        Matrix(const fsize n, const fsize m, const T val);
         Matrix(const Matrix<T> &other);
         Matrix(Matrix<T> &&other);
         ~Matrix();
@@ -311,7 +334,7 @@ namespace bpf
     };
 
     template <typename T, fsize N, fsize M>
-    const Matrix<T, N, M> Matrix<T, N, M>::Zero = Matrix<T, N, M>();
+    const Matrix<T, N, M> Matrix<T, N, M>::Zero = Matrix<T, N, M>((T)0);
 
     template <typename T, fsize N>
     const Matrix<T, N, N> Matrix<T, N, N>::Identity = Matrix<T, N, N>::GenIdentity();

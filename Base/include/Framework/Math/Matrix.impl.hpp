@@ -47,7 +47,7 @@ namespace bpf
             for (fsize x = 0; x != N; ++x)
             {
                 if (x == y)
-                    res(x, y) = 1;
+                    res(x, y) = (T)1;
             }
         }
         return (res);
@@ -260,36 +260,46 @@ namespace bpf
         , _n(n)
         , _m(m)
     {
-        std::memset(_arr, 0, n * m * sizeof(T));
+        for (fsize i = 0; i != n * m; ++i)
+            _arr[i] = DefaultOf<T>();
     }
-    
+
+    template <typename T>
+    Matrix<T>::Matrix(const fsize n, const fsize m, const T val)
+        : _arr(new T[n * m])
+        , _n(n)
+        , _m(m)
+    {
+        for (fsize i = 0; i != n * m; ++i)
+            _arr[i] = val;
+    }
+
     template <typename T>
     Matrix<T>::Matrix(const fsize n, const fsize m, const std::initializer_list<T> &lst)
         : _arr(new T[n * m])
         , _n(n)
         , _m(m)
     {
-        std::memcpy(_arr, lst.begin(), n * m * sizeof(T));
+        fsize i = 0;
+
+        for (auto &elem : lst)
+        {
+            if (i >= m * n)
+                break;
+            _arr[i++] = elem;
+        }
     }
-    
-    template <typename T>
-    Matrix<T>::Matrix(const fsize n, const fsize m, const T *mat)
-        : _arr(new T[n * m])
-        , _n(n)
-        , _m(m)
-    {
-        std::memcpy(_arr, mat, n * m * sizeof(T));
-    }
-    
+
     template <typename T>
     Matrix<T>::Matrix(const Matrix<T> &other)
         : _arr(new T[other._n * other._m])
         , _n(other._n)
         , _m(other._m)
     {
-        std::memcpy(_arr, other._arr, _n * _m * sizeof(T));
+        for (fsize i = 0; i != n * m; ++i)
+            _arr[i] = other._arr[i];
     }
-    
+
     template <typename T>
     Matrix<T>::Matrix(Matrix<T> &&other)
         : _arr(other._arr)
@@ -306,7 +316,7 @@ namespace bpf
     {
         delete[] _arr;
     }
-    
+
     template <typename T>
     Matrix<T> &Matrix<T>::operator=(const Matrix<T> &other)
     {
@@ -315,7 +325,8 @@ namespace bpf
         _n = other._n;
         _m = other._m;
         _arr = new T[_n * _m];
-        std::memcpy(_arr, other._arr, _n * _m * sizeof(T));
+        for (fsize i = 0; i != _m * _n; ++i)
+            _arr[i] = other._arr[i];
     }
 
     template <typename T>
@@ -341,7 +352,7 @@ namespace bpf
             for (fsize x = 0; x != n; ++x)
             {
                 if (x == y)
-                    m(y, x) = 1;
+                    m(y, x) = (T)1;
             }
         }
         return (m);
@@ -350,7 +361,7 @@ namespace bpf
     template <typename T>
     Matrix<T> Matrix<T>::Zero(const fsize n, const fsize m)
     {
-        return (Matrix<T>(n, m == 0 ? n : m));
+        return (Matrix<T>(n, m == 0 ? n : m, (T)0));
     }
 
     template <typename T>
