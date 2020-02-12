@@ -296,7 +296,7 @@ namespace bpf
         , _n(other._n)
         , _m(other._m)
     {
-        for (fsize i = 0; i != n * m; ++i)
+        for (fsize i = 0; i != _n * _m; ++i)
             _arr[i] = other._arr[i];
     }
 
