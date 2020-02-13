@@ -118,6 +118,7 @@ namespace bpf
 
         template <fsize P>
         Matrix<T, N, P> operator*(const Matrix<T, M, P> &other) const;
+        Matrix<T, N, M> operator*(const T &other) const;
         Vector<T, N> operator*(const Vector<T, N> &other) const;
         Matrix<T, M, N> Transpose() const;
         void SwapRows(const fsize rowa, const fsize rowb);
@@ -226,7 +227,9 @@ namespace bpf
         T GetDeterminant() const;
         template <fsize P>
         void GetMinor(Matrix<T, P, P> &dest, fsize row, fsize col) const;
-        Matrix<T, N, N> operator*(const Matrix<T, N, N> &other) const;
+        template <fsize P>
+        Matrix<T, N, P> operator*(const Matrix<T, N, P> &other) const;
+        Matrix<T, N, N> operator*(const T &other) const;
         Vector<T, N> operator*(const Vector<T, N> &other) const;
         Matrix<T, N, N> Transpose() const;
         void SwapRows(const fsize rowa, const fsize rowb);

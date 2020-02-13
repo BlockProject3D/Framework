@@ -89,13 +89,14 @@ namespace bpf
     }
 
     template <typename T, fsize N>
-    Matrix<T, N, N> Matrix<T, N, N>::operator*(const Matrix<T, N, N> &other) const
+    template <fsize P>
+    Matrix<T, N, P> Matrix<T, N, N>::operator*(const Matrix<T, N, P> &other) const
     {
         Matrix<T, N, N> mat;
 
         for (fsize i = 0; i != N; ++i)
         {
-            for (fsize j = 0; j != N; ++j)
+            for (fsize j = 0; j != P; ++j)
             {
                 T res = 0;
                 for (fsize k = 0; k != N; ++k)
