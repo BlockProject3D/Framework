@@ -54,6 +54,18 @@ namespace bpf
     }
 
     template <typename T, fsize N, fsize M>
+    bool Matrix<T, N, M>::operator==(const Matrix<T, N, M> &other) const
+    {
+        for (fsize i = 0; i != N * M; ++i)
+        {
+            T diff = Math::Abs(_arr[i] - other._arr[i]);
+            if (diff > Math::Epsilon<T>())
+                return (false);
+        }
+        return (true);
+    }
+
+    template <typename T, fsize N, fsize M>
     template <fsize P>
     Matrix<T, N, P> Matrix<T, N, M>::operator*(const Matrix<T, M, P> &other) const
     {
@@ -96,6 +108,18 @@ namespace bpf
         for (fsize i = 0; i != N * M; ++i)
             res._arr[i] *= other;
         return (res);
+    }
+
+    template <typename T, fsize N>
+    bool Matrix<T, N, N>::operator==(const Matrix<T, N, N> &other) const
+    {
+        for (fsize i = 0; i != N * N; ++i)
+        {
+            T diff = Math::Abs(_arr[i] - other._arr[i]);
+            if (diff > Math::Epsilon<T>())
+                return (false);
+        }
+        return (true);
     }
 
     template <typename T, fsize N>
@@ -453,7 +477,21 @@ namespace bpf
             }
         }
     }
-    
+
+    template <typename T>
+    bool Matrix<T>::operator==(const Matrix<T> &other) const
+    {
+        if (_m != other._m || _n != other._n)
+            return (false);
+        for (fsize i = 0; i != _n * _m; ++i)
+        {
+            T diff = Math::Abs(_arr[i] - other._arr[i]);
+            if (diff > Math::Epsilon<T>())
+                return (false);
+        }
+        return (true);
+    }
+
     template <typename T>
     Matrix<T> Matrix<T>::operator*(const Matrix<T> &other) const
     {
