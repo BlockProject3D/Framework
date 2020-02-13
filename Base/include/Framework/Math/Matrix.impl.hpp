@@ -88,6 +88,16 @@ namespace bpf
 
     }
 
+    template <typename T, fsize N, fsize M>
+    Matrix<T, N, M> Matrix<T, N, M>::operator*(const T &other) const
+    {
+        Matrix<T, N, M> res;
+
+        for (fsize i = 0; i != N * M; ++i)
+            res._arr[i] *= other;
+        return (res);
+    }
+
     template <typename T, fsize N>
     template <fsize P>
     Matrix<T, N, P> Matrix<T, N, N>::operator*(const Matrix<T, N, P> &other) const
@@ -121,6 +131,16 @@ namespace bpf
         }
         return (asda);
 
+    }
+
+    template <typename T, fsize N>
+    Matrix<T, N, N> Matrix<T, N, N>::operator*(const T &other) const
+    {
+        Matrix<T, N, N> res;
+
+        for (fsize i = 0; i != N * N; ++i)
+            res._arr[i] *= other;
+        return (res);
     }
 
     template <typename T, fsize N, fsize M>
@@ -468,6 +488,16 @@ namespace bpf
                 res += other(k) * _arr[i * _n + k];
             res(i) = res;
         }
+        return (res);
+    }
+
+    template <typename T>
+    Matrix<T> Matrix<T>::operator*(const T &other) const
+    {
+        Matrix<T> res(_n, _m);
+
+        for (fsize i = 0; i < _n * _m; ++i)
+            res._arr[i] *= other;
         return (res);
     }
 
