@@ -120,6 +120,7 @@ namespace bpf
 
         template <fsize P>
         Matrix<T, N, P> operator*(const Matrix<T, M, P> &other) const;
+        Matrix<T, N, M> operator+(const Matrix<T, N, M> &other) const;
         Vector<T, N> operator*(const Vector<T, N> &other) const;
         Matrix<T, N, M> operator*(const T &other) const;
         Matrix<T, M, N> Transpose() const;
@@ -232,6 +233,7 @@ namespace bpf
         bool operator==(const Matrix<T, N, N> &other) const;
         template <fsize P>
         Matrix<T, N, P> operator*(const Matrix<T, N, P> &other) const;
+        Matrix<T, N, N> operator+(const Matrix<T, N, N> &other) const;
         Matrix<T, N, N> operator*(const T &other) const;
         Vector<T, N> operator*(const Vector<T, N> &other) const;
         Matrix<T, N, N> Transpose() const;
@@ -381,6 +383,7 @@ namespace bpf
          * @return the product of this by other
          */
         Matrix<T> operator*(const Matrix<T> &other) const;
+        Matrix<T> operator+(const Matrix<T> &other) const;
         Vector<T> operator*(const Vector<T> &other) const;
         Matrix<T> operator*(const T &other) const;
         Matrix<T> Transpose() const;

@@ -85,6 +85,16 @@ namespace bpf
     }
 
     template <typename T, fsize N, fsize M>
+    Matrix<T, N, M> Matrix<T, N, M>::operator+(const Matrix<T, N, M> &other) const
+    {
+        Matrix<T, N, M> res;
+
+        for (fsize i = 0; i != N * M; ++i)
+            res._arr[i] = _arr[i] + other._arr[i];
+        return (res);
+    }
+
+    template <typename T, fsize N, fsize M>
     Vector<T, N> Matrix<T, N, M>::operator*(const Vector<T, N> &other) const
     {
         Vector<T, N> res;
@@ -106,7 +116,7 @@ namespace bpf
         Matrix<T, N, M> res;
 
         for (fsize i = 0; i != N * M; ++i)
-            res._arr[i] *= other;
+            res._arr[i] = _arr[i] * other;
         return (res);
     }
 
@@ -142,6 +152,16 @@ namespace bpf
     }
 
     template <typename T, fsize N>
+    Matrix<T, N, N> Matrix<T, N, N>::operator+(const Matrix<T, N, N> &other) const
+    {
+        Matrix<T, N, N> res;
+
+        for (fsize i = 0; i != N * N; ++i)
+            res._arr[i] = _arr[i] + other._arr[i];
+        return (res);
+    }
+
+    template <typename T, fsize N>
     Vector<T, N> Matrix<T, N, N>::operator*(const Vector<T, N> &other) const
     {
         Vector<T, N> asda;
@@ -163,7 +183,7 @@ namespace bpf
         Matrix<T, N, N> res;
 
         for (fsize i = 0; i != N * N; ++i)
-            res._arr[i] *= other;
+            res._arr[i] = _arr[i] * other;
         return (res);
     }
 
@@ -513,6 +533,20 @@ namespace bpf
     }
 
     template <typename T>
+    Matrix<T> Matrix<T>::operator+(const Matrix<T> &other) const
+    {
+        if (_m != other._m)
+            throw IncompatibleMatrixSizeException((fisize)_m, (fisize)other._m);
+        if (_n != other._n)
+            throw IncompatibleMatrixSizeException((fisize)_n, (fisize)other._n);
+        Matrix<T> mat(_n, _m);
+
+        for (fsize i = 0; i != _n * _m; ++i)
+            mat._arr[i] = _arr[i] + other._arr[i];
+        return (mat);
+    }
+
+    template <typename T>
     Vector<T> Matrix<T>::operator*(const Vector<T> &other) const
     {
         if (_n != other.Dim())
@@ -535,7 +569,7 @@ namespace bpf
         Matrix<T> res(_n, _m);
 
         for (fsize i = 0; i < _n * _m; ++i)
-            res._arr[i] *= other;
+            res._arr[i] = _arr[i] * other;
         return (res);
     }
 
