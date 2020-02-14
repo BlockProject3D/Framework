@@ -3,8 +3,6 @@ project(BPF)
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/../CMakes/Framework.cmake")
 
-set(CMAKE_CXX_STANDARD 11)
-
 set(SOURCES
     ./include/Framework/IO/File.hpp
     ./include/Framework/IO/EStringSerializer.hpp
