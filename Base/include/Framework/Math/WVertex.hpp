@@ -29,56 +29,16 @@
 #pragma once
 #include "Framework/Types.hpp"
 #include "Framework/Math/Vector.hpp"
-#include "Framework/Math/Matrix.hpp"
 
 namespace bpf
 {
-    template <typename T>
-    class BP_TPL_API Viewport
+    /**
+     * Weigthed vertex
+     */
+    template <typename T, fsize I>
+    struct BP_TPL_API WVertex
     {
-    public:
-        /**
-         * Field of view
-         */
-        T FOV;
-        
-        /**
-         * Near clipping plane
-         */
-        T NearPlane;
-        
-        /**
-         * Far clipping plane
-         */
-        T FarPlane;
-        
-        /**
-         * Viewport width
-         */
-        uint32 Width;
-        
-        /**
-         * Viewport height
-         */
-        uint32 Height;
-
-        /**
-         * Projection matrix
-         */
-        Matrix4<T> Projection;
-
-        Vector3<T> Project(const Matrix4<T> &view, const Vector3<T> &pt);
-
-        inline Viewport()
-            : FOV(0.0f)
-            , NearPlane(0.0f)
-            , FarPlane(0.0f)
-            , Width(0)
-            , Height(0)
-            , Projection(Matrix4<T>::Identity)
-        {
-        }
+        Vector<T, I> Position;
+        T Weight;
     };
-};
-
-#include "Framework/Math/Viewport.impl.hpp"
+}

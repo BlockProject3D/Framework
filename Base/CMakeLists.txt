@@ -50,6 +50,9 @@ set(SOURCES
     ./include/Framework/Math/Transform3D.impl.hpp
     ./include/Framework/Math/Transform.hpp
     ./include/Framework/Math/Triangle.hpp
+    ./include/Framework/Math/Polygon.hpp
+    ./include/Framework/Math/WPolygon.hpp
+    ./include/Framework/Math/WVertex.hpp
     ./include/Framework/Math/Math.hpp
     ./include/Framework/Logging/Logger.hpp
     ./include/Framework/Logging/ILogHandler.hpp
