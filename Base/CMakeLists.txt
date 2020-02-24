@@ -43,6 +43,10 @@ set(SOURCES
     ./include/Framework/Math/IncompatibleMatrixSizeException.hpp
     ./include/Framework/Math/NonSquareMatrixException.hpp
     ./include/Framework/Math/NonInvertibleMatrixException.hpp
+    ./include/Framework/Math/Transform2D.hpp
+    ./include/Framework/Math/Transform3D.hpp
+    ./include/Framework/Math/Transform2D.impl.hpp
+    ./include/Framework/Math/Transform3D.impl.hpp
     ./include/Framework/Math/Transform.hpp
     ./include/Framework/Math/Triangle.hpp
     ./include/Framework/Math/Math.hpp

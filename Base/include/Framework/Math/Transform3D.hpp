@@ -1,0 +1,96 @@
+// Copyright (c) 2020, BlockProject
+//
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without modification,
+// are permitted provided that the following conditions are met:
+//
+//     * Redistributions of source code must retain the above copyright notice,
+//       this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright notice,
+//       this list of conditions and the following disclaimer in the documentation
+//       and/or other materials provided with the distribution.
+//     * Neither the name of BlockProject nor the names of its contributors
+//       may be used to endorse or promote products derived from this software
+//       without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+// CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+// EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+// PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+// LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+// NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+#pragma once
+#include "Framework/Math/Quaternion.hpp"
+#include "Framework/Math/Vector.hpp"
+#include "Framework/Math/Matrix.hpp"
+
+namespace bpf
+{
+    template <typename T>
+    class BP_TPL_API Transform3D
+    {
+    public:
+        class BP_TPL_API MatrixBuilder
+        {
+        private:
+            Matrix4<T> _matrix;
+
+        public:
+            inline MatrixBuilder()
+                : _matrix(Matrix4<T>::Identity)
+            {
+            }
+            MatrixBuilder &Translate(const Vector3<T> &translation) noexcept;
+            MatrixBuilder &Scale(const Vector3<T> &scale) noexcept;
+            MatrixBuilder &ShearX(const Vector3<T> &shear) noexcept;
+            MatrixBuilder &ShearY(const Vector3<T> &shear) noexcept;
+            MatrixBuilder &ShearZ(const Vector3<T> &shear) noexcept;
+            MatrixBuilder &RotateX(const T &rotation) noexcept;
+            MatrixBuilder &RotateY(const T &rotation) noexcept;
+            MatrixBuilder &RotateZ(const T &rotation) noexcept;
+            inline MatrixBuilder &Rotate(const Quat<T> &quat) noexcept
+            {
+                _matrix *= quat.ToMatrix();
+                return (*this);
+            }
+            inline Matrix4<T> Build() const noexcept
+            {
+                return (_matrix);
+            }
+        };
+
+    public:
+        Vector3<T> Position;
+        Vector3<T> Scale;
+        Quat<T> Rotation;
+
+        explicit inline Transform3D(const Vector3<T> &pos = Vector3<T>::Zero, const Vector3<T> &scale = Vector3<T>::Identity, const Quat<T> &rotation = Quat<T>::Identity)
+            : Position(pos)
+            , Scale(scale)
+            , Rotation(rotation)
+        {
+        }
+
+        Vector3<T> LocalToWorld(const Vector3<T> &local);
+        Vector3<T> WorldToLocal(const Vector3<T> &world);
+
+        inline Matrix4<T> ToMatrix() const noexcept
+        {
+            return (MatrixBuilder().Rotate(Rotation).Scale(Scale).Translate(Position).Build());
+        }
+
+        Transform3D operator+(const Transform3D &other) const noexcept;
+        void operator+=(const Transform3D &other);
+
+        void RotateArround(const Vector3<T> &pivot, const Quat<T> &rotation) noexcept;
+    };
+}
+
+#include "Framework/Math/Transform3D.impl.hpp"
