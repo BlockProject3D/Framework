@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -33,23 +33,24 @@
 
 namespace bpf
 {
+    template <typename T>
     class BPF_API Viewport
     {
     public:
         /**
          * Field of view
          */
-        float FOV;
+        T FOV;
         
         /**
          * Near clipping plane
          */
-        float NearPlane;
+        T NearPlane;
         
         /**
          * Far clipping plane
          */
-        float FarPlane;
+        T FarPlane;
         
         /**
          * Viewport width
@@ -60,13 +61,13 @@ namespace bpf
          * Viewport height
          */
         uint32 Height;
-        
+
         /**
          * Projection matrix
          */
-        Matrix4f Projection;
+        Matrix4<T> Projection;
 
-        Vector3f Project(const Matrix4f &view, const Vector3f &pt);
+        Vector3<T> Project(const Matrix4<T> &view, const Vector3<T> &pt);
 
         inline Viewport()
             : FOV(0.0f)
@@ -74,8 +75,10 @@ namespace bpf
             , FarPlane(0.0f)
             , Width(0)
             , Height(0)
-            , Projection(Matrix4f::Identity)
+            , Projection(Matrix4<T>::Identity)
         {
         }
     };
 };
+
+#include "Framework/Math/Viewport.impl.hpp"

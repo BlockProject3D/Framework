@@ -36,6 +36,7 @@ set(SOURCES
     ./include/Framework/Math/Matrix3.impl.hpp
     ./include/Framework/Math/Matrix4.impl.hpp
     ./include/Framework/Math/Viewport.hpp
+    ./include/Framework/Math/Viewport.impl.hpp
     ./include/Framework/Math/Quaternion.hpp
     ./include/Framework/Math/Quaternion.impl.hpp
     ./include/Framework/Math/Matrix.hpp
