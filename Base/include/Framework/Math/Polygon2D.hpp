@@ -27,18 +27,36 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Types.hpp"
-#include "Framework/Math/Vector.hpp"
+#include "Framework/ArrayList.hpp"
+#include "Framework/Math/Transform2D.hpp"
 
 namespace bpf
 {
-    /**
-     * Weigthed vertex
-     */
-    template <typename T, fsize I>
-    struct BP_TPL_API WVertex
+    template <typename T>
+    class BP_TPL_API Polygon2D
     {
-        Vector<T, I> Position;
-        T Weight;
+    public:
+        ArrayList<Vector2> Vertices;
+
+        explicit inline Polygon2D(const ArrayList<Vector2> &verts)
+            : Vertices(verts)
+        {
+        }
+
+        explicit inline Polygon2D(ArrayList<Vector2> &&verts)
+            : Vertices(std::move(verts))
+        {
+        }
+
+        inline void Transform(const Transform2D &transform)
+        {
+            Transform(transform.ToMatrix());
+        }
+
+        Vector2 GetBarycenter() const noexcept;
+        void Transform(const Matrix3 &matrix);
+        ArrayList<Polygon2D> Triangulate() const noexcept;
     };
 }
+
+#include "Framework/Math/Polygon2D.impl.hpp"

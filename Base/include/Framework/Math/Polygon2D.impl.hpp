@@ -30,4 +30,36 @@
 
 namespace bpf
 {
+    template <typename T>
+    Vector2<T> Polygon2D<T>::GetBarycenter() const noexcept
+    {
+        Vector2<T> res;
+
+        for (const auto &v : Vertices)
+            res += v;
+        return (res / Vertices.Size());
+    }
+
+    template <typename T>
+    void Polygon2D<T>::Transform(const Matrix3<T> &matrix)
+    {
+        for (auto &v : Vertices)
+        {
+            Vector3<T> vec(v, 1.0f);
+            auto res = matrix * vec;
+            v = Vector2<T>(res.X, res.Y);
+        }
+    }
+
+    template <typename T>
+    ArrayList<Polygon2D<T>> Polygon2D<T>::Triangulate() const noexcept
+    {
+        if (Vertices.Size <= 3)
+            return ({ *this });
+        auto lst = ArrayList<Polygon2D>();
+        auto v1 = Vertices[0];
+        for (fsize i = 1; i + 1 < Vertices.Size(); i += 2)
+            lst.Add(Polygon2D({ v1, Vertices[i], Vertices[i + 1] }));
+        return (lst);
+    }
 }

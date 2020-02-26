@@ -77,11 +77,6 @@ namespace bpf
 
         Transform2D operator+(const Transform2D &other) const noexcept;
         void operator+=(const Transform2D &other);
-
-        static Matrix3<T> CreateRotationMatrix(const T &angle);
-        static Matrix3<T> CreateScaleMatrix(const Vector2<T> &scale);
-        static Matrix3<T> CreateTranslationMatrix(const Vector2<T> &translation);
-        static Matrix3<T> CreateShearMatrix(const Vector2<T> &shear);
     };
 }
 

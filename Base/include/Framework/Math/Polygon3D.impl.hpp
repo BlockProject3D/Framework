@@ -27,24 +27,39 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Types.hpp"
-#include "Framework/Math/WVertex.hpp"
-#include "Framework/ArrayList.hpp"
 
 namespace bpf
 {
-    /**
-     * Weigthed polygon
-     */
-    template <typename T, fsize I>
-    class BP_TPL_API WPolygon
+    template <typename T>
+    Vector3<T> Polygon3D<T>::GetNormal() const noexcept
     {
-    public:
-        ArrayList<WVertex> Vertices;
+        if (Vertices.Size() >= 3)
+        {
+            Vector3<T> v = Vertices[1] - Vertices[0];
+            Vector3<T> w = Vertices[2] - Vertices[0];
+            return (v.Cross(w));
+        }
+        return (Vector3<T>::Zero);
+    }
 
-        Vector<T, I> GetNormal();
-        Vector<T, I> GetBarycenter();
-    };
+    template <typename T>
+    Vector3<T> Polygon3D<T>::GetBarycenter() const noexcept
+    {
+        Vector3<T> res;
+
+        for (const auto &v : Vertices)
+            res += v;
+        return (res / Vertices.Size());
+    }
+
+    template <typename T>
+    void Polygon3D<T>::Transform(const Matrix4<T> &matrix)
+    {
+        for (auto &v : Vertices)
+        {
+            Vector4<T> vec(v, 1.0f);
+            auto res = matrix * vec;
+            v = Vector3<T>(res.X, res.Y, res.Z);
+        }
+    }
 }
-
-#include "Framework/Math/WPolygon.impl.hpp"
