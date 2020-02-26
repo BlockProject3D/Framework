@@ -34,7 +34,7 @@
 namespace bpf
 {
     template <typename T>
-    class BP_TPL_API Quat
+    class BP_TPL_API Quaternion
     {
     private:
         T X;
@@ -43,7 +43,7 @@ namespace bpf
         T W;
 
     public:
-        inline Quat()
+        inline Quaternion()
             : X(0)
             , Y(0)
             , Z(0)
@@ -51,19 +51,11 @@ namespace bpf
         {
         }
         
-        inline Quat(const T w, const T x, const T y, const T z)
+        inline Quaternion(const T w, const T x, const T y, const T z)
             : X(x)
             , Y(y)
             , Z(z)
             , W(w)
-        {
-        }
-
-        inline Quat(const Quat<T> &other)
-            : X(other.X)
-            , Y(other.Y)
-            , Z(other.Z)
-            , W(other.W)
         {
         }
 
@@ -72,20 +64,20 @@ namespace bpf
          * WARNING : Angles are expressed in radians
          * @param euler euler angles X = Pitch, Y = Yaw, Z = Roll
          */
-        explicit Quat(const Vector<T, 3> &euler);
+        explicit Quaternion(const Vector<T, 3> &euler);
 
         /**
          * Constructs a quaternion from the rotation between two vectors
          * @param from first vector
          * @param to second vector
          */
-        Quat(const Vector<T, 3> &from, const Vector<T, 3> &to);
+        Quaternion(const Vector<T, 3> &from, const Vector<T, 3> &to);
 
         /**
          * Constructs a quaternion from axis angle
          * WARNING : Angle is expressed in radians
          */
-        Quat(const Vector<T, 3> &axis, const T ang);
+        Quaternion(const Vector<T, 3> &axis, const T ang);
 
         /**
          * Rotates the given vector by this quaternion
@@ -110,9 +102,9 @@ namespace bpf
 
         Matrix<T, 4, 4> ToMatrix() const;
 
-        inline Quat<T> Invert() const
+        inline Quaternion<T> Invert() const
         {
-            return (Quat<T>(W, -X, -Y, -Z));
+            return (Quaternion<T>(W, -X, -Y, -Z));
         }
 
         inline T Length() const
@@ -130,39 +122,30 @@ namespace bpf
             W /= mag;
         }
 
-        bool operator==(const Quat<T> &other) const;
-
-        inline Quat<T> &operator=(const Quat<T> &other)
-        {
-            X = other.X;
-            Y = other.Y;
-            Z = other.Z;
-            W = other.W;
-            return (*this);
-        }
+        bool operator==(const Quaternion<T> &other) const;
 
         /**
          * Multiplies two quaternions, returns the cumulation of the rotation of this and other
          */
-        Quat<T> operator*(const Quat<T> &other) const;
+        Quaternion<T> operator*(const Quaternion<T> &other) const;
 
-        inline Quat<T> operator+(const Quat<T> &other) const
+        inline Quaternion<T> operator+(const Quaternion<T> &other) const
         {
-            return (Quat<T>(W + other.W, X + other.X, Y + other.Y, Z + other.Z));
+            return (Quaternion<T>(W + other.W, X + other.X, Y + other.Y, Z + other.Z));
         }
 
         /**
          * Returns a copy of this quaternion raised to the power of n
          */
-        Quat<T> Pow(const T n) const;
-        Quat<T> Exp() const;
-        Quat<T> Ln() const;
+        Quaternion<T> Pow(const T n) const;
+        Quaternion<T> Exp() const;
+        Quaternion<T> Log() const;
 
         /**
          * Returns the angle in degrees between two quaternions
          * WARNING : Angle is expressed in radians
          */
-        T Angle(const Quat<T> &other) const;
+        T Angle(const Quaternion<T> &other) const;
 
         /**
          * Returns the euler angles representation of that quaternion
@@ -189,7 +172,7 @@ namespace bpf
         /**
          * Linear Interpolation between two quaternions
          */
-        static Quat<T> Lerp(const Quat<T> &q, const Quat<T> &q1, const T t);
+        static Quaternion<T> Lerp(const Quaternion<T> &q, const Quaternion<T> &q1, const T t);
 
         /**
          * Spherical linear interpolation between two quaternions
@@ -197,25 +180,25 @@ namespace bpf
          * Never could figure why it did this
          * TODO : Figure out why Slerp does not work as intended, and fix it
          */
-        static Quat<T> Slerp(const Quat<T> &q, const Quat<T> &q1, const T t);
+        static Quaternion<T> Slerp(const Quaternion<T> &q, const Quaternion<T> &q1, const T t);
 
         /**
          * Zero quaternion
          */
-        static const Quat<T> Zero;
+        static const Quaternion<T> Zero;
 
         /**
          * Identity quaternion
          */
-        static const Quat<T> Identity;
+        static const Quaternion<T> Identity;
     };
 
     template <typename T>
-    const Quat<T> Quat<T>::Zero = Quat<T>(0, 0, 0, 0);
+    const Quaternion<T> Quaternion<T>::Zero = Quaternion<T>(0, 0, 0, 0);
     template <typename T>
-    const Quat<T> Quat<T>::Identity = Quat<T>(1, 0, 0, 0);
+    const Quaternion<T> Quaternion<T>::Identity = Quaternion<T>(1, 0, 0, 0);
     
-    using Quatf = Quat<float>;
+    using Quaternionf = Quaternion<float>;
 }
 
 #include "Framework/Math/Quaternion.impl.hpp"

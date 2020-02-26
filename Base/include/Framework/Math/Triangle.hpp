@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Math/Vector.hpp"
+/*#include "Framework/Math/Vector.hpp"
 #include "Framework/Math/Transform.hpp"
 
 namespace bpf
@@ -52,4 +52,4 @@ namespace bpf
         Vector3f GetNormal() const;
         Vector3f GetBarycentricCoordinates(const Vector3f &p) const;
     };
-};
+};*/

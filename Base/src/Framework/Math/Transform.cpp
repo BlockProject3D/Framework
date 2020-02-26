@@ -28,7 +28,7 @@
 
 #include "Framework/Math/Transform.hpp"
 
-namespace bpf
+/*namespace bpf
 {
     void Transform::RebuildMatrix()
     {
@@ -45,19 +45,19 @@ namespace bpf
 
         Vector4f res = worldinv * v;
         return (Vector3f(res.X, res.Y, res.Z));*/
-        return (worldpt);
-    }
+        //return (worldpt);
+    //}
 
-    Vector3f Transform::LocalToWorld(const Vector3f &localpt) const
+    /*Vector3f Transform::LocalToWorld(const Vector3f &localpt) const
     {
         /*Vector4f v(localpt, 1.0f);
 
         Vector4f res = _mat * v;
         return (Vector3f(res.X, res.Y, res.Z));*/
-        return (localpt);
-    }
+        //return (localpt);
+    //}
 
-    Vector3f Transform::TransformPoint(const Vector3f &pt) const
+    /*Vector3f Transform::TransformPoint(const Vector3f &pt) const
     {
         Vector3f res = pt;
 
@@ -66,4 +66,4 @@ namespace bpf
         res += _pos;
         return (res);
     }
-}
+}*/

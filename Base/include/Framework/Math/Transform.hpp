@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Math/Vector.hpp"
+/*#include "Framework/Math/Vector.hpp"
 #include "Framework/Math/Matrix.hpp"
 #include "Framework/Math/Quaternion.hpp"
 
@@ -135,4 +135,4 @@ namespace bpf
             return (_pos == other._pos && _quat == other._quat && _scale == other._scale);
         }
     };
-}
+}*/
