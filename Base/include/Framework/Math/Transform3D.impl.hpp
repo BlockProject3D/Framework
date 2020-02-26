@@ -27,6 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+
 namespace bpf
 {
     template <typename T>
@@ -136,7 +137,7 @@ namespace bpf
     template <typename T>
     Vector3<T> Transform3D<T>::WorldToLocal(const Vector3<T> &world)
     {
-        auto res = ToMatrix().Invert() * Vector4<T>(local, (T)1);
+        auto res = ToMatrix().Invert() * Vector4<T>(world, (T)1);
 
         return (Vector3<T>(res.X, res.Y, res.Z));
     }
