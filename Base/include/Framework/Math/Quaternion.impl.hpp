@@ -116,7 +116,7 @@ namespace bpf
     template <typename T>
     Quaternion<T> Quaternion<T>::Pow(const T n) const
     {
-        Quaternion<T> q = Ln();
+        Quaternion<T> q = Log();
 
         q.W *= n;
         q.X *= n;
@@ -174,7 +174,7 @@ namespace bpf
     template <typename T>
     Quaternion<T> Quaternion<T>::Slerp(const Quaternion<T> &q, const Quaternion<T> &q1, const T t)
     {
-        Quat<T> res = ((q1 * q.Invert()).Pow(t)) * q;
+        Quaternion<T> res = ((q1 * q.Invert()).Pow(t)) * q;
 
         return (res);
     }

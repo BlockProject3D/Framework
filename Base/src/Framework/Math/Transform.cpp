@@ -40,7 +40,7 @@
     
     Vector3f Transform::WorldToLocal(const Vector3f &worldpt) const
     {
-        /*Vector4f v(worldpt, 1.0f);
+        Vector4f v(worldpt, 1.0f);
         Matrix4f worldinv = _mat.Invert();
 
         Vector4f res = worldinv * v;
@@ -50,7 +50,7 @@
 
     /*Vector3f Transform::LocalToWorld(const Vector3f &localpt) const
     {
-        /*Vector4f v(localpt, 1.0f);
+        Vector4f v(localpt, 1.0f);
 
         Vector4f res = _mat * v;
         return (Vector3f(res.X, res.Y, res.Z));*/
