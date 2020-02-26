@@ -170,7 +170,7 @@ namespace bpf
          * @param val number for Ln(val)
          */
         template <typename T>
-        inline static T Ln(const T val)
+        inline static T Log(const T val)
         {
             return (log(val));
         }
@@ -180,9 +180,20 @@ namespace bpf
          * @param val number for Log(val)
          */
         template <typename T>
-        inline static T Log(const T val)
+        inline static T Log10(const T val)
         {
             return (log10(val));
+        }
+
+        /**
+         * Shortcut to calculate log base n
+         * @param val number for Log(val)
+         * @param base the logarythm base to use
+         */
+        template <typename T>
+        inline static T Log(const T base, const T val)
+        {
+            return (Log(val) / Log(base));
         }
 
         /**
@@ -260,25 +271,25 @@ namespace bpf
     }
 
     template <>
-    inline float Math::Ln(const float val)
+    inline float Math::Log(const float val)
     {
         return (logf(val));
     }
 
     template <>
-    inline long double Math::Ln(const long double val)
+    inline long double Math::Log(const long double val)
     {
         return (logl(val));
     }
 
     template <>
-    inline float Math::Log(const float val)
+    inline float Math::Log10(const float val)
     {
         return (log10f(val));
     }
 
     template <>
-    inline long double Math::Log(const long double val)
+    inline long double Math::Log10(const long double val)
     {
         return (log10l(val));
     }
