@@ -475,7 +475,7 @@ namespace bpf
     template <typename T>
     void Matrix<T>::GetMinor(Matrix<T> &dest, fsize row, fsize col) const
     {
-        fsize coli = 0;
+        fsize coli;
         fsize rowi = 0;
 
         if (_m != _n)
