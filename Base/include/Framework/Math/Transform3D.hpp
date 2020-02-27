@@ -55,7 +55,7 @@ namespace bpf
             MatrixBuilder &RotateX(const T &rotation) noexcept;
             MatrixBuilder &RotateY(const T &rotation) noexcept;
             MatrixBuilder &RotateZ(const T &rotation) noexcept;
-            inline MatrixBuilder &Rotate(const Quat<T> &quat) noexcept
+            inline MatrixBuilder &Rotate(const Quaternion<T> &quat) noexcept
             {
                 _matrix *= quat.ToMatrix();
                 return (*this);
@@ -69,9 +69,9 @@ namespace bpf
     public:
         Vector3<T> Position;
         Vector3<T> Scale;
-        Quat<T> Rotation;
+        Quaternion<T> Rotation;
 
-        explicit inline Transform3D(const Vector3<T> &pos = Vector3<T>::Zero, const Vector3<T> &scale = Vector3<T>::Identity, const Quat<T> &rotation = Quat<T>::Identity)
+        explicit inline Transform3D(const Vector3<T> &pos = Vector3<T>::Zero, const Vector3<T> &scale = Vector3<T>::Identity, const Quaternion<T> &rotation = Quaternion<T>::Identity)
             : Position(pos)
             , Scale(scale)
             , Rotation(rotation)
@@ -89,7 +89,7 @@ namespace bpf
         Transform3D operator+(const Transform3D &other) const noexcept;
         void operator+=(const Transform3D &other);
 
-        void RotateArround(const Vector3<T> &pivot, const Quat<T> &rotation) noexcept;
+        void RotateArround(const Vector3<T> &pivot, const Quaternion<T> &rotation) noexcept;
     };
 }
 

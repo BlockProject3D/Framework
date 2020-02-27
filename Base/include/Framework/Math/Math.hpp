@@ -113,7 +113,7 @@ namespace bpf
          * @param prec the number of decimals
          */
         template <typename T>
-        inline static T Round(const T val, const fint prec = 0)
+        inline static T Round(const T val, const fsize prec = 0)
         {
             return ((T)(floor(val * pow(10, prec) + 0.5) / pow(10, prec)));
         }
@@ -122,7 +122,7 @@ namespace bpf
          * Returns true if nb is a power of two
          * @param nb the number to check
          */
-        inline static bool IsPowerOfTwo(const uint32 nb)
+        inline static bool IsPowerOfTwo(const fsize nb)
         {
             return (nb & (nb - 1)) == 0;
         }
@@ -131,19 +131,19 @@ namespace bpf
          * Finds the next power of two starting at nb + 1
          * @param nb the number to find the next power of two
          */
-        static uint32 FindNextPowerOfTwo(uint32 nb);
+        static fsize FindNextPowerOfTwo(fsize nb);
 
         /**
          * Returns true if a given number is prime
          * @param nb the number to check
          */
-        static bool IsPrime(const fint nb);
+        static bool IsPrime(const fisize nb);
 
         /**
          * Finds the next prime number starting at nb + 1
          * @param nb the number to find the next prime
          */
-        static fint FindNextPrime(const fint nb);
+        static fisize FindNextPrime(const fisize nb);
 
         /**
          * Shortcut to the system's square root function
@@ -170,7 +170,7 @@ namespace bpf
          * @param val number for Ln(val)
          */
         template <typename T>
-        inline static T Ln(const T val)
+        inline static T Log(const T val)
         {
             return (log(val));
         }
@@ -180,9 +180,20 @@ namespace bpf
          * @param val number for Log(val)
          */
         template <typename T>
-        inline static T Log(const T val)
+        inline static T Log10(const T val)
         {
             return (log10(val));
+        }
+
+        /**
+         * Shortcut to calculate log base n
+         * @param val number for Log(val)
+         * @param base the logarythm base to use
+         */
+        template <typename T>
+        inline static T Log(const T base, const T val)
+        {
+            return (Log(val) / Log(base));
         }
 
         /**
@@ -260,25 +271,25 @@ namespace bpf
     }
 
     template <>
-    inline float Math::Ln(const float val)
+    inline float Math::Log(const float val)
     {
         return (logf(val));
     }
 
     template <>
-    inline long double Math::Ln(const long double val)
+    inline long double Math::Log(const long double val)
     {
         return (logl(val));
     }
 
     template <>
-    inline float Math::Log(const float val)
+    inline float Math::Log10(const float val)
     {
         return (log10f(val));
     }
 
     template <>
-    inline long double Math::Log(const long double val)
+    inline long double Math::Log10(const long double val)
     {
         return (log10l(val));
     }

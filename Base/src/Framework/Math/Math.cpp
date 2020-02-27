@@ -36,9 +36,9 @@ constexpr float Math::RadToDeg;
 constexpr float Math::DegToRad;
 constexpr float Math::Pi;
 
-bool Math::IsPrime(const fint n)
+bool Math::IsPrime(const fisize n)
 {
-    fint a = 2;
+    fisize a = 2;
 
     while (a < n)
     {
@@ -49,16 +49,16 @@ bool Math::IsPrime(const fint n)
     return (true);
 }
 
-fint Math::FindNextPrime(const fint n)
+fisize Math::FindNextPrime(const fisize n)
 {
-    fint a = n + 1;
+    fisize a = n + 1;
 
     while (!IsPrime(a))
         ++a;
     return (a);
 }
 
-uint32 Math::FindNextPowerOfTwo(uint32 nb)
+fsize Math::FindNextPowerOfTwo(fsize nb)
 {
     --nb;
     nb |= nb >> 1;

@@ -159,7 +159,7 @@ namespace bpf
     }
 
     template <typename T>
-    void Transform3D<T>::RotateArround(const Vector3<T> &pivot, const Quat<T> &rotation) noexcept
+    void Transform3D<T>::RotateArround(const Vector3<T> &pivot, const Quaternion<T> &rotation) noexcept
     {
         auto dir = Position - pivot;
 
