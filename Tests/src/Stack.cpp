@@ -29,12 +29,15 @@
 #include <cassert>
 #include <iostream>
 #include <gtest/gtest.h>
-#include <Framework/Stack.hpp>
+#include <Framework/Collection/Stack.hpp>
 #include <Framework/Memory/Memory.hpp>
+
+using namespace bpf::collection;
+using namespace bpf;
 
 TEST(Stack, Creation)
 {
-    bpf::Stack<int> stack(8);
+    Stack<int> stack(8);
 
     stack.Push(0);
     stack.Push(42);
@@ -46,7 +49,7 @@ TEST(Stack, Creation)
 
 TEST(Stack, Move)
 {
-    bpf::Stack<int> stack(8);
+    Stack<int> stack(8);
 
     stack.Push(0);
     stack.Push(42);
@@ -61,7 +64,7 @@ TEST(Stack, Move)
 
 TEST(Stack, Creation_List)
 {
-    bpf::Stack<int> stack = { 0, 42, -1 };
+    Stack<int> stack = { 0, 42, -1 };
 
     EXPECT_EQ(stack.Top(), -1);
     EXPECT_EQ(stack.Size(), 3);
@@ -69,7 +72,7 @@ TEST(Stack, Creation_List)
 
 TEST(Stack, Push_Pop_Limited)
 {
-    bpf::Stack<int> stack(3);
+    Stack<int> stack(3);
 
     stack.Push(0);
     stack.Push(42);
@@ -77,18 +80,18 @@ TEST(Stack, Push_Pop_Limited)
 
     EXPECT_EQ(stack.Top(), -1);
     EXPECT_EQ(stack.Size(), 3);
-    EXPECT_THROW(stack.Push(1), bpf::StackOverflowException);
+    EXPECT_THROW(stack.Push(1), StackOverflowException);
     const int i = 2;
-    EXPECT_THROW(stack.Push(i), bpf::StackOverflowException);
+    EXPECT_THROW(stack.Push(i), StackOverflowException);
     EXPECT_EQ(stack.Pop(), -1);
     EXPECT_EQ(stack.Pop(), 42);
     EXPECT_EQ(stack.Pop(), 0);
-    EXPECT_THROW(stack.Pop(), bpf::StackUnderflowException);
+    EXPECT_THROW(stack.Pop(), StackUnderflowException);
 }
 
 TEST(Stack, Push_Pop_Unlimited_1)
 {
-    bpf::Stack<int> stack;
+    Stack<int> stack;
 
     stack.Push(0);
     stack.Push(42);
@@ -103,12 +106,12 @@ TEST(Stack, Push_Pop_Unlimited_1)
     EXPECT_EQ(stack.Pop(), -1);
     EXPECT_EQ(stack.Pop(), 42);
     EXPECT_EQ(stack.Pop(), 0);
-    EXPECT_THROW(stack.Pop(), bpf::StackUnderflowException);
+    EXPECT_THROW(stack.Pop(), StackUnderflowException);
 }
 
 TEST(Stack, Push_Pop_Unlimited_2)
 {
-    bpf::Stack<int> stack;
+    Stack<int> stack;
 
     stack.Push(1);
     stack.Push(2);
@@ -125,20 +128,20 @@ TEST(Stack, Push_Pop_Unlimited_2)
 
 TEST(Stack, Push_Pop_NonCopy)
 {
-    bpf::Stack<bpf::UniquePtr<int>> stack;
+    Stack<UniquePtr<int>> stack;
 
-    stack.Push(bpf::MakeUnique<int>(0));
-    stack.Push(bpf::MakeUnique<int>(42));
-    stack.Push(bpf::MakeUnique<int>(-1));
+    stack.Push(MakeUnique<int>(0));
+    stack.Push(MakeUnique<int>(42));
+    stack.Push(MakeUnique<int>(-1));
 
     EXPECT_EQ(*stack.Top(), -1);
     EXPECT_EQ(stack.Size(), 3);
-    stack.Push(bpf::MakeUnique<int>(1));
+    stack.Push(MakeUnique<int>(1));
     EXPECT_EQ(stack.Size(), 4);
     EXPECT_EQ(*stack.Top(), 1);
     EXPECT_EQ(*stack.Pop(), 1);
     EXPECT_EQ(*stack.Pop(), -1);
     EXPECT_EQ(*stack.Pop(), 42);
     EXPECT_EQ(*stack.Pop(), 0);
-    EXPECT_THROW(stack.Pop(), bpf::StackUnderflowException);
+    EXPECT_THROW(stack.Pop(), StackUnderflowException);
 }

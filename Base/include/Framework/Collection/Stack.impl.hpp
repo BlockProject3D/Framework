@@ -30,56 +30,52 @@
 
 namespace bpf
 {
-    template <typename T>
-    void Matrix3<T>::Translate(const Vector2<T> &v)
+    namespace collection
     {
-        Matrix3<T> mat = {
-            1, 0, v.X,
-            0, 1, v.Y,
-            0, 0, 1
-        };
-
-        *this = *this * mat;
-    }
-
-    template <typename T>
-    void Matrix3<T>::Rotate(const T ang)
-    {
-        Matrix3<T> mat = {
-            Math::Cos(ang), -Math::Sin(ang), 0,
-            Math::Sin(ang), Math::Cos(ang), 0,
-            0, 0, 1
-        };
-
-        *this = *this * mat;
-    }
-
-    template <typename T>
-    void Matrix3<T>::Scale(const Vector2<T> &v)
-    {
-        Matrix3<T> mat = {
-            v.X, 0, 0,
-            0, v.Y, 0,
-            0, 0, 1
-        };
-
-        *this = *this * mat;
-    }
-
-    template <typename T>
-    Vector3<T> Matrix3<T>::operator*(const Vector3<T> &other)
-    {
-        const T *data = Matrix<T, 3, 3>::operator*();
-        T myvec[3] = { other.X, other.Y, other.Z };
-        T result[3];
-
-        for (fsize i = 0; i < 3; ++i)
+        template <typename T>
+        inline Stack<T>::Stack(const fsize maxsize)
+            : _maxSize(maxsize)
         {
-            T res = 0;
-            for (fsize k = 0; k < 3; ++k)
-                res += myvec[k] * data[i * 3 + k];
-            result[i] = res;
         }
-        return (Vector3<T>(result[0], result[1], result[2]));
+
+        template <typename T>
+        Stack<T>::Stack(const std::initializer_list<T> &lst)
+            : _maxSize(0)
+        {
+            for (auto &elem : lst)
+                Push(elem);
+        }
+
+        template <typename T>
+        void Stack<T>::Clear()
+        {
+            _data.Clear();
+        }
+
+        template <typename T>
+        void Stack<T>::Push(const T &element)
+        {
+            if (_maxSize > 0 && _data.Size() >= _maxSize)
+                throw StackOverflowException(_maxSize);
+            _data.Add(element);
+        }
+
+        template <typename T>
+        void Stack<T>::Push(T &&element)
+        {
+            if (_maxSize > 0 && _data.Size() >= _maxSize)
+                throw StackOverflowException(_maxSize);
+            _data.Add(std::move(element));
+        }
+
+        template <typename T>
+        T Stack<T>::Pop()
+        {
+            if (_data.Size() == 0)
+                throw StackUnderflowException();
+            auto ref = std::move(_data.Last());
+            _data.RemoveLast();
+            return (std::move(ref));
+        }
     }
 }

@@ -28,19 +28,19 @@
 
 #pragma once
 #include "Framework/String.hpp"
-#include "Framework/Array.hpp"
-#include "Framework/List.hpp"
-#include "Framework/ArrayList.hpp"
-#include "Framework/HashMap.hpp"
-#include "Framework/Map.hpp"
+#include "Framework/Collection/Array.hpp"
+#include "Framework/Collection/List.hpp"
+#include "Framework/Collection/ArrayList.hpp"
+#include "Framework/Collection/HashMap.hpp"
+#include "Framework/Collection/Map.hpp"
 
 namespace bpf
 {
     template <typename T, fsize I>
-    class String::Stringifier<Array<T, I>>
+    class String::Stringifier<collection::Array<T, I>>
     {
     public:
-        inline static String Stringify(const Array<T, I> &arr)
+        inline static String Stringify(const collection::Array<T, I> &arr)
         {
             String res = "[";
 
@@ -54,12 +54,12 @@ namespace bpf
             return (res);
         }
     };
-    
+
     template <typename T>
-    class String::Stringifier<List<T>>
+    class String::Stringifier<collection::List<T>>
     {
     public:
-        inline static String Stringify(const List<T> &lst)
+        inline static String Stringify(const collection::List<T> &lst)
         {
             String res = "[";
 
@@ -74,64 +74,64 @@ namespace bpf
         }
     };
 
-	template <typename T>
-	class String::Stringifier<ArrayList<T>>
-	{
-	public:
-		inline static String Stringify(const ArrayList<T> &arr)
-		{
-			String res = "[";
+    template <typename T>
+    class String::Stringifier<collection::ArrayList<T>>
+    {
+    public:
+        inline static String Stringify(const collection::ArrayList<T> &arr)
+        {
+            String res = "[";
 
-			for (fsize i = 0; i < arr.Size(); ++i)
-			{
-				res += String::ValueOf(arr[i]);
-				if (i < arr.Size() - 1)
-					res += ", ";
-			}
-			res += "]";
-			return (res);
-		}
-	};
+            for (fsize i = 0; i < arr.Size(); ++i)
+            {
+                res += String::ValueOf(arr[i]);
+                if (i < arr.Size() - 1)
+                    res += ", ";
+            }
+            res += "]";
+            return (res);
+        }
+    };
 
-	template <typename K, typename V, typename HashOp>
-	class String::Stringifier<HashMap<K, V, HashOp>>
-	{
-	public:
-		inline static String Stringify(const HashMap<K, V, HashOp> &map)
-		{
-			String res = "{";
-			fsize i = 0;
+    template <typename K, typename V, typename HashOp>
+    class String::Stringifier<collection::HashMap<K, V, HashOp>>
+    {
+    public:
+        inline static String Stringify(const collection::HashMap<K, V, HashOp> &map)
+        {
+            String res = "{";
+            fsize i = 0;
 
-			for (auto &entry : map)
-			{
-				res += String('\'') + String::ValueOf(entry.Key) + "': " + String::ValueOf(entry.Value);
-				if (i < map.Size() - 1)
-					res += ", ";
-				++i;
-			}
-			res += "}";
-			return (res);
-		}
-	};
+            for (auto &entry : map)
+            {
+                res += String('\'') + String::ValueOf(entry.Key) + "': " + String::ValueOf(entry.Value);
+                if (i < map.Size() - 1)
+                    res += ", ";
+                ++i;
+            }
+            res += "}";
+            return (res);
+        }
+    };
 
-	template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
-	class String::Stringifier<Map<K, V, Greater, Less>>
-	{
-	public:
-		inline static String Stringify(const Map<K, V, Greater, Less> &map)
-		{
-			String res = "{";
-			fsize i = 0;
+    template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
+    class String::Stringifier<collection::Map<K, V, Greater, Less>>
+    {
+    public:
+        inline static String Stringify(const collection::Map<K, V, Greater, Less> &map)
+        {
+            String res = "{";
+            fsize i = 0;
 
-			for (auto &entry : map)
-			{
-				res += String('\'') + String::ValueOf(entry.Key) + "': " + String::ValueOf(entry.Value);
-				if (i < map.Size() - 1)
-					res += ", ";
-				++i;
-			}
-			res += "}";
-			return (res);
-		}
-	};
+            for (auto &entry : map)
+            {
+                res += String('\'') + String::ValueOf(entry.Key) + "': " + String::ValueOf(entry.Value);
+                if (i < map.Size() - 1)
+                    res += ", ";
+                ++i;
+            }
+            res += "}";
+            return (res);
+        }
+    };
 }

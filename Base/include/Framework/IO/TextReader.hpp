@@ -30,8 +30,11 @@
 
 namespace bpf
 {
-    class BPF_API TextReader
+    namespace io
     {
+        class BPF_API TextReader
+        {
 
-    };
+        };
+    }
 }

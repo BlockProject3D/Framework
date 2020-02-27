@@ -28,6 +28,7 @@
 
 #include "Framework/IO/BinaryReader.hpp"
 
+using namespace bpf::io;
 using namespace bpf;
 
 uint8 BinaryReader::ReadByte()

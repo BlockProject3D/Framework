@@ -27,67 +27,91 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/IO/File.hpp"
+#include "Framework/Collection/ArrayList.hpp"
+#include "Framework/Collection/StackException.hpp"
 
 namespace bpf
 {
-    namespace io
+    namespace collection
     {
-        class BPF_API MemoryMapper
+        template <typename T>
+        class BP_TPL_API Stack
         {
         private:
-            File _file;
-            void *_mem;
-            fint _mode;
-            void *_memoff;
-#ifdef WINDOWS
-            void *_handle;
-            void *_mapper;
-#else
-            int _handle;
-            fsize _size;
-#endif
+            fsize _maxSize;
+            ArrayList<T> _data;
 
         public:
-            /**
-             * Creates a new MemoryMapper from the given file and mode
-             * @param file file to open
-             * @param mode file mode
-             * @throws IOException
-             */
-            MemoryMapper(const File &file, fint mode);
-            ~MemoryMapper();
+            explicit Stack(const fsize maxsize = 0);
+            Stack(const std::initializer_list<T> &lst);
 
-            /**
-             * Cannot copy a MemoryMapper
-             */
-            MemoryMapper(const MemoryMapper &other) = delete;
-
-            /**
-             * Cannot copy a MemoryMapper
-             */
-            MemoryMapper operator=(const MemoryMapper &other) = delete;
-
-            /**
-             * Map or re-map the file in virtual memory
-             * @param pos position in bytes in the file to start mapping
-             * @param size the size in bytes to map,
-             *        if the size is greater than the size of the file,
-             *        this function throws
-             * @throws IOException
-             */
-            void Map(uint64 pos, fsize size);
-
-            const File &GetFile() const noexcept
+            inline Stack(const Stack<T> &other)
+                : _maxSize(other._maxSize)
+                , _data(other._data)
             {
-                return (_file);
             }
 
-            inline void *operator*()
+            inline Stack(Stack<T> &&other)
+                : _maxSize(other._maxSize)
+                , _data(std::move(other._data))
             {
-                return (_memoff);
+            }
+
+            inline Stack<T> &operator=(const Stack<T> &other)
+            {
+                _maxSize = other._maxSize;
+                _data = other._data;
+                return (*this);
+            }
+
+            inline Stack<T> &operator=(Stack<T> &&other)
+            {
+                _maxSize = other._maxSize;
+                _data = std::move(other._data);
+                return (*this);
+            }
+
+            void Clear();
+
+            /**
+             * Pushes an element on the stack
+             */
+            void Push(const T &element);
+
+            /**
+             * Pushes an element on the stack
+             */
+            void Push(T &&element);
+
+            /**
+             * Extracts the top of the stack
+             */
+            T Pop();
+
+            /**
+             * Returns the top of the stack
+             */
+            inline T &Top()
+            {
+                return (_data.Last());
+            }
+
+            /**
+             * Returns the top of the stack
+             */
+            inline const T &Top() const
+            {
+                if (Size() <= 0)
+                    throw IndexException(0);
+                return (_data.Last());
+            }
+
+            inline fsize Size() const
+            {
+                return (_data.Size());
             }
         };
     }
-}
+};
 
+#include "Framework/Collection/Stack.impl.hpp"

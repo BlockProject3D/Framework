@@ -27,49 +27,54 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Types.hpp"
-#include "Framework/Exception.hpp"
 
 namespace bpf
 {
-    class BPF_API StackOverflowException final : public Exception
+    namespace collection
     {
-    private:
-        fisize _size;
-
-    public:
-        explicit inline StackOverflowException(const fisize size) noexcept
-            : Exception()
-            , _size(size)
+        /**
+         * Abstract iterator
+         * @tparam C the target container for this Iterator
+         * @tparam T the target iterated object
+         */
+        template <typename C, typename T>
+        class BP_TPL_API IIterator
         {
-        }
+        public:
+            virtual ~IIterator() {}
+            virtual IIterator &operator++() = 0;
+            virtual IIterator &operator--() = 0;
+            virtual const T &operator*() const = 0;
+            virtual const T *operator->() const = 0;
+            virtual bool operator==(const C &other) const = 0;
+            virtual bool operator!=(const C &other) const = 0;
+        };
 
-        fisize Size() const noexcept
+        template <typename C>
+        class BP_TPL_API ReverseAdapter
         {
-            return (_size);
-        }
+        private:
+            const C &_ref;
 
-        const char *Type() const noexcept
+        public:
+            inline explicit ReverseAdapter(const C &ref)
+                : _ref(ref)
+            {
+            }
+            inline typename C::ReverseIterator begin() const
+            {
+                return (_ref.rbegin());
+            }
+            inline typename C::ReverseIterator end() const
+            {
+                return (_ref.rend());
+            }
+        };
+
+        template <typename C>
+        BP_TPL_API ReverseAdapter<C> Reverse(const C &container)
         {
-            return ("StackOverflow");
+            return (ReverseAdapter<C>(container));
         }
-
-        //void Log(Framework::FLogger &logger) const;
-    };
-
-	class BPF_API StackUnderflowException final : public Exception
-	{
-	public:
-		explicit inline StackUnderflowException() noexcept
-			: Exception()
-		{
-		}
-
-		const char *Type() const noexcept
-		{
-			return ("StackUnderflow");
-		}
-
-		//void Log(Framework::FLogger &logger) const;
-	};
-}
+    }
+};

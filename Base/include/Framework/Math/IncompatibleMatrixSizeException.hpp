@@ -32,7 +32,7 @@
 
 namespace bpf
 {
-    class BPF_API IncompatibleMatrixSizeException : public Exception
+    class IncompatibleMatrixSizeException : public Exception
     {
     private:
         fisize _sizea;

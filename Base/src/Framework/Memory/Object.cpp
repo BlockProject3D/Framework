@@ -26,30 +26,13 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-/*#include "Framework/Math/Vector.hpp"
-#include "Framework/Math/Transform.hpp"
+#include "Framework/Types.hpp"
+#include "Framework/Memory/Object.hpp"
 
-namespace bpf
+using namespace bpf;
+
+Object::~Object()
 {
-    class BPF_API Triangle
-    {
-    public:
-        Vector3f A;
-        Vector3f B;
-        Vector3f C;
-
-        inline Triangle()
-        {
-        }
-        inline Triangle(const Vector3f &p1, const Vector3f &p2, const Vector3f &p3)
-            : A(p1)
-            , B(p2)
-            , C(p3)
-        {
-        }
-        void ApplyTransform(const Transform &tr);
-        Vector3f GetNormal() const;
-        Vector3f GetBarycentricCoordinates(const Vector3f &p) const;
-    };
-};*/
+    for (void **ref : Refs)
+        *ref = Null;
+}

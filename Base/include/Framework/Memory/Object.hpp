@@ -26,28 +26,28 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Framework/Math/Viewport.hpp"
+#pragma once
+#include "Framework/Collection/List.hpp"
 
-using namespace bpf;
-
-/*Vector3f Viewport::Project(const Matrix4f &view, const Vector3f &pt)
+namespace bpf
 {
-    Matrix4f viewproj = view * Projection;
-    Vector4f vec(pt, 1.0f);
-    Vector3f projected;
-
-    vec = viewproj * vec;
-    projected = Vector3f(vec.X / vec.W, vec.Y / vec.W, vec.Z / vec.W);
-    projected.X /= projected.Z;
-    projected.Y /= projected.Z;
-    projected.X = (((1 + projected.X) / 2.f) * Width) + 0.5f;
-    projected.Y = (((1 - projected.Y) / 2.f) * Height) + 0.5f;
-    if (vec.W < 0)
+    class BPF_API Object
     {
-        if (projected.X > 0)
-            projected.X *= -1;
-        if (projected.Y > 0)
-            projected.Y *= -1;
-    }
-    return (projected);
-}*/
+    private:
+        collection::List<void **> Refs;
+
+    public:
+        virtual ~Object();
+        inline void AddRef(void **ref)
+        {
+            Refs.Add(ref);
+        }
+        inline void RemoveRef(void **ref)
+        {
+            Refs.Remove(ref);
+        }
+        
+        template <class T>
+        friend class ObjectPtr;
+    };
+}

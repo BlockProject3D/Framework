@@ -31,12 +31,15 @@
 
 namespace bpf
 {
-    class BPF_API IOException : public RuntimeException
+    namespace io
     {
-    public:
-        explicit inline IOException(const String &msg) noexcept
-            : RuntimeException("IO", msg)
+        class BPF_API IOException : public RuntimeException
         {
-        }
-    };
+        public:
+            explicit inline IOException(const String &msg) noexcept
+                : RuntimeException("IO", msg)
+            {
+            }
+        };
+    }
 }

@@ -30,61 +30,64 @@
 
 namespace bpf
 {
-    namespace ops
+    namespace collection
     {
-        template <typename T>
-        class Less
+        namespace ops
         {
-        public:
-            inline static bool Eval(const T &a, const T &b)
+            template <typename T>
+            class Less
             {
-                return (a < b);
-            }
-        };
+            public:
+                inline static bool Eval(const T &a, const T &b)
+                {
+                    return (a < b);
+                }
+            };
+
+            template <typename T>
+            class Greater
+            {
+            public:
+                inline static bool Eval(const T &a, const T &b)
+                {
+                    return (a > b);
+                }
+            };
+
+            template <typename T>
+            class LessOrEqual
+            {
+            public:
+                inline static bool Eval(const T &a, const T &b)
+                {
+                    return (a <= b);
+                }
+            };
+
+            template <typename T>
+            class GreaterOrEqual
+            {
+            public:
+                inline static bool Eval(const T &a, const T &b)
+                {
+                    return (a >= b);
+                }
+            };
+
+            template <typename T>
+            class Equal
+            {
+            public:
+                inline static bool Eval(const T &a, const T &b)
+                {
+                    return (a == b);
+                }
+            };
+        }
 
         template <typename T>
-        class Greater
-        {
-        public:
-            inline static bool Eval(const T &a, const T &b)
-            {
-                return (a > b);
-            }
-        };
-
+        using MinHeap = ops::LessOrEqual<T>;
         template <typename T>
-        class LessOrEqual
-        {
-        public:
-            inline static bool Eval(const T &a, const T &b)
-            {
-                return (a <= b);
-            }
-        };
-
-        template <typename T>
-        class GreaterOrEqual
-        {
-        public:
-            inline static bool Eval(const T &a, const T &b)
-            {
-                return (a >= b);
-            }
-        };
-
-        template <typename T>
-        class Equal
-        {
-        public:
-            inline static bool Eval(const T &a, const T &b)
-            {
-                return (a == b);
-            }
-        };
+        using MaxHeap = ops::GreaterOrEqual<T>;
     }
-
-    template <typename T>
-    using MinHeap = ops::LessOrEqual<T>;
-    template <typename T>
-    using MaxHeap = ops::GreaterOrEqual<T>;
-};
+}

@@ -31,7 +31,7 @@
 
 namespace bpf
 {
-    class BPF_API NonInvertibleMatrixException : public Exception
+    class NonInvertibleMatrixException : public Exception
     {
     public:
         inline virtual const char *GetType() const noexcept

@@ -26,67 +26,72 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-/*#pragma once
-#include "Framework/Math/Matrix.hpp"
-#include "Framework/Math/Vector3.hpp"
-#include "Framework/Math/Vector4.hpp"
+#include <stdlib.h>
+#include <time.h>
+#include "Framework/Math/Random.hpp"
+#include "Framework/Math/Math.hpp"
 
-namespace bpf
+using namespace bpf;
+
+fint Random::IntBounds(const fint min, const fint max)
 {
-    template <typename T>
-    class BP_TPL_API Matrix4 : public Matrix<T, 4, 4>
-    {
-    public:
-        inline Matrix4()
-            : Matrix<T, 4, 4>()
-        {
-        }
+    fint rd = rand() % max;
 
-        inline Matrix4(const std::initializer_list<T> &lst)
-            : Matrix<T, 4, 4>(lst)
-        {
-        }
-
-        explicit inline Matrix4(const T *mat)
-            : Matrix<T, 4, 4>(mat)
-        {
-        }
-
-        inline Matrix4(const Matrix4<T> &other)
-            : Matrix<T, 4, 4>(other)
-        {
-        }
-
-        inline Matrix4(const Matrix<T, 4, 4> &other)
-            : Matrix<T, 4, 4>(other)
-        {
-        }
-
-        inline Matrix4<T> Invert() const
-        {
-            return (Matrix<T, 4, 4>::Invert());
-        }
-
-        inline Matrix4<T> operator*(const Matrix4<T> &other) const
-        {
-            return (Matrix<T, 4, 4>::operator*(other));
-        }
-
-        inline Matrix4<T> Transpose() const
-        {
-            return (Matrix<T, 4, 4>::Transpose());
-        }
-
-        void Translate(const Vector3<T> &v);
-        
-        void RotateYaw(const T ang);
-
-        void RotatePitch(const T ang);
-        
-        void RotateRoll(const T ang);
-        void Scale(const Vector3<T> &v);
-        Vector4<T> operator*(const Vector4<T> &other) const;
-    };
+    while (rd < min || rd > max)
+        rd = rand() % max;
+    return (rd);
 }
 
-#include "Framework/Math/Matrix4.impl.hpp"*/
+Random::Random(const long seed)
+{
+    srand((uint32)seed);
+}
+
+Random::Random()
+{
+    srand((unsigned int)time(NULL));
+}
+
+fint Random::NextInt(const fint max)
+{
+    return (rand() % max);
+}
+
+fint Random::NextInt(const fint min, const fint max)
+{
+    return (IntBounds(min, max));
+}
+
+uint8 Random::NextByte(const uint8 max)
+{
+    return ((uint8)IntBounds(0, max));
+}
+
+uint8 Random::NextByte(const uint8 min, const uint8 max)
+{
+    return ((uint8)IntBounds(min, max));
+}
+
+uint16 Random::NextShort(const uint16 max)
+{
+    return ((uint16)IntBounds(0, max));
+}
+
+uint16 Random::NextShort(const uint16 min, const uint16 max)
+{
+    return ((uint16)IntBounds(min, max));
+}
+
+float Random::NextFloat(const float min)
+{
+    fint start = Math::Abs(rand() % 256);
+
+    return (((float)start / 256.0f) + min);
+}
+
+double Random::NextDouble()
+{
+    fint start = Math::Abs(rand() % 256);
+
+    return ((double)start / 256.0f);
+}

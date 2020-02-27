@@ -31,10 +31,13 @@
 
 namespace bpf
 {
-    class BPF_API IInputStream
+    namespace io
     {
-    public:
-        virtual ~IInputStream() {}
-        virtual fsize Read(void *buf, fsize bufsize) = 0;
-    };
+        class BPF_API IInputStream
+        {
+        public:
+            virtual ~IInputStream() {}
+            virtual fsize Read(void *buf, fsize bufsize) = 0;
+        };
+    }
 }

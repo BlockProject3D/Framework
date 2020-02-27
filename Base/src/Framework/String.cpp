@@ -33,8 +33,9 @@
 #include "Framework/EvalException.hpp"
 #include "Framework/IndexException.hpp"
 #include "Framework/BinUtils.hpp"
-#include "Framework/ArrayList.hpp"
+#include "Framework/Collection/ArrayList.hpp"
 
+using namespace bpf::collection;
 using namespace bpf;
 
 const String String::Empty = String();

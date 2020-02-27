@@ -31,7 +31,7 @@
 #include <cstdlib>
 #include "Framework/Types.hpp"
 #include "Framework/TypeInfo.hpp"
-#include "Framework/Array.hpp"
+#include "Framework/Collection/Array.hpp"
 #include "Framework/IndexException.hpp"
 #include "Framework/API.hpp"
 
@@ -197,7 +197,7 @@ namespace bpf
             return (Data);
         }
 
-        Array<char> ToArray() const;
+        collection::Array<char> ToArray() const;
 
         /**
          * Returns the number of characters in this string
@@ -278,7 +278,7 @@ namespace bpf
          * @param c the sperator char
          * @return array of tokens
          */
-        Array<String> Explode(const char c) const;
+        collection::Array<String> Explode(const char c) const;
 
         /**
          * Splits this string using a delimiter
@@ -286,14 +286,14 @@ namespace bpf
          * @param ignore character to identify escape sequences (all characters between two of this ignore char will be interpreted as a single token)
          * @return array of tokens
          */
-        Array<String> ExplodeIgnore(const char c, const char ignore) const;
+        collection::Array<String> ExplodeIgnore(const char c, const char ignore) const;
 
         /**
          * Splits this string using a delimiter
          * @param str the separator string
          * @return array of tokens
          */
-        Array<String> Explode(const String &str) const;
+        collection::Array<String> Explode(const String &str) const;
 
         /**
          * Splits this string using a delimiter
@@ -301,14 +301,14 @@ namespace bpf
          * @param ignore string to identify escape sequences (all characters between two of this ignore string will be interpreted as a single token)
          * @return array of tokens
          */
-        Array<String> ExplodeIgnore(const String &str, const String &ignore) const;
+        collection::Array<String> ExplodeIgnore(const String &str, const String &ignore) const;
 
         /**
          * Splits this string using multiple delimiters
          * @param str the delimiters
          * @return array of tokens
          */
-        Array<String> ExplodeOr(const String &str) const;
+        collection::Array<String> ExplodeOr(const String &str) const;
 
         /**
          * Returns true if this string starts with other
@@ -382,7 +382,7 @@ namespace bpf
             {
                 res += format.Sub(0, i);
                 String pattern = format.Sub(i + 1, j);
-                Array<String> tokens = pattern.Explode(',');
+                collection::Array<String> tokens = pattern.Explode(',');
                 if (tokens.Size() < 3)
                     return (res + ValueOf(t) + Format(format.Sub(j + 1), args...));
                 fint maxn = std::atoi(*tokens[0]);

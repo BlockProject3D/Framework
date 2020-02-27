@@ -38,9 +38,9 @@ TEST(MemoryMapper, OpenExcept)
 {
     try
     {
-        bpf::MemoryMapper mapper(bpf::File("./doesnotexist.txt"), bpf::FILE_MODE_READ);
+        bpf::io::MemoryMapper mapper(bpf::io::File("./doesnotexist.txt"), bpf::io::FILE_MODE_READ);
     }
-    catch (const bpf::IOException &)
+    catch (const bpf::io::IOException &)
     {
         return;
     }
@@ -51,9 +51,9 @@ static void Test_OpenExcept_MemLeak()
 {
     try
     {
-        bpf::MemoryMapper mapper(bpf::File("./doesnotexist.txt"), bpf::FILE_MODE_READ);
+        bpf::io::MemoryMapper mapper(bpf::io::File("./doesnotexist.txt"), bpf::io::FILE_MODE_READ);
     }
-    catch (const bpf::IOException &)
+    catch (const bpf::io::IOException &)
     {
         return;
     }
@@ -68,18 +68,18 @@ TEST(MemoryMapper, OpenExcept_MemLeak)
     EXPECT_EQ(cur, bpf::Memory::GetAllocCount());
 }
 
-static void SetupTestFile(bpf::File &f)
+static void SetupTestFile(bpf::io::File &f)
 {
-    bpf::FileStream stream(f, bpf::FILE_MODE_WRITE | bpf::FILE_MODE_TRUNCATE);
+    bpf::io::FileStream stream(f, bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
     EXPECT_EQ(stream.Write("This is a test", 14), (bpf::fsize)14);
     stream.Close();
 }
 
 TEST(MemoryMapper, Map_Test1)
 {
-    bpf::File f("./map_me.txt");
+    bpf::io::File f("./map_me.txt");
     SetupTestFile(f);
-    bpf::MemoryMapper mapper(f, bpf::FILE_MODE_READ);
+    bpf::io::MemoryMapper mapper(f, bpf::io::FILE_MODE_READ);
     mapper.Map(0, 14);
     char *txt = reinterpret_cast<char *>(*mapper);
     char buf[15];
@@ -90,9 +90,9 @@ TEST(MemoryMapper, Map_Test1)
 
 TEST(MemoryMapper, Map_Test2)
 {
-    bpf::File f("./map_me.txt");
+    bpf::io::File f("./map_me.txt");
     SetupTestFile(f);
-    bpf::MemoryMapper mapper(f, bpf::FILE_MODE_READ | bpf::FILE_MODE_WRITE);
+    bpf::io::MemoryMapper mapper(f, bpf::io::FILE_MODE_READ | bpf::io::FILE_MODE_WRITE);
     mapper.Map(0, 1);
     char *txt = reinterpret_cast<char *>(*mapper);
     EXPECT_EQ(txt[0], 'T');
@@ -103,9 +103,9 @@ TEST(MemoryMapper, Map_Test2)
 
 TEST(MemoryMapper, Map_Test3)
 {
-    bpf::File f("./map_me.txt");
+    bpf::io::File f("./map_me.txt");
     SetupTestFile(f);
-    bpf::MemoryMapper mapper(f, bpf::FILE_MODE_READ);
+    bpf::io::MemoryMapper mapper(f, bpf::io::FILE_MODE_READ);
     mapper.Map(13, 1);
     char *txt = reinterpret_cast<char *>(*mapper);
     EXPECT_EQ(txt[0], 't');
@@ -113,14 +113,14 @@ TEST(MemoryMapper, Map_Test3)
 
 TEST(MemoryMapper, Map_Test4)
 {
-    bpf::File f("./map_me.txt");
+    bpf::io::File f("./map_me.txt");
     SetupTestFile(f);
-    bpf::MemoryMapper mapper(f, bpf::FILE_MODE_READ);
+    bpf::io::MemoryMapper mapper(f, bpf::io::FILE_MODE_READ);
     try
     {
         mapper.Map(14, 1);
     }
-    catch (const bpf::IOException &)
+    catch (const bpf::io::IOException &)
     {
         return;
     }
@@ -129,14 +129,14 @@ TEST(MemoryMapper, Map_Test4)
 
 TEST(MemoryMapper, Map_Test5)
 {
-    bpf::File f("./map_me.txt");
+    bpf::io::File f("./map_me.txt");
     SetupTestFile(f);
-    bpf::MemoryMapper mapper(f, bpf::FILE_MODE_READ);
+    bpf::io::MemoryMapper mapper(f, bpf::io::FILE_MODE_READ);
     try
     {
         mapper.Map(100000, 1); //Obviously it's not gonna work :)
     }
-    catch (const bpf::IOException &)
+    catch (const bpf::io::IOException &)
     {
         return;
     }

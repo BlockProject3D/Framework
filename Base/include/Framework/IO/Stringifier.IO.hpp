@@ -33,12 +33,12 @@
 namespace bpf
 {
     template <>
-    class String::Stringifier<File>
+    class String::Stringifier<io::File>
     {
     public:
-        inline static String Stringify(const File &f)
+        inline static String Stringify(const io::File &f)
         {
-			return (bpf::String("File(") + f.Path() + ")");
+            return (String("File(") + f.Path() + ")");
         }
     };
 }

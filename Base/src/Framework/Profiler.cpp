@@ -29,6 +29,7 @@
 #include <chrono>
 #include "Framework/Profiler.hpp"
 
+using namespace bpf::collection;
 using namespace bpf;
 
 Profiler::Profiler()

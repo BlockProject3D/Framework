@@ -28,6 +28,7 @@
 
 #include "Framework/IO/BinaryWriter.hpp"
 
+using namespace bpf::io;
 using namespace bpf;
 
 void BinaryWriter::WriteByte(uint8 byte)

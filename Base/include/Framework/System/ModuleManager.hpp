@@ -32,8 +32,8 @@
 #include <map>
 #include "Framework/System/Module.hpp"
 #include "Framework/System/IModuleInterface.hpp"
-#include "Framework/HashMap.hpp"
-#include "Framework/List.hpp"
+#include "Framework/Collection/HashMap.hpp"
+#include "Framework/Collection/List.hpp"
 
 # ifdef WINDOWS
 #  define IMPLEMENT_MODULE(name, clname) \
@@ -82,8 +82,8 @@ namespace bpf
     class BPF_API ModuleManager
     {
     private:
-        bpf::List<ModuleEntry *> ModuleList;
-        bpf::HashMap<const char *, ModuleEntry *> ModuleMap;
+        bpf::collection::List<ModuleEntry *> ModuleList;
+        bpf::collection::HashMap<const char *, ModuleEntry *> ModuleMap;
 
         void UnloadModule(ModuleEntry *entry);
     public:

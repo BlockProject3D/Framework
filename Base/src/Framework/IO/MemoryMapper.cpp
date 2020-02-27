@@ -39,6 +39,7 @@
 #include "Framework/IO/FileStream.hpp"
 #include "OSPrivate.hpp"
 
+using namespace bpf::io;
 using namespace bpf;
 
 MemoryMapper::MemoryMapper(const File &file, fint mode)

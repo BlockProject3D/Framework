@@ -38,7 +38,7 @@ namespace bpf
     public:
         inline static String Stringify(const Color &col)
         {
-			return (String("Color(") + col.R + ", " + col.G + ", " + col.B + ", " + col.A + ")");
+            return (String("Color(") + col.R + ", " + col.G + ", " + col.B + ", " + col.A + ")");
         }
     };
 }

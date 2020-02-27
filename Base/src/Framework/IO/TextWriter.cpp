@@ -28,6 +28,7 @@
 
 #include "Framework/IO/TextWriter.hpp"
 
+using namespace bpf::io;
 using namespace bpf;
 
 void TextWriter::WriteByte(uint8 byte)

@@ -30,11 +30,14 @@
 
 namespace bpf
 {
-    enum class EStringSerializer
+    namespace io
     {
-        VARCHAR_32,
-        VARCHAR_16,
-        VARCHAR_8,
-        CSTYLE
-    };
+        enum class EStringSerializer
+        {
+            VARCHAR_32,
+            VARCHAR_16,
+            VARCHAR_8,
+            CSTYLE
+        };
+    }
 }
