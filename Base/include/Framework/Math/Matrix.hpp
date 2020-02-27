@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -31,19 +31,11 @@
 #include <initializer_list>
 #include "Framework/Types.hpp"
 #include "Framework/IndexException.hpp"
+#include "Framework/Math/Vector.hpp"
 
 namespace bpf
 {
-    class BPF_API MatrixException : public Exception
-    {
-    public:
-        inline virtual const char *GetType() const noexcept
-        {
-            return ("MatrixException");
-        }
-    };
-
-    template <typename T, fsize M = 0, fsize N = 0>
+    template <typename T, fsize N = 0, fsize M = 0>
     class BP_TPL_API Matrix
     {
     private:
@@ -52,52 +44,86 @@ namespace bpf
     public:
         inline Matrix()
         {
-            std::memset(_arr, 0, N * M * sizeof(T));
+            for (fsize i = 0; i != N * M; ++i)
+                _arr[i] = DefaultOf<T>();
+        }
+
+        explicit inline Matrix(const T val)
+        {
+            for (fsize i = 0; i != N * M; ++i)
+                _arr[i] = val;
         }
 
         inline Matrix(const std::initializer_list<T> &lst)
         {
-            std::memcpy(_arr, lst.begin(), N * M * sizeof(T));
+            fsize i = 0;
+
+            for (auto &elem : lst)
+            {
+                if (i >= N * M)
+                    break;
+                _arr[i++] = elem;
+            }
         }
 
-        inline Matrix(const T *mat)
+        inline Matrix(const Matrix<T, N, M> &other)
         {
-            std::memcpy(_arr, mat, N * M * sizeof(T));
+            for (fsize i = 0; i != N * M; ++i)
+                _arr[i] = other._arr[i];
         }
 
-        inline Matrix(const Matrix<T, M, N> &other)
+        inline Matrix(Matrix<T, N, M> &&other)
         {
-            std::memcpy(_arr, other._arr, N * M * sizeof(T));
+            for (fsize i = 0; i != N * M; ++i)
+                _arr[i] = std::move(other._arr[i]);
         }
 
-        inline Matrix<T, M, N> &operator=(const Matrix<T, M, N> &other)
+        inline Matrix<T, N, M> &operator=(const Matrix<T, N, M> &other)
         {
-            std::memcpy(_arr, other._arr, N * M * sizeof(T));
+            for (fsize i = 0; i != N * M; ++i)
+                _arr[i] = other._arr[i];
             return (*this);
         }
 
-        inline T &operator()(const fsize x, const fsize y)
+        inline Matrix<T, N, M> &operator=(Matrix<T, N, M> &&other)
         {
-            if (x >= N || y >= M)
-                throw IndexException((fint)(y * N + x));
-            return (_arr[y * N + x]);
+            for (fsize i = 0; i != N * M; ++i)
+                _arr[i] = std::move(other._arr[i]);
+            return (*this);
         }
 
-        inline T operator()(const fsize x, const fsize y) const
+        inline T &operator()(const fsize l, const fsize c)
         {
-            if (x >= N || y >= M)
-                throw IndexException((fint)(y * N + x));
-            return (_arr[y * N + x]);
+            if (l >= N || c >= M)
+                throw IndexException((fisize)(l * M + c));
+            return (_arr[l * M + c]);
         }
 
-        inline const T *operator*() const
+        inline T operator()(const fsize l, const fsize c) const
+        {
+            if (l >= N || c >= M)
+                throw IndexException((fisize)(l * M + c));
+            return (_arr[l * M + c]);
+        }
+
+        inline const T *operator*() const noexcept
         {
             return (_arr);
         }
 
+        inline T *operator*() noexcept
+        {
+            return (_arr);
+        }
+
+        bool operator==(const Matrix<T, N, M> &other) const;
+
         template <fsize P>
-        Matrix<T, M, P> operator*(const Matrix<T, N, P> &other) const;
-        Matrix<T, N, M> Transpose() const;
+        Matrix<T, N, P> operator*(const Matrix<T, M, P> &other) const;
+        Matrix<T, N, M> operator+(const Matrix<T, N, M> &other) const;
+        Vector<T, N> operator*(const Vector<T, N> &other) const;
+        Matrix<T, N, M> operator*(const T &other) const;
+        Matrix<T, M, N> Transpose() const;
         void SwapRows(const fsize rowa, const fsize rowb);
         void SwapColumns(const fsize cola, const fsize colb);
 
@@ -114,48 +140,83 @@ namespace bpf
         T _arr[N * N];
 
         static Matrix<T, N, N> GenIdentity();
+
     public:
         inline Matrix()
         {
-            std::memset(_arr, 0, N * N * sizeof(T));
+            for (fsize i = 0; i != N * N; ++i)
+                _arr[i] = DefaultOf<T>();
+        }
+
+        explicit inline Matrix(const T val)
+        {
+            for (fsize i = 0; i != N * N; ++i)
+                _arr[i] = val;
         }
 
         inline Matrix(const std::initializer_list<T> &lst)
         {
-            std::memcpy(_arr, lst.begin(), N * N * sizeof(T));
-        }
+            fsize i = 0;
 
-        inline Matrix(const T *mat)
-        {
-            std::memcpy(_arr, mat, N * N * sizeof(T));
+            for (auto &elem : lst)
+            {
+                if (i >= N * N)
+                    break;
+                _arr[i++] = elem;
+            }
         }
 
         inline Matrix(const Matrix<T, N, N> &other)
         {
-            std::memcpy(_arr, other._arr, N * N * sizeof(T));
+            for (fsize i = 0; i != N * N; ++i)
+                _arr[i] = other._arr[i];
+        }
+
+        inline Matrix(Matrix<T, N, N> &&other)
+        {
+            for (fsize i = 0; i != N * N; ++i)
+                _arr[i] = std::move(other._arr[i]);
+        }
+
+        inline constexpr fsize Order() const noexcept
+        {
+            return (N);
         }
 
         inline Matrix<T, N, N> &operator=(const Matrix<T, N, N> &other)
         {
-            std::memcpy(_arr, other._arr, N * N * sizeof(T));
+            for (fsize i = 0; i != N * N; ++i)
+                _arr[i] = other._arr[i];
             return (*this);
         }
 
-        inline T &operator()(const fsize x, const fsize y)
+        inline Matrix<T, N, N> &operator=(Matrix<T, N, N> &&other)
         {
-            if (x >= N || y >= N)
-                throw IndexException((fint)(y * N + x));
-            return (_arr[y * N + x]);
+            for (fsize i = 0; i != N * N; ++i)
+                _arr[i] = std::move(other._arr[i]);
+            return (*this);
         }
 
-        inline T operator()(const fsize x, const fsize y) const
+        inline T &operator()(const fsize l, const fsize c)
         {
-            if (x >= N || y >= N)
-                throw IndexException((fint)(y * N + x));
-            return (_arr[y * N + x]);
+            if (l >= N || c >= N)
+                throw IndexException((fisize)(l * N + c));
+            return (_arr[l * N + c]);
         }
 
-        inline const T *operator*() const
+        inline T operator()(const fsize l, const fsize c) const
+        {
+            if (l >= N || c >= N)
+                throw IndexException((fisize)(l * N + c));
+            return (_arr[l * N + c]);
+        }
+
+        inline const T *operator*() const noexcept
+        {
+            return (_arr);
+        }
+
+        inline T *operator*() noexcept
         {
             return (_arr);
         }
@@ -169,7 +230,12 @@ namespace bpf
         T GetDeterminant() const;
         template <fsize P>
         void GetMinor(Matrix<T, P, P> &dest, fsize row, fsize col) const;
-        Matrix<T, N, N> operator*(const Matrix<T, N, N> &other) const;
+        bool operator==(const Matrix<T, N, N> &other) const;
+        template <fsize P>
+        Matrix<T, N, P> operator*(const Matrix<T, N, P> &other) const;
+        Matrix<T, N, N> operator+(const Matrix<T, N, N> &other) const;
+        Matrix<T, N, N> operator*(const T &other) const;
+        Vector<T, N> operator*(const Vector<T, N> &other) const;
         Matrix<T, N, N> Transpose() const;
         void SwapRows(const fsize rowa, const fsize rowb);
         void SwapColumns(const fsize cola, const fsize colb);
@@ -198,8 +264,8 @@ namespace bpf
         {
         }
 
-        inline Matrix(const T *mat)
-            : _arr(*mat)
+        explicit inline Matrix(const T val)
+            : _arr(val)
         {
         }
 
@@ -238,13 +304,16 @@ namespace bpf
     {
     private:
         T *_arr;
-        fsize _m;
         fsize _n;
-    
+        fsize _m;
+
     public:
-        Matrix(const fsize m, const fsize n);
-        Matrix(const fsize m, const fsize n, const std::initializer_list<T> &lst);
-        Matrix(const fsize m, const fsize n, const T *mat);
+        static Matrix Identity(const fsize n);
+        static Matrix Zero(const fsize n, const fsize m = 0);
+
+        Matrix(const fsize n, const fsize m);
+        Matrix(const fsize n, const fsize m, const std::initializer_list<T> &lst);
+        Matrix(const fsize n, const fsize m, const T val);
         Matrix(const Matrix<T> &other);
         Matrix(Matrix<T> &&other);
         ~Matrix();
@@ -253,35 +322,34 @@ namespace bpf
         
         fsize Rows() const noexcept
         {
-            return (_m);
+            return (_n);
         }
 
         fsize Columns() const noexcept
         {
-            return (_n);
+            return (_m);
         }
 
-        /**
-         * Sets this matrix to identity
-         * @throws MatrixException in case this is not a square matrix
-         */
-        void SetIdentity();
-        
-        inline T &operator()(const fsize x, const fsize y)
+        inline T &operator()(const fsize l, const fsize c)
         {
-            if (x >= _n || y >= _m)
-                throw IndexException((fint)(y * _n + x));
-            return (_arr[y * _n + x]);
+            if (l >= _n || c >= _m)
+                throw IndexException((fisize)(l * _m + c));
+            return (_arr[l * _m + c]);
         }
 
-        inline T operator()(const fsize x, const fsize y) const
+        inline T operator()(const fsize l, const fsize c) const
         {
-            if (x >= _n || y >= _m)
-                throw IndexException((fint)(y * _n + x));
-            return (_arr[y * _n + x]);
+            if (l >= _n || c >= _m)
+                throw IndexException((fisize)(l *_m + c));
+            return (_arr[l * _m + c]);
         }
 
-        inline const T *operator*() const
+        inline const T *operator*() const noexcept
+        {
+            return (_arr);
+        }
+
+        inline T *operator*() noexcept
         {
             return (_arr);
         }
@@ -306,32 +374,43 @@ namespace bpf
          * @return the minor matrix
          */
         void GetMinor(Matrix<T> &dest, fsize row, fsize col) const;
-        
+
+        bool operator==(const Matrix<T> &other) const;
+
         /**
          * Multiplies two matrices
          * @throws MatrixException if the multiplication is impossible
          * @return the product of this by other
          */
         Matrix<T> operator*(const Matrix<T> &other) const;
+        Matrix<T> operator+(const Matrix<T> &other) const;
+        Vector<T> operator*(const Vector<T> &other) const;
+        Matrix<T> operator*(const T &other) const;
         Matrix<T> Transpose() const;
         void SwapRows(const fsize rowa, const fsize rowb);
         void SwapColumns(const fsize cola, const fsize colb);
     };
 
     template <typename T, fsize N, fsize M>
-    const Matrix<T, N, M> Matrix<T, N, M>::Zero = Matrix<T, N, M>();
+    const Matrix<T, N, M> Matrix<T, N, M>::Zero = Matrix<T, N, M>((T)0);
 
     template <typename T, fsize N>
     const Matrix<T, N, N> Matrix<T, N, N>::Identity = Matrix<T, N, N>::GenIdentity();
 }
 
 #include "Framework/Math/Matrix.impl.hpp"
-#include "Framework/Math/Matrix2.hpp"
-#include "Framework/Math/Matrix3.hpp"
-#include "Framework/Math/Matrix4.hpp"
+//#include "Framework/Math/Matrix2.hpp"
+//#include "Framework/Math/Matrix3.hpp"
+//#include "Framework/Math/Matrix4.hpp"
 
 namespace bpf
 {
+    template <typename T>
+    using Matrix2 = Matrix<T, 2, 2>;
+    template <typename T>
+    using Matrix3 = Matrix<T, 3, 3>;
+    template <typename T>
+    using Matrix4 = Matrix<T, 4, 4>;
     using Matrix2f = Matrix2<float>;
     using Matrix3f = Matrix3<float>;
     using Matrix4f = Matrix4<float>;

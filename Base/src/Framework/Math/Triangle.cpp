@@ -28,7 +28,7 @@
 
 #include "Framework/Math/Triangle.hpp"
 
-using namespace bpf;
+/*using namespace bpf;
 
 Vector3f Triangle::GetNormal() const
 {
@@ -57,4 +57,4 @@ Vector3f Triangle::GetBarycentricCoordinates(const Vector3f &p) const
     res.Y = pca / abc;
     res.Z = 1.0f - res.X - res.Y;
     return (res);
-}
+}*/

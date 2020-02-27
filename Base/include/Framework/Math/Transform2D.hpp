@@ -27,58 +27,57 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Types.hpp"
 #include "Framework/Math/Vector.hpp"
 #include "Framework/Math/Matrix.hpp"
 
 namespace bpf
 {
     template <typename T>
-    class BP_TPL_API Viewport
+    class BP_TPL_API Transform2D
     {
     public:
-        /**
-         * Field of view
-         */
-        T FOV;
-        
-        /**
-         * Near clipping plane
-         */
-        T NearPlane;
-        
-        /**
-         * Far clipping plane
-         */
-        T FarPlane;
-        
-        /**
-         * Viewport width
-         */
-        uint32 Width;
-        
-        /**
-         * Viewport height
-         */
-        uint32 Height;
+        class BP_TPL_API MatrixBuilder
+        {
+        private:
+            Matrix3<T> _matrix;
 
-        /**
-         * Projection matrix
-         */
-        Matrix4<T> Projection;
+        public:
+            MatrixBuilder &Translate(const Vector2<T> &translation) noexcept;
+            MatrixBuilder &Scale(const Vector2<T> &scale) noexcept;
+            MatrixBuilder &ShearX(const T &shear) noexcept;
+            MatrixBuilder &ShearY(const T &shear) noexcept;
+            MatrixBuilder &Rotate(const T &rotation) noexcept;
+            inline Matrix3<T> Build() const noexcept
+            {
+                return (_matrix);
+            }
+        };
 
-        Vector3<T> Project(const Matrix4<T> &view, const Vector3<T> &pt);
+    public:
+        Vector2<T> Position;
+        Vector2<T> Scale;
+        T Rotation;
 
-        inline Viewport()
-            : FOV(0.0f)
-            , NearPlane(0.0f)
-            , FarPlane(0.0f)
-            , Width(0)
-            , Height(0)
-            , Projection(Matrix4<T>::Identity)
+        explicit inline Transform2D(const Vector2<T> &pos = Vector2<T>::Zero, const Vector2<T> &scale = Vector2<T>::Identity, const T &rotation = 0)
+            : Position(pos)
+            , Scale(scale)
+            , Rotation(rotation)
         {
         }
-    };
-};
 
-#include "Framework/Math/Viewport.impl.hpp"
+        Vector2<T> LocalToWorld(const Vector2<T> &local);
+        Vector2<T> WorldToLocal(const Vector2<T> &world);
+
+        inline Matrix3<T> ToMatrix() const noexcept
+        {
+            return (MatrixBuilder().Rotate(Rotation).Scale(Scale).Translate(Position).Build());
+        }
+
+        void RotateArround(const Vector2<T> &pivot, const T &rotation);
+
+        Transform2D operator+(const Transform2D &other) const noexcept;
+        void operator+=(const Transform2D &other);
+    };
+}
+
+#include "Framework/Math/Transform2D.impl.hpp"

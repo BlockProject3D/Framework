@@ -27,8 +27,13 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include <utility>
 #undef minor //FUCK YOU LINUX
 #undef major //FUCK YOU LINUX
+
+#include "Framework/Math/IncompatibleMatrixSizeException.hpp"
+#include "Framework/Math/NonInvertibleMatrixException.hpp"
+#include "Framework/Math/NonSquareMatrixException.hpp"
 
 namespace bpf
 {
@@ -42,39 +47,100 @@ namespace bpf
             for (fsize x = 0; x != N; ++x)
             {
                 if (x == y)
-                    res(x, y) = 1;
+                    res(x, y) = (T)1;
             }
         }
         return (res);
     }
 
-    template <typename T, fsize M, fsize N>
-    template <fsize P>
-    Matrix<T, M, P> Matrix<T, M, N>::operator*(const Matrix<T, N, P> &other) const
+    template <typename T, fsize N, fsize M>
+    bool Matrix<T, N, M>::operator==(const Matrix<T, N, M> &other) const
     {
-        Matrix<T, M, P> mat;
+        for (fsize i = 0; i != N * M; ++i)
+        {
+            T diff = Math::Abs(_arr[i] - other._arr[i]);
+            if (diff > Math::Epsilon<T>())
+                return (false);
+        }
+        return (true);
+    }
 
-        for (fsize i = 0; i != M; ++i)
+    template <typename T, fsize N, fsize M>
+    template <fsize P>
+    Matrix<T, N, P> Matrix<T, N, M>::operator*(const Matrix<T, M, P> &other) const
+    {
+        Matrix<T, N, P> mat;
+
+        for (fsize i = 0; i != N; ++i)
         {
             for (fsize j = 0; j != P; ++j)
             {
                 T res = 0;
-                for (fsize k = 0; k != N; ++k)
-                    res += _arr[i * N + k] * other._arr[k * P + j];
+                for (fsize k = 0; k != M; ++k)
+                    res += _arr[i * M + k] * other._arr[k * P + j];
                 mat._arr[i * P + j] = res;
             }
         }
         return (mat);
     }
 
+    template <typename T, fsize N, fsize M>
+    Matrix<T, N, M> Matrix<T, N, M>::operator+(const Matrix<T, N, M> &other) const
+    {
+        Matrix<T, N, M> res;
+
+        for (fsize i = 0; i != N * M; ++i)
+            res._arr[i] = _arr[i] + other._arr[i];
+        return (res);
+    }
+
+    template <typename T, fsize N, fsize M>
+    Vector<T, N> Matrix<T, N, M>::operator*(const Vector<T, N> &other) const
+    {
+        Vector<T, N> res;
+
+        for (fsize i = 0; i < N; ++i)
+        {
+            T res = 0;
+            for (fsize k = 0; k < N; ++k)
+                res += other(k) * _arr[i * N + k];
+            res(i) = res;
+        }
+        return (res);
+
+    }
+
+    template <typename T, fsize N, fsize M>
+    Matrix<T, N, M> Matrix<T, N, M>::operator*(const T &other) const
+    {
+        Matrix<T, N, M> res;
+
+        for (fsize i = 0; i != N * M; ++i)
+            res._arr[i] = _arr[i] * other;
+        return (res);
+    }
+
     template <typename T, fsize N>
-    Matrix<T, N, N> Matrix<T, N, N>::operator*(const Matrix<T, N, N> &other) const
+    bool Matrix<T, N, N>::operator==(const Matrix<T, N, N> &other) const
+    {
+        for (fsize i = 0; i != N * N; ++i)
+        {
+            T diff = Math::Abs(_arr[i] - other._arr[i]);
+            if (diff > Math::Epsilon<T>())
+                return (false);
+        }
+        return (true);
+    }
+
+    template <typename T, fsize N>
+    template <fsize P>
+    Matrix<T, N, P> Matrix<T, N, N>::operator*(const Matrix<T, N, P> &other) const
     {
         Matrix<T, N, N> mat;
 
         for (fsize i = 0; i != N; ++i)
         {
-            for (fsize j = 0; j != N; ++j)
+            for (fsize j = 0; j != P; ++j)
             {
                 T res = 0;
                 for (fsize k = 0; k != N; ++k)
@@ -84,16 +150,52 @@ namespace bpf
         }
         return (mat);
     }
-    
-    template <typename T, fsize M, fsize N>
-    Matrix<T, N, M> Matrix<T, M, N>::Transpose() const
-    {
-        Matrix<T, N, M> res;
 
-        for (fsize x = 0; x != N; ++x)
+    template <typename T, fsize N>
+    Matrix<T, N, N> Matrix<T, N, N>::operator+(const Matrix<T, N, N> &other) const
+    {
+        Matrix<T, N, N> res;
+
+        for (fsize i = 0; i != N * N; ++i)
+            res._arr[i] = _arr[i] + other._arr[i];
+        return (res);
+    }
+
+    template <typename T, fsize N>
+    Vector<T, N> Matrix<T, N, N>::operator*(const Vector<T, N> &other) const
+    {
+        Vector<T, N> asda;
+
+        for (fsize i = 0; i < N; ++i)
         {
-            for (fsize y = 0; y != M; ++y)
-                res(y, x) = operator()(x, y);
+            T res = 0;
+            for (fsize k = 0; k < N; ++k)
+                res += other(k) * _arr[i * N + k];
+            asda(i) = res;
+        }
+        return (asda);
+
+    }
+
+    template <typename T, fsize N>
+    Matrix<T, N, N> Matrix<T, N, N>::operator*(const T &other) const
+    {
+        Matrix<T, N, N> res;
+
+        for (fsize i = 0; i != N * N; ++i)
+            res._arr[i] = _arr[i] * other;
+        return (res);
+    }
+
+    template <typename T, fsize N, fsize M>
+    Matrix<T, M, N> Matrix<T, N, M>::Transpose() const
+    {
+        Matrix<T, M, N> res;
+
+        for (fsize x = 0; x != M; ++x)
+        {
+            for (fsize y = 0; y != N; ++y)
+                res(x, y) = operator()(y, x);
         }
         return (res);
     }
@@ -101,28 +203,24 @@ namespace bpf
     template <typename T, fsize N>
     Matrix<T, N, N> Matrix<T, N, N>::Transpose() const
     {
-        Matrix<T, N, N> res = *this;
+        Matrix<T, N, N> res;
 
         for (fsize x = 0; x != N; ++x)
         {
             for (fsize y = 0; y != N; ++y)
-            {
-                T copy = res(y, x);
-                res(y, x) = res(x, y);
-                res(x, y) = copy;
-            }
+                res(x, y) = operator()(y, x);
         }
         return (res);
     }
 
-    template <typename T, fsize M, fsize N>
-    void Matrix<T, M, N>::SwapRows(const fsize rowa, const fsize rowb)
+    template <typename T, fsize N, fsize M>
+    void Matrix<T, N, M>::SwapRows(const fsize rowa, const fsize rowb)
     {
-        for (fsize x = 0; x != N; ++x)
+        for (fsize x = 0; x != M; ++x)
         {
-            T copy = operator()(x, rowa);
-            operator()(x, rowa) = operator()(x, rowb);
-            operator()(x, rowb) = copy;
+            T tmp = std::move(operator()(rowa, x));
+            operator()(rowa, x) = std::move(operator()(rowb, x));
+            operator()(rowb, x) = std::move(tmp);
         }
     }
 
@@ -131,20 +229,20 @@ namespace bpf
     {
         for (fsize x = 0; x != N; ++x)
         {
-            T copy = operator()(x, rowa);
-            operator()(x, rowa) = operator()(x, rowb);
-            operator()(x, rowb) = copy;
+            T tmp = std::move(operator()(rowa, x));
+            operator()(rowa, x) = std::move(operator()(rowb, x));
+            operator()(rowb, x) = std::move(tmp);
         }
     }
-    
-    template <typename T, fsize M, fsize N>
-    void Matrix<T, M, N>::SwapColumns(const fsize cola, const fsize colb)
+
+    template <typename T, fsize N, fsize M>
+    void Matrix<T, N, M>::SwapColumns(const fsize cola, const fsize colb)
     {
-        for (fsize x = 0; x != M; ++x)
+        for (fsize x = 0; x != N; ++x)
         {
-            T copy = operator()(cola, x);
-            operator()(cola, x) = operator()(colb, x);
-            operator()(colb, x) = copy;
+            T tmp = std::move(operator()(x, cola));
+            operator()(x, cola) = std::move(operator()(x, colb));
+            operator()(x, colb) = std::move(tmp);
         }
     }
     
@@ -153,9 +251,9 @@ namespace bpf
     {
         for (fsize x = 0; x != N; ++x)
         {
-            T copy = operator()(cola, x);
-            operator()(cola, x) = operator()(colb, x);
-            operator()(colb, x) = copy;
+            T tmp = std::move(operator()(x, cola));
+            operator()(x, cola) = std::move(operator()(x, colb));
+            operator()(x, colb) = std::move(tmp);
         }
     }
 
@@ -167,7 +265,7 @@ namespace bpf
         Matrix<T, N, N> res;
 
         if (det == 0)
-            throw MatrixException();
+            throw NonInvertibleMatrixException();
         det = (T)1 / det;
         for (fsize j = 0; j != N; ++j)
         {
@@ -222,48 +320,60 @@ namespace bpf
     }
     
     template <typename T>
-    Matrix<T>::Matrix(const fsize m, const fsize n)
-        : _arr(new T[m * n])
-        , _m(m)
+    Matrix<T>::Matrix(const fsize n, const fsize m)
+        : _arr(new T[n * m])
         , _n(n)
+        , _m(m)
     {
-        std::memset(_arr, 0, m * n * sizeof(T));
+        for (fsize i = 0; i != n * m; ++i)
+            _arr[i] = DefaultOf<T>();
     }
-    
+
     template <typename T>
-    Matrix<T>::Matrix(const fsize m, const fsize n, const std::initializer_list<T> &lst)
-        : _arr(new T[m * n])
-        , _m(m)
+    Matrix<T>::Matrix(const fsize n, const fsize m, const T val)
+        : _arr(new T[n * m])
         , _n(n)
+        , _m(m)
     {
-        std::memcpy(_arr, lst.begin(), m * n * sizeof(T));
+        for (fsize i = 0; i != n * m; ++i)
+            _arr[i] = val;
     }
-    
+
     template <typename T>
-    Matrix<T>::Matrix(const fsize m, const fsize n, const T *mat)
-        : _arr(new T[m * n])
-        , _m(m)
+    Matrix<T>::Matrix(const fsize n, const fsize m, const std::initializer_list<T> &lst)
+        : _arr(new T[n * m])
         , _n(n)
+        , _m(m)
     {
-        std::memcpy(_arr, mat, m * n * sizeof(T));
+        fsize i = 0;
+
+        for (auto &elem : lst)
+        {
+            if (i >= m * n)
+                break;
+            _arr[i++] = elem;
+        }
     }
-    
+
     template <typename T>
     Matrix<T>::Matrix(const Matrix<T> &other)
-        : _arr(new T[other._m * other._n])
-        , _m(other._m)
+        : _arr(new T[other._n * other._m])
         , _n(other._n)
+        , _m(other._m)
     {
-        std::memcpy(_arr, other._arr, _m * _n * sizeof(T));
+        for (fsize i = 0; i != _n * _m; ++i)
+            _arr[i] = other._arr[i];
     }
-    
+
     template <typename T>
     Matrix<T>::Matrix(Matrix<T> &&other)
         : _arr(other._arr)
-        , _m(other._m)
         , _n(other._n)
+        , _m(other._m)
     {
         other._arr = Null;
+        other._n = 0;
+        other._m = 0;
     }
     
     template <typename T>
@@ -271,55 +381,65 @@ namespace bpf
     {
         delete[] _arr;
     }
-    
+
     template <typename T>
     Matrix<T> &Matrix<T>::operator=(const Matrix<T> &other)
     {
         if (_arr != Null)
             delete[] _arr;
-        _m = other._m;
         _n = other._n;
-        _arr = new T[_m * _n];
-        std::memcpy(_arr, other._arr, _m * _n * sizeof(T));
+        _m = other._m;
+        _arr = new T[_n * _m];
+        for (fsize i = 0; i != _m * _n; ++i)
+            _arr[i] = other._arr[i];
     }
-    
+
     template <typename T>
     Matrix<T> &Matrix<T>::operator=(Matrix<T> &&other)
     {
         if (_arr != Null)
             delete[] _arr;
-        _m = other._m;
         _n = other._n;
+        _m = other._m;
         _arr = other._arr;
         other._arr = Null;
+        other._n = 0;
+        other._m = 0;
     }
-    
+
     template <typename T>
-    void Matrix<T>::SetIdentity()
+    Matrix<T> Matrix<T>::Identity(const fsize n)
     {
-        if (_m != _n)
-            throw MatrixException();
-        for (fsize y = 0; y != _m; ++y)
+        Matrix<T> m(n, n);
+
+        for (fsize y = 0; y != n; ++y)
         {
-            for (fsize x = 0; x != _n; ++x)
+            for (fsize x = 0; x != n; ++x)
             {
                 if (x == y)
-                    operator()(x, y) = 1;
+                    m(y, x) = (T)1;
             }
         }
+        return (m);
     }
-    
+
+    template <typename T>
+    Matrix<T> Matrix<T>::Zero(const fsize n, const fsize m)
+    {
+        return (Matrix<T>(n, m == 0 ? n : m, (T)0));
+    }
+
     template <typename T>
     Matrix<T> Matrix<T>::Invert() const
     {
         if (_m != _n)
-            throw MatrixException();
+            throw NonSquareMatrixException();
         T det = GetDeterminant();
         Matrix<T> minor(_n - 1, _n - 1);
         Matrix<T> res(_n, _n);
 
         if (det == 0)
-            throw MatrixException();
+            throw NonInvertibleMatrixException();
         det = (T)1 / det;
         for (fsize j = 0; j != _n; ++j)
         {
@@ -338,7 +458,7 @@ namespace bpf
     T Matrix<T>::GetDeterminant() const
     {
         if (_m != _n)
-            throw MatrixException();
+            throw NonSquareMatrixException();
         if (_n == 1)
             return (operator()(0, 0));
         T det = 0;
@@ -355,11 +475,11 @@ namespace bpf
     template <typename T>
     void Matrix<T>::GetMinor(Matrix<T> &dest, fsize row, fsize col) const
     {
-        fsize coli = 0;
+        fsize coli;
         fsize rowi = 0;
 
         if (_m != _n)
-            throw MatrixException();
+            throw NonSquareMatrixException();
         for (fsize i = 0; i != _n; ++i)
         {
             if (i != row)
@@ -377,36 +497,91 @@ namespace bpf
             }
         }
     }
-    
+
+    template <typename T>
+    bool Matrix<T>::operator==(const Matrix<T> &other) const
+    {
+        if (_m != other._m || _n != other._n)
+            return (false);
+        for (fsize i = 0; i != _n * _m; ++i)
+        {
+            T diff = Math::Abs(_arr[i] - other._arr[i]);
+            if (diff > Math::Epsilon<T>())
+                return (false);
+        }
+        return (true);
+    }
+
     template <typename T>
     Matrix<T> Matrix<T>::operator*(const Matrix<T> &other) const
     {
-        if (_n != other._m)
-            throw MatrixException();
-        Matrix<T> mat(_m, other._n);
+        if (_m != other._n)
+            throw IncompatibleMatrixSizeException((fisize)_m, (fisize)other._n);
+        Matrix<T> mat(_n, other._m);
 
-        for (fsize i = 0; i != _m; ++i)
+        for (fsize i = 0; i != _n; ++i)
         {
-            for (fsize j = 0; j != other._n; ++j)
+            for (fsize j = 0; j != other._m; ++j)
             {
                 T res = 0;
-                for (fsize k = 0; k != _n; ++k)
-                    res += _arr[i * _n + k] * other._arr[k * other._n + j];
-                mat._arr[i * other._n + j] = res;
+                for (fsize k = 0; k != _m; ++k)
+                    res += _arr[i * _m + k] * other._arr[k * other._m + j];
+                mat._arr[i * other._m + j] = res;
             }
         }
         return (mat);
     }
-    
+
     template <typename T>
-    Matrix<T> Matrix<T>::Transpose() const
+    Matrix<T> Matrix<T>::operator+(const Matrix<T> &other) const
+    {
+        if (_m != other._m)
+            throw IncompatibleMatrixSizeException((fisize)_m, (fisize)other._m);
+        if (_n != other._n)
+            throw IncompatibleMatrixSizeException((fisize)_n, (fisize)other._n);
+        Matrix<T> mat(_n, _m);
+
+        for (fsize i = 0; i != _n * _m; ++i)
+            mat._arr[i] = _arr[i] + other._arr[i];
+        return (mat);
+    }
+
+    template <typename T>
+    Vector<T> Matrix<T>::operator*(const Vector<T> &other) const
+    {
+        if (_n != other.Dim())
+            throw IncompatibleMatrixSizeException((fisize)_n, (fisize)other.Dim());
+        Vector<T> res;
+
+        for (fsize i = 0; i < _n; ++i)
+        {
+            T res = 0;
+            for (fsize k = 0; k < _n; ++k)
+                res += other(k) * _arr[i * _n + k];
+            res(i) = res;
+        }
+        return (res);
+    }
+
+    template <typename T>
+    Matrix<T> Matrix<T>::operator*(const T &other) const
     {
         Matrix<T> res(_n, _m);
 
-        for (fsize x = 0; x != _n; ++x)
+        for (fsize i = 0; i < _n * _m; ++i)
+            res._arr[i] = _arr[i] * other;
+        return (res);
+    }
+
+    template <typename T>
+    Matrix<T> Matrix<T>::Transpose() const
+    {
+        Matrix<T> res(_m, _n);
+
+        for (fsize x = 0; x != _m; ++x)
         {
-            for (fsize y = 0; y != _m; ++y)
-                res(y, x) = operator()(x, y);
+            for (fsize y = 0; y != _n; ++y)
+                res(x, y) = operator()(y, x);
         }
         return (res);
     }
@@ -414,22 +589,22 @@ namespace bpf
     template <typename T>
     void Matrix<T>::SwapRows(const fsize rowa, const fsize rowb)
     {
-        for (fsize x = 0; x != _n; ++x)
+        for (fsize x = 0; x != _m; ++x)
         {
-            T copy = operator()(x, rowa);
-            operator()(x, rowa) = operator()(x, rowb);
-            operator()(x, rowb) = copy;
+            T tmp = std::move(operator()(rowa, x));
+            operator()(rowa, x) = std::move(operator()(rowb, x));
+            operator()(rowb, x) = std::move(tmp);
         }
     }
     
     template <typename T>
     void Matrix<T>::SwapColumns(const fsize cola, const fsize colb)
     {
-        for (fsize x = 0; x != _m; ++x)
+        for (fsize x = 0; x != _n; ++x)
         {
-            T copy = operator()(cola, x);
-            operator()(cola, x) = operator()(colb, x);
-            operator()(colb, x) = copy;
+            T tmp = std::move(operator()(x, cola));
+            operator()(x, cola) = std::move(operator()(x, colb));
+            operator()(x, colb) = std::move(tmp);
         }
     }
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -26,28 +26,30 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Framework/Math/Viewport.hpp"
+#pragma once
 
-using namespace bpf;
-
-/*Vector3f Viewport::Project(const Matrix4f &view, const Vector3f &pt)
+namespace bpf
 {
-    Matrix4f viewproj = view * Projection;
-    Vector4f vec(pt, 1.0f);
-    Vector3f projected;
-
-    vec = viewproj * vec;
-    projected = Vector3f(vec.X / vec.W, vec.Y / vec.W, vec.Z / vec.W);
-    projected.X /= projected.Z;
-    projected.Y /= projected.Z;
-    projected.X = (((1 + projected.X) / 2.f) * Width) + 0.5f;
-    projected.Y = (((1 - projected.Y) / 2.f) * Height) + 0.5f;
-    if (vec.W < 0)
+    template <typename T>
+    Vector3<T> Viewport<T>::Project(const Matrix4<T> &view, const Vector3<T> &pt)
     {
-        if (projected.X > 0)
-            projected.X *= -1;
-        if (projected.Y > 0)
-            projected.Y *= -1;
+        Matrix4<T> viewproj = view * Projection;
+        Vector4<T> vec(pt, 1.0f);
+        Vector3<T> projected;
+
+        vec = viewproj * vec;
+        projected = Vector3<T>(vec.X / vec.W, vec.Y / vec.W, vec.Z / vec.W);
+        projected.X /= projected.Z;
+        projected.Y /= projected.Z;
+        projected.X = (((1 + projected.X) / 2.f) * Width) + 0.5f;
+        projected.Y = (((1 - projected.Y) / 2.f) * Height) + 0.5f;
+        if (vec.W < 0)
+        {
+            if (projected.X > 0)
+                projected.X *= -1;
+            if (projected.Y > 0)
+                projected.Y *= -1;
+        }
+        return (projected);
     }
-    return (projected);
-}*/
+}

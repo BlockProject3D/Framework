@@ -72,10 +72,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/Platforms/${PLATFORM}.cmake")
 
 #Setup the main target name=name of target mainincdir=main include directory
 macro(bp_setup_target name mainincdir)
-    #set(BP_NAME ${name})
     target_include_directories(${name} PRIVATE ${mainincdir})
-    #target_include_directories(${name} PRIVATE ${BP_INCLUDES})
-    #target_compile_definitions(${name} PRIVATE ${BP_PLATFORM_DEF})
     if (COVERAGE)
         target_compile_options(${name}
             PRIVATE
@@ -101,8 +98,6 @@ macro(bp_setup_target name mainincdir)
             -Wno-unused)
         target_link_libraries(${name} PRIVATE gcov supc++)
     endif (COVERAGE)
-    #target_link_libraries(${name} PRIVATE ${BP_MODULES})
-    set_property(TARGET ${name} PROPERTY CXX_STANDARD 11)
     bp_target_created(${name})
     source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}"
                  PREFIX ""

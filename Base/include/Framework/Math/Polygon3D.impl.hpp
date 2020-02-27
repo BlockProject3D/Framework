@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -26,28 +26,40 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Framework/Math/Viewport.hpp"
+#pragma once
 
-using namespace bpf;
-
-/*Vector3f Viewport::Project(const Matrix4f &view, const Vector3f &pt)
+namespace bpf
 {
-    Matrix4f viewproj = view * Projection;
-    Vector4f vec(pt, 1.0f);
-    Vector3f projected;
-
-    vec = viewproj * vec;
-    projected = Vector3f(vec.X / vec.W, vec.Y / vec.W, vec.Z / vec.W);
-    projected.X /= projected.Z;
-    projected.Y /= projected.Z;
-    projected.X = (((1 + projected.X) / 2.f) * Width) + 0.5f;
-    projected.Y = (((1 - projected.Y) / 2.f) * Height) + 0.5f;
-    if (vec.W < 0)
+    template <typename T>
+    Vector3<T> Polygon3D<T>::GetNormal() const noexcept
     {
-        if (projected.X > 0)
-            projected.X *= -1;
-        if (projected.Y > 0)
-            projected.Y *= -1;
+        if (Vertices.Size() >= 3)
+        {
+            Vector3<T> v = Vertices[1] - Vertices[0];
+            Vector3<T> w = Vertices[2] - Vertices[0];
+            return (v.Cross(w));
+        }
+        return (Vector3<T>::Zero);
     }
-    return (projected);
-}*/
+
+    template <typename T>
+    Vector3<T> Polygon3D<T>::GetBarycenter() const noexcept
+    {
+        Vector3<T> res;
+
+        for (const auto &v : Vertices)
+            res += v;
+        return (res / Vertices.Size());
+    }
+
+    template <typename T>
+    void Polygon3D<T>::Transform(const Matrix4<T> &matrix)
+    {
+        for (auto &v : Vertices)
+        {
+            Vector4<T> vec(v, 1.0f);
+            auto res = matrix * vec;
+            v = Vector3<T>(res.X, res.Y, res.Z);
+        }
+    }
+}

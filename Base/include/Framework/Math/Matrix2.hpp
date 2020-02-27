@@ -26,7 +26,7 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
+/*#pragma once
 #include "Framework/Math/Matrix.hpp"
 #include "Framework/Math/Vector2.hpp"
 
@@ -80,4 +80,4 @@ namespace bpf
     };
 }
 
-#include "Framework/Math/Matrix2.impl.hpp"
+#include "Framework/Math/Matrix2.impl.hpp"*/

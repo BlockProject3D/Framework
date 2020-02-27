@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -26,28 +26,40 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Framework/Math/Viewport.hpp"
+#pragma once
 
-using namespace bpf;
-
-/*Vector3f Viewport::Project(const Matrix4f &view, const Vector3f &pt)
+namespace bpf
 {
-    Matrix4f viewproj = view * Projection;
-    Vector4f vec(pt, 1.0f);
-    Vector3f projected;
-
-    vec = viewproj * vec;
-    projected = Vector3f(vec.X / vec.W, vec.Y / vec.W, vec.Z / vec.W);
-    projected.X /= projected.Z;
-    projected.Y /= projected.Z;
-    projected.X = (((1 + projected.X) / 2.f) * Width) + 0.5f;
-    projected.Y = (((1 - projected.Y) / 2.f) * Height) + 0.5f;
-    if (vec.W < 0)
+    template <typename T>
+    Vector2<T> Polygon2D<T>::GetBarycenter() const noexcept
     {
-        if (projected.X > 0)
-            projected.X *= -1;
-        if (projected.Y > 0)
-            projected.Y *= -1;
+        Vector2<T> res;
+
+        for (const auto &v : Vertices)
+            res += v;
+        return (res / Vertices.Size());
     }
-    return (projected);
-}*/
+
+    template <typename T>
+    void Polygon2D<T>::Transform(const Matrix3<T> &matrix)
+    {
+        for (auto &v : Vertices)
+        {
+            Vector3<T> vec(v, 1.0f);
+            auto res = matrix * vec;
+            v = Vector2<T>(res.X, res.Y);
+        }
+    }
+
+    template <typename T>
+    ArrayList<Polygon2D<T>> Polygon2D<T>::Triangulate() const noexcept
+    {
+        if (Vertices.Size <= 3)
+            return ({ *this });
+        auto lst = ArrayList<Polygon2D>();
+        auto v1 = Vertices[0];
+        for (fsize i = 1; i + 1 < Vertices.Size(); i += 2)
+            lst.Add(Polygon2D({ v1, Vertices[i], Vertices[i + 1] }));
+        return (lst);
+    }
+}

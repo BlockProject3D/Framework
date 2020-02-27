@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -26,28 +26,62 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Framework/Math/Viewport.hpp"
+#pragma once
 
-using namespace bpf;
-
-/*Vector3f Viewport::Project(const Matrix4f &view, const Vector3f &pt)
+namespace bpf
 {
-    Matrix4f viewproj = view * Projection;
-    Vector4f vec(pt, 1.0f);
-    Vector3f projected;
-
-    vec = viewproj * vec;
-    projected = Vector3f(vec.X / vec.W, vec.Y / vec.W, vec.Z / vec.W);
-    projected.X /= projected.Z;
-    projected.Y /= projected.Z;
-    projected.X = (((1 + projected.X) / 2.f) * Width) + 0.5f;
-    projected.Y = (((1 - projected.Y) / 2.f) * Height) + 0.5f;
-    if (vec.W < 0)
+    template <typename T>
+    Vector<T, 3>::Vector(const std::initializer_list<T> &lst)
     {
-        if (projected.X > 0)
-            projected.X *= -1;
-        if (projected.Y > 0)
-            projected.Y *= -1;
+        fsize i = 0;
+
+        for (auto &elem : lst)
+        {
+            switch (i)
+            {
+            case 0:
+                X = elem;
+                break;
+            case 1:
+                Y = elem;
+                break;
+            case 2:
+                Z = elem;
+                break;
+            }
+            ++i;
+        }
     }
-    return (projected);
-}*/
+
+    template <typename T>
+    T &Vector<T, 3>::operator()(const fsize l)
+    {
+        switch (l)
+        {
+        case 0:
+            return (X);
+        case 1:
+            return (Y);
+        case 2:
+            return (Z);
+        default:
+            throw IndexException((fisize)l);
+        }
+    }
+
+    template <typename T>
+    const T &Vector<T, 3>::operator()(const fsize l) const
+    {
+        switch (l)
+        {
+        case 0:
+            return (X);
+        case 1:
+            return (Y);
+        case 2:
+            return (Z);
+        default:
+            throw IndexException((fisize)l);
+        }
+    }
+}

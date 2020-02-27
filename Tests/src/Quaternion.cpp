@@ -33,7 +33,7 @@
 
 namespace bpf
 {
-    using Quatld = Quat<long double>;
+    using Quatld = Quaternion<long double>;
     using Vector3ld = Vector3<long double>;
 }
 

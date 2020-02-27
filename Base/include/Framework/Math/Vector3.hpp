@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -27,84 +27,72 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Math/Math.hpp"
-#include "Framework/Math/Vector2.hpp"
+#include "Framework/Math/Vector.hpp"
 
 namespace bpf
 {
     template <typename T>
-    class BP_TPL_API Vector3
+    class BP_TPL_API Vector<T, 3>
     {
     public:
         T X;
         T Y;
         T Z;
 
-        Vector3(const T x, const T y, const T z)
+        inline Vector(const T x, const T y, const T z)
             : X(x)
             , Y(y)
             , Z(z)
         {
         }
 
-        Vector3(const Vector3<T> &other)
+        inline Vector(const Vector<T, 2> &other, const T val)
+            : X(other.X)
+            , Y(other.Y)
+            , Z(val)
+        {
+        }
+
+        inline Vector()
+            : X(DefaultOf<T>())
+            , Y(DefaultOf<T>())
+            , Z(DefaultOf<T>())
+        {
+        }
+
+        explicit inline Vector(const T val)
+            : X(val)
+            , Y(val)
+            , Z(val)
+        {
+        }
+
+        Vector(const std::initializer_list<T> &lst);
+
+        inline Vector(const Vector &other)
             : X(other.X)
             , Y(other.Y)
             , Z(other.Z)
         {
         }
 
-        Vector3(const Vector2<T> &other, const T z = 0)
-            : X(other.X)
-            , Y(other.Y)
-            , Z(z)
+        inline Vector(Vector &&other)
+            : X(std::move(other.X))
+            , Y(std::move(other.Y))
+            , Z(std::move(other.Z))
         {
         }
 
-        Vector3()
-            : X(0)
-            , Y(0)
-            , Z(0)
+        constexpr inline fsize Dim() const noexcept
         {
+            return (3);
         }
 
-        inline T Dot(const Vector3<T> &other) const
-        {
-            return (X * other.X + Y * other.Y + Z * other.Z);
-        }
+        T &operator()(const fsize l);
 
-        inline Vector3<T> Cross(const Vector3<T> &other) const
-        {
-            return (Vector3<T>(Y * other.Z - Z * other.Y,
-                               Z * other.X - X * other.Z,
-                               X * other.Y - Y * other.X));
-        }
+        const T &operator()(const fsize l) const;
 
-        inline T Length() const
-        {
-            return (Math::Sqrt(X * X + Y * Y + Z * Z));
-        }
-
-        inline T Distance(const Vector3<T> &other) const
-        {
-            Vector3<T> v(Math::Abs(other.X - X), Math::Abs(other.Y - Y), Math::Abs(other.Z - Z));
-            return (v.Length());
-        }
-
-        inline T DistanceSquared(const Vector3<T> &other) const
-        {
-            Vector3<T> v(Math::Abs(other.X - X), Math::Abs(other.Y - Y), Math::Abs(other.Z - Z));
-            return (v.X * v.X + v.Y * v.Y + v.Z * v.Z);
-        }
-
-        inline void Normalize()
-        {
-            X = X / Length();
-            Y = Y / Length();
-            Z = Z / Length();
-        }
-
-        inline Vector3<T> &operator=(const Vector3<T> &other)
+        inline Vector &operator=(const Vector &other)
         {
             X = other.X;
             Y = other.Y;
@@ -112,24 +100,70 @@ namespace bpf
             return (*this);
         }
 
-        inline Vector3<T> operator*(const T other) const
+        inline Vector &operator=(Vector &&other)
         {
-            return (Vector3<T>(X * other, Y * other, Z * other));
+            X = std::move(other.X);
+            Y = std::move(other.Y);
+            Z = std::move(other.Z);
+            return (*this);
         }
 
-        inline Vector3<T> operator/(const T other) const
+        inline Vector operator+(const Vector &other) const
         {
-            return (Vector3<T>(X / other, Y / other, Z / other));
+            return (Vector(X + other.X, Y + other.Y, Z + other.Z));
         }
 
-        inline Vector3<T> operator+(const T other) const
+        inline Vector operator-(const Vector &other) const
         {
-            return (Vector3<T>(X + other, Y + other, Z + other));
+            return (Vector(X - other.X, Y - other.Y, Z - other.Z));
         }
 
-        inline Vector3<T> operator-(const T other) const
+        inline Vector operator*(const Vector &other) const
         {
-            return (Vector3<T>(X - other, Y - other, Z - other));
+            return (Vector(X * other.X, Y * other.Y, Z * other.Z));
+        }
+
+        inline Vector operator/(const Vector &other) const
+        {
+            return (Vector(X / other.X, Y / other.Y, Z / other.Z));
+        }
+
+        inline Vector operator*(const T other) const
+        {
+            return (Vector(X * other, Y * other, Z * other));
+        }
+
+        inline Vector operator/(const T other) const
+        {
+            return (Vector(X / other, Y / other, Z / other));
+        }
+
+        inline void operator+=(const Vector &other)
+        {
+            X += other.X;
+            Y += other.Y;
+            Z += other.Z;
+        }
+
+        inline void operator-=(const Vector &other)
+        {
+            X -= other.X;
+            Y -= other.Y;
+            Z -= other.Z;
+        }
+
+        inline void operator*=(const Vector &other)
+        {
+            X *= other.X;
+            Y *= other.Y;
+            Z *= other.Z;
+        }
+
+        inline void operator/=(const Vector &other)
+        {
+            X /= other.X;
+            Y /= other.Y;
+            Z /= other.Z;
         }
 
         inline void operator*=(const T other)
@@ -146,109 +180,82 @@ namespace bpf
             Z /= other;
         }
 
-        inline void operator+=(const T other)
+        inline Vector operator-() const
         {
-            X += other;
-            Y += other;
-            Z += other;
+            return (Vector(-X, -Y, -Z));
         }
 
-        inline void operator-=(const T other)
+        inline T Dot(const Vector &other) const
         {
-            X -= other;
-            Y -= other;
-            Z -= other;
+            return (X * other.X + Y * other.Y + Z * other.Z);
         }
 
-        inline Vector3<T> operator+(const Vector3<T> &other) const
+        inline T Distance(const Vector &other) const
         {
-            return (Vector3<T>(X + other.X, Y + other.Y, Z + other.Z));
+            auto dist = other - *this;
+            return (dist.Norm());
         }
 
-        inline Vector3<T> operator-(const Vector3<T> &other) const
+        inline T DistanceSquared(const Vector &other) const
         {
-            return (Vector3<T>(X - other.X, Y - other.Y, Z - other.Z));
+            auto dist = other - *this;
+            return (dist.NormSquared());
         }
 
-        inline Vector3<T> operator*(const Vector3<T> &other) const
+        inline T Norm() const
         {
-            return (Vector3<T>(X * other.X, Y * other.Y, Z * other.Z));
+            return (Math::Sqrt(X * X + Y * Y + Z * Z));
         }
 
-        inline Vector3<T> operator/(const Vector3<T> &other) const
+        inline T NormSquared() const
         {
-            return (Vector3<T>(X / other.X, Y / other.Y, Z / other.Z));
+            return (X * X + Y * Y + Z * Z);
         }
 
-        inline void operator+=(const Vector3<T> &other)
+        inline void Normalize()
         {
-            X += other.X;
-            Y += other.Y;
-            Z += other.Z;
+            auto v = Norm();
+            X /= v;
+            Y /= v;
+            Z /= v;
         }
 
-        inline void operator-=(const Vector3<T> &other)
+        inline Vector Cross(const Vector &other) const
         {
-            X -= other.X;
-            Y -= other.Y;
-            Z -= other.Z;
+            return (Vector(Y * other.Z - Z * other.Y, Z * other.X - X * other.Z, X * other.Y - Y * other.X));
         }
 
-        inline void operator*=(const Vector3<T> &other)
+        inline bool operator==(const Vector &other) const
         {
-            X *= other.X;
-            Y *= other.Y;
-            Z *= other.Z;
+            T diffx = Math::Abs(X - other.X);
+            T diffy = Math::Abs(Y - other.Y);
+            T diffz = Math::Abs(Z - other.Z);
+
+            return (diffx <= Math::Epsilon<T>() && diffy <= Math::Epsilon<T>() && diffz <= Math::Epsilon<T>());
         }
 
-        inline void operator/=(const Vector3<T> &other)
+        inline static Vector Lerp(const Vector &v, const Vector &v1, const T t)
         {
-            X /= other.X;
-            Y /= other.Y;
-            Z /= other.Z;
+            return (Vector(Math::Lerp(v.X, v1.X, t), Math::Lerp(v.Y, v1.Y, t), Math::Lerp(v.Z, v1.Z, t)));
         }
 
-        inline Vector3<T> operator-() const
-        {
-            return (Vector3<T>(-X, -Y, -Z));
-        }
-
-        inline bool operator==(const Vector3<T> &other) const
-        {
-            return (X == other.X && Y == other.Y && Z == other.Z);
-        }
-
-        inline static Vector3<T> Lerp(const Vector3<T> &v, const Vector3<T> &v1, const T t)
-        {
-            Vector3<T> res(Math::Lerp(v.X, v1.X, t), Math::Lerp(v.Y, v1.Y, t), Math::Lerp(v.Z, v1.Z, t));
-
-            return (res);
-        }
-
-        static const Vector3<T> Zero;
-        static const Vector3<T> Unit;
-        static const Vector3<T> Right;
-        static const Vector3<T> Up;
-        static const Vector3<T> Forward;
-        static const Vector3<T> Backward;
-        static const Vector3<T> Left;
-        static const Vector3<T> Down;
+        static const Vector Zero;
+        static const Vector Identity;
+        static const Vector Right;
+        static const Vector Up;
+        static const Vector Forward;
     };
 
     template <typename T>
-    const Vector3<T> Vector3<T>::Zero = Vector3<T>();
+    const Vector<T, 3> Vector<T, 3>::Zero = Vector((T)0);
     template <typename T>
-    const Vector3<T> Vector3<T>::Unit = Vector3<T>(1, 1, 1);
+    const Vector<T, 3> Vector<T, 3>::Identity = Vector((T)1);
     template <typename T>
-    const Vector3<T> Vector3<T>::Right = Vector3<T>(1, 0, 0);
+    const Vector<T, 3> Vector<T, 3>::Right = Vector((T)1, (T)0, (T)0);
     template <typename T>
-    const Vector3<T> Vector3<T>::Up = Vector3<T>(0, 0, 1);
+    const Vector<T, 3> Vector<T, 3>::Up = Vector((T)0, (T)0, (T)1);
     template <typename T>
-    const Vector3<T> Vector3<T>::Forward = Vector3<T>(0, 1, 0);
-    template <typename T>
-    const Vector3<T> Vector3<T>::Backward = Vector3<T>(0, -1, 0);
-    template <typename T>
-    const Vector3<T> Vector3<T>::Left = Vector3<T>(-1, 0, 0);
-    template <typename T>
-    const Vector3<T> Vector3<T>::Down = Vector3<T>(0, 0, -1);
+    const Vector<T, 3> Vector<T, 3>::Forward = Vector((T)0, (T)1, (T)0);
 }
+
+#include "Framework/Math/Vector3.impl.hpp"

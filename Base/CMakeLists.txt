@@ -3,8 +3,6 @@ project(BPF)
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/../CMakes/Framework.cmake")
 
-set(CMAKE_CXX_STANDARD 11)
-
 set(SOURCES
     ./include/Framework/IO/File.hpp
     ./include/Framework/IO/EStringSerializer.hpp
@@ -24,9 +22,13 @@ set(SOURCES
     ./include/Framework/IO/Stringifier.IO.hpp
     ./include/Framework/Math/Triangle.hpp
     ./include/Framework/Math/Vector.hpp
+    ./include/Framework/Math/Vector.impl.hpp
     ./include/Framework/Math/Vector2.hpp
+    ./include/Framework/Math/Vector2.impl.hpp
     ./include/Framework/Math/Vector3.hpp
+    ./include/Framework/Math/Vector3.impl.hpp
     ./include/Framework/Math/Vector4.hpp
+    ./include/Framework/Math/Vector4.impl.hpp
     ./include/Framework/Math/Matrix2.hpp
     ./include/Framework/Math/Matrix3.hpp
     ./include/Framework/Math/Matrix4.hpp
@@ -34,12 +36,24 @@ set(SOURCES
     ./include/Framework/Math/Matrix3.impl.hpp
     ./include/Framework/Math/Matrix4.impl.hpp
     ./include/Framework/Math/Viewport.hpp
+    ./include/Framework/Math/Viewport.impl.hpp
     ./include/Framework/Math/Quaternion.hpp
     ./include/Framework/Math/Quaternion.impl.hpp
     ./include/Framework/Math/Matrix.hpp
     ./include/Framework/Math/Matrix.impl.hpp
+    ./include/Framework/Math/IncompatibleMatrixSizeException.hpp
+    ./include/Framework/Math/NonSquareMatrixException.hpp
+    ./include/Framework/Math/NonInvertibleMatrixException.hpp
+    ./include/Framework/Math/Transform2D.hpp
+    ./include/Framework/Math/Transform3D.hpp
+    ./include/Framework/Math/Transform2D.impl.hpp
+    ./include/Framework/Math/Transform3D.impl.hpp
     ./include/Framework/Math/Transform.hpp
     ./include/Framework/Math/Triangle.hpp
+    ./include/Framework/Math/Polygon2D.hpp
+    ./include/Framework/Math/Polygon3D.hpp
+    ./include/Framework/Math/Polygon2D.impl.hpp
+    ./include/Framework/Math/Polygon3D.impl.hpp
     ./include/Framework/Math/Math.hpp
     ./include/Framework/Logging/Logger.hpp
     ./include/Framework/Logging/ILogHandler.hpp
