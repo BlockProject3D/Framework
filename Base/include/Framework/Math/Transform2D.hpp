@@ -32,52 +32,55 @@
 
 namespace bpf
 {
-    template <typename T>
-    class BP_TPL_API Transform2D
+    namespace math
     {
-    public:
-        class BP_TPL_API MatrixBuilder
+        template <typename T>
+        class BP_TPL_API Transform2D
         {
-        private:
-            Matrix3<T> _matrix;
+        public:
+            class BP_TPL_API MatrixBuilder
+            {
+            private:
+                Matrix3<T> _matrix;
+
+            public:
+                MatrixBuilder &Translate(const Vector2<T> &translation) noexcept;
+                MatrixBuilder &Scale(const Vector2<T> &scale) noexcept;
+                MatrixBuilder &ShearX(const T &shear) noexcept;
+                MatrixBuilder &ShearY(const T &shear) noexcept;
+                MatrixBuilder &Rotate(const T &rotation) noexcept;
+                inline Matrix3<T> Build() const noexcept
+                {
+                    return (_matrix);
+                }
+            };
 
         public:
-            MatrixBuilder &Translate(const Vector2<T> &translation) noexcept;
-            MatrixBuilder &Scale(const Vector2<T> &scale) noexcept;
-            MatrixBuilder &ShearX(const T &shear) noexcept;
-            MatrixBuilder &ShearY(const T &shear) noexcept;
-            MatrixBuilder &Rotate(const T &rotation) noexcept;
-            inline Matrix3<T> Build() const noexcept
+            Vector2<T> Position;
+            Vector2<T> Scale;
+            T Rotation;
+
+            explicit inline Transform2D(const Vector2<T> &pos = Vector2<T>::Zero, const Vector2<T> &scale = Vector2<T>::Identity, const T &rotation = 0)
+                : Position(pos)
+                , Scale(scale)
+                , Rotation(rotation)
             {
-                return (_matrix);
             }
+
+            Vector2<T> LocalToWorld(const Vector2<T> &local);
+            Vector2<T> WorldToLocal(const Vector2<T> &world);
+
+            inline Matrix3<T> ToMatrix() const noexcept
+            {
+                return (MatrixBuilder().Rotate(Rotation).Scale(Scale).Translate(Position).Build());
+            }
+
+            void RotateArround(const Vector2<T> &pivot, const T &rotation);
+
+            Transform2D operator+(const Transform2D &other) const noexcept;
+            void operator+=(const Transform2D &other);
         };
-
-    public:
-        Vector2<T> Position;
-        Vector2<T> Scale;
-        T Rotation;
-
-        explicit inline Transform2D(const Vector2<T> &pos = Vector2<T>::Zero, const Vector2<T> &scale = Vector2<T>::Identity, const T &rotation = 0)
-            : Position(pos)
-            , Scale(scale)
-            , Rotation(rotation)
-        {
-        }
-
-        Vector2<T> LocalToWorld(const Vector2<T> &local);
-        Vector2<T> WorldToLocal(const Vector2<T> &world);
-
-        inline Matrix3<T> ToMatrix() const noexcept
-        {
-            return (MatrixBuilder().Rotate(Rotation).Scale(Scale).Translate(Position).Build());
-        }
-
-        void RotateArround(const Vector2<T> &pivot, const T &rotation);
-
-        Transform2D operator+(const Transform2D &other) const noexcept;
-        void operator+=(const Transform2D &other);
-    };
+    }
 }
 
 #include "Framework/Math/Transform2D.impl.hpp"

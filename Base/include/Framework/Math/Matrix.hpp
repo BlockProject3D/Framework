@@ -35,383 +35,386 @@
 
 namespace bpf
 {
-    template <typename T, fsize N = 0, fsize M = 0>
-    class BP_TPL_API Matrix
+    namespace math
     {
-    private:
-        T _arr[N * M];
-
-    public:
-        inline Matrix()
+        template <typename T, fsize N = 0, fsize M = 0>
+        class BP_TPL_API Matrix
         {
-            for (fsize i = 0; i != N * M; ++i)
-                _arr[i] = DefaultOf<T>();
-        }
+        private:
+            T _arr[N * M];
 
-        explicit inline Matrix(const T val)
-        {
-            for (fsize i = 0; i != N * M; ++i)
-                _arr[i] = val;
-        }
-
-        inline Matrix(const std::initializer_list<T> &lst)
-        {
-            fsize i = 0;
-
-            for (auto &elem : lst)
+        public:
+            inline Matrix()
             {
-                if (i >= N * M)
-                    break;
-                _arr[i++] = elem;
+                for (fsize i = 0; i != N * M; ++i)
+                    _arr[i] = DefaultOf<T>();
             }
-        }
 
-        inline Matrix(const Matrix<T, N, M> &other)
-        {
-            for (fsize i = 0; i != N * M; ++i)
-                _arr[i] = other._arr[i];
-        }
-
-        inline Matrix(Matrix<T, N, M> &&other)
-        {
-            for (fsize i = 0; i != N * M; ++i)
-                _arr[i] = std::move(other._arr[i]);
-        }
-
-        inline Matrix<T, N, M> &operator=(const Matrix<T, N, M> &other)
-        {
-            for (fsize i = 0; i != N * M; ++i)
-                _arr[i] = other._arr[i];
-            return (*this);
-        }
-
-        inline Matrix<T, N, M> &operator=(Matrix<T, N, M> &&other)
-        {
-            for (fsize i = 0; i != N * M; ++i)
-                _arr[i] = std::move(other._arr[i]);
-            return (*this);
-        }
-
-        inline T &operator()(const fsize l, const fsize c)
-        {
-            if (l >= N || c >= M)
-                throw IndexException((fisize)(l * M + c));
-            return (_arr[l * M + c]);
-        }
-
-        inline T operator()(const fsize l, const fsize c) const
-        {
-            if (l >= N || c >= M)
-                throw IndexException((fisize)(l * M + c));
-            return (_arr[l * M + c]);
-        }
-
-        inline const T *operator*() const noexcept
-        {
-            return (_arr);
-        }
-
-        inline T *operator*() noexcept
-        {
-            return (_arr);
-        }
-
-        bool operator==(const Matrix<T, N, M> &other) const;
-
-        template <fsize P>
-        Matrix<T, N, P> operator*(const Matrix<T, M, P> &other) const;
-        Matrix<T, N, M> operator+(const Matrix<T, N, M> &other) const;
-        Vector<T, N> operator*(const Vector<T, N> &other) const;
-        Matrix<T, N, M> operator*(const T &other) const;
-        Matrix<T, M, N> Transpose() const;
-        void SwapRows(const fsize rowa, const fsize rowb);
-        void SwapColumns(const fsize cola, const fsize colb);
-
-        static const Matrix Zero;
-        
-        template <typename TT, fsize P, fsize Q>
-        friend class Matrix;
-    };
-
-    template <typename T, fsize N>
-    class BP_TPL_API Matrix<T, N, N>
-    {
-    private:
-        T _arr[N * N];
-
-        static Matrix<T, N, N> GenIdentity();
-
-    public:
-        inline Matrix()
-        {
-            for (fsize i = 0; i != N * N; ++i)
-                _arr[i] = DefaultOf<T>();
-        }
-
-        explicit inline Matrix(const T val)
-        {
-            for (fsize i = 0; i != N * N; ++i)
-                _arr[i] = val;
-        }
-
-        inline Matrix(const std::initializer_list<T> &lst)
-        {
-            fsize i = 0;
-
-            for (auto &elem : lst)
+            explicit inline Matrix(const T val)
             {
-                if (i >= N * N)
-                    break;
-                _arr[i++] = elem;
+                for (fsize i = 0; i != N * M; ++i)
+                    _arr[i] = val;
             }
-        }
 
-        inline Matrix(const Matrix<T, N, N> &other)
+            inline Matrix(const std::initializer_list<T> &lst)
+            {
+                fsize i = 0;
+
+                for (auto &elem : lst)
+                {
+                    if (i >= N * M)
+                        break;
+                    _arr[i++] = elem;
+                }
+            }
+
+            inline Matrix(const Matrix<T, N, M> &other)
+            {
+                for (fsize i = 0; i != N * M; ++i)
+                    _arr[i] = other._arr[i];
+            }
+
+            inline Matrix(Matrix<T, N, M> &&other)
+            {
+                for (fsize i = 0; i != N * M; ++i)
+                    _arr[i] = std::move(other._arr[i]);
+            }
+
+            inline Matrix<T, N, M> &operator=(const Matrix<T, N, M> &other)
+            {
+                for (fsize i = 0; i != N * M; ++i)
+                    _arr[i] = other._arr[i];
+                return (*this);
+            }
+
+            inline Matrix<T, N, M> &operator=(Matrix<T, N, M> &&other)
+            {
+                for (fsize i = 0; i != N * M; ++i)
+                    _arr[i] = std::move(other._arr[i]);
+                return (*this);
+            }
+
+            inline T &operator()(const fsize l, const fsize c)
+            {
+                if (l >= N || c >= M)
+                    throw IndexException((fisize)(l * M + c));
+                return (_arr[l * M + c]);
+            }
+
+            inline T operator()(const fsize l, const fsize c) const
+            {
+                if (l >= N || c >= M)
+                    throw IndexException((fisize)(l * M + c));
+                return (_arr[l * M + c]);
+            }
+
+            inline const T *operator*() const noexcept
+            {
+                return (_arr);
+            }
+
+            inline T *operator*() noexcept
+            {
+                return (_arr);
+            }
+
+            bool operator==(const Matrix<T, N, M> &other) const;
+
+            template <fsize P>
+            Matrix<T, N, P> operator*(const Matrix<T, M, P> &other) const;
+            Matrix<T, N, M> operator+(const Matrix<T, N, M> &other) const;
+            Vector<T, N> operator*(const Vector<T, N> &other) const;
+            Matrix<T, N, M> operator*(const T &other) const;
+            Matrix<T, M, N> Transpose() const;
+            void SwapRows(const fsize rowa, const fsize rowb);
+            void SwapColumns(const fsize cola, const fsize colb);
+
+            static const Matrix Zero;
+
+            template <typename TT, fsize P, fsize Q>
+            friend class Matrix;
+        };
+
+        template <typename T, fsize N>
+        class BP_TPL_API Matrix<T, N, N>
         {
-            for (fsize i = 0; i != N * N; ++i)
-                _arr[i] = other._arr[i];
-        }
+        private:
+            T _arr[N * N];
 
-        inline Matrix(Matrix<T, N, N> &&other)
+            static Matrix<T, N, N> GenIdentity();
+
+        public:
+            inline Matrix()
+            {
+                for (fsize i = 0; i != N * N; ++i)
+                    _arr[i] = DefaultOf<T>();
+            }
+
+            explicit inline Matrix(const T val)
+            {
+                for (fsize i = 0; i != N * N; ++i)
+                    _arr[i] = val;
+            }
+
+            inline Matrix(const std::initializer_list<T> &lst)
+            {
+                fsize i = 0;
+
+                for (auto &elem : lst)
+                {
+                    if (i >= N * N)
+                        break;
+                    _arr[i++] = elem;
+                }
+            }
+
+            inline Matrix(const Matrix<T, N, N> &other)
+            {
+                for (fsize i = 0; i != N * N; ++i)
+                    _arr[i] = other._arr[i];
+            }
+
+            inline Matrix(Matrix<T, N, N> &&other)
+            {
+                for (fsize i = 0; i != N * N; ++i)
+                    _arr[i] = std::move(other._arr[i]);
+            }
+
+            inline constexpr fsize Order() const noexcept
+            {
+                return (N);
+            }
+
+            inline Matrix<T, N, N> &operator=(const Matrix<T, N, N> &other)
+            {
+                for (fsize i = 0; i != N * N; ++i)
+                    _arr[i] = other._arr[i];
+                return (*this);
+            }
+
+            inline Matrix<T, N, N> &operator=(Matrix<T, N, N> &&other)
+            {
+                for (fsize i = 0; i != N * N; ++i)
+                    _arr[i] = std::move(other._arr[i]);
+                return (*this);
+            }
+
+            inline T &operator()(const fsize l, const fsize c)
+            {
+                if (l >= N || c >= N)
+                    throw IndexException((fisize)(l * N + c));
+                return (_arr[l * N + c]);
+            }
+
+            inline T operator()(const fsize l, const fsize c) const
+            {
+                if (l >= N || c >= N)
+                    throw IndexException((fisize)(l * N + c));
+                return (_arr[l * N + c]);
+            }
+
+            inline const T *operator*() const noexcept
+            {
+                return (_arr);
+            }
+
+            inline T *operator*() noexcept
+            {
+                return (_arr);
+            }
+
+            /**
+             * Inverts this matrix
+             * @throws MatrixException if the matrix is not invertible (ie determinant is null)
+             * @return the inverse of this matrix
+             */
+            Matrix<T, N, N> Invert() const;
+            T GetDeterminant() const;
+            template <fsize P>
+            void GetMinor(Matrix<T, P, P> &dest, fsize row, fsize col) const;
+            bool operator==(const Matrix<T, N, N> &other) const;
+            template <fsize P>
+            Matrix<T, N, P> operator*(const Matrix<T, N, P> &other) const;
+            Matrix<T, N, N> operator+(const Matrix<T, N, N> &other) const;
+            Matrix<T, N, N> operator*(const T &other) const;
+            Vector<T, N> operator*(const Vector<T, N> &other) const;
+            Matrix<T, N, N> Transpose() const;
+            void SwapRows(const fsize rowa, const fsize rowb);
+            void SwapColumns(const fsize cola, const fsize colb);
+
+            static const Matrix Zero;
+            static const Matrix Identity;
+
+            template <typename TT, fsize P, fsize Q>
+            friend class Matrix;
+        };
+
+        template <typename T>
+        class BP_TPL_API Matrix<T, 1, 1>
         {
-            for (fsize i = 0; i != N * N; ++i)
-                _arr[i] = std::move(other._arr[i]);
-        }
+        private:
+            T _arr;
 
-        inline constexpr fsize Order() const noexcept
+        public:
+            inline Matrix()
+                : _arr(0)
+            {
+            }
+
+            inline Matrix(const std::initializer_list<T> &lst)
+                : _arr(*lst.begin())
+            {
+            }
+
+            explicit inline Matrix(const T val)
+                : _arr(val)
+            {
+            }
+
+            inline Matrix(const Matrix<T, 1, 1> &other)
+                : _arr(other._arr)
+            {
+            }
+
+            inline Matrix<T, 1, 1> &operator=(const Matrix<T, 1, 1> &other)
+            {
+                _arr = other._arr;
+                return (*this);
+            }
+
+            inline T &operator()(const fsize, const fsize)
+            {
+                return (_arr);
+            }
+
+            inline T operator()(const fsize, const fsize) const
+            {
+                return (_arr);
+            }
+
+            inline T GetDeterminant() const
+            {
+                return (_arr);
+            }
+
+            template <typename TT, fsize P, fsize Q>
+            friend class Matrix;
+        };
+
+        template <typename T>
+        class BP_TPL_API Matrix<T, 0, 0>
         {
-            return (N);
-        }
+        private:
+            T *_arr;
+            fsize _n;
+            fsize _m;
 
-        inline Matrix<T, N, N> &operator=(const Matrix<T, N, N> &other)
-        {
-            for (fsize i = 0; i != N * N; ++i)
-                _arr[i] = other._arr[i];
-            return (*this);
-        }
+        public:
+            static Matrix Identity(const fsize n);
+            static Matrix Zero(const fsize n, const fsize m = 0);
 
-        inline Matrix<T, N, N> &operator=(Matrix<T, N, N> &&other)
-        {
-            for (fsize i = 0; i != N * N; ++i)
-                _arr[i] = std::move(other._arr[i]);
-            return (*this);
-        }
+            Matrix(const fsize n, const fsize m);
+            Matrix(const fsize n, const fsize m, const std::initializer_list<T> &lst);
+            Matrix(const fsize n, const fsize m, const T val);
+            Matrix(const Matrix<T> &other);
+            Matrix(Matrix<T> &&other);
+            ~Matrix();
+            Matrix<T> &operator=(const Matrix<T> &other);
+            Matrix<T> &operator=(Matrix<T> &&other);
 
-        inline T &operator()(const fsize l, const fsize c)
-        {
-            if (l >= N || c >= N)
-                throw IndexException((fisize)(l * N + c));
-            return (_arr[l * N + c]);
-        }
+            fsize Rows() const noexcept
+            {
+                return (_n);
+            }
 
-        inline T operator()(const fsize l, const fsize c) const
-        {
-            if (l >= N || c >= N)
-                throw IndexException((fisize)(l * N + c));
-            return (_arr[l * N + c]);
-        }
+            fsize Columns() const noexcept
+            {
+                return (_m);
+            }
 
-        inline const T *operator*() const noexcept
-        {
-            return (_arr);
-        }
+            inline T &operator()(const fsize l, const fsize c)
+            {
+                if (l >= _n || c >= _m)
+                    throw IndexException((fisize)(l * _m + c));
+                return (_arr[l * _m + c]);
+            }
 
-        inline T *operator*() noexcept
-        {
-            return (_arr);
-        }
+            inline T operator()(const fsize l, const fsize c) const
+            {
+                if (l >= _n || c >= _m)
+                    throw IndexException((fisize)(l * _m + c));
+                return (_arr[l * _m + c]);
+            }
 
-        /**
-         * Inverts this matrix
-         * @throws MatrixException if the matrix is not invertible (ie determinant is null)
-         * @return the inverse of this matrix
-         */
-        Matrix<T, N, N> Invert() const;
-        T GetDeterminant() const;
-        template <fsize P>
-        void GetMinor(Matrix<T, P, P> &dest, fsize row, fsize col) const;
-        bool operator==(const Matrix<T, N, N> &other) const;
-        template <fsize P>
-        Matrix<T, N, P> operator*(const Matrix<T, N, P> &other) const;
-        Matrix<T, N, N> operator+(const Matrix<T, N, N> &other) const;
-        Matrix<T, N, N> operator*(const T &other) const;
-        Vector<T, N> operator*(const Vector<T, N> &other) const;
-        Matrix<T, N, N> Transpose() const;
-        void SwapRows(const fsize rowa, const fsize rowb);
-        void SwapColumns(const fsize cola, const fsize colb);
+            inline const T *operator*() const noexcept
+            {
+                return (_arr);
+            }
 
-        static const Matrix Zero;
-        static const Matrix Identity;
+            inline T *operator*() noexcept
+            {
+                return (_arr);
+            }
 
-        template <typename TT, fsize P, fsize Q>
-        friend class Matrix;
-    };
+            /**
+             * Inverts this matrix
+             * @throws MatrixException if the matrix is not invertible (ie determinant is null) or if it is not a square matrix
+             * @return the inverse of this matrix
+             */
+            Matrix<T> Invert() const;
 
-    template <typename T>
-    class BP_TPL_API Matrix<T, 1, 1>
-    {
-    private:
-        T _arr;
+            /**
+             * Calculates the determinant of this matrix
+             * @throws MatrixException if the matrix is not squared
+             * @return the determinant of this matrix
+             */
+            T GetDeterminant() const;
 
-    public:
-        inline Matrix()
-            : _arr(0)
-        {
-        }
+            /**
+             * Calculates a minor matrix of a square matrix
+             * @throws MatrixException if the matrix is not squared
+             * @return the minor matrix
+             */
+            void GetMinor(Matrix<T> &dest, fsize row, fsize col) const;
 
-        inline Matrix(const std::initializer_list<T> &lst)
-            : _arr(*lst.begin())
-        {
-        }
+            bool operator==(const Matrix<T> &other) const;
 
-        explicit inline Matrix(const T val)
-            : _arr(val)
-        {
-        }
+            /**
+             * Multiplies two matrices
+             * @throws MatrixException if the multiplication is impossible
+             * @return the product of this by other
+             */
+            Matrix<T> operator*(const Matrix<T> &other) const;
+            Matrix<T> operator+(const Matrix<T> &other) const;
+            Vector<T> operator*(const Vector<T> &other) const;
+            Matrix<T> operator*(const T &other) const;
+            Matrix<T> Transpose() const;
+            void SwapRows(const fsize rowa, const fsize rowb);
+            void SwapColumns(const fsize cola, const fsize colb);
+        };
 
-        inline Matrix(const Matrix<T, 1, 1> &other)
-            : _arr(other._arr)
-        {
-        }
+        template <typename T, fsize N, fsize M>
+        const Matrix<T, N, M> Matrix<T, N, M>::Zero = Matrix<T, N, M>((T)0);
 
-        inline Matrix<T, 1, 1> &operator=(const Matrix<T, 1, 1> &other)
-        {
-            _arr = other._arr;
-            return (*this);
-        }
-
-        inline T &operator()(const fsize, const fsize)
-        {
-            return (_arr);
-        }
-
-        inline T operator()(const fsize, const fsize) const
-        {
-            return (_arr);
-        }
-
-        inline T GetDeterminant() const
-        {
-            return (_arr);
-        }
-
-        template <typename TT, fsize P, fsize Q>
-        friend class Matrix;
-    };
-    
-    template <typename T>
-    class BP_TPL_API Matrix<T, 0, 0>
-    {
-    private:
-        T *_arr;
-        fsize _n;
-        fsize _m;
-
-    public:
-        static Matrix Identity(const fsize n);
-        static Matrix Zero(const fsize n, const fsize m = 0);
-
-        Matrix(const fsize n, const fsize m);
-        Matrix(const fsize n, const fsize m, const std::initializer_list<T> &lst);
-        Matrix(const fsize n, const fsize m, const T val);
-        Matrix(const Matrix<T> &other);
-        Matrix(Matrix<T> &&other);
-        ~Matrix();
-        Matrix<T> &operator=(const Matrix<T> &other);
-        Matrix<T> &operator=(Matrix<T> &&other);
-        
-        fsize Rows() const noexcept
-        {
-            return (_n);
-        }
-
-        fsize Columns() const noexcept
-        {
-            return (_m);
-        }
-
-        inline T &operator()(const fsize l, const fsize c)
-        {
-            if (l >= _n || c >= _m)
-                throw IndexException((fisize)(l * _m + c));
-            return (_arr[l * _m + c]);
-        }
-
-        inline T operator()(const fsize l, const fsize c) const
-        {
-            if (l >= _n || c >= _m)
-                throw IndexException((fisize)(l *_m + c));
-            return (_arr[l * _m + c]);
-        }
-
-        inline const T *operator*() const noexcept
-        {
-            return (_arr);
-        }
-
-        inline T *operator*() noexcept
-        {
-            return (_arr);
-        }
-
-        /**
-         * Inverts this matrix
-         * @throws MatrixException if the matrix is not invertible (ie determinant is null) or if it is not a square matrix
-         * @return the inverse of this matrix
-         */
-        Matrix<T> Invert() const;
-        
-        /**
-         * Calculates the determinant of this matrix
-         * @throws MatrixException if the matrix is not squared
-         * @return the determinant of this matrix
-         */
-        T GetDeterminant() const;
-        
-        /**
-         * Calculates a minor matrix of a square matrix
-         * @throws MatrixException if the matrix is not squared
-         * @return the minor matrix
-         */
-        void GetMinor(Matrix<T> &dest, fsize row, fsize col) const;
-
-        bool operator==(const Matrix<T> &other) const;
-
-        /**
-         * Multiplies two matrices
-         * @throws MatrixException if the multiplication is impossible
-         * @return the product of this by other
-         */
-        Matrix<T> operator*(const Matrix<T> &other) const;
-        Matrix<T> operator+(const Matrix<T> &other) const;
-        Vector<T> operator*(const Vector<T> &other) const;
-        Matrix<T> operator*(const T &other) const;
-        Matrix<T> Transpose() const;
-        void SwapRows(const fsize rowa, const fsize rowb);
-        void SwapColumns(const fsize cola, const fsize colb);
-    };
-
-    template <typename T, fsize N, fsize M>
-    const Matrix<T, N, M> Matrix<T, N, M>::Zero = Matrix<T, N, M>((T)0);
-
-    template <typename T, fsize N>
-    const Matrix<T, N, N> Matrix<T, N, N>::Identity = Matrix<T, N, N>::GenIdentity();
+        template <typename T, fsize N>
+        const Matrix<T, N, N> Matrix<T, N, N>::Identity = Matrix<T, N, N>::GenIdentity();
+    }
 }
 
 #include "Framework/Math/Matrix.impl.hpp"
-//#include "Framework/Math/Matrix2.hpp"
-//#include "Framework/Math/Matrix3.hpp"
-//#include "Framework/Math/Matrix4.hpp"
 
 namespace bpf
 {
-    template <typename T>
-    using Matrix2 = Matrix<T, 2, 2>;
-    template <typename T>
-    using Matrix3 = Matrix<T, 3, 3>;
-    template <typename T>
-    using Matrix4 = Matrix<T, 4, 4>;
-    using Matrix2f = Matrix2<float>;
-    using Matrix3f = Matrix3<float>;
-    using Matrix4f = Matrix4<float>;
+    namespace math
+    {
+        template <typename T>
+        using Matrix2 = Matrix<T, 2, 2>;
+        template <typename T>
+        using Matrix3 = Matrix<T, 3, 3>;
+        template <typename T>
+        using Matrix4 = Matrix<T, 4, 4>;
+        using Matrix2f = Matrix2<float>;
+        using Matrix3f = Matrix3<float>;
+        using Matrix4f = Matrix4<float>;
+    }
 }

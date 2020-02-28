@@ -33,172 +33,175 @@
 
 namespace bpf
 {
-    template <typename T>
-    class BP_TPL_API Quaternion
+    namespace math
     {
-    private:
-        T X;
-        T Y;
-        T Z;
-        T W;
-
-    public:
-        inline Quaternion()
-            : X(0)
-            , Y(0)
-            , Z(0)
-            , W(1)
+        template <typename T>
+        class BP_TPL_API Quaternion
         {
-        }
-        
-        inline Quaternion(const T w, const T x, const T y, const T z)
-            : X(x)
-            , Y(y)
-            , Z(z)
-            , W(w)
-        {
-        }
+        private:
+            T X;
+            T Y;
+            T Z;
+            T W;
 
-        /**
-         * Constructs a quaternion from euler angles
-         * WARNING : Angles are expressed in radians
-         * @param euler euler angles X = Pitch, Y = Yaw, Z = Roll
-         */
-        explicit Quaternion(const Vector<T, 3> &euler);
+        public:
+            inline Quaternion()
+                : X(0)
+                , Y(0)
+                , Z(0)
+                , W(1)
+            {
+            }
 
-        /**
-         * Constructs a quaternion from the rotation between two vectors
-         * @param from first vector
-         * @param to second vector
-         */
-        Quaternion(const Vector<T, 3> &from, const Vector<T, 3> &to);
+            inline Quaternion(const T w, const T x, const T y, const T z)
+                : X(x)
+                , Y(y)
+                , Z(z)
+                , W(w)
+            {
+            }
 
-        /**
-         * Constructs a quaternion from axis angle
-         * WARNING : Angle is expressed in radians
-         */
-        Quaternion(const Vector<T, 3> &axis, const T ang);
+            /**
+             * Constructs a quaternion from euler angles
+             * WARNING : Angles are expressed in radians
+             * @param euler euler angles X = Pitch, Y = Yaw, Z = Roll
+             */
+            explicit Quaternion(const Vector<T, 3> &euler);
 
-        /**
-         * Rotates the given vector by this quaternion
-         * @param v the vector to rotate
-         */
-        Vector<T, 3> Rotate(const Vector<T, 3> &v) const;
+            /**
+             * Constructs a quaternion from the rotation between two vectors
+             * @param from first vector
+             * @param to second vector
+             */
+            Quaternion(const Vector<T, 3> &from, const Vector<T, 3> &to);
 
-        inline Vector<T, 3> Up() const
-        {
-            return (Rotate(Vector3<T>::Up));
-        }
+            /**
+             * Constructs a quaternion from axis angle
+             * WARNING : Angle is expressed in radians
+             */
+            Quaternion(const Vector<T, 3> &axis, const T ang);
 
-        inline Vector<T, 3> Forward() const
-        {
-            return (Rotate(Vector3<T>::Forward));
-        }
+            /**
+             * Rotates the given vector by this quaternion
+             * @param v the vector to rotate
+             */
+            Vector<T, 3> Rotate(const Vector<T, 3> &v) const;
 
-        inline Vector<T, 3> Right() const
-        {
-            return (Rotate(Vector3<T>::Right));
-        }
+            inline Vector<T, 3> Up() const
+            {
+                return (Rotate(Vector3<T>::Up));
+            }
 
-        Matrix<T, 4, 4> ToMatrix() const;
+            inline Vector<T, 3> Forward() const
+            {
+                return (Rotate(Vector3<T>::Forward));
+            }
 
-        inline Quaternion<T> Invert() const
-        {
-            return (Quaternion<T>(W, -X, -Y, -Z));
-        }
+            inline Vector<T, 3> Right() const
+            {
+                return (Rotate(Vector3<T>::Right));
+            }
 
-        inline T Length() const
-        {
-            return (Math::Sqrt(W * W + X * X + Y * Y + Z * Z));
-        }
+            Matrix<T, 4, 4> ToMatrix() const;
 
-        inline void Normalize()
-        {
-            T mag = Length();
+            inline Quaternion<T> Invert() const
+            {
+                return (Quaternion<T>(W, -X, -Y, -Z));
+            }
 
-            X /= mag;
-            Y /= mag;
-            Z /= mag;
-            W /= mag;
-        }
+            inline T Length() const
+            {
+                return (Math::Sqrt(W * W + X * X + Y * Y + Z * Z));
+            }
 
-        bool operator==(const Quaternion<T> &other) const;
+            inline void Normalize()
+            {
+                T mag = Length();
 
-        /**
-         * Multiplies two quaternions, returns the cumulation of the rotation of this and other
-         */
-        Quaternion<T> operator*(const Quaternion<T> &other) const;
+                X /= mag;
+                Y /= mag;
+                Z /= mag;
+                W /= mag;
+            }
 
-        inline Quaternion<T> operator+(const Quaternion<T> &other) const
-        {
-            return (Quaternion<T>(W + other.W, X + other.X, Y + other.Y, Z + other.Z));
-        }
+            bool operator==(const Quaternion<T> &other) const;
 
-        /**
-         * Returns a copy of this quaternion raised to the power of n
-         */
-        Quaternion<T> Pow(const T n) const;
-        Quaternion<T> Exp() const;
-        Quaternion<T> Log() const;
+            /**
+             * Multiplies two quaternions, returns the cumulation of the rotation of this and other
+             */
+            Quaternion<T> operator*(const Quaternion<T> &other) const;
 
-        /**
-         * Returns the angle in degrees between two quaternions
-         * WARNING : Angle is expressed in radians
-         */
-        T Angle(const Quaternion<T> &other) const;
+            inline Quaternion<T> operator+(const Quaternion<T> &other) const
+            {
+                return (Quaternion<T>(W + other.W, X + other.X, Y + other.Y, Z + other.Z));
+            }
 
-        /**
-         * Returns the euler angles representation of that quaternion
-         * WARNING : Angles are expressed in radians
-         */
-        Vector<T, 3> ToEulerAngles() const;
+            /**
+             * Returns a copy of this quaternion raised to the power of n
+             */
+            Quaternion<T> Pow(const T n) const;
+            Quaternion<T> Exp() const;
+            Quaternion<T> Log() const;
 
-        /**
-         * Returns the axis of that quaternion
-         */
-        inline Vector<T, 3> GetAxis() const
-        {
-            return (Vector<T, 3>(X, Y, Z));
-        }
+            /**
+             * Returns the angle in degrees between two quaternions
+             * WARNING : Angle is expressed in radians
+             */
+            T Angle(const Quaternion<T> &other) const;
 
-        /**
-         * Returns the W component of that quaternion
-         */
-        inline T GetW() const
-        {
-            return (W);
-        }
+            /**
+             * Returns the euler angles representation of that quaternion
+             * WARNING : Angles are expressed in radians
+             */
+            Vector<T, 3> ToEulerAngles() const;
 
-        /**
-         * Linear Interpolation between two quaternions
-         */
-        static Quaternion<T> Lerp(const Quaternion<T> &q, const Quaternion<T> &q1, const T t);
+            /**
+             * Returns the axis of that quaternion
+             */
+            inline Vector<T, 3> GetAxis() const
+            {
+                return (Vector<T, 3>(X, Y, Z));
+            }
 
-        /**
-         * Spherical linear interpolation between two quaternions
-         * WARNING : produces garbage after short period of animation time
-         * Never could figure why it did this
-         * TODO : Figure out why Slerp does not work as intended, and fix it
-         */
-        static Quaternion<T> Slerp(const Quaternion<T> &q, const Quaternion<T> &q1, const T t);
+            /**
+             * Returns the W component of that quaternion
+             */
+            inline T GetW() const
+            {
+                return (W);
+            }
 
-        /**
-         * Zero quaternion
-         */
-        static const Quaternion<T> Zero;
+            /**
+             * Linear Interpolation between two quaternions
+             */
+            static Quaternion<T> Lerp(const Quaternion<T> &q, const Quaternion<T> &q1, const T t);
 
-        /**
-         * Identity quaternion
-         */
-        static const Quaternion<T> Identity;
-    };
+            /**
+             * Spherical linear interpolation between two quaternions
+             * WARNING : produces garbage after short period of animation time
+             * Never could figure why it did this
+             * TODO : Figure out why Slerp does not work as intended, and fix it
+             */
+            static Quaternion<T> Slerp(const Quaternion<T> &q, const Quaternion<T> &q1, const T t);
 
-    template <typename T>
-    const Quaternion<T> Quaternion<T>::Zero = Quaternion<T>(0, 0, 0, 0);
-    template <typename T>
-    const Quaternion<T> Quaternion<T>::Identity = Quaternion<T>(1, 0, 0, 0);
-    
-    using Quaternionf = Quaternion<float>;
+            /**
+             * Zero quaternion
+             */
+            static const Quaternion<T> Zero;
+
+            /**
+             * Identity quaternion
+             */
+            static const Quaternion<T> Identity;
+        };
+
+        template <typename T>
+        const Quaternion<T> Quaternion<T>::Zero = Quaternion<T>(0, 0, 0, 0);
+        template <typename T>
+        const Quaternion<T> Quaternion<T>::Identity = Quaternion<T>(1, 0, 0, 0);
+
+        using Quaternionf = Quaternion<float>;
+    }
 }
 
 #include "Framework/Math/Quaternion.impl.hpp"

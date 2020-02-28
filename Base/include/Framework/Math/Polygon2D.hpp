@@ -27,36 +27,39 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/ArrayList.hpp"
+#include "Framework/Collection/ArrayList.hpp"
 #include "Framework/Math/Transform2D.hpp"
 
 namespace bpf
 {
-    template <typename T>
-    class BP_TPL_API Polygon2D
+    namespace math
     {
-    public:
-        ArrayList<Vector2> Vertices;
-
-        explicit inline Polygon2D(const ArrayList<Vector2> &verts)
-            : Vertices(verts)
+        template <typename T>
+        class BP_TPL_API Polygon2D
         {
-        }
+        public:
+            ArrayList<Vector2> Vertices;
 
-        explicit inline Polygon2D(ArrayList<Vector2> &&verts)
-            : Vertices(std::move(verts))
-        {
-        }
+            explicit inline Polygon2D(const ArrayList<Vector2> &verts)
+                : Vertices(verts)
+            {
+            }
 
-        inline void Transform(const Transform2D &transform)
-        {
-            Transform(transform.ToMatrix());
-        }
+            explicit inline Polygon2D(ArrayList<Vector2> &&verts)
+                : Vertices(std::move(verts))
+            {
+            }
 
-        Vector2 GetBarycenter() const noexcept;
-        void Transform(const Matrix3 &matrix);
-        ArrayList<Polygon2D> Triangulate() const noexcept;
-    };
+            inline void Transform(const Transform2D &transform)
+            {
+                Transform(transform.ToMatrix());
+            }
+
+            Vector2 GetBarycenter() const noexcept;
+            void Transform(const Matrix3 &matrix);
+            ArrayList<Polygon2D> Triangulate() const noexcept;
+        };
+    }
 }
 
 #include "Framework/Math/Polygon2D.impl.hpp"

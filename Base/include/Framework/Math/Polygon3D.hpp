@@ -27,36 +27,39 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/ArrayList.hpp"
+#include "Framework/Collection/ArrayList.hpp"
 #include "Framework/Math/Transform3D.hpp"
 
 namespace bpf
 {
-    template <typename T>
-    class BP_TPL_API Polygon3D
+    namespace math
     {
-    public:
-        ArrayList<Vector3> Vertices;
-
-        explicit inline Polygon3D(const ArrayList<Vector3> &verts)
-            : Vertices(verts)
+        template <typename T>
+        class BP_TPL_API Polygon3D
         {
-        }
+        public:
+            ArrayList<Vector3> Vertices;
 
-        explicit inline Polygon3D(ArrayList<Vector3> &&verts)
-            : Vertices(std::move(verts))
-        {
-        }
+            explicit inline Polygon3D(const ArrayList<Vector3> &verts)
+                : Vertices(verts)
+            {
+            }
 
-        inline void Transform(const Transform3D &transform)
-        {
-            Transform(transform.ToMatrix());
-        }
+            explicit inline Polygon3D(ArrayList<Vector3> &&verts)
+                : Vertices(std::move(verts))
+            {
+            }
 
-        Vector3 GetNormal() const noexcept;
-        Vector3 GetBarycenter() const noexcept;
-        void Transform(const Matrix4 &matrix);
-    };
+            inline void Transform(const Transform3D &transform)
+            {
+                Transform(transform.ToMatrix());
+            }
+
+            Vector3 GetNormal() const noexcept;
+            Vector3 GetBarycenter() const noexcept;
+            void Transform(const Matrix4 &matrix);
+        };
+    }
 }
 
 #include "Framework/Math/Polygon3D.impl.hpp"

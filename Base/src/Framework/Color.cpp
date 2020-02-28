@@ -29,6 +29,7 @@
 #include "Framework/Color.hpp"
 #include "Framework/Math/Math.hpp"
 
+using namespace bpf::math;
 using namespace bpf;
 
 const Color Color::Red = Color(255, 0, 0);

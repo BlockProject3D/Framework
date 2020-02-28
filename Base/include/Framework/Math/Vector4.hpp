@@ -31,234 +31,237 @@
 
 namespace bpf
 {
-    template <typename T>
-    class BP_TPL_API Vector<T, 4>
+    namespace math
     {
-    public:
-        T X;
-        T Y;
-        T Z;
-        T W;
-
-        inline Vector(const T x, const T y, const T z, const T w)
-            : X(x)
-            , Y(y)
-            , Z(z)
-            , W(w)
+        template <typename T>
+        class BP_TPL_API Vector<T, 4>
         {
-        }
+        public:
+            T X;
+            T Y;
+            T Z;
+            T W;
 
-        inline Vector(const Vector<T, 3> &other, const T val)
-            : X(other.X)
-            , Y(other.Y)
-            , Z(other.Z)
-            , W(val)
-        {
-        }
+            inline Vector(const T x, const T y, const T z, const T w)
+                : X(x)
+                , Y(y)
+                , Z(z)
+                , W(w)
+            {
+            }
 
-        inline Vector()
-            : X(DefaultOf<T>())
-            , Y(DefaultOf<T>())
-            , Z(DefaultOf<T>())
-            , W(DefaultOf<T>())
-        {
-        }
+            inline Vector(const Vector<T, 3> &other, const T val)
+                : X(other.X)
+                , Y(other.Y)
+                , Z(other.Z)
+                , W(val)
+            {
+            }
 
-        explicit inline Vector(const T val)
-            : X(val)
-            , Y(val)
-            , Z(val)
-            , W(val)
-        {
-        }
+            inline Vector()
+                : X(DefaultOf<T>())
+                , Y(DefaultOf<T>())
+                , Z(DefaultOf<T>())
+                , W(DefaultOf<T>())
+            {
+            }
 
-        Vector(const std::initializer_list<T> &lst);
+            explicit inline Vector(const T val)
+                : X(val)
+                , Y(val)
+                , Z(val)
+                , W(val)
+            {
+            }
 
-        inline Vector(const Vector &other)
-            : X(other.X)
-            , Y(other.Y)
-            , Z(other.Z)
-            , W(other.W)
-        {
-        }
+            Vector(const std::initializer_list<T> &lst);
 
-        inline Vector(Vector &&other)
-            : X(std::move(other.X))
-            , Y(std::move(other.Y))
-            , Z(std::move(other.Z))
-            , W(std::move(other.W))
-        {
-        }
+            inline Vector(const Vector &other)
+                : X(other.X)
+                , Y(other.Y)
+                , Z(other.Z)
+                , W(other.W)
+            {
+            }
 
-        constexpr inline fsize Dim() const noexcept
-        {
-            return (4);
-        }
+            inline Vector(Vector &&other)
+                : X(std::move(other.X))
+                , Y(std::move(other.Y))
+                , Z(std::move(other.Z))
+                , W(std::move(other.W))
+            {
+            }
 
-        T &operator()(const fsize l);
+            constexpr inline fsize Dim() const noexcept
+            {
+                return (4);
+            }
 
-        const T &operator()(const fsize l) const;
+            T &operator()(const fsize l);
 
-        inline Vector &operator=(const Vector &other)
-        {
-            X = other.X;
-            Y = other.Y;
-            Z = other.Z;
-            W = other.W;
-            return (*this);
-        }
+            const T &operator()(const fsize l) const;
 
-        inline Vector &operator=(Vector &&other)
-        {
-            X = std::move(other.X);
-            Y = std::move(other.Y);
-            Z = std::move(other.Z);
-            W = std::move(other.W);
-            return (*this);
-        }
+            inline Vector &operator=(const Vector &other)
+            {
+                X = other.X;
+                Y = other.Y;
+                Z = other.Z;
+                W = other.W;
+                return (*this);
+            }
 
-        inline Vector operator+(const Vector &other) const
-        {
-            return (Vector(X + other.X, Y + other.Y, Z + other.Z, W + other.W));
-        }
+            inline Vector &operator=(Vector &&other)
+            {
+                X = std::move(other.X);
+                Y = std::move(other.Y);
+                Z = std::move(other.Z);
+                W = std::move(other.W);
+                return (*this);
+            }
 
-        inline Vector operator-(const Vector &other) const
-        {
-            return (Vector(X - other.X, Y - other.Y, Z - other.Z, W - other.W));
-        }
+            inline Vector operator+(const Vector &other) const
+            {
+                return (Vector(X + other.X, Y + other.Y, Z + other.Z, W + other.W));
+            }
 
-        inline Vector operator*(const Vector &other) const
-        {
-            return (Vector(X * other.X, Y * other.Y, Z * other.Z, W * other.W));
-        }
+            inline Vector operator-(const Vector &other) const
+            {
+                return (Vector(X - other.X, Y - other.Y, Z - other.Z, W - other.W));
+            }
 
-        inline Vector operator/(const Vector &other) const
-        {
-            return (Vector(X / other.X, Y / other.Y, Z / other.Z, W / other.W));
-        }
+            inline Vector operator*(const Vector &other) const
+            {
+                return (Vector(X * other.X, Y * other.Y, Z * other.Z, W * other.W));
+            }
 
-        inline Vector operator*(const T other) const
-        {
-            return (Vector(X * other, Y * other, Z * other, W * other));
-        }
+            inline Vector operator/(const Vector &other) const
+            {
+                return (Vector(X / other.X, Y / other.Y, Z / other.Z, W / other.W));
+            }
 
-        inline Vector operator/(const T other) const
-        {
-            return (Vector(X / other, Y / other, Z / other, W / other));
-        }
+            inline Vector operator*(const T other) const
+            {
+                return (Vector(X * other, Y * other, Z * other, W * other));
+            }
 
-        inline void operator+=(const Vector &other)
-        {
-            X += other.X;
-            Y += other.Y;
-            Z += other.Z;
-            W += other.W;
-        }
+            inline Vector operator/(const T other) const
+            {
+                return (Vector(X / other, Y / other, Z / other, W / other));
+            }
 
-        inline void operator-=(const Vector &other)
-        {
-            X -= other.X;
-            Y -= other.Y;
-            Z -= other.Z;
-            W -= other.W;
-        }
+            inline void operator+=(const Vector &other)
+            {
+                X += other.X;
+                Y += other.Y;
+                Z += other.Z;
+                W += other.W;
+            }
 
-        inline void operator*=(const Vector &other)
-        {
-            X *= other.X;
-            Y *= other.Y;
-            Z *= other.Z;
-            W *= other.W;
-        }
+            inline void operator-=(const Vector &other)
+            {
+                X -= other.X;
+                Y -= other.Y;
+                Z -= other.Z;
+                W -= other.W;
+            }
 
-        inline void operator/=(const Vector &other)
-        {
-            X /= other.X;
-            Y /= other.Y;
-            Z /= other.Z;
-            W /= other.W;
-        }
+            inline void operator*=(const Vector &other)
+            {
+                X *= other.X;
+                Y *= other.Y;
+                Z *= other.Z;
+                W *= other.W;
+            }
 
-        inline void operator*=(const T other)
-        {
-            X *= other;
-            Y *= other;
-            Z *= other;
-            W *= other;
-        }
+            inline void operator/=(const Vector &other)
+            {
+                X /= other.X;
+                Y /= other.Y;
+                Z /= other.Z;
+                W /= other.W;
+            }
 
-        inline void operator/=(const T other)
-        {
-            X /= other;
-            Y /= other;
-            Z /= other;
-            W /= other;
-        }
+            inline void operator*=(const T other)
+            {
+                X *= other;
+                Y *= other;
+                Z *= other;
+                W *= other;
+            }
 
-        inline Vector operator-() const
-        {
-            return (Vector(-X, -Y, -Z, -W));
-        }
+            inline void operator/=(const T other)
+            {
+                X /= other;
+                Y /= other;
+                Z /= other;
+                W /= other;
+            }
 
-        inline T Dot(const Vector &other) const
-        {
-            return (X * other.X + Y * other.Y + Z * other.Z + W * other.W);
-        }
+            inline Vector operator-() const
+            {
+                return (Vector(-X, -Y, -Z, -W));
+            }
 
-        inline T Distance(const Vector &other) const
-        {
-            auto dist = other - *this;
-            return (dist.Norm());
-        }
+            inline T Dot(const Vector &other) const
+            {
+                return (X * other.X + Y * other.Y + Z * other.Z + W * other.W);
+            }
 
-        inline T DistanceSquared(const Vector &other) const
-        {
-            auto dist = other - *this;
-            return (dist.NormSquared());
-        }
+            inline T Distance(const Vector &other) const
+            {
+                auto dist = other - *this;
+                return (dist.Norm());
+            }
 
-        inline T Norm() const
-        {
-            return (Math::Sqrt(X * X + Y * Y + Z * Z + W * W));
-        }
+            inline T DistanceSquared(const Vector &other) const
+            {
+                auto dist = other - *this;
+                return (dist.NormSquared());
+            }
 
-        inline T NormSquared() const
-        {
-            return (X * X + Y * Y + Z * Z + W * W);
-        }
+            inline T Norm() const
+            {
+                return (Math::Sqrt(X * X + Y * Y + Z * Z + W * W));
+            }
 
-        inline void Normalize()
-        {
-            auto v = Norm();
-            X /= v;
-            Y /= v;
-            Z /= v;
-            W /= v;
-        }
+            inline T NormSquared() const
+            {
+                return (X * X + Y * Y + Z * Z + W * W);
+            }
 
-        inline bool operator==(const Vector &other) const
-        {
-            T diffx = Math::Abs(X - other.X);
-            T diffy = Math::Abs(Y - other.Y);
-            T diffz = Math::Abs(Z - other.Z);
-            T diffw = Math::Abs(W - other.W);
+            inline void Normalize()
+            {
+                auto v = Norm();
+                X /= v;
+                Y /= v;
+                Z /= v;
+                W /= v;
+            }
 
-            return (diffx <= Math::Epsilon<T>() && diffy <= Math::Epsilon<T>() && diffz <= Math::Epsilon<T>() && diffw <= Math::Epsilon<T>());
-        }
+            inline bool operator==(const Vector &other) const
+            {
+                T diffx = Math::Abs(X - other.X);
+                T diffy = Math::Abs(Y - other.Y);
+                T diffz = Math::Abs(Z - other.Z);
+                T diffw = Math::Abs(W - other.W);
 
-        inline static Vector Lerp(const Vector &v, const Vector &v1, const T t)
-        {
-            return (Vector(Math::Lerp(v.X, v1.X, t), Math::Lerp(v.Y, v1.Y, t), Math::Lerp(v.Z, v1.Z, t), Math::Lerp(v.W, v1.W, t)));
-        }
+                return (diffx <= Math::Epsilon<T>() && diffy <= Math::Epsilon<T>() && diffz <= Math::Epsilon<T>() && diffw <= Math::Epsilon<T>());
+            }
 
-        static const Vector Zero;
-        static const Vector Identity;
-    };
+            inline static Vector Lerp(const Vector &v, const Vector &v1, const T t)
+            {
+                return (Vector(Math::Lerp(v.X, v1.X, t), Math::Lerp(v.Y, v1.Y, t), Math::Lerp(v.Z, v1.Z, t), Math::Lerp(v.W, v1.W, t)));
+            }
 
-    template <typename T>
-    const Vector<T, 4> Vector<T, 4>::Zero = Vector((T)0);
-    template <typename T>
-    const Vector<T, 4> Vector<T, 4>::Identity = Vector((T)1);
+            static const Vector Zero;
+            static const Vector Identity;
+        };
+
+        template <typename T>
+        const Vector<T, 4> Vector<T, 4>::Zero = Vector((T)0);
+        template <typename T>
+        const Vector<T, 4> Vector<T, 4>::Identity = Vector((T)1);
+    }
 }
 
 #include "Framework/Math/Vector4.impl.hpp"

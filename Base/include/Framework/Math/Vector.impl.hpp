@@ -31,461 +31,464 @@
 
 namespace bpf
 {
-    template <typename T, fsize I>
-    Vector<T, I>::Vector(const std::initializer_list<T> &lst)
+    namespace math
     {
-        fsize i = 0;
-
-        for (auto &elem : lst)
-            _arr[i++] = elem;
-    }
-
-    template <typename T, fsize I>
-    Vector<T, I> &Vector<T, I>::operator=(const Vector &other)
-    {
-        for (fsize i = 0; i != I; ++i)
-            _arr[i] = other._arr[i];
-        return (*this);
-    }
-
-    template <typename T, fsize I>
-    Vector<T, I> &Vector<T, I>::operator=(Vector &&other)
-    {
-        for (fsize i = 0; i != I; ++i)
-            _arr[i] = std::move(other._arr[i]);
-        return (*this);
-    }
-
-    template <typename T, fsize I>
-    Vector<T, I> Vector<T, I>::operator+(const Vector &other) const
-    {
-        auto res = *this;
-
-        for (fsize i = 0; i != I; ++i)
-            res(i) += other(i);
-        return (res);
-    }
-
-    template <typename T, fsize I>
-    Vector<T, I> Vector<T, I>::operator-(const Vector &other) const
-    {
-        auto res = *this;
-
-        for (fsize i = 0; i != I; ++i)
-            res(i) -= other(i);
-        return (res);
-    }
-
-    template <typename T, fsize I>
-    Vector<T, I> Vector<T, I>::operator*(const Vector &other) const
-    {
-        auto res = *this;
-
-        for (fsize i = 0; i != I; ++i)
-            res(i) *= other(i);
-        return (res);
-    }
-
-    template <typename T, fsize I>
-    Vector<T, I> Vector<T, I>::operator/(const Vector &other) const
-    {
-        auto res = *this;
-
-        for (fsize i = 0; i != I; ++i)
-            res(i) /= other(i);
-        return (res);
-    }
-
-    template <typename T, fsize I>
-    Vector<T, I> Vector<T, I>::operator*(const T other) const
-    {
-        auto res = *this;
-
-        for (fsize i = 0; i != I; ++i)
-            res(i) *= other;
-        return (res);
-    }
-
-    template <typename T, fsize I>
-    Vector<T, I> Vector<T, I>::operator/(const T other) const
-    {
-        auto res = *this;
-
-        for (fsize i = 0; i != I; ++i)
-            res(i) /= other;
-        return (res);
-    }
-
-    template <typename T, fsize I>
-    void Vector<T, I>::operator+=(const Vector &other)
-    {
-        for (fsize i = 0; i != I; ++i)
-            _arr[i] += other(i);
-    }
-
-    template <typename T, fsize I>
-    void Vector<T, I>::operator-=(const Vector &other)
-    {
-        for (fsize i = 0; i != I; ++i)
-            _arr[i] -= other(i);
-    }
-
-    template <typename T, fsize I>
-    void Vector<T, I>::operator*=(const Vector &other)
-    {
-        for (fsize i = 0; i != I; ++i)
-            _arr[i] *= other(i);
-    }
-
-    template <typename T, fsize I>
-    void Vector<T, I>::operator/=(const Vector &other)
-    {
-        for (fsize i = 0; i != I; ++i)
-            _arr[i] /= other(i);
-    }
-
-    template <typename T, fsize I>
-    void Vector<T, I>::operator*=(const T other)
-    {
-        for (fsize i = 0; i != I; ++i)
-            _arr[i] *= other;
-    }
-
-    template <typename T, fsize I>
-    void Vector<T, I>::operator/=(const T other)
-    {
-        for (fsize i = 0; i != I; ++i)
-            _arr[i] /= other;
-    }
-
-    template <typename T, fsize I>
-    Vector<T, I> Vector<T, I>::operator-() const
-    {
-        auto res = *this;
-
-        for (fsize i = 0; i != I; ++i)
-            res(i) *= -1;
-        return (res);
-    }
-
-    template <typename T, fsize I>
-    bool Vector<T, I>::operator==(const Vector &other) const
-    {
-        for (fsize i = 0; i != I; ++i)
+        template <typename T, fsize I>
+        Vector<T, I>::Vector(const std::initializer_list<T> &lst)
         {
-            T diff = Math::Abs(_arr[i] - other(i));
-            if (diff >= Math::Epsilon<T>())
-                return (false);
+            fsize i = 0;
+
+            for (auto &elem : lst)
+                _arr[i++] = elem;
         }
-        return (true);
-    }
 
-    template <typename T, fsize I>
-    T Vector<T, I>::Dot(const Vector &other) const
-    {
-        T res = DefaultOf<T>();
-
-        for (fsize i = 0; i != I; ++i)
-            res += _arr[i] * other(i);
-        return (res);
-    }
-
-    template <typename T, fsize I>
-    T Vector<T, I>::Distance(const Vector &other) const
-    {
-        auto dist = other - *this;
-
-        return (dist.Norm());
-    }
-
-    template <typename T, fsize I>
-    T Vector<T, I>::DistanceSquared(const Vector &other) const
-    {
-        auto dist = other - *this;
-
-        return (dist.NormSquared());
-    }
-
-    template <typename T, fsize I>
-    T Vector<T, I>::Norm() const
-    {
-        T res = DefaultOf<T>();
-
-        for (fsize i = 0; i != I; ++i)
-            res += _arr[i] * _arr[i];
-        return (Math::Sqrt(res));
-    }
-
-    template <typename T, fsize I>
-    T Vector<T, I>::NormSquared() const
-    {
-        T res = DefaultOf<T>();
-
-        for (fsize i = 0; i != I; ++i)
-            res += _arr[i] * _arr[i];
-        return (res);
-    }
-
-    template <typename T, fsize I>
-    void Vector<T, I>::Normalize()
-    {
-        auto norm = Norm();
-
-        for (fsize i = 0; i != I; ++i)
-            _arr[i] /= norm;
-    }
-
-    template <typename T, fsize I>
-    Vector<T, I> Vector<T, I>::Lerp(const Vector &v, const Vector &v1, const T t)
-    {
-        auto res = Vector();
-
-        for (fsize i = 0; i != I; ++i)
-            res(i) = Math::Lerp(v(i), v1(i), t);
-        return (res);
-    }
-
-    template <typename T>
-    Vector<T>::Vector(const std::initializer_list<T> &lst)
-        : _arr(new T[lst.size()])
-        , _l(lst.size())
-    {
-        fsize i = 0;
-
-        for (auto &elem : lst)
-            _arr[i++] = elem;
-    }
-
-    template <typename T>
-    Vector<T> &Vector<T>::operator=(const Vector &other)
-    {
-        delete[] _arr;
-        _l = other._l;
-        _arr = new T[_l];
-        for (fsize i = 0; i != _l; ++i)
-            _arr[i] = other._arr[i];
-        return (*this);
-    }
-
-    template <typename T>
-    Vector<T> &Vector<T>::operator=(Vector &&other)
-    {
-        delete[] _arr;
-        _arr = other._arr;
-        _l = other._l;
-        other._arr = Null;
-        other._l = 0;
-        return (*this);
-    }
-
-    template <typename T>
-    Vector<T> Vector<T>::operator+(const Vector &other) const
-    {
-        if (_l != other._l)
-            throw IncompatibleMatrixSizeException((fisize)_l, (fisize)other._l);
-        auto res = *this;
-
-        for (fsize i = 0; i != _l; ++i)
-            res(i) += other(i);
-        return (res);
-    }
-
-    template <typename T>
-    Vector<T> Vector<T>::operator-(const Vector &other) const
-    {
-        if (_l != other._l)
-            throw IncompatibleMatrixSizeException((fisize)_l, (fisize)other._l);
-        auto res = *this;
-
-        for (fsize i = 0; i != _l; ++i)
-            res(i) -= other(i);
-        return (res);
-    }
-
-    template <typename T>
-    Vector<T> Vector<T>::operator*(const Vector &other) const
-    {
-        if (_l != other._l)
-            throw IncompatibleMatrixSizeException((fisize)_l, (fisize)other._l);
-        auto res = *this;
-
-        for (fsize i = 0; i != _l; ++i)
-            res(i) *= other(i);
-        return (res);
-    }
-
-    template <typename T>
-    Vector<T> Vector<T>::operator/(const Vector &other) const
-    {
-        if (_l != other._l)
-            throw IncompatibleMatrixSizeException((fisize)_l, (fisize)other._l);
-        auto res = *this;
-
-        for (fsize i = 0; i != _l; ++i)
-            res(i) /= other(i);
-        return (res);
-    }
-
-    template <typename T>
-    Vector<T> Vector<T>::operator*(const T other) const
-    {
-        auto res = *this;
-
-        for (fsize i = 0; i != _l; ++i)
-            res(i) *= other;
-        return (res);
-    }
-
-    template <typename T>
-    Vector<T> Vector<T>::operator/(const T other) const
-    {
-        auto res = *this;
-
-        for (fsize i = 0; i != _l; ++i)
-            res(i) /= other;
-        return (res);
-    }
-
-    template <typename T>
-    void Vector<T>::operator+=(const Vector &other)
-    {
-        if (_l != other._l)
-            throw IncompatibleMatrixSizeException((fisize)_l, (fisize)other._l);
-        for (fsize i = 0; i != _l; ++i)
-            _arr[i] += other(i);
-    }
-
-    template <typename T>
-    void Vector<T>::operator-=(const Vector &other)
-    {
-        if (_l != other._l)
-            throw IncompatibleMatrixSizeException((fisize)_l, (fisize)other._l);
-        for (fsize i = 0; i != _l; ++i)
-            _arr[i] -= other(i);
-    }
-
-    template <typename T>
-    void Vector<T>::operator*=(const Vector &other)
-    {
-        if (_l != other._l)
-            throw IncompatibleMatrixSizeException((fisize)_l, (fisize)other._l);
-        for (fsize i = 0; i != _l; ++i)
-            _arr[i] *= other(i);
-    }
-
-    template <typename T>
-    void Vector<T>::operator/=(const Vector &other)
-    {
-        if (_l != other._l)
-            throw IncompatibleMatrixSizeException((fisize)_l, (fisize)other._l);
-        for (fsize i = 0; i != _l; ++i)
-            _arr[i] /= other(i);
-    }
-
-    template <typename T>
-    void Vector<T>::operator*=(const T other)
-    {
-        for (fsize i = 0; i != _l; ++i)
-            _arr[i] *= other;
-    }
-
-    template <typename T>
-    void Vector<T>::operator/=(const T other)
-    {
-        for (fsize i = 0; i != _l; ++i)
-            _arr[i] /= other;
-    }
-
-    template <typename T>
-    Vector<T> Vector<T>::operator-() const
-    {
-        auto res = *this;
-
-        for (fsize i = 0; i != _l; ++i)
-            res(i) *= -1;
-        return (res);
-    }
-
-    template <typename T>
-    bool Vector<T>::operator==(const Vector &other) const
-    {
-        if (_l != other._l)
-            throw IncompatibleMatrixSizeException((fisize)_l, (fisize)other._l);
-        for (fsize i = 0; i != _l; ++i)
+        template <typename T, fsize I>
+        Vector<T, I> &Vector<T, I>::operator=(const Vector &other)
         {
-            T diff = Math::Abs(_arr[i] - other(i));
-            if (diff >= Math::Epsilon<T>())
-                return (false);
+            for (fsize i = 0; i != I; ++i)
+                _arr[i] = other._arr[i];
+            return (*this);
         }
-        return (true);
-    }
 
-    template <typename T>
-    T Vector<T>::Dot(const Vector &other) const
-    {
-        if (_l != other._l)
-            throw IncompatibleMatrixSizeException((fisize)_l, (fisize)other._l);
-        T res = DefaultOf<T>();
+        template <typename T, fsize I>
+        Vector<T, I> &Vector<T, I>::operator=(Vector &&other)
+        {
+            for (fsize i = 0; i != I; ++i)
+                _arr[i] = std::move(other._arr[i]);
+            return (*this);
+        }
 
-        for (fsize i = 0; i != _l; ++i)
-            res += _arr[i] * other(i);
-        return (res);
-    }
+        template <typename T, fsize I>
+        Vector<T, I> Vector<T, I>::operator+(const Vector &other) const
+        {
+            auto res = *this;
 
-    template <typename T>
-    T Vector<T>::Distance(const Vector &other) const
-    {
-        auto dist = other - *this;
+            for (fsize i = 0; i != I; ++i)
+                res(i) += other(i);
+            return (res);
+        }
 
-        return (dist.Norm());
-    }
+        template <typename T, fsize I>
+        Vector<T, I> Vector<T, I>::operator-(const Vector &other) const
+        {
+            auto res = *this;
 
-    template <typename T>
-    T Vector<T>::DistanceSquared(const Vector &other) const
-    {
-        auto dist = other - *this;
+            for (fsize i = 0; i != I; ++i)
+                res(i) -= other(i);
+            return (res);
+        }
 
-        return (dist.NormSquared());
-    }
+        template <typename T, fsize I>
+        Vector<T, I> Vector<T, I>::operator*(const Vector &other) const
+        {
+            auto res = *this;
 
-    template <typename T>
-    T Vector<T>::Norm() const
-    {
-        T res = DefaultOf<T>();
+            for (fsize i = 0; i != I; ++i)
+                res(i) *= other(i);
+            return (res);
+        }
 
-        for (fsize i = 0; i != _l; ++i)
-            res += _arr[i] * _arr[i];
-        return (Math::Sqrt(res));
-    }
+        template <typename T, fsize I>
+        Vector<T, I> Vector<T, I>::operator/(const Vector &other) const
+        {
+            auto res = *this;
 
-    template <typename T>
-    T Vector<T>::NormSquared() const
-    {
-        T res = DefaultOf<T>();
+            for (fsize i = 0; i != I; ++i)
+                res(i) /= other(i);
+            return (res);
+        }
 
-        for (fsize i = 0; i != _l; ++i)
-            res += _arr[i] * _arr[i];
-        return (res);
-    }
+        template <typename T, fsize I>
+        Vector<T, I> Vector<T, I>::operator*(const T other) const
+        {
+            auto res = *this;
 
-    template <typename T>
-    void Vector<T>::Normalize()
-    {
-        auto norm = Norm();
+            for (fsize i = 0; i != I; ++i)
+                res(i) *= other;
+            return (res);
+        }
 
-        for (fsize i = 0; i != _l; ++i)
-            _arr[i] /= norm;
-    }
+        template <typename T, fsize I>
+        Vector<T, I> Vector<T, I>::operator/(const T other) const
+        {
+            auto res = *this;
 
-    template <typename T>
-    Vector<T> Vector<T>::Lerp(const Vector &v, const Vector &v1, const T t)
-    {
-        if (v._l != v1._l)
-            throw IncompatibleMatrixSizeException((fisize)v._l, (fisize)v1._l);
-        auto res = Vector(v._l);
+            for (fsize i = 0; i != I; ++i)
+                res(i) /= other;
+            return (res);
+        }
 
-        for (fsize i = 0; i != v._l; ++i)
-            res(i) = Math::Lerp(v(i), v1(i), t);
-        return (res);
+        template <typename T, fsize I>
+        void Vector<T, I>::operator+=(const Vector &other)
+        {
+            for (fsize i = 0; i != I; ++i)
+                _arr[i] += other(i);
+        }
+
+        template <typename T, fsize I>
+        void Vector<T, I>::operator-=(const Vector &other)
+        {
+            for (fsize i = 0; i != I; ++i)
+                _arr[i] -= other(i);
+        }
+
+        template <typename T, fsize I>
+        void Vector<T, I>::operator*=(const Vector &other)
+        {
+            for (fsize i = 0; i != I; ++i)
+                _arr[i] *= other(i);
+        }
+
+        template <typename T, fsize I>
+        void Vector<T, I>::operator/=(const Vector &other)
+        {
+            for (fsize i = 0; i != I; ++i)
+                _arr[i] /= other(i);
+        }
+
+        template <typename T, fsize I>
+        void Vector<T, I>::operator*=(const T other)
+        {
+            for (fsize i = 0; i != I; ++i)
+                _arr[i] *= other;
+        }
+
+        template <typename T, fsize I>
+        void Vector<T, I>::operator/=(const T other)
+        {
+            for (fsize i = 0; i != I; ++i)
+                _arr[i] /= other;
+        }
+
+        template <typename T, fsize I>
+        Vector<T, I> Vector<T, I>::operator-() const
+        {
+            auto res = *this;
+
+            for (fsize i = 0; i != I; ++i)
+                res(i) *= -1;
+            return (res);
+        }
+
+        template <typename T, fsize I>
+        bool Vector<T, I>::operator==(const Vector &other) const
+        {
+            for (fsize i = 0; i != I; ++i)
+            {
+                T diff = Math::Abs(_arr[i] - other(i));
+                if (diff >= Math::Epsilon<T>())
+                    return (false);
+            }
+            return (true);
+        }
+
+        template <typename T, fsize I>
+        T Vector<T, I>::Dot(const Vector &other) const
+        {
+            T res = DefaultOf<T>();
+
+            for (fsize i = 0; i != I; ++i)
+                res += _arr[i] * other(i);
+            return (res);
+        }
+
+        template <typename T, fsize I>
+        T Vector<T, I>::Distance(const Vector &other) const
+        {
+            auto dist = other - *this;
+
+            return (dist.Norm());
+        }
+
+        template <typename T, fsize I>
+        T Vector<T, I>::DistanceSquared(const Vector &other) const
+        {
+            auto dist = other - *this;
+
+            return (dist.NormSquared());
+        }
+
+        template <typename T, fsize I>
+        T Vector<T, I>::Norm() const
+        {
+            T res = DefaultOf<T>();
+
+            for (fsize i = 0; i != I; ++i)
+                res += _arr[i] * _arr[i];
+            return (Math::Sqrt(res));
+        }
+
+        template <typename T, fsize I>
+        T Vector<T, I>::NormSquared() const
+        {
+            T res = DefaultOf<T>();
+
+            for (fsize i = 0; i != I; ++i)
+                res += _arr[i] * _arr[i];
+            return (res);
+        }
+
+        template <typename T, fsize I>
+        void Vector<T, I>::Normalize()
+        {
+            auto norm = Norm();
+
+            for (fsize i = 0; i != I; ++i)
+                _arr[i] /= norm;
+        }
+
+        template <typename T, fsize I>
+        Vector<T, I> Vector<T, I>::Lerp(const Vector &v, const Vector &v1, const T t)
+        {
+            auto res = Vector();
+
+            for (fsize i = 0; i != I; ++i)
+                res(i) = Math::Lerp(v(i), v1(i), t);
+            return (res);
+        }
+
+        template <typename T>
+        Vector<T>::Vector(const std::initializer_list<T> &lst)
+            : _arr(new T[lst.size()])
+            , _l(lst.size())
+        {
+            fsize i = 0;
+
+            for (auto &elem : lst)
+                _arr[i++] = elem;
+        }
+
+        template <typename T>
+        Vector<T> &Vector<T>::operator=(const Vector &other)
+        {
+            delete[] _arr;
+            _l = other._l;
+            _arr = new T[_l];
+            for (fsize i = 0; i != _l; ++i)
+                _arr[i] = other._arr[i];
+            return (*this);
+        }
+
+        template <typename T>
+        Vector<T> &Vector<T>::operator=(Vector &&other)
+        {
+            delete[] _arr;
+            _arr = other._arr;
+            _l = other._l;
+            other._arr = Null;
+            other._l = 0;
+            return (*this);
+        }
+
+        template <typename T>
+        Vector<T> Vector<T>::operator+(const Vector &other) const
+        {
+            if (_l != other._l)
+                throw IncompatibleMatrixSizeException((fisize)_l, (fisize)other._l);
+            auto res = *this;
+
+            for (fsize i = 0; i != _l; ++i)
+                res(i) += other(i);
+            return (res);
+        }
+
+        template <typename T>
+        Vector<T> Vector<T>::operator-(const Vector &other) const
+        {
+            if (_l != other._l)
+                throw IncompatibleMatrixSizeException((fisize)_l, (fisize)other._l);
+            auto res = *this;
+
+            for (fsize i = 0; i != _l; ++i)
+                res(i) -= other(i);
+            return (res);
+        }
+
+        template <typename T>
+        Vector<T> Vector<T>::operator*(const Vector &other) const
+        {
+            if (_l != other._l)
+                throw IncompatibleMatrixSizeException((fisize)_l, (fisize)other._l);
+            auto res = *this;
+
+            for (fsize i = 0; i != _l; ++i)
+                res(i) *= other(i);
+            return (res);
+        }
+
+        template <typename T>
+        Vector<T> Vector<T>::operator/(const Vector &other) const
+        {
+            if (_l != other._l)
+                throw IncompatibleMatrixSizeException((fisize)_l, (fisize)other._l);
+            auto res = *this;
+
+            for (fsize i = 0; i != _l; ++i)
+                res(i) /= other(i);
+            return (res);
+        }
+
+        template <typename T>
+        Vector<T> Vector<T>::operator*(const T other) const
+        {
+            auto res = *this;
+
+            for (fsize i = 0; i != _l; ++i)
+                res(i) *= other;
+            return (res);
+        }
+
+        template <typename T>
+        Vector<T> Vector<T>::operator/(const T other) const
+        {
+            auto res = *this;
+
+            for (fsize i = 0; i != _l; ++i)
+                res(i) /= other;
+            return (res);
+        }
+
+        template <typename T>
+        void Vector<T>::operator+=(const Vector &other)
+        {
+            if (_l != other._l)
+                throw IncompatibleMatrixSizeException((fisize)_l, (fisize)other._l);
+            for (fsize i = 0; i != _l; ++i)
+                _arr[i] += other(i);
+        }
+
+        template <typename T>
+        void Vector<T>::operator-=(const Vector &other)
+        {
+            if (_l != other._l)
+                throw IncompatibleMatrixSizeException((fisize)_l, (fisize)other._l);
+            for (fsize i = 0; i != _l; ++i)
+                _arr[i] -= other(i);
+        }
+
+        template <typename T>
+        void Vector<T>::operator*=(const Vector &other)
+        {
+            if (_l != other._l)
+                throw IncompatibleMatrixSizeException((fisize)_l, (fisize)other._l);
+            for (fsize i = 0; i != _l; ++i)
+                _arr[i] *= other(i);
+        }
+
+        template <typename T>
+        void Vector<T>::operator/=(const Vector &other)
+        {
+            if (_l != other._l)
+                throw IncompatibleMatrixSizeException((fisize)_l, (fisize)other._l);
+            for (fsize i = 0; i != _l; ++i)
+                _arr[i] /= other(i);
+        }
+
+        template <typename T>
+        void Vector<T>::operator*=(const T other)
+        {
+            for (fsize i = 0; i != _l; ++i)
+                _arr[i] *= other;
+        }
+
+        template <typename T>
+        void Vector<T>::operator/=(const T other)
+        {
+            for (fsize i = 0; i != _l; ++i)
+                _arr[i] /= other;
+        }
+
+        template <typename T>
+        Vector<T> Vector<T>::operator-() const
+        {
+            auto res = *this;
+
+            for (fsize i = 0; i != _l; ++i)
+                res(i) *= -1;
+            return (res);
+        }
+
+        template <typename T>
+        bool Vector<T>::operator==(const Vector &other) const
+        {
+            if (_l != other._l)
+                throw IncompatibleMatrixSizeException((fisize)_l, (fisize)other._l);
+            for (fsize i = 0; i != _l; ++i)
+            {
+                T diff = Math::Abs(_arr[i] - other(i));
+                if (diff >= Math::Epsilon<T>())
+                    return (false);
+            }
+            return (true);
+        }
+
+        template <typename T>
+        T Vector<T>::Dot(const Vector &other) const
+        {
+            if (_l != other._l)
+                throw IncompatibleMatrixSizeException((fisize)_l, (fisize)other._l);
+            T res = DefaultOf<T>();
+
+            for (fsize i = 0; i != _l; ++i)
+                res += _arr[i] * other(i);
+            return (res);
+        }
+
+        template <typename T>
+        T Vector<T>::Distance(const Vector &other) const
+        {
+            auto dist = other - *this;
+
+            return (dist.Norm());
+        }
+
+        template <typename T>
+        T Vector<T>::DistanceSquared(const Vector &other) const
+        {
+            auto dist = other - *this;
+
+            return (dist.NormSquared());
+        }
+
+        template <typename T>
+        T Vector<T>::Norm() const
+        {
+            T res = DefaultOf<T>();
+
+            for (fsize i = 0; i != _l; ++i)
+                res += _arr[i] * _arr[i];
+            return (Math::Sqrt(res));
+        }
+
+        template <typename T>
+        T Vector<T>::NormSquared() const
+        {
+            T res = DefaultOf<T>();
+
+            for (fsize i = 0; i != _l; ++i)
+                res += _arr[i] * _arr[i];
+            return (res);
+        }
+
+        template <typename T>
+        void Vector<T>::Normalize()
+        {
+            auto norm = Norm();
+
+            for (fsize i = 0; i != _l; ++i)
+                _arr[i] /= norm;
+        }
+
+        template <typename T>
+        Vector<T> Vector<T>::Lerp(const Vector &v, const Vector &v1, const T t)
+        {
+            if (v._l != v1._l)
+                throw IncompatibleMatrixSizeException((fisize)v._l, (fisize)v1._l);
+            auto res = Vector(v._l);
+
+            for (fsize i = 0; i != v._l; ++i)
+                res(i) = Math::Lerp(v(i), v1(i), t);
+            return (res);
+        }
     }
 }

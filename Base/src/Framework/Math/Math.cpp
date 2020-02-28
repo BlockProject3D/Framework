@@ -30,6 +30,7 @@
 #include <time.h>
 #include "Framework/Math/Math.hpp"
 
+using namespace bpf::math;
 using namespace bpf;
 
 constexpr float Math::RadToDeg;

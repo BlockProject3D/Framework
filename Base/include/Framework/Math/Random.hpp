@@ -32,29 +32,32 @@
 
 namespace bpf
 {
-    class BPF_API Random
+    namespace math
     {
-    private:
-        fint IntBounds(const fint min, const fint max);
+        class BPF_API Random
+        {
+        private:
+            fint IntBounds(const fint min, const fint max);
 
-    public:
-        Random();
-        explicit Random(const long seed);
-        fint NextInt(const fint max = INT_MAX);
-        fint NextInt(const fint min, const fint max);
-        uint8 NextByte(const uint8 max = 255);
-        uint8 NextByte(const uint8 min, const uint8 max);
-        uint16 NextShort(const uint16 max = 65535);
-        uint16 NextShort(const uint16 min, const uint16 max);
+        public:
+            Random();
+            explicit Random(const long seed);
+            fint NextInt(const fint max = INT_MAX);
+            fint NextInt(const fint min, const fint max);
+            uint8 NextByte(const uint8 max = 255);
+            uint8 NextByte(const uint8 min, const uint8 max);
+            uint16 NextShort(const uint16 max = 65535);
+            uint16 NextShort(const uint16 min, const uint16 max);
 
-        /**
-         * Returns random float between 0 and 1
-         */
-        float NextFloat(const float min = 0);
+            /**
+             * Returns random float between 0 and 1
+             */
+            float NextFloat(const float min = 0);
 
-        /**
-         * Returns random double between 0 and 1
-         */
-        double NextDouble();
-    };
+            /**
+             * Returns random double between 0 and 1
+             */
+            double NextDouble();
+        };
+    }
 };

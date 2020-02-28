@@ -31,6 +31,7 @@
 #include "Framework/Math/Random.hpp"
 #include "Framework/Math/Math.hpp"
 
+using namespace bpf::math;
 using namespace bpf;
 
 fint Random::IntBounds(const fint min, const fint max)

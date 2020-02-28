@@ -31,11 +31,11 @@
 #include <gtest/gtest.h>
 #include <Framework/Math/Vector.hpp>
 
-using Vector5f = bpf::Vector<float, 5>;
+using Vector5f = bpf::math::Vector<float, 5>;
 
 TEST(VectorStatic, Create_1)
 {
-    bpf::Vector2f v(0, 0);
+    bpf::math::Vector2f v(0, 0);
 
     EXPECT_EQ(v.X, 0);
     EXPECT_EQ(v.Y, 0);
@@ -44,15 +44,15 @@ TEST(VectorStatic, Create_1)
     EXPECT_EQ(v.X, 0);
     EXPECT_EQ(v.Y, 0);
 
-    v = bpf::Vector2f(0);
+    v = bpf::math::Vector2f(0);
     EXPECT_EQ(v.X, 0);
     EXPECT_EQ(v.Y, 0);
 
-    v = bpf::Vector2f::Zero;
+    v = bpf::math::Vector2f::Zero;
     EXPECT_EQ(v.X, 0);
     EXPECT_EQ(v.Y, 0);
 
-    v = bpf::Vector2f::Identity;
+    v = bpf::math::Vector2f::Identity;
     EXPECT_EQ(v.X, 1);
     EXPECT_EQ(v.Y, 1);
 
@@ -61,7 +61,7 @@ TEST(VectorStatic, Create_1)
 
 TEST(VectorStatic, Indexer_1)
 {
-    auto v = bpf::Vector2f::Identity;
+    auto v = bpf::math::Vector2f::Identity;
     const auto &c = v;
 
     EXPECT_EQ(v(0), 1);
@@ -73,35 +73,35 @@ TEST(VectorStatic, Indexer_1)
 
 TEST(VectorStatic, Operators_1)
 {
-    auto identity = bpf::Vector2f::Identity;
-    auto zero = bpf::Vector2f::Zero;
+    auto identity = bpf::math::Vector2f::Identity;
+    auto zero = bpf::math::Vector2f::Zero;
 
     EXPECT_EQ(identity * zero, zero);
     EXPECT_EQ(identity * 0, zero);
     EXPECT_EQ(identity / 1, identity);
     EXPECT_EQ(identity - zero, identity);
     EXPECT_EQ(identity + zero, identity);
-    EXPECT_EQ(identity + identity, bpf::Vector2f(2));
+    EXPECT_EQ(identity + identity, bpf::math::Vector2f(2));
     EXPECT_EQ(zero / identity, zero);
     identity -= zero;
     identity += zero;
     identity /= identity;
-    EXPECT_EQ(identity, bpf::Vector2f::Identity);
+    EXPECT_EQ(identity, bpf::math::Vector2f::Identity);
     identity *= zero;
-    EXPECT_EQ(identity, bpf::Vector2f::Zero);
-    identity += bpf::Vector2f::Identity;
-    identity += bpf::Vector2f::Identity;
-    EXPECT_EQ(identity, bpf::Vector2f(2));
+    EXPECT_EQ(identity, bpf::math::Vector2f::Zero);
+    identity += bpf::math::Vector2f::Identity;
+    identity += bpf::math::Vector2f::Identity;
+    EXPECT_EQ(identity, bpf::math::Vector2f(2));
     identity /= 2;
-    EXPECT_EQ(identity, bpf::Vector2f::Identity);
+    EXPECT_EQ(identity, bpf::math::Vector2f::Identity);
     identity *= 2;
-    EXPECT_EQ(identity, bpf::Vector2f(2));
-    EXPECT_EQ(-identity, bpf::Vector2f(-2));
+    EXPECT_EQ(identity, bpf::math::Vector2f(2));
+    EXPECT_EQ(-identity, bpf::math::Vector2f(-2));
 }
 
 TEST(VectorStatic, Norm_1)
 {
-    auto vec = bpf::Vector2f(2);
+    auto vec = bpf::math::Vector2f(2);
 
     EXPECT_EQ(vec.NormSquared(), 8);
     EXPECT_GT(vec.Norm(), 2.8);
@@ -110,8 +110,8 @@ TEST(VectorStatic, Norm_1)
 
 TEST(VectorStatic, Distance_1)
 {
-    auto v1 = bpf::Vector2f::Identity;
-    auto v2 = bpf::Vector2f(2);
+    auto v1 = bpf::math::Vector2f::Identity;
+    auto v2 = bpf::math::Vector2f(2);
 
     EXPECT_EQ(v1.Distance(v1), 0);
     EXPECT_GT(v1.Distance(v2), 1.4);
@@ -122,17 +122,17 @@ TEST(VectorStatic, Distance_1)
 
 TEST(VectorStatic, Normalize_1)
 {
-    auto v1 = bpf::Vector2f::Identity;
+    auto v1 = bpf::math::Vector2f::Identity;
 
     v1.Normalize();
-    EXPECT_LT(1 - v1.Norm(), bpf::Math::Epsilon<float>());
+    EXPECT_LT(1 - v1.Norm(), bpf::math::Math::Epsilon<float>());
 }
 
 TEST(VectorStatic, Dot_1)
 {
-    auto v1 = bpf::Vector2f::Zero;
-    auto v2 = bpf::Vector2f::Identity;
-    auto v3 = bpf::Vector2f(2);
+    auto v1 = bpf::math::Vector2f::Zero;
+    auto v2 = bpf::math::Vector2f::Identity;
+    auto v3 = bpf::math::Vector2f(2);
 
     EXPECT_EQ(v1.Dot(v2), 0);
     EXPECT_EQ(v2.Dot(v3), 4);
@@ -140,16 +140,16 @@ TEST(VectorStatic, Dot_1)
 
 TEST(VectorStatic, Lerp_1)
 {
-    auto v1 = bpf::Vector2f::Zero;
-    auto v2 = bpf::Vector2f::Identity;
-    auto lerp = bpf::Vector2f::Lerp(v1, v2, 0.5f);
+    auto v1 = bpf::math::Vector2f::Zero;
+    auto v2 = bpf::math::Vector2f::Identity;
+    auto lerp = bpf::math::Vector2f::Lerp(v1, v2, 0.5f);
 
-    EXPECT_EQ(lerp, bpf::Vector2f(0.5f));
+    EXPECT_EQ(lerp, bpf::math::Vector2f(0.5f));
 }
 
 TEST(VectorStatic, CopyMove_1)
 {
-    bpf::Vector2f v = bpf::Vector2f::Identity;
+    bpf::math::Vector2f v = bpf::math::Vector2f::Identity;
     EXPECT_EQ(v.X, 1);
     EXPECT_EQ(v.Y, 1);
 
@@ -171,7 +171,7 @@ TEST(VectorStatic, CopyMove_1)
 
 TEST(VectorStatic, Create_2)
 {
-    bpf::Vector3f v(0, 0, 0);
+    bpf::math::Vector3f v(0, 0, 0);
 
     EXPECT_EQ(v.X, 0);
     EXPECT_EQ(v.Y, 0);
@@ -182,22 +182,22 @@ TEST(VectorStatic, Create_2)
     EXPECT_EQ(v.Y, 0);
     EXPECT_EQ(v.Z, 0);
 
-    v = bpf::Vector3f(0);
+    v = bpf::math::Vector3f(0);
     EXPECT_EQ(v.X, 0);
     EXPECT_EQ(v.Y, 0);
     EXPECT_EQ(v.Z, 0);
 
-    v = bpf::Vector3f(bpf::Vector2f(0), 0);
+    v = bpf::math::Vector3f(bpf::math::Vector2f(0), 0);
     EXPECT_EQ(v.X, 0);
     EXPECT_EQ(v.Y, 0);
     EXPECT_EQ(v.Z, 0);
 
-    v = bpf::Vector3f::Zero;
+    v = bpf::math::Vector3f::Zero;
     EXPECT_EQ(v.X, 0);
     EXPECT_EQ(v.Y, 0);
     EXPECT_EQ(v.Z, 0);
 
-    v = bpf::Vector3f::Identity;
+    v = bpf::math::Vector3f::Identity;
     EXPECT_EQ(v.X, 1);
     EXPECT_EQ(v.Y, 1);
     EXPECT_EQ(v.Z, 1);
@@ -207,7 +207,7 @@ TEST(VectorStatic, Create_2)
 
 TEST(VectorStatic, Indexer_2)
 {
-    auto v = bpf::Vector3f::Identity;
+    auto v = bpf::math::Vector3f::Identity;
     const auto &c = v;
 
     EXPECT_EQ(v(0), 1);
@@ -219,35 +219,35 @@ TEST(VectorStatic, Indexer_2)
 
 TEST(VectorStatic, Operators_2)
 {
-    auto identity = bpf::Vector3f::Identity;
-    auto zero = bpf::Vector3f::Zero;
+    auto identity = bpf::math::Vector3f::Identity;
+    auto zero = bpf::math::Vector3f::Zero;
 
     EXPECT_EQ(identity * zero, zero);
     EXPECT_EQ(identity * 0, zero);
     EXPECT_EQ(identity / 1, identity);
     EXPECT_EQ(identity - zero, identity);
     EXPECT_EQ(identity + zero, identity);
-    EXPECT_EQ(identity + identity, bpf::Vector3f(2));
+    EXPECT_EQ(identity + identity, bpf::math::Vector3f(2));
     EXPECT_EQ(zero / identity, zero);
     identity -= zero;
     identity += zero;
     identity /= identity;
-    EXPECT_EQ(identity, bpf::Vector3f::Identity);
+    EXPECT_EQ(identity, bpf::math::Vector3f::Identity);
     identity *= zero;
-    EXPECT_EQ(identity, bpf::Vector3f::Zero);
-    identity += bpf::Vector3f::Identity;
-    identity += bpf::Vector3f::Identity;
-    EXPECT_EQ(identity, bpf::Vector3f(2));
+    EXPECT_EQ(identity, bpf::math::Vector3f::Zero);
+    identity += bpf::math::Vector3f::Identity;
+    identity += bpf::math::Vector3f::Identity;
+    EXPECT_EQ(identity, bpf::math::Vector3f(2));
     identity /= 2;
-    EXPECT_EQ(identity, bpf::Vector3f::Identity);
+    EXPECT_EQ(identity, bpf::math::Vector3f::Identity);
     identity *= 2;
-    EXPECT_EQ(identity, bpf::Vector3f(2));
-    EXPECT_EQ(-identity, bpf::Vector3f(-2));
+    EXPECT_EQ(identity, bpf::math::Vector3f(2));
+    EXPECT_EQ(-identity, bpf::math::Vector3f(-2));
 }
 
 TEST(VectorStatic, Norm_2)
 {
-    auto vec = bpf::Vector3f(2);
+    auto vec = bpf::math::Vector3f(2);
 
     EXPECT_EQ(vec.NormSquared(), 12);
     EXPECT_GT(vec.Norm(), 3.4);
@@ -256,8 +256,8 @@ TEST(VectorStatic, Norm_2)
 
 TEST(VectorStatic, Distance_2)
 {
-    auto v1 = bpf::Vector3f::Identity;
-    auto v2 = bpf::Vector3f(2);
+    auto v1 = bpf::math::Vector3f::Identity;
+    auto v2 = bpf::math::Vector3f(2);
 
     EXPECT_EQ(v1.Distance(v1), 0);
     EXPECT_GT(v1.Distance(v2), 1.7);
@@ -268,17 +268,17 @@ TEST(VectorStatic, Distance_2)
 
 TEST(VectorStatic, Normalize_2)
 {
-    auto v1 = bpf::Vector3f::Identity;
+    auto v1 = bpf::math::Vector3f::Identity;
 
     v1.Normalize();
-    EXPECT_LT(1 - v1.Norm(), bpf::Math::Epsilon<float>());
+    EXPECT_LT(1 - v1.Norm(), bpf::math::Math::Epsilon<float>());
 }
 
 TEST(VectorStatic, Dot_2)
 {
-    auto v1 = bpf::Vector3f::Zero;
-    auto v2 = bpf::Vector3f::Identity;
-    auto v3 = bpf::Vector3f(2);
+    auto v1 = bpf::math::Vector3f::Zero;
+    auto v2 = bpf::math::Vector3f::Identity;
+    auto v3 = bpf::math::Vector3f(2);
 
     EXPECT_EQ(v1.Dot(v2), 0);
     EXPECT_EQ(v2.Dot(v3), 6);
@@ -286,24 +286,24 @@ TEST(VectorStatic, Dot_2)
 
 TEST(VectorStatic, Lerp_2)
 {
-    auto v1 = bpf::Vector3f::Zero;
-    auto v2 = bpf::Vector3f::Identity;
-    auto lerp = bpf::Vector3f::Lerp(v1, v2, 0.5f);
+    auto v1 = bpf::math::Vector3f::Zero;
+    auto v2 = bpf::math::Vector3f::Identity;
+    auto lerp = bpf::math::Vector3f::Lerp(v1, v2, 0.5f);
 
-    EXPECT_EQ(lerp, bpf::Vector3f(0.5f));
+    EXPECT_EQ(lerp, bpf::math::Vector3f(0.5f));
 }
 
 TEST(VectorStatic, Cross)
 {
-    auto v1 = bpf::Vector3f::Zero;
-    auto v2 = bpf::Vector3f::Identity;
+    auto v1 = bpf::math::Vector3f::Zero;
+    auto v2 = bpf::math::Vector3f::Identity;
 
-    EXPECT_EQ(v1.Cross(v2), bpf::Vector3f::Zero);
+    EXPECT_EQ(v1.Cross(v2), bpf::math::Vector3f::Zero);
 }
 
 TEST(VectorStatic, CopyMove_2)
 {
-    bpf::Vector3f v = bpf::Vector3f::Identity;
+    bpf::math::Vector3f v = bpf::math::Vector3f::Identity;
     EXPECT_EQ(v.X, 1);
     EXPECT_EQ(v.Y, 1);
     EXPECT_EQ(v.Z, 1);
@@ -330,7 +330,7 @@ TEST(VectorStatic, CopyMove_2)
 
 TEST(VectorStatic, Create_3)
 {
-    bpf::Vector4f v(0, 0, 0, 0);
+    bpf::math::Vector4f v(0, 0, 0, 0);
 
     EXPECT_EQ(v.X, 0);
     EXPECT_EQ(v.Y, 0);
@@ -343,25 +343,25 @@ TEST(VectorStatic, Create_3)
     EXPECT_EQ(v.Z, 0);
     EXPECT_EQ(v.W, 0);
 
-    v = bpf::Vector4f(0);
+    v = bpf::math::Vector4f(0);
     EXPECT_EQ(v.X, 0);
     EXPECT_EQ(v.Y, 0);
     EXPECT_EQ(v.Z, 0);
     EXPECT_EQ(v.W, 0);
 
-    v = bpf::Vector4f(bpf::Vector3f(0), 0);
+    v = bpf::math::Vector4f(bpf::math::Vector3f(0), 0);
     EXPECT_EQ(v.X, 0);
     EXPECT_EQ(v.Y, 0);
     EXPECT_EQ(v.Z, 0);
     EXPECT_EQ(v.W, 0);
 
-    v = bpf::Vector4f::Zero;
+    v = bpf::math::Vector4f::Zero;
     EXPECT_EQ(v.X, 0);
     EXPECT_EQ(v.Y, 0);
     EXPECT_EQ(v.Z, 0);
     EXPECT_EQ(v.W, 0);
 
-    v = bpf::Vector4f::Identity;
+    v = bpf::math::Vector4f::Identity;
     EXPECT_EQ(v.X, 1);
     EXPECT_EQ(v.Y, 1);
     EXPECT_EQ(v.Z, 1);
@@ -372,7 +372,7 @@ TEST(VectorStatic, Create_3)
 
 TEST(VectorStatic, Indexer_3)
 {
-    auto v = bpf::Vector4f::Identity;
+    auto v = bpf::math::Vector4f::Identity;
     const auto &c = v;
 
     EXPECT_EQ(v(0), 1);
@@ -384,35 +384,35 @@ TEST(VectorStatic, Indexer_3)
 
 TEST(VectorStatic, Operators_3)
 {
-    auto identity = bpf::Vector4f::Identity;
-    auto zero = bpf::Vector4f::Zero;
+    auto identity = bpf::math::Vector4f::Identity;
+    auto zero = bpf::math::Vector4f::Zero;
 
     EXPECT_EQ(identity * zero, zero);
     EXPECT_EQ(identity * 0, zero);
     EXPECT_EQ(identity / 1, identity);
     EXPECT_EQ(identity - zero, identity);
     EXPECT_EQ(identity + zero, identity);
-    EXPECT_EQ(identity + identity, bpf::Vector4f(2));
+    EXPECT_EQ(identity + identity, bpf::math::Vector4f(2));
     EXPECT_EQ(zero / identity, zero);
     identity -= zero;
     identity += zero;
     identity /= identity;
-    EXPECT_EQ(identity, bpf::Vector4f::Identity);
+    EXPECT_EQ(identity, bpf::math::Vector4f::Identity);
     identity *= zero;
-    EXPECT_EQ(identity, bpf::Vector4f::Zero);
-    identity += bpf::Vector4f::Identity;
-    identity += bpf::Vector4f::Identity;
-    EXPECT_EQ(identity, bpf::Vector4f(2));
+    EXPECT_EQ(identity, bpf::math::Vector4f::Zero);
+    identity += bpf::math::Vector4f::Identity;
+    identity += bpf::math::Vector4f::Identity;
+    EXPECT_EQ(identity, bpf::math::Vector4f(2));
     identity /= 2;
-    EXPECT_EQ(identity, bpf::Vector4f::Identity);
+    EXPECT_EQ(identity, bpf::math::Vector4f::Identity);
     identity *= 2;
-    EXPECT_EQ(identity, bpf::Vector4f(2));
-    EXPECT_EQ(-identity, bpf::Vector4f(-2));
+    EXPECT_EQ(identity, bpf::math::Vector4f(2));
+    EXPECT_EQ(-identity, bpf::math::Vector4f(-2));
 }
 
 TEST(VectorStatic, Norm_3)
 {
-    auto vec = bpf::Vector4f(2);
+    auto vec = bpf::math::Vector4f(2);
 
     EXPECT_EQ(vec.NormSquared(), 16);
     EXPECT_EQ(vec.Norm(), 4);
@@ -420,8 +420,8 @@ TEST(VectorStatic, Norm_3)
 
 TEST(VectorStatic, Distance_3)
 {
-    auto v1 = bpf::Vector4f::Identity;
-    auto v2 = bpf::Vector4f(2);
+    auto v1 = bpf::math::Vector4f::Identity;
+    auto v2 = bpf::math::Vector4f(2);
 
     EXPECT_EQ(v1.Distance(v1), 0);
     EXPECT_EQ(v1.Distance(v2), 2);
@@ -431,17 +431,17 @@ TEST(VectorStatic, Distance_3)
 
 TEST(VectorStatic, Normalize_3)
 {
-    auto v1 = bpf::Vector4f::Identity;
+    auto v1 = bpf::math::Vector4f::Identity;
 
     v1.Normalize();
-    EXPECT_LT(1 - v1.Norm(), bpf::Math::Epsilon<float>());
+    EXPECT_LT(1 - v1.Norm(), bpf::math::Math::Epsilon<float>());
 }
 
 TEST(VectorStatic, Dot_3)
 {
-    auto v1 = bpf::Vector4f::Zero;
-    auto v2 = bpf::Vector4f::Identity;
-    auto v3 = bpf::Vector4f(2);
+    auto v1 = bpf::math::Vector4f::Zero;
+    auto v2 = bpf::math::Vector4f::Identity;
+    auto v3 = bpf::math::Vector4f(2);
 
     EXPECT_EQ(v1.Dot(v2), 0);
     EXPECT_EQ(v2.Dot(v3), 8);
@@ -449,16 +449,16 @@ TEST(VectorStatic, Dot_3)
 
 TEST(VectorStatic, Lerp_3)
 {
-    auto v1 = bpf::Vector4f::Zero;
-    auto v2 = bpf::Vector4f::Identity;
-    auto lerp = bpf::Vector4f::Lerp(v1, v2, 0.5f);
+    auto v1 = bpf::math::Vector4f::Zero;
+    auto v2 = bpf::math::Vector4f::Identity;
+    auto lerp = bpf::math::Vector4f::Lerp(v1, v2, 0.5f);
 
-    EXPECT_EQ(lerp, bpf::Vector4f(0.5f));
+    EXPECT_EQ(lerp, bpf::math::Vector4f(0.5f));
 }
 
 TEST(VectorStatic, CopyMove_3)
 {
-    bpf::Vector4f v = bpf::Vector4f::Identity;
+    bpf::math::Vector4f v = bpf::math::Vector4f::Identity;
     EXPECT_EQ(v.X, 1);
     EXPECT_EQ(v.Y, 1);
     EXPECT_EQ(v.Z, 1);
@@ -504,7 +504,7 @@ TEST(VectorStatic, Create_4)
     EXPECT_EQ(v(3), 0);
     EXPECT_EQ(v(4), 0);
 
-    v = Vector5f(bpf::Vector4f(0), 0);
+    v = Vector5f(bpf::math::Vector4f(0), 0);
     EXPECT_EQ(v(0), 0);
     EXPECT_EQ(v(1), 0);
     EXPECT_EQ(v(2), 0);
@@ -595,7 +595,7 @@ TEST(VectorStatic, Normalize_4)
     auto v1 = Vector5f::Identity;
 
     v1.Normalize();
-    EXPECT_LT(1 - v1.Norm(), bpf::Math::Epsilon<float>());
+    EXPECT_LT(1 - v1.Norm(), bpf::math::Math::Epsilon<float>());
 }
 
 TEST(VectorStatic, Dot_4)

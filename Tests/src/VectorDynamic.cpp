@@ -31,7 +31,7 @@
 #include <gtest/gtest.h>
 #include <Framework/Math/Vector.hpp>
 
-using Vectorf = bpf::Vector<float>;
+using Vectorf = bpf::math::Vector<float>;
 
 TEST(VectorDynamic, Create)
 {
@@ -151,7 +151,7 @@ TEST(VectorDynamic, Normalize)
     auto v1 = Vectorf::Identity(5);
 
     v1.Normalize();
-    EXPECT_LT(1 - v1.Norm(), bpf::Math::Epsilon<float>());
+    EXPECT_LT(1 - v1.Norm(), bpf::math::Math::Epsilon<float>());
 }
 
 TEST(VectorDynamic, Dot)
