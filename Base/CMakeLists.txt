@@ -52,6 +52,7 @@ set(SOURCES
     ./include/Framework/Log/DefaultLogger.hpp
     ./include/Framework/Log/FileLogger.hpp
     ./include/Framework/Memory/Memory.hpp
+    ./include/Framework/Memory/MemUtils.hpp
     ./include/Framework/Memory/Memory.Hash.hpp
     ./include/Framework/Memory/Utility.hpp
     ./include/Framework/Memory/MemoryException.hpp

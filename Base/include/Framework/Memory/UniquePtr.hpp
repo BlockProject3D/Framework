@@ -64,7 +64,7 @@ namespace bpf
 
             inline ~UniquePtr()
             {
-                Memory::Delete(RawPtr);
+                MemUtils::Delete(RawPtr);
             }
 
             UniquePtr<T> &operator=(UniquePtr<T> &&other);

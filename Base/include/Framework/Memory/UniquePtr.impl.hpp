@@ -36,7 +36,7 @@ namespace bpf
         UniquePtr<T> &UniquePtr<T>::operator=(UniquePtr<T> &&other)
         {
             if (RawPtr != Null)
-                Memory::Delete(RawPtr);
+                MemUtils::Delete(RawPtr);
             RawPtr = other.RawPtr;
             other.RawPtr = Null;
             return (*this);

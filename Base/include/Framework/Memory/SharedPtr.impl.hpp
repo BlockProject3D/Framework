@@ -40,7 +40,7 @@ namespace bpf
             -- *Count;
             if (*Count <= 0)
             {
-                Memory::Delete(RawPtr);
+                MemUtils::Delete(RawPtr);
                 if (*WCount <= 0)
                 {
                     Memory::Free(Count);
@@ -57,7 +57,7 @@ namespace bpf
                 -- *Count;
                 if (*Count <= 0)
                 {
-                    Memory::Delete(RawPtr);
+                    MemUtils::Delete(RawPtr);
                     if (*WCount <= 0)
                     {
                         Memory::Free(Count);
@@ -82,7 +82,7 @@ namespace bpf
                 -- *Count;
                 if (*Count <= 0)
                 {
-                    Memory::Delete(RawPtr);
+                    MemUtils::Delete(RawPtr);
                     if (*WCount <= 0)
                     {
                         Memory::Free(Count);
