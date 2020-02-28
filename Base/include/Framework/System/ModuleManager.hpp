@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -26,10 +26,7 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef MODULEMANAGER_H_
-# define MODULEMANAGER_H_
-
-#include <map>
+#pragma once
 #include "Framework/System/Module.hpp"
 #include "Framework/System/IModuleInterface.hpp"
 #include "Framework/Collection/HashMap.hpp"
@@ -64,58 +61,58 @@ extern "C" \
 //TODO : improve genericity of module manager
 namespace bpf
 {
-    typedef IModuleInterface*(*ModuleLinkFunc)();
-    typedef int(*ModuleDescribeFunc)();
-
-    class BPF_API ModuleEntry
+    namespace system
     {
-    public:
-        IModuleInterface *Interface;
-        bpf::String Name;
-        Module Handle;
-        inline ModuleEntry(const bpf::String &path, const bpf::String &name)
-            : Interface(Null), Name(name), Handle(path)
+        typedef IModuleInterface *(*ModuleLinkFunc)();
+        typedef int(*ModuleDescribeFunc)();
+
+        class BPF_API ModuleEntry
         {
-        }
-    };
-    
-    class BPF_API ModuleManager
-    {
-    private:
-        bpf::collection::List<ModuleEntry *> ModuleList;
-        bpf::collection::HashMap<const char *, ModuleEntry *> ModuleMap;
+        public:
+            IModuleInterface *Interface;
+            bpf::String Name;
+            Module Handle;
+            inline ModuleEntry(const bpf::String &path, const bpf::String &name)
+                : Interface(Null), Name(name), Handle(path)
+            {
+            }
+        };
 
-        void UnloadModule(ModuleEntry *entry);
-    public:
-        inline ModuleManager() {}
-        ~ModuleManager();
-        
-        /**
-         * Loads the given module name
-         * @throws ModuleException
-         */
-        void LoadModule(const char *name);
-
-        /**
-         * Unloads the given module name
-         */
-        void UnloadModule(const char *name);
-
-        inline bool ModuleLoaded(const char *name)
+        class BPF_API ModuleManager
         {
-            return (ModuleMap.HasKey(name));
-        }
+        private:
+            bpf::collection::List<ModuleEntry *> ModuleList;
+            bpf::collection::HashMap<const char *, ModuleEntry *> ModuleMap;
 
-        template <typename T>
-        inline T *GetModule(const char *name)
-        {
-            if (ModuleMap.HasKey(name))
-                return (dynamic_cast<T *>(ModuleMap[name]->Interface));
-            else
-                return (Null);
-        }
-    };
+            void UnloadModule(ModuleEntry *entry);
+        public:
+            inline ModuleManager() {}
+            ~ModuleManager();
+
+            /**
+             * Loads the given module name
+             * @throws ModuleException
+             */
+            void LoadModule(const char *name);
+
+            /**
+             * Unloads the given module name
+             */
+            void UnloadModule(const char *name);
+
+            inline bool ModuleLoaded(const char *name)
+            {
+                return (ModuleMap.HasKey(name));
+            }
+
+            template <typename T>
+            inline T *GetModule(const char *name)
+            {
+                if (ModuleMap.HasKey(name))
+                    return (dynamic_cast<T *>(ModuleMap[name]->Interface));
+                else
+                    return (Null);
+            }
+        };
+    }
 };
-
-#endif /* !MODULEMANAGER_H_ */
-

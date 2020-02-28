@@ -37,6 +37,7 @@
 #include "Framework/Memory/Memory.hpp"
 #include "Framework/System/Mutex.hpp"
 
+using namespace bpf::system;
 using namespace bpf;
 
 Mutex::Mutex()

@@ -43,7 +43,7 @@ namespace bpf
     private:
         static fsize CurUsedMem;
         static fsize Allocs;
-        static Mutex MemMutex;
+        static system::Mutex MemMutex;
 #endif
     public:
         static void *Malloc(fsize size);

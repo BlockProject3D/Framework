@@ -34,7 +34,7 @@ using namespace bpf;
 #ifdef BUILD_DEBUG
 fsize Memory::Allocs = 0;
 fsize Memory::CurUsedMem = 0;
-Mutex Memory::MemMutex;
+system::Mutex Memory::MemMutex;
 
 struct Metadata
 {

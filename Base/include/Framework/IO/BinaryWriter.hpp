@@ -40,14 +40,14 @@ namespace bpf
         private:
             IOutputStream & _stream;
             ByteBuf _buf;
-            EPlatformEndianess _targetorder;
+            system::EPlatformEndianess _targetorder;
             bool _buffered;
             EStringSerializer _serializer;
 
             void WriteByte(uint8 byte);
             void WriteSubBuf(void *in, const fsize size);
         public:
-            explicit inline BinaryWriter(IOutputStream &stream, EPlatformEndianess order = PLATFORM_LITTLEENDIAN, bool buffered = true)
+            explicit inline BinaryWriter(IOutputStream &stream, system::EPlatformEndianess order = system::PLATFORM_LITTLEENDIAN, bool buffered = true)
                 : _stream(stream)
                 , _buf(WRITE_BUF_SIZE)
                 , _targetorder(order)

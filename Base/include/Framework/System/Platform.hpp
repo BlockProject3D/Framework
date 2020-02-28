@@ -32,116 +32,75 @@
 
 namespace bpf
 {
-    class String;
-
-    enum EPlatformEndianess
+    namespace system
     {
-        PLATFORM_BIGENDIAN,
-        PLATFORM_LITTLEENDIAN
-    };
+        enum EPlatformEndianess
+        {
+            PLATFORM_BIGENDIAN,
+            PLATFORM_LITTLEENDIAN
+        };
 
-    struct OS
-    {
-        String Name;
-        String Version;
-        String ModuleExt;
-        String PathSep;
-        String NewLine;
-    };
+        struct OS
+        {
+            String Name;
+            String Version;
+            String ModuleExt;
+            String PathSep;
+            String NewLine;
+        };
 
-    struct CPU
-    {
-        String Name;
-        fint NumCores;
-        fint Freq;
-    };
+        struct CPU
+        {
+            String Name;
+            fint NumCores;
+            fint Freq;
+        };
 
-    struct RAM
-    {
-        uint64 MaxPhysical;
-        uint64 MaxVirtual;
-    };
+        struct RAM
+        {
+            uint64 MaxPhysical;
+            uint64 MaxVirtual;
+        };
 
-    struct Env
-    {
-        String ShortName;
-        String Name;
-        String Version;
-        fint VersionInt;
-    };
+        struct Env
+        {
+            String ShortName;
+            String Name;
+            String Version;
+            fint VersionInt;
+        };
 
-    class BPF_API Platform
-    {
-    private:
-        static Env InitEnvInfo();
-        static OS InitOSInfo();
-        static String IdentifyCPUBranding();
-        static String CPUIDIntToStr(fint data);
+        class BPF_API Platform
+        {
+        private:
+            static Env InitEnvInfo();
+            static OS InitOSInfo();
+            static String IdentifyCPUBranding();
+            static String CPUIDIntToStr(fint data);
 
-    public:
-        static Env &GetEnvInfo();
-        static OS &GetOSInfo();
-        static CPU &GetCPUInfo();
-        static RAM GetRAMInfo();
-        static EPlatformEndianess GetEndianess();
+        public:
+            static Env &GetEnvInfo();
+            static OS &GetOSInfo();
+            static CPU &GetCPUInfo();
+            static RAM GetRAMInfo();
+            static EPlatformEndianess GetEndianess();
 
-        /**
-         * Reverse a buffer byte per byte
-         * WARNING : This function modifies the input buffer
-         * @param buf the buffer to reverse
-         * @param size the size of the buffer to reverse
-         */
-        static void ReverseBuffer(void *buf, const fsize size);
-        
-        /**
-         * Reverse a buffer group per group
-         * WARNING : This function modifies the input buffer
-         * @param buf the buffer to reverse
-         * @param size the size of the buffer to reverse
-         * @param groupsize the amount of bytes per group
-         */
-        static void ReverseBuffer(void *buf, const fsize size, const fsize groupsize);
-    };
+            /**
+             * Reverse a buffer byte per byte
+             * WARNING : This function modifies the input buffer
+             * @param buf the buffer to reverse
+             * @param size the size of the buffer to reverse
+             */
+            static void ReverseBuffer(void *buf, const fsize size);
+
+            /**
+             * Reverse a buffer group per group
+             * WARNING : This function modifies the input buffer
+             * @param buf the buffer to reverse
+             * @param size the size of the buffer to reverse
+             * @param groupsize the amount of bytes per group
+             */
+            static void ReverseBuffer(void *buf, const fsize size, const fsize groupsize);
+        };
+    }
 }
-
-/*namespace Framework
-{
-    class IFileSystem;
-    class ISystemNetwork;
-    class ISystemManager;
-    class FString;
-
-    enum EPlatformEndianess
-    {
-        PLATFORM_BIGENDIAN,
-        PLATFORM_LITTLEENDIAN
-    };
-
-
-    //TODO : THIS CLASS IS THE DEVIL !
-    //TODO : DO NOT REACTIVATE IT
-    class BPF_API FPlatform
-    {
-    private:
-        static bool Exit;
-        static IFileSystem *FileSys;
-        static ISystemManager *BaseSys;
-        static bpf::Map<const char *, bpf::String> PropMap;
-    public:
-        static void RequestExit(bool force=false);
-        static bool IsExiting();
-        static IFileSystem *GetFileSystem();
-        static ISystemManager *GetBaseSystem();
-        static EPlatformEndianess GetPlatformEndianess();
-        static void ReverseBuffer(uint8 *buf, const uint32 size);*/
-
-        /**
-         * Reverse buffer buf groupsize per groupsize instead of byte per byte
-         */
-        /*static void ReverseBuffer(uint8 *buf, const uint32 groupsize, const uint32 size);
-        static void Initialize();
-        static void Shutdown();
-        static const bpf::String &GetProperty(const char *vname);
-        static void SetProperty(const char *vname, const bpf::String &prop);
-    };
-};*/

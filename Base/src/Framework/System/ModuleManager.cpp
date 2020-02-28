@@ -31,6 +31,7 @@
 #include "Framework/System/ModuleManager.hpp"
 #include "Framework/System/Platform.hpp"
 
+using namespace bpf::system;
 using namespace bpf;
 
 ModuleManager::~ModuleManager()

@@ -50,8 +50,8 @@ void BinaryWriter::WriteSubBuf(void *out, const fsize size)
 {
     uint8 *res = reinterpret_cast<uint8 *>(out);
 
-    if (Platform::GetEndianess() != _targetorder)
-        Platform::ReverseBuffer(res, size);
+    if (system::Platform::GetEndianess() != _targetorder)
+        system::Platform::ReverseBuffer(res, size);
     for (fsize i = 0; i != size; ++i)
         WriteByte(res[i]);
 }

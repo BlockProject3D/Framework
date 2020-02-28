@@ -30,23 +30,26 @@
 
 namespace bpf
 {
-    class BPF_API Mutex
+    namespace system
     {
-    private:
-        void *_handle;
+        class BPF_API Mutex
+        {
+        private:
+            void *_handle;
 
-    public:
-        Mutex();
-        ~Mutex();
+        public:
+            Mutex();
+            ~Mutex();
 
-        /**
-         * Locks this mutex
-         */
-        void Lock();
+            /**
+             * Locks this mutex
+             */
+            void Lock();
 
-        /**
-         * Unlocks this mutex
-         */
-        void Unlock();
-    };
+            /**
+             * Unlocks this mutex
+             */
+            void Unlock();
+        };
+    }
 }

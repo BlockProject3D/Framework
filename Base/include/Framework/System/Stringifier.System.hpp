@@ -33,16 +33,16 @@
 namespace bpf
 {
     template <>
-    class String::Stringifier<DateTime>
+    class String::Stringifier<system::DateTime>
     {
     public:
-        inline static String Stringify(const DateTime &dt)
+        inline static String Stringify(const system::DateTime &dt)
         {
-			return (dt.GetDayName() + " "
-				+ dt.GetMonthName() + " "
-				+ dt.GetDay() + " "
-				+ dt.GetYear() + " "
-				+ dt.GetHours() + ":" + dt.GetMinutes() + ":" + dt.GetSeconds());
+            return (dt.GetDayName() + " "
+                + dt.GetMonthName() + " "
+                + dt.GetDay() + " "
+                + dt.GetYear() + " "
+                + dt.GetHours() + ":" + dt.GetMinutes() + ":" + dt.GetSeconds());
         }
     };
 }

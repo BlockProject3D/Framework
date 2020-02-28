@@ -31,31 +31,34 @@
 
 namespace bpf
 {
-    class BPF_API Thread
+    namespace system
     {
-    private:
-        void *_handle;
-        bool _exit;
-        String _name;
-
-    public:
-        Thread(const String &name);
-        ~Thread();
-
-        void Start();
-        void Kill(const bool force = false);
-        void Join();
-
-        inline bool ShouldExit() const noexcept
+        class BPF_API Thread
         {
-            return (_exit);
-        }
+        private:
+            void *_handle;
+            bool _exit;
+            String _name;
 
-        inline const String &GetName() const noexcept
-        {
-            return (_name);
-        }
+        public:
+            Thread(const String &name);
+            ~Thread();
 
-        virtual void Run() = 0;
-    };
+            void Start();
+            void Kill(const bool force = false);
+            void Join();
+
+            inline bool ShouldExit() const noexcept
+            {
+                return (_exit);
+            }
+
+            inline const String &GetName() const noexcept
+            {
+                return (_name);
+            }
+
+            virtual void Run() = 0;
+        };
+    }
 }
