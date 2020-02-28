@@ -57,9 +57,9 @@ namespace bpf
             template <typename T>
             inline static T *NewArray(const fsize count, const T &def = DefaultOf<T>())
             {
-                void *mem = Memory::Malloc(count * sizeof(T));
+                T *mem = static_cast<T *>(Memory::Malloc(count * sizeof(T)));
                 for (fsize i = 0; i != count; ++i)
-                    std::memcpy(mem + i * sizeof(T), reinterpret_cast<void *>(*def), sizeof(T));
+                    std::memcpy(mem + i, reinterpret_cast<const void *>(&def), sizeof(T));
                 return (mem);
             }
 
@@ -67,27 +67,27 @@ namespace bpf
             inline static void DeleteArray(T *mem, const fsize count)
             {
                 for (fsize i = 0; i != count; ++i)
-                    mem->~T();
+                    mem[i].~T();
                 Memory::Free(mem);
             }
 
             template <typename T>
-            inline static void *ResizeArray(T *mem, const fsize oldCount, const fsize newCount, const T &def = DefaultOf<T>())
+            inline static T *ResizeArray(T *mem, const fsize oldCount, const fsize newCount, const T &def = DefaultOf<T>())
             {
                 if (newCount == oldCount)
                     return (mem);
                 if (newCount < oldCount)
                 {
                     for (fsize i = newCount; i != oldCount; ++i)
-                        mem->~T();
-                    return (Memory::Realloc(mem, newCount * sizeof(T)));
+                        mem[i].~T();
+                    return (reinterpret_cast<T *>(Memory::Realloc(reinterpret_cast<void *>(mem), newCount * sizeof(T))));
                 }
                 else
                 {
-                    mem = Memory::Realloc(mem, newCount * sizeof(T));
+                    mem = reinterpret_cast<T *>(Memory::Realloc(reinterpret_cast<void *>(mem), newCount * sizeof(T)));
                     for (fsize i = oldCount; i != newCount; ++i)
-                        std::memcpy(mem + i * sizeof(T), reinterpret_cast<void *>(*def), sizeof(T));
-                    return (mem)
+                        std::memcpy(mem + i, reinterpret_cast<const void *>(&def), sizeof(T));
+                    return (mem);
                 }
             }
         };
