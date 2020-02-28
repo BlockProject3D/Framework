@@ -31,23 +31,26 @@
 
 namespace bpf
 {
-    class BPF_API Object
+    namespace memory
     {
-    private:
-        collection::List<void **> Refs;
+        class BPF_API Object
+        {
+        private:
+            collection::List<void **> Refs;
 
-    public:
-        virtual ~Object();
-        inline void AddRef(void **ref)
-        {
-            Refs.Add(ref);
-        }
-        inline void RemoveRef(void **ref)
-        {
-            Refs.Remove(ref);
-        }
-        
-        template <class T>
-        friend class ObjectPtr;
-    };
+        public:
+            virtual ~Object();
+            inline void AddRef(void **ref)
+            {
+                Refs.Add(ref);
+            }
+            inline void RemoveRef(void **ref)
+            {
+                Refs.Remove(ref);
+            }
+
+            template <class T>
+            friend class ObjectPtr;
+        };
+    }
 }

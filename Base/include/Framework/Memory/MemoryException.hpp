@@ -31,13 +31,16 @@
 
 namespace bpf
 {
-    class BPF_API MemoryException final : public Exception
+    namespace memory
     {
-    public:
-        inline MemoryException() {}
-        inline const char *Type() const noexcept override
+        class BPF_API MemoryException final : public Exception
         {
-            return ("Memory");
-        }
-    };
+        public:
+            inline MemoryException() {}
+            inline const char *Type() const noexcept override
+            {
+                return ("Memory");
+            }
+        };
+    }
 }

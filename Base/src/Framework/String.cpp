@@ -35,6 +35,7 @@
 #include "Framework/BinUtils.hpp"
 #include "Framework/Collection/ArrayList.hpp"
 
+using namespace bpf::memory;
 using namespace bpf::collection;
 using namespace bpf;
 

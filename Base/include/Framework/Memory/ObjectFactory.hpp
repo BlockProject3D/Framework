@@ -28,43 +28,46 @@
 
 #pragma once
 #include "Framework/String.hpp"
-#include "Framework/IObjectConstructor.hpp"
-#include "Framework/Map.hpp"
+#include "Framework/Memory/IObjectConstructor.hpp"
+#include "Framework/Collection/Map.hpp"
 
 namespace bpf
 {
-    /**
-     * Factory, creates object instances from object constructor names
-     * @tparam T the type of parent to generate
-     * @tparam Args the arguments to the constructor
-     */
-    template <class /* ? extends */ T, typename ...Args>
-    class BPF_API ObjectFactory
+    namespace memory
     {
-    private:
-        Map<String, IObjectConstructor<T, Args...> *> Registry;
+        /**
+         * Factory, creates object instances from object constructor names
+         * @tparam T the type of parent to generate
+         * @tparam Args the arguments to the constructor
+         */
+        template <class /* ? extends */ T, typename ...Args>
+        class BPF_API ObjectFactory
+        {
+        private:
+            collection::Map<String, IObjectConstructor<T, Args...> *> Registry;
 
-    public:
-        template <class ObjConstructor>
-        inline void AddClass()
-        {
-            IObjectConstructor<T, Args...> *raw = Memory::New<ObjConstructor>(); // TODO : Update when Map will accept UniquePtr as a value
-            //WARNING : MemLeak to fix here
-            Registry[raw->GetName()] = raw;
-        }
-        
-        inline UniquePtr<T> MakeUnique(const String &name, Args&&... args)
-        {
-            if (!Registry.HasKey(name))
-                return (Null);
-            return (Registry[name]->MakeUnique(std::forward<Args>(args)...));
-        }
-        
-        inline SharedPtr<T> MakeShared(const String &name, Args&&... args)
-        {
-            if (!Registry.HasKey(name))
-                return (Null);
-            return (Registry[name]->MakeShared(std::forward<Args>(args)...));
-        }
-    };
+        public:
+            template <class ObjConstructor>
+            inline void AddClass()
+            {
+                IObjectConstructor<T, Args...> *raw = Memory::New<ObjConstructor>(); // TODO : Update when Map will accept UniquePtr as a value
+                //WARNING : MemLeak to fix here
+                Registry[raw->GetName()] = raw;
+            }
+
+            inline UniquePtr<T> MakeUnique(const String &name, Args &&... args)
+            {
+                if (!Registry.HasKey(name))
+                    return (Null);
+                return (Registry[name]->MakeUnique(std::forward<Args>(args)...));
+            }
+
+            inline SharedPtr<T> MakeShared(const String &name, Args &&... args)
+            {
+                if (!Registry.HasKey(name))
+                    return (Null);
+                return (Registry[name]->MakeShared(std::forward<Args>(args)...));
+            }
+        };
+    }
 }

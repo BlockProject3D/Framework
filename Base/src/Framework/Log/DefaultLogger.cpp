@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <iostream>
-#include "Framework/Logging/DefaultLogger.hpp"
+#include "Framework/Log/DefaultLogger.hpp"
 
 using namespace bpf::log;
 using namespace bpf;

@@ -33,6 +33,7 @@
 #include <Framework/Collection/Map.hpp>
 #include <Framework/Collection/Stringifier.Collection.hpp>
 
+using namespace bpf::memory;
 using namespace bpf::collection;
 using namespace bpf;
 

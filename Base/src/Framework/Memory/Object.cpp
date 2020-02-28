@@ -29,6 +29,7 @@
 #include "Framework/Types.hpp"
 #include "Framework/Memory/Object.hpp"
 
+using namespace bpf::memory;
 using namespace bpf;
 
 Object::~Object()

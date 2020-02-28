@@ -32,37 +32,40 @@
 
 namespace bpf
 {
-    /**
-     * Constructor abstraction
-     * @tparam T the type of parent to generate
-     * @tparam Args the arguments to pass to the constructor
-     */
-    template <class /* ? extends */ T, typename ...Args>
-    class BPF_API IObjectConstructor
+    namespace memory
     {
-    public:
-        virtual ~IObjectConstructor() {}
-
-        virtual const String &GetName() const noexcept = 0;
-        virtual UniquePtr<T> MakeUnique(Args &&... args) const = 0;
-        virtual SharedPtr<T> MakeShared(Args &&... args) const = 0;
-    };
-
-    template <class Class, class Parent, typename ...Args>
-    class BPF_API SimpleObjectConstructor : public IObjectConstructor<Parent, Args...>
-    {
-    public:
-        virtual const String &GetName() const noexcept = 0;
-
-        inline UniquePtr<Parent> MakeUnique(Args &&... args) const
+        /**
+         * Constructor abstraction
+         * @tparam T the type of parent to generate
+         * @tparam Args the arguments to pass to the constructor
+         */
+        template <class /* ? extends */ T, typename ...Args>
+        class BPF_API IObjectConstructor
         {
-            return (bpf::MakeUnique<Class>(std::forward<Args>(args)...));
-        }
-        inline SharedPtr<Parent> MakeShared(Args &&... args) const
+        public:
+            virtual ~IObjectConstructor() {}
+
+            virtual const String &GetName() const noexcept = 0;
+            virtual UniquePtr<T> MakeUnique(Args &&... args) const = 0;
+            virtual SharedPtr<T> MakeShared(Args &&... args) const = 0;
+        };
+
+        template <class Class, class Parent, typename ...Args>
+        class BPF_API SimpleObjectConstructor : public IObjectConstructor<Parent, Args...>
         {
-            return (bpf::MakeShared<Class>(std::forward<Args>(args)...));
-        }
-    };
+        public:
+            virtual const String &GetName() const noexcept = 0;
+
+            inline UniquePtr<Parent> MakeUnique(Args &&... args) const
+            {
+                return (bpf::MakeUnique<Class>(std::forward<Args>(args)...));
+            }
+            inline SharedPtr<Parent> MakeShared(Args &&... args) const
+            {
+                return (bpf::MakeShared<Class>(std::forward<Args>(args)...));
+            }
+        };
+    }
 }
 
 #define MAP_CONSTRUCTOR(Name, Parent, Class, ...) \

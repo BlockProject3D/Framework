@@ -30,29 +30,14 @@
 
 namespace bpf
 {
-    template <typename T>
-    SharedPtr<T>::~SharedPtr()
+    namespace memory
     {
-        if (Count == Null)
-            return;
-        --*Count;
-        if (*Count <= 0)
+        template <typename T>
+        SharedPtr<T>::~SharedPtr()
         {
-            Memory::Delete(RawPtr);
-            if (*WCount <= 0)
-            {
-                Memory::Free(Count);
-                Memory::Free(WCount);
-            }
-        }
-    }
-
-    template <typename T>
-    SharedPtr<T> &SharedPtr<T>::operator=(SharedPtr<T> &&other)
-    {
-        if (Count != Null)
-        {
-            --*Count;
+            if (Count == Null)
+                return;
+            -- *Count;
             if (*Count <= 0)
             {
                 Memory::Delete(RawPtr);
@@ -63,36 +48,54 @@ namespace bpf
                 }
             }
         }
-        Count = other.Count;
-        WCount = other.WCount;
-        RawPtr = other.RawPtr;
-        other.Count = Null;
-        other.WCount = Null;
-        other.RawPtr = Null;
-        return (*this);
-    }
 
-    template <typename T>
-    SharedPtr<T> &SharedPtr<T>::operator=(const SharedPtr<T> &other)
-    {
-        if (Count != Null)
+        template <typename T>
+        SharedPtr<T> &SharedPtr<T>::operator=(SharedPtr<T> &&other)
         {
-            --*Count;
-            if (*Count <= 0)
+            if (Count != Null)
             {
-                Memory::Delete(RawPtr);
-                if (*WCount <= 0)
+                -- *Count;
+                if (*Count <= 0)
                 {
-                    Memory::Free(Count);
-                    Memory::Free(WCount);
+                    Memory::Delete(RawPtr);
+                    if (*WCount <= 0)
+                    {
+                        Memory::Free(Count);
+                        Memory::Free(WCount);
+                    }
                 }
             }
+            Count = other.Count;
+            WCount = other.WCount;
+            RawPtr = other.RawPtr;
+            other.Count = Null;
+            other.WCount = Null;
+            other.RawPtr = Null;
+            return (*this);
         }
-        Count = other.Count;
-        WCount = other.WCount;
-        RawPtr = other.RawPtr;
-        if (Count != Null)
-            ++*Count;
-        return (*this);
+
+        template <typename T>
+        SharedPtr<T> &SharedPtr<T>::operator=(const SharedPtr<T> &other)
+        {
+            if (Count != Null)
+            {
+                -- *Count;
+                if (*Count <= 0)
+                {
+                    Memory::Delete(RawPtr);
+                    if (*WCount <= 0)
+                    {
+                        Memory::Free(Count);
+                        Memory::Free(WCount);
+                    }
+                }
+            }
+            Count = other.Count;
+            WCount = other.WCount;
+            RawPtr = other.RawPtr;
+            if (Count != Null)
+                ++ *Count;
+            return (*this);
+        }
     }
 }

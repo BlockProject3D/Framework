@@ -30,13 +30,16 @@
 
 namespace bpf
 {
-    template <typename T>
-    UniquePtr<T> &UniquePtr<T>::operator=(UniquePtr<T> &&other)
+    namespace memory
     {
-        if (RawPtr != Null)
-            Memory::Delete(RawPtr);
-        RawPtr = other.RawPtr;
-        other.RawPtr = Null;
-        return (*this);
+        template <typename T>
+        UniquePtr<T> &UniquePtr<T>::operator=(UniquePtr<T> &&other)
+        {
+            if (RawPtr != Null)
+                Memory::Delete(RawPtr);
+            RawPtr = other.RawPtr;
+            other.RawPtr = Null;
+            return (*this);
+        }
     }
 }

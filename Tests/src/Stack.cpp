@@ -32,6 +32,7 @@
 #include <Framework/Collection/Stack.hpp>
 #include <Framework/Memory/Memory.hpp>
 
+using namespace bpf::memory;
 using namespace bpf::collection;
 using namespace bpf;
 

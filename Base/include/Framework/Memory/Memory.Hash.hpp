@@ -34,20 +34,20 @@
 namespace bpf
 {
     template <typename T>
-    class Hash<UniquePtr<T>>
+    class Hash<memory::UniquePtr<T>>
     {
     public:
-        inline static fsize HashCode(const UniquePtr<T> &val)
+        inline static fsize HashCode(const memory::UniquePtr<T> &val)
         {
             return ((fsize)val.Raw());
         }
     };
 
     template <typename T>
-    class Hash<SharedPtr<T>>
+    class Hash<memory::SharedPtr<T>>
     {
     public:
-        inline static fsize HashCode(const SharedPtr<T> &val)
+        inline static fsize HashCode(const memory::SharedPtr<T> &val)
         {
             return ((fsize)val.Raw());
         }

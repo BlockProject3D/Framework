@@ -27,81 +27,84 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Object.hpp"
+#include "Framework/Memory/Object.hpp"
 
 namespace bpf
 {
-    /**
-     * The object smart pointer, allows you to automatically reset all instances of FObjectPtr when a given underlying instance is destroyed
-     * This class only works with types extending the FObject class
-     * @tparam T the type of the underlying instance
-     */
-    template <class T /* extends FObject */>
-    class BPF_API ObjectPtr
+    namespace memory
     {
-    private:
-        T *RawPtr;
+        /**
+         * The object smart pointer, allows you to automatically reset all instances of FObjectPtr when a given underlying instance is destroyed
+         * This class only works with types extending the FObject class
+         * @tparam T the type of the underlying instance
+         */
+        template <class T /* extends FObject */>
+        class BPF_API ObjectPtr
+        {
+        private:
+            T *RawPtr;
 
-    public:
-        inline ObjectPtr()
-            : RawPtr(Null)
-        {
-        }
-        
-        inline ~ObjectPtr()
-        {
-            if (RawPtr != Null)
-                RawPtr->RemoveRef((void **)&RawPtr);
-        }
-        
-        inline bool operator==(T *other) const
-        {
-            return (RawPtr == other);
-        }
-        
-        inline bool operator!=(T *other) const
-        {
-            return (RawPtr != other);
-        }
-        
-        inline bool operator==(const ObjectPtr<T> &other) const
-        {
-            return (RawPtr == other.RawPtr);
-        }
-        
-        inline bool operator!=(const ObjectPtr<T> &other) const
-        {
-            return (RawPtr != other.RawPtr);
-        }
-        
-        inline T *operator->() const
-        {
-            return (RawPtr);
-        }
-        
-        inline T *operator*() const
-        {
-            return (RawPtr);
-        }
-        
-        ObjectPtr<T> &operator=(T *other)
-        {
-            if (RawPtr != Null)
-                RawPtr->RemoveRef((void **)&RawPtr);
-            RawPtr = other;
-            if (RawPtr != Null)
-                RawPtr->AddRef((void **)&RawPtr);
-            return (*this);
-        }
-        
-        ObjectPtr<T> &operator=(const ObjectPtr<T> &other)
-        {
-            if (RawPtr != Null)
-                RawPtr->RemoveRef((void **)&RawPtr);
-            RawPtr = other.RawPtr;
-            if (RawPtr != Null)
-                RawPtr->AddRef((void **)&RawPtr);
-            return (*this);
-        }
-    };
+        public:
+            inline ObjectPtr()
+                : RawPtr(Null)
+            {
+            }
+
+            inline ~ObjectPtr()
+            {
+                if (RawPtr != Null)
+                    RawPtr->RemoveRef((void **)&RawPtr);
+            }
+
+            inline bool operator==(T *other) const
+            {
+                return (RawPtr == other);
+            }
+
+            inline bool operator!=(T *other) const
+            {
+                return (RawPtr != other);
+            }
+
+            inline bool operator==(const ObjectPtr<T> &other) const
+            {
+                return (RawPtr == other.RawPtr);
+            }
+
+            inline bool operator!=(const ObjectPtr<T> &other) const
+            {
+                return (RawPtr != other.RawPtr);
+            }
+
+            inline T *operator->() const
+            {
+                return (RawPtr);
+            }
+
+            inline T *operator*() const
+            {
+                return (RawPtr);
+            }
+
+            ObjectPtr<T> &operator=(T *other)
+            {
+                if (RawPtr != Null)
+                    RawPtr->RemoveRef((void **)&RawPtr);
+                RawPtr = other;
+                if (RawPtr != Null)
+                    RawPtr->AddRef((void **)&RawPtr);
+                return (*this);
+            }
+
+            ObjectPtr<T> &operator=(const ObjectPtr<T> &other)
+            {
+                if (RawPtr != Null)
+                    RawPtr->RemoveRef((void **)&RawPtr);
+                RawPtr = other.RawPtr;
+                if (RawPtr != Null)
+                    RawPtr->AddRef((void **)&RawPtr);
+                return (*this);
+            }
+        };
+    }
 }

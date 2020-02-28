@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include "Framework/Memory/Memory.hpp"
 
+using namespace bpf::memory;
 using namespace bpf;
 
 #ifdef BUILD_DEBUG

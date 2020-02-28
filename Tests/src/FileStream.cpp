@@ -61,10 +61,10 @@ static void Test_OpenExcept_MemLeak()
 
 TEST(FileStream, OpenExcept_MemLeak)
 {
-    bpf::fsize cur = bpf::Memory::GetAllocCount();
+    bpf::fsize cur = bpf::memory::Memory::GetAllocCount();
 
     Test_OpenExcept_MemLeak();
-    EXPECT_EQ(cur, bpf::Memory::GetAllocCount());
+    EXPECT_EQ(cur, bpf::memory::Memory::GetAllocCount());
 }
 
 TEST(FileStream, Open)

@@ -37,48 +37,51 @@
 
 namespace bpf
 {
-    class BPF_API Memory
+    namespace memory
     {
+        class BPF_API Memory
+        {
 #ifdef BUILD_DEBUG
-    private:
-        static fsize CurUsedMem;
-        static fsize Allocs;
-        static system::Mutex MemMutex;
+        private:
+            static fsize CurUsedMem;
+            static fsize Allocs;
+            static system::Mutex MemMutex;
 #endif
-    public:
-        static void *Malloc(fsize size);
-        static void Free(void *addr);
-        static void *Realloc(void *addr, fsize newsize);
+        public:
+            static void *Malloc(fsize size);
+            static void Free(void *addr);
+            static void *Realloc(void *addr, fsize newsize);
 
-        template <typename T, typename ...Args>
-        inline static T *New(Args&&... args)
-        {
-            T *obj = static_cast<T *>(Malloc(sizeof(T)));
+            template <typename T, typename ...Args>
+            inline static T *New(Args &&... args)
+            {
+                T *obj = static_cast<T *>(Malloc(sizeof(T)));
 
-            new (obj) T(args...);
-            return (obj);
-        }
+                new (obj) T(args...);
+                return (obj);
+            }
 
-        template <typename T>
-        inline static void Delete(T *obj)
-        {
-            if (obj == Null)
-                return;
-            obj->~T();
-            Free(obj);
-        }
+            template <typename T>
+            inline static void Delete(T *obj)
+            {
+                if (obj == Null)
+                    return;
+                obj->~T();
+                Free(obj);
+            }
 
 #ifdef BUILD_DEBUG
-        inline static fsize GetAllocCount() noexcept
-        {
-            return (Allocs);
-        }
-        inline static fsize GetUsedMem() noexcept
-        {
-            return (CurUsedMem);
-        }
+            inline static fsize GetAllocCount() noexcept
+            {
+                return (Allocs);
+            }
+            inline static fsize GetUsedMem() noexcept
+            {
+                return (CurUsedMem);
+            }
 #endif
-    };
+        };
+    }
 };
 
 #include "Framework/Memory/UniquePtr.hpp"

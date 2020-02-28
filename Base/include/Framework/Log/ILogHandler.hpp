@@ -28,7 +28,7 @@
 
 #pragma once
 #include "Framework/String.hpp"
-#include "Framework/Logging/ELogLevel.hpp"
+#include "Framework/Log/ELogLevel.hpp"
 
 namespace bpf
 {
