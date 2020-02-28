@@ -26,33 +26,17 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <iostream>
-#include "Framework/Logging/DefaultLogger.hpp"
+#pragma once
+#include "Framework/Logging/ILogHandler.hpp"
 
-using namespace bpf;
-
-void DefaultLogger::LogMessage(ELogLevel level, const String &category, const String &msg)
+namespace bpf
 {
-    String lvl = "";
-
-    switch (level)
+    namespace log
     {
-    case ELogLevel::DEBUG:
-        lvl = "DEBUG";
-        break;
-    case ELogLevel::INFO:
-        lvl = "INFO";
-        break;
-    case ELogLevel::WARNING:
-        lvl = "WARNING";
-        break;
-    case ELogLevel::ERROR:
-        lvl = "ERROR";
-        break;
+        class DefaultLogger final : public ILogHandler
+        {
+        public:
+            void LogMessage(ELogLevel level, const String &category, const String &msg);
+        };
     }
-    String res = String('[') + category + "][" + lvl + "] " + msg;
-    if (level == ELogLevel::ERROR)
-        std::cerr << *res << std::endl;
-    else
-        std::cout << *res << std::endl;
 }

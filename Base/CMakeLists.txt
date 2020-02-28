@@ -46,11 +46,11 @@ set(SOURCES
     ./include/Framework/Math/IncompatibleMatrixSizeException.hpp
     ./include/Framework/Math/NonSquareMatrixException.hpp
     ./include/Framework/Math/NonInvertibleMatrixException.hpp
-    ./include/Framework/Logging/Logger.hpp
-    ./include/Framework/Logging/ILogHandler.hpp
-    ./include/Framework/Logging/ELogLevel.hpp
-    ./include/Framework/Logging/DefaultLogger.hpp
-    ./include/Framework/Logging/FileLogger.hpp
+    ./include/Framework/Log/Logger.hpp
+    ./include/Framework/Log/ILogHandler.hpp
+    ./include/Framework/Log/ELogLevel.hpp
+    ./include/Framework/Log/DefaultLogger.hpp
+    ./include/Framework/Log/FileLogger.hpp
     ./include/Framework/Memory/Memory.hpp
     ./include/Framework/Memory/Memory.Hash.hpp
     ./include/Framework/Memory/Utility.hpp
@@ -134,8 +134,8 @@ set(SOURCES
     ./src/Framework/IO/BinaryWriter.cpp
     ./src/Framework/IO/TextReader.cpp
     ./src/Framework/IO/TextWriter.cpp
-    ./src/Framework/Logging/DefaultLogger.cpp
-    ./src/Framework/Logging/FileLogger.cpp
+    ./src/Framework/Log/DefaultLogger.cpp
+    ./src/Framework/Log/FileLogger.cpp
     ./src/Framework/Math/Math.cpp
     ./src/Framework/Math/Random.cpp
     ./src/Framework/Memory/Memory.cpp

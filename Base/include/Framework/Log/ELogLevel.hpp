@@ -30,11 +30,14 @@
 
 namespace bpf
 {
-    enum class ELogLevel
+    namespace log
     {
-        INFO,
-        WARNING,
-        ERROR,
-        DEBUG
-    };
+        enum class ELogLevel
+        {
+            INFO,
+            WARNING,
+            ERROR,
+            DEBUG
+        };
+    }
 }
