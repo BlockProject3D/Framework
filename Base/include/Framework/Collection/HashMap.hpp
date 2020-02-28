@@ -33,6 +33,7 @@
 #include "Framework/Collection/Iterator.hpp"
 #include "Framework/IndexException.hpp"
 #include "Framework/Hash.hpp"
+#include "Framework/Hash.Base.hpp"
 #include "Framework/Collection/Utility.hpp"
 
 namespace bpf

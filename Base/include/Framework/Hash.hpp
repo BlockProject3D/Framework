@@ -41,5 +41,3 @@ namespace bpf
         }
     };
 }
-
-#include "Framework/BasicHash.hpp"

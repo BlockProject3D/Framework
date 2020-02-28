@@ -107,7 +107,7 @@ set(SOURCES
     ./include/Framework/Delegate.hpp
     ./include/Framework/EntryPoint.hpp
     ./include/Framework/Hash.hpp
-    ./include/Framework/BasicHash.hpp
+    ./include/Framework/Hash.Base.hpp
     ./include/Framework/Path.hpp
     ./include/Framework/Profiler.hpp
     ./include/Framework/Math/Random.hpp
