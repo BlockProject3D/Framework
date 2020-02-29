@@ -41,7 +41,7 @@ namespace bpf
             {
                 T *obj = static_cast<T *>(Memory::Malloc(sizeof(T)));
 
-                new (obj) T(args...);
+                new (obj) T(std::forward<Args>(args)...);
                 return (obj);
             }
 
@@ -59,7 +59,7 @@ namespace bpf
             {
                 T *mem = static_cast<T *>(Memory::Malloc(count * sizeof(T)));
                 for (fsize i = 0; i != count; ++i)
-                    new (mem + i) T(args...);
+                    new (mem + i) T(std::forward<Args>(args)...);
                 return (mem);
             }
 
@@ -86,7 +86,7 @@ namespace bpf
                 {
                     mem = reinterpret_cast<T *>(Memory::Realloc(reinterpret_cast<void *>(mem), newCount * sizeof(T)));
                     for (fsize i = oldCount; i != newCount; ++i)
-                        new (mem + i) T(args...);
+                        new (mem + i) T(std::forward<Args>(args)...);
                     return (mem);
                 }
             }

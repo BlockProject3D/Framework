@@ -27,6 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/Memory/MemUtils.hpp"
 
 namespace bpf
 {
@@ -120,7 +121,7 @@ namespace bpf
         void List<T>::Insert(fsize pos, const T &elem)
         {
             Node *nd = GetNode(pos);
-            Node *newi = new Node(elem);
+            Node *newi = memory::MemUtils::New<Node>(elem);
 
             newi->Next = nd;
             if (nd != Null)
@@ -147,7 +148,7 @@ namespace bpf
         void List<T>::Insert(fsize pos, T &&elem)
         {
             Node *nd = GetNode(pos);
-            Node *newi = new Node(std::move(elem));
+            Node *newi = memory::MemUtils::New<Node>(std::move(elem));
 
             newi->Next = nd;
             if (nd != Null)
@@ -174,7 +175,7 @@ namespace bpf
         void List<T>::Insert(const Iterator &pos, const T &elem)
         {
             Node *nd = pos._cur;
-            Node *newi = new Node(elem);
+            Node *newi = memory::MemUtils::New<Node>(elem);
 
             newi->Next = nd;
             if (nd != Null)
@@ -201,7 +202,7 @@ namespace bpf
         void List<T>::Insert(const Iterator &pos, T &&elem)
         {
             Node *nd = pos._cur;
-            Node *newi = new Node(std::move(elem));
+            Node *newi = memory::MemUtils::New<Node>(std::move(elem));
 
             newi->Next = nd;
             if (nd != Null)
@@ -227,7 +228,7 @@ namespace bpf
         template <typename T>
         void List<T>::Add(const T &elem)
         {
-            Node *newi = new Node(elem);
+            Node *newi = memory::MemUtils::New<Node>(elem);
 
             if (_last == Null)
                 _first = newi;
@@ -243,7 +244,7 @@ namespace bpf
         template <typename T>
         void List<T>::Add(T &&elem)
         {
-            Node *newi = new Node(std::move(elem));
+            Node *newi = memory::MemUtils::New<Node>(std::move(elem));
 
             if (_last == Null)
                 _first = newi;
@@ -474,7 +475,7 @@ namespace bpf
                     _first = next;
                 if (next)
                     next->Prev = prev;
-                delete toRM;
+                memory::MemUtils::Delete(toRM);
                 --_count;
             }
         }
@@ -509,7 +510,7 @@ namespace bpf
                     lst->Next = Null;
                 else
                     _first = Null;
-                delete _last;
+                memory::MemUtils::Delete(_last);
                 _last = lst;
                 --_count;
             }
