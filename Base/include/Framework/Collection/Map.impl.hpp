@@ -26,6 +26,9 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#pragma once
+#include "Framework/Memory/MemUtils.hpp"
+
 namespace bpf
 {
     namespace collection
@@ -223,7 +226,7 @@ namespace bpf
                     stack.Push(elem->Left);
                 if (elem->Right != Null)
                     stack.Push(elem->Right);
-                delete elem;
+                memory::MemUtils::Delete(elem);
             }
             _root = Null;
             _count = 0;
@@ -338,7 +341,7 @@ namespace bpf
             /* BST standard add */
             if (_root == Null)
             {
-                newNode = new Node();
+                newNode = memory::MemUtils::New<Node>();
                 newNode->KeyVal.Key = key;
                 /* Data structure augmentation */
                 newNode->Height = 1; //Every new node is a leaf
@@ -369,7 +372,7 @@ namespace bpf
                     return (cur);
             }
             ++_count;
-            newNode = new Node();
+            newNode = memory::MemUtils::New<Node>();
             newNode->KeyVal.Key = key;
             /* Data structure augmentation */
             newNode->Height = 1; //Every new node is a leaf
@@ -445,7 +448,7 @@ namespace bpf
             {
                 if (node == _root)
                 {
-                    delete node;
+                    memory::MemUtils::Delete(node);
                     _root = Null;
                     return;
                 }
@@ -454,7 +457,7 @@ namespace bpf
                 else
                     node->Parent->Right = Null;
                 parent = parent->Parent;
-                delete node;
+                memory::MemUtils::Delete(node);
             }
             else if (node->Left != Null && node->Right != Null) // Case 3 node has two children, find min in right sub tree then swap and finally remove
             {
@@ -464,7 +467,7 @@ namespace bpf
                     nd->Parent->Left = Null;
                 else
                     nd->Parent->Right = Null;
-                delete nd;
+                memory::MemUtils::Delete(nd);
             }
             else // Case 2 node has one child
             {
@@ -505,7 +508,7 @@ namespace bpf
                         node->Right->Parent = node->Parent;
                         parent = node->Right;
                     }
-                    delete node;
+                    memory::MemUtils::Delete(node);
                 }
             }
 
