@@ -29,6 +29,8 @@
 #pragma once
 #include "Framework/Math/IncompatibleMatrixSizeException.hpp"
 
+#include "Framework/Memory/MemUtils.hpp"
+
 namespace bpf
 {
     namespace math
@@ -249,7 +251,7 @@ namespace bpf
 
         template <typename T>
         Vector<T>::Vector(const std::initializer_list<T> &lst)
-            : _arr(new T[lst.size()])
+            : _arr(memory::MemUtils::NewArray<T>(lst.size()))
             , _l(lst.size())
         {
             fsize i = 0;
@@ -261,9 +263,9 @@ namespace bpf
         template <typename T>
         Vector<T> &Vector<T>::operator=(const Vector &other)
         {
-            delete[] _arr;
+            memory::MemUtils::DeleteArray(_arr, _l);
             _l = other._l;
-            _arr = new T[_l];
+            _arr = memory::MemUtils::NewArray<T>(_l);
             for (fsize i = 0; i != _l; ++i)
                 _arr[i] = other._arr[i];
             return (*this);
@@ -272,7 +274,7 @@ namespace bpf
         template <typename T>
         Vector<T> &Vector<T>::operator=(Vector &&other)
         {
-            delete[] _arr;
+            memory::MemUtils::DeleteArray(_arr, _l);
             _arr = other._arr;
             _l = other._l;
             other._arr = Null;

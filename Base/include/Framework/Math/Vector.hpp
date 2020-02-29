@@ -162,7 +162,7 @@ namespace bpf
             }
 
             inline Vector(const Vector &other, const T val)
-                : _arr(new T[other._l + 1])
+                : _arr(memory::MemUtils::NewArray<T>(other._l + 1))
                 , _l(other._l + 1)
             {
                 for (fsize i = 0; i != other._l; ++i)
@@ -171,7 +171,7 @@ namespace bpf
             }
 
             explicit inline Vector(const fsize l)
-                : _arr(new T[l])
+                : _arr(memory::MemUtils::NewArray<T>(l))
                 , _l(l)
             {
                 for (fsize i = 0; i != l; ++i)
@@ -179,7 +179,7 @@ namespace bpf
             }
 
             inline Vector(const fsize l, const T val)
-                : _arr(new T[l])
+                : _arr(memory::MemUtils::NewArray<T>(l))
                 , _l(l)
             {
                 for (fsize i = 0; i != l; ++i)
@@ -189,7 +189,7 @@ namespace bpf
             Vector(const std::initializer_list<T> &lst);
 
             inline Vector(const Vector &other)
-                : _arr(new T[other._l])
+                : _arr(memory::MemUtils::NewArray<T>(other._l))
                 , _l(other._l)
             {
                 for (fsize i = 0; i != _l; ++i)
@@ -206,7 +206,7 @@ namespace bpf
 
             inline ~Vector()
             {
-                delete[] _arr;
+                memory::MemUtils::DeleteArray(_arr, _l);
             }
 
             inline fsize Dim() const noexcept

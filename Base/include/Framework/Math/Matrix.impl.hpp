@@ -35,6 +35,8 @@
 #include "Framework/Math/NonInvertibleMatrixException.hpp"
 #include "Framework/Math/NonSquareMatrixException.hpp"
 
+#include "Framework/Memory/MemUtils.hpp"
+
 namespace bpf
 {
     namespace math
@@ -323,17 +325,15 @@ namespace bpf
 
         template <typename T>
         Matrix<T>::Matrix(const fsize n, const fsize m)
-            : _arr(new T[n * m])
+            : _arr(memory::MemUtils::NewArray<T>(n * m))
             , _n(n)
             , _m(m)
         {
-            for (fsize i = 0; i != n * m; ++i)
-                _arr[i] = DefaultOf<T>();
         }
 
         template <typename T>
         Matrix<T>::Matrix(const fsize n, const fsize m, const T val)
-            : _arr(new T[n * m])
+            : _arr(memory::MemUtils::NewArray<T>(n * m))
             , _n(n)
             , _m(m)
         {
@@ -343,7 +343,7 @@ namespace bpf
 
         template <typename T>
         Matrix<T>::Matrix(const fsize n, const fsize m, const std::initializer_list<T> &lst)
-            : _arr(new T[n * m])
+            : _arr(memory::MemUtils::NewArray<T>(n * m))
             , _n(n)
             , _m(m)
         {
@@ -359,7 +359,7 @@ namespace bpf
 
         template <typename T>
         Matrix<T>::Matrix(const Matrix<T> &other)
-            : _arr(new T[other._n * other._m])
+            : _arr(memory::MemUtils::NewArray<T>(other._n * other._m))
             , _n(other._n)
             , _m(other._m)
         {
@@ -381,17 +381,17 @@ namespace bpf
         template <typename T>
         Matrix<T>::~Matrix()
         {
-            delete[] _arr;
+            memory::MemUtils::DeleteArray(_arr, _n * _m);
         }
 
         template <typename T>
         Matrix<T> &Matrix<T>::operator=(const Matrix<T> &other)
         {
             if (_arr != Null)
-                delete[] _arr;
+                memory::MemUtils::DeleteArray(_arr, _n * _m);
             _n = other._n;
             _m = other._m;
-            _arr = new T[_n * _m];
+            _arr = memory::MemUtils::NewArray<T>(_n * _m);
             for (fsize i = 0; i != _m * _n; ++i)
                 _arr[i] = other._arr[i];
         }
@@ -400,7 +400,7 @@ namespace bpf
         Matrix<T> &Matrix<T>::operator=(Matrix<T> &&other)
         {
             if (_arr != Null)
-                delete[] _arr;
+                memory::MemUtils::DeleteArray(_arr, _n * _m);
             _n = other._n;
             _m = other._m;
             _arr = other._arr;
