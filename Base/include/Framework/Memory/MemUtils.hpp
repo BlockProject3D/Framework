@@ -54,12 +54,12 @@ namespace bpf
                 Memory::Free(obj);
             }
 
-            template <typename T>
-            inline static T *NewArray(const fsize count, const T &def = DefaultOf<T>())
+            template <typename T, typename ...Args>
+            inline static T *NewArray(const fsize count, Args &&... args)
             {
                 T *mem = static_cast<T *>(Memory::Malloc(count * sizeof(T)));
                 for (fsize i = 0; i != count; ++i)
-                    std::memcpy(mem + i, reinterpret_cast<const void *>(&def), sizeof(T));
+                    new (mem + i) T(args...);
                 return (mem);
             }
 
@@ -71,8 +71,8 @@ namespace bpf
                 Memory::Free(mem);
             }
 
-            template <typename T>
-            inline static T *ResizeArray(T *mem, const fsize oldCount, const fsize newCount, const T &def = DefaultOf<T>())
+            template <typename T, typename ...Args>
+            inline static T *ResizeArray(T *mem, const fsize oldCount, const fsize newCount, Args &&... args)
             {
                 if (newCount == oldCount)
                     return (mem);
@@ -86,7 +86,7 @@ namespace bpf
                 {
                     mem = reinterpret_cast<T *>(Memory::Realloc(reinterpret_cast<void *>(mem), newCount * sizeof(T)));
                     for (fsize i = oldCount; i != newCount; ++i)
-                        std::memcpy(mem + i, reinterpret_cast<const void *>(&def), sizeof(T));
+                        new (mem + i) T(args...);
                     return (mem);
                 }
             }

@@ -28,6 +28,7 @@
 
 #pragma once
 #include <utility>
+#include "Framework/Memory/MemUtils.hpp"
 
 namespace bpf
 {
@@ -56,7 +57,7 @@ namespace bpf
         {
             if (_size > 0)
             {
-                _arr = new T[_size];
+                _arr = memory::MemUtils::NewArray<T>(_size);
                 for (fsize i = 0; i < _size; ++i)
                     _arr[i] = arr[i];
             }
@@ -69,7 +70,7 @@ namespace bpf
         {
             if (size > 0)
             {
-                _arr = new T[_size];
+                _arr = memory::MemUtils::NewArray<T>(_size);
                 for (fsize i = 0; i < _size; ++i)
                     _arr[i] = DefaultOf<T>();
             }
@@ -82,7 +83,7 @@ namespace bpf
         {
             if (_size > 0)
             {
-                _arr = new T[_size];
+                _arr = memory::MemUtils::NewArray<T>(_size);
                 fsize i = 0;
                 for (auto &elem : lst)
                     _arr[i++] = elem;
@@ -104,7 +105,7 @@ namespace bpf
         template <typename T>
         Array<T> &Array<T>::operator=(Array<T> &&arr)
         {
-            delete[] _arr;
+            memory::MemUtils::DeleteArray(_arr, _size);
             _size = arr._size;
             _arr = arr._arr;
             arr._arr = Null;
@@ -115,9 +116,9 @@ namespace bpf
         template <typename T>
         Array<T> &Array<T>::operator=(const Array<T> &arr)
         {
-            delete[] _arr;
+            memory::MemUtils::DeleteArray(_arr, _size);
             _size = arr._size;
-            _arr = new T[_size];
+            _arr = memory::MemUtils::NewArray<T>(_size);
             for (fsize i = 0; i < _size; ++i)
                 _arr[i] = arr[i];
             return (*this);
@@ -126,7 +127,7 @@ namespace bpf
         template <typename T>
         inline Array<T>::~Array()
         {
-            delete[] _arr;
+            memory::MemUtils::DeleteArray(_arr, _size);
         }
 
         template <typename T>
@@ -142,14 +143,8 @@ namespace bpf
         {
             if (_size == newSize)
                 return;
-            T *tmp = _arr;
-            _arr = new T[newSize];
-            for (fsize i = 0; i < ((newSize < _size) ? newSize : _size); ++i)
-                _arr[i] = std::move(tmp[i]);
-            for (fsize i = _size; i < newSize; ++i)
-                _arr[i] = DefaultOf<T>();
+            _arr = memory::MemUtils::ResizeArray(_arr, _size, newSize);
             _size = newSize;
-            delete[] tmp;
         }
 
         template <typename T>

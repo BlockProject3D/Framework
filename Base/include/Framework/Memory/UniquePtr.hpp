@@ -27,6 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/Memory/MemUtils.hpp"
 
 namespace bpf
 {
@@ -111,3 +112,5 @@ namespace bpf
         };
     }
 }
+
+#include "Framework/Memory/UniquePtr.impl.hpp"

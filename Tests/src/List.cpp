@@ -32,7 +32,7 @@
 #include <Framework/Collection/List.hpp>
 #include <Framework/String.hpp>
 #include <Framework/Collection/Stringifier.Collection.hpp>
-#include <Framework/Memory/Memory.hpp>
+#include <Framework/Memory/Utility.hpp>
 
 using namespace bpf::memory;
 using namespace bpf::collection;

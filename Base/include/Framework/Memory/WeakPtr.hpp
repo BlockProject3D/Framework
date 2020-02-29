@@ -27,6 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/Memory/SharedPtr.hpp"
 
 namespace bpf
 {
@@ -80,3 +81,5 @@ namespace bpf
         };
     }
 }
+
+#include "Framework/Memory/WeakPtr.impl.hpp"

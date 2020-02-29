@@ -31,7 +31,7 @@
 #include <gtest/gtest.h>
 #include <Framework/Tuple.hpp>
 #include <Framework/String.hpp>
-#include <Framework/Memory/Memory.hpp>
+#include <Framework/Memory/Utility.hpp>
 
 TEST(Tuple, Basic)
 {

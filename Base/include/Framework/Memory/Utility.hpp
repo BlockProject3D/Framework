@@ -28,6 +28,9 @@
 
 #pragma once
 #include <utility>
+#include "Framework/Memory/UniquePtr.hpp"
+#include "Framework/Memory/SharedPtr.hpp"
+#include "Framework/Memory/Memory.Hash.hpp"
 
 namespace bpf
 {

@@ -29,7 +29,7 @@
 #include <cassert>
 #include <iostream>
 #include <gtest/gtest.h>
-#include <Framework/Memory/Memory.hpp>
+#include <Framework/Memory/Utility.hpp>
 #include <Framework/Collection/Map.hpp>
 #include <Framework/Collection/Stringifier.Collection.hpp>
 
