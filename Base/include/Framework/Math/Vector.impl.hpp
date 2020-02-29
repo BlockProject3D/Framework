@@ -29,8 +29,6 @@
 #pragma once
 #include "Framework/Math/IncompatibleMatrixSizeException.hpp"
 
-#include "Framework/Memory/MemUtils.hpp"
-
 namespace bpf
 {
     namespace math

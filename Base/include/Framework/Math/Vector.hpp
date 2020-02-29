@@ -34,6 +34,8 @@
 #include "Framework/IndexException.hpp"
 #include "Framework/Math/Math.hpp"
 
+#include "Framework/Memory/MemUtils.hpp"
+
 namespace bpf
 {
     namespace math
