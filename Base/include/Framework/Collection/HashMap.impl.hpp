@@ -27,6 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/Memory/MemUtils.hpp"
 
 namespace bpf
 {
@@ -114,7 +115,7 @@ namespace bpf
 
         template <typename K, typename V, typename HashOp>
         HashMap<K, V, HashOp>::HashMap()
-            : _data(new Node[HASH_MAP_INIT_BUF_SIZE])
+            : _data(memory::MemUtils::NewArray<Node>(HASH_MAP_INIT_BUF_SIZE))
             , CurSize(HASH_MAP_INIT_BUF_SIZE)
             , ElemCount(0)
         {
@@ -124,7 +125,7 @@ namespace bpf
 
         template <typename K, typename V, typename HashOp>
         HashMap<K, V, HashOp>::HashMap(const std::initializer_list<Entry> &entries)
-            : _data(new Node[HASH_MAP_INIT_BUF_SIZE])
+            : _data(memory::MemUtils::NewArray<Node>(HASH_MAP_INIT_BUF_SIZE))
             , CurSize(HASH_MAP_INIT_BUF_SIZE)
             , ElemCount(0)
         {
@@ -136,7 +137,7 @@ namespace bpf
 
         template <typename K, typename V, typename HashOp>
         HashMap<K, V, HashOp>::HashMap(const HashMap &other)
-            : _data(new Node[HASH_MAP_INIT_BUF_SIZE])
+            : _data(memory::MemUtils::NewArray<Node>(HASH_MAP_INIT_BUF_SIZE))
             , CurSize(HASH_MAP_INIT_BUF_SIZE)
             , ElemCount(0)
         {
@@ -149,8 +150,8 @@ namespace bpf
         template <typename K, typename V, typename HashOp>
         HashMap<K, V, HashOp> &HashMap<K, V, HashOp>::operator=(const HashMap &other)
         {
-            delete[] _data;
-            _data = new Node[HASH_MAP_INIT_BUF_SIZE];
+            memory::MemUtils::DeleteArray(_data, CurSize);
+            _data = memory::MemUtils::NewArray<Node>(HASH_MAP_INIT_BUF_SIZE);
             _data[0].State = ENTRY_STATE_NON_EXISTANT;
             _data[1].State = ENTRY_STATE_NON_EXISTANT;
             CurSize = HASH_MAP_INIT_BUF_SIZE;
@@ -191,7 +192,7 @@ namespace bpf
         template <typename K, typename V, typename HashOp>
         HashMap<K, V, HashOp> &HashMap<K, V, HashOp>::operator=(HashMap &&other)
         {
-            delete[] _data;
+            memory::MemUtils::DeleteArray(_data, CurSize);
             _data = other._data;
             CurSize = other.CurSize;
             ElemCount = other.ElemCount;
@@ -204,7 +205,7 @@ namespace bpf
         template <typename K, typename V, typename HashOp>
         HashMap<K, V, HashOp>::~HashMap()
         {
-            delete[] _data;
+            memory::MemUtils::DeleteArray(_data, CurSize);
         }
 
         template <typename K, typename V, typename HashOp>
@@ -214,7 +215,7 @@ namespace bpf
             {
                 Node *olddata = _data;
                 CurSize <<= 1;
-                _data = new Node[CurSize];
+                _data = memory::MemUtils::NewArray<Node>(CurSize);
                 for (fsize i = 0; i < CurSize; ++i)
                     _data[i].State = ENTRY_STATE_NON_EXISTANT;
                 for (fsize i = 0; i < CurSize >> 1; ++i)
@@ -229,7 +230,7 @@ namespace bpf
                         }
                     }
                 }
-                delete[] olddata;
+                memory::MemUtils::DeleteArray(olddata, CurSize >> 1);
             }
         }
 
@@ -351,8 +352,8 @@ namespace bpf
         template <typename K, typename V, typename HashOp>
         void HashMap<K, V, HashOp>::Clear()
         {
-            delete[] _data;
-            _data = new Node[HASH_MAP_INIT_BUF_SIZE];
+            memory::MemUtils::DeleteArray(_data, CurSize);
+            _data = memory::MemUtils::NewArray<Node>(HASH_MAP_INIT_BUF_SIZE);
             CurSize = HASH_MAP_INIT_BUF_SIZE;
             ElemCount = 0;
             _data[0].State = ENTRY_STATE_NON_EXISTANT;
