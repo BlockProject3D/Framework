@@ -204,6 +204,11 @@ namespace bpf
                 other._l = 0;
             }
 
+            inline ~Vector()
+            {
+                delete[] _arr;
+            }
+
             inline fsize Dim() const noexcept
             {
                 return (_l);

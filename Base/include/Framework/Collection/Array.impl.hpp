@@ -71,8 +71,6 @@ namespace bpf
             if (size > 0)
             {
                 _arr = memory::MemUtils::NewArray<T>(_size);
-                for (fsize i = 0; i < _size; ++i)
-                    _arr[i] = DefaultOf<T>();
             }
         }
 
@@ -99,6 +97,11 @@ namespace bpf
                 _arr[i++] = elem;
                 if (i >= I)
                     break;
+            }
+            while (i != I)
+            {
+                _arr[i] = T();
+                ++i;
             }
         }
 

@@ -140,7 +140,7 @@ namespace bpf
             inline Array()
             {
                 for (fsize i = 0; i != I; ++i)
-                    _arr[i] = DefaultOf<T>();
+                    _arr[i] = T();
             }
 
             Array(const std::initializer_list<T> &lst);
