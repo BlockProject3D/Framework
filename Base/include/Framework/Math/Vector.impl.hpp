@@ -185,7 +185,7 @@ namespace bpf
         template <typename T, fsize I>
         T Vector<T, I>::Dot(const Vector &other) const
         {
-            T res = DefaultOf<T>();
+            T res = T();
 
             for (fsize i = 0; i != I; ++i)
                 res += _arr[i] * other(i);
@@ -211,7 +211,7 @@ namespace bpf
         template <typename T, fsize I>
         T Vector<T, I>::Norm() const
         {
-            T res = DefaultOf<T>();
+            T res = T();
 
             for (fsize i = 0; i != I; ++i)
                 res += _arr[i] * _arr[i];
@@ -221,7 +221,7 @@ namespace bpf
         template <typename T, fsize I>
         T Vector<T, I>::NormSquared() const
         {
-            T res = DefaultOf<T>();
+            T res = T();
 
             for (fsize i = 0; i != I; ++i)
                 res += _arr[i] * _arr[i];
@@ -427,7 +427,7 @@ namespace bpf
         {
             if (_l != other._l)
                 throw IncompatibleMatrixSizeException((fisize)_l, (fisize)other._l);
-            T res = DefaultOf<T>();
+            T res = T();
 
             for (fsize i = 0; i != _l; ++i)
                 res += _arr[i] * other(i);
@@ -453,7 +453,7 @@ namespace bpf
         template <typename T>
         T Vector<T>::Norm() const
         {
-            T res = DefaultOf<T>();
+            T res = T();
 
             for (fsize i = 0; i != _l; ++i)
                 res += _arr[i] * _arr[i];
@@ -463,7 +463,7 @@ namespace bpf
         template <typename T>
         T Vector<T>::NormSquared() const
         {
-            T res = DefaultOf<T>();
+            T res = T();
 
             for (fsize i = 0; i != _l; ++i)
                 res += _arr[i] * _arr[i];

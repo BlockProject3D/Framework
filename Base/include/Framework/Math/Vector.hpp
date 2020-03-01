@@ -53,7 +53,7 @@ namespace bpf
             inline Vector()
             {
                 for (fsize i = 0; i != I; ++i)
-                    _arr[i] = DefaultOf<T>();
+                    _arr[i] = T();
             }
 
             explicit inline Vector(const T val)
@@ -177,7 +177,7 @@ namespace bpf
                 , _l(l)
             {
                 for (fsize i = 0; i != l; ++i)
-                    _arr[i] = DefaultOf<T>();
+                    _arr[i] = T();
             }
 
             inline Vector(const fsize l, const T val)

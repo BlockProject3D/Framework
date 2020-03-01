@@ -47,7 +47,7 @@ namespace bpf
             inline Matrix()
             {
                 for (fsize i = 0; i != N * M; ++i)
-                    _arr[i] = DefaultOf<T>();
+                    _arr[i] = T();
             }
 
             explicit inline Matrix(const T val)
@@ -147,7 +147,7 @@ namespace bpf
             inline Matrix()
             {
                 for (fsize i = 0; i != N * N; ++i)
-                    _arr[i] = DefaultOf<T>();
+                    _arr[i] = T();
             }
 
             explicit inline Matrix(const T val)

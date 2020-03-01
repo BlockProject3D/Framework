@@ -56,9 +56,9 @@ namespace bpf
             }
 
             inline Vector()
-                : X(DefaultOf<T>())
-                , Y(DefaultOf<T>())
-                , Z(DefaultOf<T>())
+                : X(T())
+                , Y(T())
+                , Z(T())
             {
             }
 

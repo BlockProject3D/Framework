@@ -520,6 +520,3 @@ namespace bpf
         static const String Empty;
     };
 }
-
-DEFINE_DEFAULT(bpf::String, bpf::String());
-

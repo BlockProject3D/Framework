@@ -30,19 +30,6 @@
 #include <type_traits>
 
 /**
- * Defines a default for a given type
- */
-#define DEFINE_DEFAULT(type, ret) \
-    namespace bpf \
-    { \
-        template <> \
-        inline type DefaultOf<type>() \
-        { \
-            return (ret); \
-        } \
-    }
-
-/**
  * Defines the type name for a given type
  */
 #define DEFINE_TYPE(compilename, runtimename) \
@@ -61,30 +48,9 @@ namespace bpf
     class String;
 
     /**
-     * Returns the default of a given type
-     * @tparam T the type to find the default of
+     * Returns the type name as a string of a given type
+     * @tparam T the type to search the name of
      */
-    template <typename T, typename std::enable_if<!std::is_pointer<T>::value>::type * = nullptr>
-    inline T DefaultOf()
-    {
-        return (T());
-    }
-    template <class T, typename std::enable_if<std::is_pointer<T>::value>::type * = nullptr>
-    inline T DefaultOf()
-    {
-        return (nullptr);
-    }
-
-    /**
-    * Returns the type name as a string of a given type
-    * @tparam T the type to search the name of
-    */
     template<typename T>
     const bpf::String &TypeOf();
 }
-
-DEFINE_DEFAULT(int, 0);
-DEFINE_DEFAULT(float, 0);
-DEFINE_DEFAULT(double, 0);
-DEFINE_DEFAULT(bool, false);
-DEFINE_DEFAULT(char, 0);
