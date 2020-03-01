@@ -163,6 +163,19 @@ TEST(ArrayStatic, Copy_1)
     EXPECT_EQ(copy[2], 7);
 }
 
+TEST(ArrayStatic, Move)
+{
+    Array<String, 3> lst = { "0", "3", "7" };
+
+    auto mv = std::move(lst);
+    EXPECT_STREQ(*mv[0], "0");
+    EXPECT_STREQ(*mv[1], "3");
+    EXPECT_STREQ(*mv[2], "7");
+    EXPECT_EQ(lst[0], String::Empty);
+    EXPECT_EQ(lst[1], String::Empty);
+    EXPECT_EQ(lst[2], String::Empty);
+}
+
 TEST(ArrayStatic, Copy_2)
 {
     auto arr = Array<int, 3>();

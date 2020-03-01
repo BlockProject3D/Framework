@@ -145,16 +145,29 @@ namespace bpf
 
             Array(const std::initializer_list<T> &lst);
 
-            inline Array(const Array<T> &arr)
+            inline Array(const Array<T, I> &arr)
             {
                 for (fsize i = 0; i != I; ++i)
                     _arr[i] = arr._arr[i];
+            }
+
+            inline Array(Array<T, I> &&arr)
+            {
+                for (fsize i = 0; i != I; ++i)
+                    _arr[i] = std::move(arr._arr[i]);
             }
 
             inline Array<T, I> &operator=(const Array<T, I> &arr)
             {
                 for (fsize i = 0; i != I; ++i)
                     _arr[i] = arr._arr[i];
+                return (*this);
+            }
+
+            inline Array<T, I> &operator=(Array<T, I> &&arr)
+            {
+                for (fsize i = 0; i != I; ++i)
+                    _arr[i] = std::move(arr._arr[i]);
                 return (*this);
             }
 
