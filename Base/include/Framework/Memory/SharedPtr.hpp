@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -28,6 +28,8 @@
 
 #pragma once
 #include "Framework/Memory/MemUtils.hpp"
+#include "Framework/Memory/ClassCastException.hpp"
+#include "Framework/TypeInfo.hpp"
 
 namespace bpf
 {
@@ -141,14 +143,23 @@ namespace bpf
                 return (RawPtr != other.RawPtr);
             }
 
-            //Static casting
-            //TODO : Throw class cast exception in debug build
             template <typename T1>
-            inline SharedPtr<T1> StaticCast() const noexcept
+            inline SharedPtr<T1> Cast() const
             {
+#ifdef BUILD_DEBUG
+                if (RawPtr == Null)
+                    return (Null);
+                else
+                {
+                    auto ptr = dynamic_cast<T1 *>(RawPtr);
+                    if (ptr == Null)
+                        throw ClassCastException(String("Cannot cast from ") + TypeName<T>() + " to " + TypeName<T1>());
+                    return (SharedPtr<T1>(Count, WCount, ptr));
+                }
+#else
                 return (SharedPtr<T1>(Count, WCount, static_cast<T1 *>(RawPtr)));
+#endif
             }
-            //End
 
             friend class WeakPtr<T>;
 

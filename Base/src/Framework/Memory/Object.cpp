@@ -35,5 +35,5 @@ using namespace bpf;
 Object::~Object()
 {
     for (void **ref : Refs)
-        *ref = Null;
+        *ref = Default;
 }

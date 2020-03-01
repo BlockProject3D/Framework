@@ -27,30 +27,34 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include <type_traits>
-
-/**
- * Defines the type name for a given type
- */
-#define DEFINE_TYPE(compilename, runtimename) \
-    namespace bpf \
-    { \
-        template <> \
-            const bpf::String &TypeOf<compilename>() \
-        { \
-            static bpf::String staticname = #runtimename; \
-            return (staticname); \
-        } \
-    }
 
 namespace bpf
 {
-    class String;
-
     /**
      * Returns the type name as a string of a given type
      * @tparam T the type to search the name of
      */
-    template<typename T>
-    const bpf::String &TypeOf();
+    template <typename T>
+    inline BP_TPL_API const char *TypeName() noexcept
+    {
+        return ("Unknown")
+    }
 }
+
+/**
+ * Defines the type name for a given type
+ */
+#define DEFINE_TYPEINFO(T) \
+    namespace bpf \
+    { \
+        template <> \
+        inline BPF_API const char *TypeName<T>() noexcept \
+        { \
+            return (#T); \
+        } \
+    }
+
+
+DEFINE_TYPEINFO(int);
+DEFINE_TYPEINFO(float);
+DEFINE_TYPEINFO(double);

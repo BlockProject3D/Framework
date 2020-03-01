@@ -28,6 +28,7 @@
 
 #pragma once
 #include "Framework/Memory/SharedPtr.hpp"
+#include "Framework/Memory/ClassCastException.hpp"
 
 namespace bpf
 {
@@ -67,14 +68,23 @@ namespace bpf
 
             SharedPtr<T> Lock() noexcept;
 
-            //Static casting
-            //TODO : Throw class cast exception in debug build
             template <typename T1>
-            inline WeakPtr<T1> StaticCast() const noexcept
+            inline WeakPtr<T1> Cast() const
             {
+#ifdef BUILD_DEBUG
+                if (RawPtr == Null)
+                    return (Null);
+                else
+                {
+                    auto ptr = dynamic_cast<T1 *>(RawPtr);
+                    if (ptr == Null)
+                        throw ClassCastException(String("Cannot cast from ") + TypeName<T>() + " to " + TypeName<T1>());
+                    return (WeakPtr<T1>(Count, ptr, WCount));
+                }
+#else
                 return (WeakPtr<T1>(Count, static_cast<T1 *>(RawPtr), WCount));
+#endif
             }
-            //End
 
             template <typename T1>
             friend class WeakPtr;

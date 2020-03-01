@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -27,39 +27,19 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Collection/List.hpp"
+#include "Framework/RuntimeException.hpp"
 
 namespace bpf
 {
     namespace memory
     {
-        class BPF_API Object
+        class BPF_API ClassCastException : public RuntimeException
         {
-        private:
-            void *Default;
-            collection::List<void **> Refs;
-
         public:
-            inline Object()
-                : Default(Null)
+            inline ClassCastException(const String &message) noexcept
+                : RuntimeException("ClassCast", message)
             {
             }
-            virtual ~Object();
-            inline void AddRef(void **ref)
-            {
-                Refs.Add(ref);
-            }
-            inline void RemoveRef(void **ref)
-            {
-                Refs.Remove(ref);
-            }
-            inline void SetDefault(void *def)
-            {
-                Default = def;
-            }
-
-            template <class T>
-            friend class ObjectPtr;
         };
     }
 }

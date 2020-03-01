@@ -107,6 +107,31 @@ namespace bpf
                 return (RawPtr != other.RawPtr);
             }
 
+            /**
+             * Return a new UniquePtr containing casted pointer from T to T1,
+             * WARNING: old UniquePtr will be reset to Null
+             */
+            template <typename T1>
+            inline UniquePtr<T1> Cast()
+            {
+#ifdef BUILD_DEBUG
+                if (RawPtr == Null)
+                    return (Null);
+                else
+                {
+                    auto ptr = dynamic_cast<T1 *>(RawPtr);
+                    if (ptr == Null)
+                        throw ClassCastException(String("Cannot cast from ") + TypeName<T>() + " to " + TypeName<T1>());
+                    RawPtr = Null;
+                    return (UniquePtr<T1>(ptr));
+                }
+#else
+                auto ptr = static_cast<T1 *>(RawPtr);
+                RawPtr = Null;
+                return (UniquePtr<T1>(ptr));
+#endif
+            }
+
             template <typename T1>
             friend class UniquePtr;
         };

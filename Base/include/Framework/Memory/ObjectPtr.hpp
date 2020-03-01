@@ -38,7 +38,7 @@ namespace bpf
          * This class only works with types extending the FObject class
          * @tparam T the type of the underlying instance
          */
-        template <class T /* extends FObject */>
+        template <class T /* extends Object */>
         class BPF_API ObjectPtr
         {
         private:
