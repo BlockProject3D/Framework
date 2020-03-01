@@ -37,7 +37,7 @@ namespace bpf
     template <typename T>
     inline BP_TPL_API const char *TypeName() noexcept
     {
-        return ("Unknown")
+        return ("Unknown");
     }
 }
 
