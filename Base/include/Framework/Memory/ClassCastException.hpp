@@ -36,7 +36,7 @@ namespace bpf
         class BPF_API ClassCastException : public RuntimeException
         {
         public:
-            inline ClassCastException(const String &message) noexcept
+            explicit inline ClassCastException(const String &message) noexcept
                 : RuntimeException("ClassCast", message)
             {
             }

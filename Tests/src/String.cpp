@@ -123,6 +123,7 @@ TEST(String, ByteAt)
     EXPECT_TRUE(s.ByteAt(3) == 't');
     EXPECT_TRUE((bpf::uint8)s.ByteAt(4) == 0xC3);
     EXPECT_TRUE(s.ByteAt(s.Size() - 1) == 't');
+    EXPECT_THROW(s.ByteAt(42), bpf::IndexException);
 }
 
 TEST(String, OperatorPlus)
@@ -303,6 +304,7 @@ TEST(String, LastIndexOfSingleChar)
     EXPECT_TRUE(ascii.LastIndexOf('u') == ascii.Len() - 1);
     EXPECT_TRUE(ascii.LastIndexOf('A') == -1);
     EXPECT_TRUE(utf8.LastIndexOf('G') == -1);
+    EXPECT_EQ(utf8.LastIndexOf(bpf::String::UTF32("▦")), 12);
 }
 
 TEST(String, LastIndexOfString)

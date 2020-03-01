@@ -27,10 +27,10 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Memory/Memory.hpp"
+#include "Framework/Memory/Utility.hpp"
 #include "Framework/Collection/List.hpp"
-#include "Framework/Logging/ILogHandler.hpp"
-#include "Framework/Logging/ELogLevel.hpp"
+#include "Framework/Log/ILogHandler.hpp"
+#include "Framework/Log/ELogLevel.hpp"
 
 namespace bpf
 {
@@ -39,28 +39,14 @@ namespace bpf
         class BPF_API Logger
         {
         private:
-            collection::List<UniquePtr<ILogHandler>> _handlers;
+            collection::List<memory::UniquePtr<ILogHandler>> _handlers;
             String _name;
 
-            String Format(const String &format)
-            {
-                return (format);
-            }
-
             template <typename Arg, typename ...Args>
-            String Format(const String &format, Arg &&arg, Args &&...args)
+            inline String LogMessage(const ELogLevel level, const String &format, Args &&...args)
             {
-                String res = "";
-
-                for (uint32 i = 0; i < format.Size(); ++i)
-                {
-                    if (format[i] == '@' && ((i + 1 == format.Size()) || (i + 1 != format.Size() && format[i + 1] != '@')))
-                        return (res + String::ValueOf(std::forward<Arg>(arg))
-                            + Format(format.Sub(i + 1, format.Size() - i), std::forward<Args>(args)...));
-                    else
-                        res += format[i];
-                }
-                return (res);
+                for (auto &ptr : _handlers)
+                    ptr->LogMessage(level, _name, String::Format(format, std::forward<Args>(args)...));
             }
         public:
             explicit inline Logger(const String &name)
@@ -68,7 +54,7 @@ namespace bpf
             {
             }
 
-            inline void AddHandler(UniquePtr<ILogHandler> &&ptr)
+            inline void AddHandler(memory::UniquePtr<ILogHandler> &&ptr)
             {
                 _handlers.Add(std::move(ptr));
             }
@@ -76,25 +62,25 @@ namespace bpf
             template <typename ...Args>
             inline void Info(const String &format, Args &&...args)
             {
-                //_out.LogMessage(ELogLevel::INFO, _name, Format(format, std::forward<Args>(args)...));
+                LogMessage(ELogLevel::INFO, _name, Format(format, std::forward<Args>(args)...));
             }
 
             template <typename ...Args>
             inline void Debug(const String &format, Args &&...args)
             {
-                //_out.LogMessage(ELogLevel::DEBUG, _name, Format(format, std::forward<Args>(args)...));
+                LogMessage(ELogLevel::DEBUG, _name, Format(format, std::forward<Args>(args)...));
             }
 
             template <typename ...Args>
             inline void Warning(const String &format, Args &&...args)
             {
-                //_out.LogMessage(ELogLevel::WARNING, _name, Format(format, std::forward<Args>(args)...));
+                LogMessage(ELogLevel::WARNING, _name, Format(format, std::forward<Args>(args)...));
             }
 
             template <typename ...Args>
             inline void Error(const String &format, Args &&...args)
             {
-                //_out.LogMessage(ELogLevel::ERROR, _name, Format(format, std::forward<Args>(args)...));
+                LogMessage(ELogLevel::ERROR, _name, Format(format, std::forward<Args>(args)...));
             }
         };
     }

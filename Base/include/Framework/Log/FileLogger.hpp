@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Logging/ILogHandler.hpp"
+#include "Framework/Log/ILogHandler.hpp"
 
 namespace bpf
 {
