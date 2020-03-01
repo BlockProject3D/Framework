@@ -28,6 +28,8 @@
 
 #pragma once
 #include "Framework/Memory/MemUtils.hpp"
+#include "Framework/Memory/ClassCastException.hpp"
+#include "Framework/TypeInfo.hpp"
 
 namespace bpf
 {

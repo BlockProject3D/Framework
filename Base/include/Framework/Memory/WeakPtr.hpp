@@ -29,6 +29,7 @@
 #pragma once
 #include "Framework/Memory/SharedPtr.hpp"
 #include "Framework/Memory/ClassCastException.hpp"
+#include "Framework/TypeInfo.hpp"
 
 namespace bpf
 {
