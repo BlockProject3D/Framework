@@ -30,6 +30,7 @@
 #include <iostream>
 #include <gtest/gtest.h>
 #include <Framework/Math/Vector.hpp>
+#include <Framework/Math/Stringifier.Vector.hpp>
 
 using Vector5f = bpf::math::Vector<float, 5>;
 
@@ -652,4 +653,11 @@ TEST(VectorStatic, CopyMove_4)
     EXPECT_EQ(mv(2), 1);
     EXPECT_EQ(mv(3), 1);
     EXPECT_EQ(mv(4), 1);
+}
+
+TEST(VectorStatic, Stringifier)
+{
+    bpf::math::Vector4<int> v = { 0, 4, 2, 6 };
+
+    EXPECT_STREQ(*bpf::String::ValueOf(v), "Vector(0, 4, 2, 6)");
 }

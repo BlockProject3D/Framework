@@ -30,6 +30,7 @@
 #include <iostream>
 #include <gtest/gtest.h>
 #include <Framework/Math/Matrix.hpp>
+#include <Framework/Math/Stringifier.Matrix.hpp>
 
 template <typename T>
 static void PrintMatrix(const bpf::math::Matrix<T> &other)
@@ -304,4 +305,16 @@ TEST(MatrixDynamic, Matrix_Inverse)
     });
     
     ExpectMatrixEq(res, expected);
+}
+
+TEST(MatrixDynamic, Stringifier)
+{
+    bpf::math::Matrix<int> mat(4, 4, {
+        5, 9, 8, 5,
+        7, 2, 6, 7,
+        3, 4, 1, 6,
+        4, 5, 8, 1
+    });
+
+    EXPECT_STREQ(*bpf::String::ValueOf(mat), "Matrix(\n\t5\t9\t8\t5\n\t7\t2\t6\t7\n\t3\t4\t1\t6\n\t4\t5\t8\t1\n)");
 }

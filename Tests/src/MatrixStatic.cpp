@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -30,35 +30,8 @@
 #include <iostream>
 #include <gtest/gtest.h>
 #include <Framework/Math/Matrix.hpp>
+#include <Framework/Math/Stringifier.Matrix.hpp>
 
-template <typename T, bpf::fsize X, bpf::fsize Y>
-static void PrintMatrix(const bpf::math::Matrix<T, Y, X> &other)
-{
-    for (bpf::fsize y = 0; y != Y; ++y)
-    {
-        for (bpf::fsize x = 0; x != X; ++x)
-            std::cout << other(x, y) << "\t";
-        std::cout << std::endl;
-    }
-}
-
-template <typename T>
-static void PrintVector(const bpf::math::Vector2<T> &other)
-{
-    std::cout << "V2(" << other.X << ", " << other.Y << ")" << std::endl;
-}
-
-template <typename T>
-static void PrintVector(const bpf::math::Vector3<T> &other)
-{
-    std::cout << "V3(" << other.X << ", " << other.Y << ", " << other.Z << ")" << std::endl;
-}
-
-template <typename T>
-static void PrintVector(const bpf::math::Vector4<T> &other)
-{
-    std::cout << "V4(" << other.X << ", " << other.Y << ", " << other.Z << ", " << other.W <<")" << std::endl;
-}
 
 template <typename T, bpf::fsize N, bpf::fsize M>
 static void ExpectMatrixEq(const bpf::math::Matrix<T, N, M> &mat, const bpf::math::Matrix<T, N, M> &mat1)
@@ -387,6 +360,18 @@ TEST(MatrixStatic, Multiply_Vec4)
     bpf::math::Vector4<int> expected(109, 84, 53, 75);
 
     ExpectVectorEq(res, expected);
+}
+
+TEST(MatrixStatic, Stringifier)
+{
+    bpf::math::Matrix4<int> mat = {
+        5, 9, 8, 5,
+        7, 2, 6, 7,
+        3, 4, 1, 6,
+        4, 5, 8, 1
+    };
+
+    EXPECT_STREQ(*bpf::String::ValueOf(mat), "Matrix(\n\t5\t9\t8\t5\n\t7\t2\t6\t7\n\t3\t4\t1\t6\n\t4\t5\t8\t1\n)");
 }
 
 /*TEST(MatrixStatic, HomogeneousCoords_2D)

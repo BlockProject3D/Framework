@@ -38,20 +38,20 @@ namespace bpf
     public:
         inline static String Stringify(const math::Matrix<T, N, M> &mat, const fsize prec = 0)
         {
-            String s = "Matrix(";
+            String res = "Matrix(\n\t";
 
             for (fsize i = 0; i != N; ++i)
             {
-                for (fsize j = 0; j != M; ++i)
+                for (fsize j = 0; j != M; ++j)
                 {
                     res += String::ValueOf(mat(i, j), prec);
                     if (j < M - 1)
                         res += "\t";
                 }
                 if (i < N - 1)
-                    res += "\n";
+                    res += "\n\t";
             }
-            return (s);
+            return (res + "\n)");
         }
     };
 
@@ -61,20 +61,20 @@ namespace bpf
     public:
         inline static String Stringify(const math::Matrix<T> &mat, const fsize prec = 0)
         {
-            String s = "Matrix(";
+            String res = "Matrix(\n\t";
 
             for (fsize i = 0; i != mat.Rows(); ++i)
             {
-                for (fsize j = 0; j != mat.Columns(); ++i)
+                for (fsize j = 0; j != mat.Columns(); ++j)
                 {
                     res += String::ValueOf(mat(i, j), prec);
                     if (j < mat.Rows() - 1)
                         res += "\t";
                 }
                 if (i < mat.Columns() - 1)
-                    res += "\n";
+                    res += "\n\t";
             }
-            return (s);
+            return (res + "\n)");
         }
     };
 }
