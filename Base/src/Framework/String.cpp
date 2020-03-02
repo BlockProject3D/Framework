@@ -737,10 +737,20 @@ String String::ValueOf(fint i, const fsize prec)
 {
     std::stringstream strs;
 
-    if (prec > 0)
+    if (prec > 0) //Dev of stringstream you are stupid; let me show you how it's supposed to be done!
     {
-        strs.precision(prec);
-        strs << std::fixed << i;
+        strs << i;
+        String str = strs.str().c_str();
+        fisize len = (fisize)(prec - str.Len());
+        if (len < 0)
+            return (str);
+        if (str[0] == '-')
+            str = str.Sub(1);
+        for (fisize j = 0; j < len; ++j)
+            str = String('0') + str;
+        if (i < 0)
+            str = String('-') + str;
+        return (str);
     }
     else
         strs << i;
@@ -753,8 +763,14 @@ String String::ValueOf(uint32 i, const fsize prec)
 
     if (prec > 0)
     {
-        strs.precision(prec);
-        strs << std::fixed << i;
+        strs << i;
+        String str = strs.str().c_str();
+        fisize len = (fisize)(prec - str.Len());
+        if (len < 0)
+            return (str);
+        for (fisize j = 0; j < len; ++j)
+            str = String('0') + str;
+        return (str);
     }
     else
         strs << i;
@@ -767,8 +783,14 @@ String String::ValueOf(uint64 i, const fsize prec)
 
     if (prec > 0)
     {
-        strs.precision(prec);
-        strs << std::fixed << i;
+        strs << i;
+        String str = strs.str().c_str();
+        fisize len = (fisize)(prec - str.Len());
+        if (len < 0)
+            return (str);
+        for (fisize j = 0; j < len; ++j)
+            str = String('0') + str;
+        return (str);
     }
     else
         strs << i;
@@ -781,8 +803,18 @@ String String::ValueOf(int64 i, const fsize prec)
 
     if (prec > 0)
     {
-        strs.precision(prec);
-        strs << std::fixed << i;
+        strs << i;
+        String str = strs.str().c_str();
+        fisize len = (fisize)(prec - str.Len());
+        if (len < 0)
+            return (str);
+        if (str[0] == '-')
+            str = str.Sub(1);
+        for (fisize j = 0; j < len; ++j)
+            str = String('0') + str;
+        if (i < 0)
+            str = String('-') + str;
+        return (str);
     }
     else
         strs << i;

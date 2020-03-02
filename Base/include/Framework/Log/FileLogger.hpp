@@ -43,7 +43,7 @@ namespace bpf
             io::TextWriter _writer;
 
         public:
-            FileLogger(const io::File &file);
+            explicit FileLogger(const io::File &file);
 
             void LogMessage(ELogLevel level, const String &category, const String &msg);
         };

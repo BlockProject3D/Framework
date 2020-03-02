@@ -135,6 +135,8 @@ TEST(String, OperatorPlus)
     bpf::String s1("");
     s1 = s1 + 'T' + ' ' + bpf::String::UTF32("¥") + ' ' + 128224;
     EXPECT_STREQ(*s1, "T ¥ \U0001F4E0");
+    bpf::String ss = bpf::String("test") + bpf::String(bpf::String::UTF32("¥"));
+    EXPECT_STREQ(*ss, "test¥");
 }
 
 TEST(String, OperatorPlusEqual)
@@ -576,9 +578,34 @@ TEST(String, Format_Test2)
 
 TEST(String, ValueOf)
 {
+    //Int32
     EXPECT_STREQ(*bpf::String::ValueOf(42), "42");
+    EXPECT_STREQ(*bpf::String::ValueOf(42, 4), "0042");
+    EXPECT_STREQ(*bpf::String::ValueOf(42, 1), "42");
+    EXPECT_STREQ(*bpf::String::ValueOf(-42, 1), "-42");
+    EXPECT_STREQ(*bpf::String::ValueOf(-42, 4), "-042");
+    //UInt32
+    EXPECT_STREQ(*bpf::String::ValueOf(42U), "42");
+    EXPECT_STREQ(*bpf::String::ValueOf(42U, 4), "0042");
+    EXPECT_STREQ(*bpf::String::ValueOf(42U, 1), "42");
+    //Int64
+    EXPECT_STREQ(*bpf::String::ValueOf(42LL), "42");
+    EXPECT_STREQ(*bpf::String::ValueOf(42LL, 4), "0042");
+    EXPECT_STREQ(*bpf::String::ValueOf(42LL, 1), "42");
+    EXPECT_STREQ(*bpf::String::ValueOf(-42LL, 1), "-42");
+    EXPECT_STREQ(*bpf::String::ValueOf(-42LL, 4), "-042");
+    //UInt64
+    EXPECT_STREQ(*bpf::String::ValueOf(42ULL), "42");
+    EXPECT_STREQ(*bpf::String::ValueOf(42ULL, 4), "0042");
+    EXPECT_STREQ(*bpf::String::ValueOf(42ULL, 1), "42");
+    //Float
     EXPECT_STREQ(*bpf::String::ValueOf(42.42f), "42.42");
+    EXPECT_STREQ(*bpf::String::ValueOf(42.423f, 2), "42.42");
+    EXPECT_STREQ(*bpf::String::ValueOf(42.42f, 4), "42.4200");
+    //Double
     EXPECT_STREQ(*bpf::String::ValueOf(42.42), "42.42");
+    EXPECT_STREQ(*bpf::String::ValueOf(42.423, 2), "42.42");
+    EXPECT_STREQ(*bpf::String::ValueOf(42.42, 4), "42.4200");
     EXPECT_STREQ(*bpf::String::ValueOf((bpf::uint64)999999999), "999999999");
     EXPECT_STREQ(*bpf::String::ValueOf((bpf::int64)-999999999), "-999999999");
     EXPECT_STREQ(*bpf::String::ValueOf((bpf::uint32)4000000000), "4000000000");
