@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -28,17 +28,26 @@
 
 #pragma once
 #include "Framework/String.hpp"
-#include "Framework/IO/File.hpp"
+#include "Framework/Math/Vector.hpp"
 
 namespace bpf
 {
-    template <>
-    class String::Stringifier<io::File>
+    template <typename T, fsize I>
+    class String::Stringifier<math::Vector<T, I>>
     {
     public:
-        inline static String Stringify(const io::File &f)
+        inline static String Stringify(const math::Vector<T, I> &vec, const fsize prec = 0)
         {
-            return (String("File(") + f.Path() + ")");
+            String res = "Vector(";
+
+            for (fsize i = 0; i < vec.Dim(); ++i)
+            {
+                res += String::ValueOf(vec(i), prec);
+                if (i < vec.Dim() - 1)
+                    res += ", ";
+            }
+            res += ")";
+            return (res);
         }
     };
 }

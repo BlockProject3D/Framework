@@ -49,12 +49,47 @@ namespace bpf
         fsize CalcStartFromUnicode(const fsize start) const;
         static uint8 CalcCharIncrement(const char c);
         void MakeSized(String &str, const fsize len) const;
+
+        //* '[]' for no format and [(.precision,)(<num chars padding>,<allignment (left / right)>,<characters to serve as padding>)]
+        template <typename T>
+        static String FormatSingle(const collection::Array<String> &tokens, T &&t)
+        {
+            fsize tokId = 0;
+            if (tokens.Size() == 0)
+                return (ValueOf(t));
+            fsize prec = 0;
+            if (tokens[0][0] == '.')
+            {
+                prec = std::atoi(*tokens[0].Sub(1));
+                ++tokId;
+            }
+            if (tokens.Size() - tokId < 3)
+                return (ValueOf(t, prec));
+            fint maxn = std::atoi(*tokens[tokId]);
+            bool left = tokens[tokId + 1] == "left";
+            String leading = tokens[tokId + 2];
+            String data = ValueOf(t, prec);
+            if (data.Len() > maxn)
+                data = data.Sub(0, maxn);
+            else if (data.Len() < maxn)
+            {
+                fisize remain = maxn - data.Len();
+                for (int k = 0; k < remain; ++k)
+                {
+                    if (left)
+                        data += leading;
+                    else
+                        data = leading + data;
+                }
+            }
+            return (data);
+        }
     public:
         template <typename T>
         class Stringifier
         {
         public:
-            inline static String Stringify(const T &obj)
+            inline static String Stringify(const T &obj, const fsize prec = 0)
             {
                 return (obj);
             }
@@ -363,11 +398,10 @@ namespace bpf
             return (format);
         }
 
-        //TODO : Add precision support
         //TODO : Add support for center alignment
         /**
          * Builds a string using the following formating syntax :
-         * '[]' for no format and [<num chars padding>,<allignment (left / right)>,<characters to serve as padding>]
+         * '[]' for no format and [(.precision,)(<num chars padding>,<allignment (left / right)>,<characters to serve as padding>)]
          * @tparam Args objects / scalar types to format
          * @param format the given format
          */
@@ -383,26 +417,7 @@ namespace bpf
                 res += format.Sub(0, i);
                 String pattern = format.Sub(i + 1, j);
                 collection::Array<String> tokens = pattern.Explode(',');
-                if (tokens.Size() < 3)
-                    return (res + ValueOf(t) + Format(format.Sub(j + 1), args...));
-                fint maxn = std::atoi(*tokens[0]);
-                bool left = tokens[1] == "left";
-                String leading = tokens[2];
-                String data = ValueOf(t);
-                if (data.Len() > maxn)
-                    data = data.Sub(0, maxn);
-                else if (data.Len() < maxn)
-                {
-                    fisize remain = maxn - data.Len();
-                    for (int k = 0; k < remain; ++k)
-                    {
-                        if (left)
-                            data += leading;
-                        else
-                            data = leading + data;
-                    }
-                }
-                res += data;
+                res += FormatSingle(tokens, std::forward<T>(t));
                 return (res + Format(format.Sub(j + 1), args...));
             }
             else
@@ -415,101 +430,131 @@ namespace bpf
 
         /**
          * Converts any object to it's string representation by calling ToString on it
+         * @param val value to convert to a string
+         * @param prec precision for numeric types (0 means max precision)
          */
         template <typename T, typename std::enable_if<std::is_class<T>::value>::type * = nullptr>
-        inline static String ValueOf(const T &val)
+        inline static String ValueOf(const T &val, const fsize prec = 0)
         {
-            return (Stringifier<T>::Stringify(val));
+            return (Stringifier<T>::Stringify(val, prec));
         }
 
         /**
          * Converts any pointer type to it's string representation
+         * @param val value to convert to a string
+         * @param prec precision for numeric types (0 means max precision)
          */
         template <typename T, typename std::enable_if<std::is_pointer<T>::value>::type * = nullptr>
-        inline static String ValueOf(T val)
+        inline static String ValueOf(T val, const fsize prec = 0)
         {
             return (ValueOf((void *)val));
         }
 
         /**
          * Converts a signed integer 32 bits to it's string representation
+         * @param i value to convert to a string
+         * @param prec precision for numeric types (0 means max precision)
          */
-        static String ValueOf(fint i);
+        static String ValueOf(fint i, const fsize prec = 0);
 
         /**
          * Converts an unsigned integer 32 bits to it's string representation
+         * @param i value to convert to a string
+         * @param prec precision for numeric types (0 means max precision)
          */
-        static String ValueOf(uint32 i);
+        static String ValueOf(uint32 i, const fsize prec = 0);
 
         /**
          * Converts an unsigned integer 64 bits to it's string representation
+         * @param i value to convert to a string
+         * @param prec precision for numeric types (0 means max precision)
          */
-        static String ValueOf(uint64 i);
+        static String ValueOf(uint64 i, const fsize prec = 0);
 
         /**
          * Converts a signed integer 64 bits to it's string representation
+         * @param i value to convert to a string
+         * @param prec precision for numeric types (0 means max precision)
          */
-        static String ValueOf(int64 i);
+        static String ValueOf(int64 i, const fsize prec = 0);
 
         /**
          * Converts a float to it's string representation
+         * @param f value to convert to a string
+         * @param prec precision for numeric types (0 means max precision)
          */
-        static String ValueOf(float f);
+        static String ValueOf(float f, const fsize prec = 0);
 
         /**
          * Converts a double to it's string representation
+         * @param d value to convert to a string
+         * @param prec precision for numeric types (0 means max precision)
          */
-        static String ValueOf(double d);
+        static String ValueOf(double d, const fsize prec = 0);
 
         /**
          * Converts a raw pointer to it's string representation
+         * @param ptr value to convert to a string
+         * @param prec precision for numeric types (0 means max precision)
          */
-        static String ValueOf(void *ptr);
+        static String ValueOf(void *ptr, const fsize prec = 0);
 
         /**
          * Converts a signed integer 8 bits to it's string representation
+         * @param i value to convert to a string
+         * @param prec precision for numeric types (0 means max precision)
          */
-        inline static String ValueOf(int8 i)
+        inline static String ValueOf(int8 i, const fsize prec = 0)
         {
             return (ValueOf(static_cast<int>(i)));
         }
 
         /**
          * Converts an unsigned integer 8 bits to it's string representation
+         * @param i value to convert to a string
+         * @param prec precision for numeric types (0 means max precision)
          */
-        inline static String ValueOf(uint8 i)
+        inline static String ValueOf(uint8 i, const fsize prec = 0)
         {
             return (ValueOf(static_cast<int>(i)));
         }
 
         /**
          * Converts a signed integer 16 bits to it's string representation
+         * @param i value to convert to a string
+         * @param prec precision for numeric types (0 means max precision)
          */
-        inline static String ValueOf(int16 i)
+        inline static String ValueOf(int16 i, const fsize prec = 0)
         {
             return (ValueOf(static_cast<int>(i)));
         }
 
         /**
          * Converts an unsigned integer 16 bits to it's string representation
+         * @param i value to convert to a string
+         * @param prec precision for numeric types (0 means max precision)
          */
-        inline static String ValueOf(uint16 i)
+        inline static String ValueOf(uint16 i, const fsize prec = 0)
         {
             return (ValueOf(static_cast<int>(i)));
         }
 
         /**
          * Converts a low-level C string to a high level string
+         * @param s value to convert to a string
+         * @param prec precision for numeric types (0 means max precision)
          */
-        inline static String ValueOf(const char *s)
+        inline static String ValueOf(const char *s, const fsize prec = 0)
         {
             return (String(s));
         }
 
         /**
          * Converts a bool to it's string representation
+         * @param b value to convert to a string
+         * @param prec precision for numeric types (0 means max precision)
          */
-        inline static String ValueOf(bool b)
+        inline static String ValueOf(bool b, const fsize prec = 0)
         {
             return (b ? "TRUE" : "FALSE");
         }

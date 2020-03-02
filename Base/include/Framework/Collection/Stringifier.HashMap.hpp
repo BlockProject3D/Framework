@@ -28,21 +28,28 @@
 
 #pragma once
 #include "Framework/String.hpp"
-#include "Framework/System/DateTime.hpp"
+#include "Framework/Collection/HashMap.hpp"
 
 namespace bpf
 {
-    template <>
-    class String::Stringifier<system::DateTime>
+    template <typename K, typename V, typename HashOp>
+    class String::Stringifier<collection::HashMap<K, V, HashOp>>
     {
     public:
-        inline static String Stringify(const system::DateTime &dt)
+        inline static String Stringify(const collection::HashMap<K, V, HashOp> &map, const fsize prec = 0)
         {
-            return (dt.GetDayName() + " "
-                + dt.GetMonthName() + " "
-                + dt.GetDay() + " "
-                + dt.GetYear() + " "
-                + dt.GetHours() + ":" + dt.GetMinutes() + ":" + dt.GetSeconds());
+            String res = "{";
+            fsize i = 0;
+
+            for (auto &entry : map)
+            {
+                res += String('\'') + String::ValueOf(entry.Key, prec) + "': " + String::ValueOf(entry.Value, prec);
+                if (i < map.Size() - 1)
+                    res += ", ";
+                ++i;
+            }
+            res += "}";
+            return (res);
         }
     };
 }

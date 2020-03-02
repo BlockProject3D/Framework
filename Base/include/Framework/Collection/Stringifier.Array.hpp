@@ -28,17 +28,26 @@
 
 #pragma once
 #include "Framework/String.hpp"
-#include "Framework/Color.hpp"
+#include "Framework/Collection/Array.hpp"
 
 namespace bpf
 {
-    template <>
-    class String::Stringifier<Color>
+    template <typename T, fsize I>
+    class String::Stringifier<collection::Array<T, I>>
     {
     public:
-        inline static String Stringify(const Color &col)
+        inline static String Stringify(const collection::Array<T, I> &arr, const fsize prec = 0)
         {
-            return (String("Color(") + col.R + ", " + col.G + ", " + col.B + ", " + col.A + ")");
+            String res = "[";
+
+            for (fsize i = 0; i < arr.Size(); ++i)
+            {
+                res += String::ValueOf(arr[i], prec);
+                if (i < arr.Size() - 1)
+                    res += ", ";
+            }
+            res += "]";
+            return (res);
         }
     };
 }

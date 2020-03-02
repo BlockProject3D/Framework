@@ -733,58 +733,100 @@ String String::Reverse() const
 	return (res);
 }
 
-String String::ValueOf(fint i)
+String String::ValueOf(fint i, const fsize prec)
 {
     std::stringstream strs;
 
-    strs << i;
+    if (prec > 0)
+    {
+        strs.precision(prec);
+        strs << std::fixed << i;
+    }
+    else
+        strs << i;
     return (String(strs.str().c_str()));
 }
 
-String String::ValueOf(uint32 i)
+String String::ValueOf(uint32 i, const fsize prec)
 {
     std::stringstream strs;
 
-    strs << i;
+    if (prec > 0)
+    {
+        strs.precision(prec);
+        strs << std::fixed << i;
+    }
+    else
+        strs << i;
     return (String(strs.str().c_str()));
 }
 
-String String::ValueOf(uint64 i)
+String String::ValueOf(uint64 i, const fsize prec)
 {
     std::stringstream strs;
 
-    strs << i;
+    if (prec > 0)
+    {
+        strs.precision(prec);
+        strs << std::fixed << i;
+    }
+    else
+        strs << i;
     return (String(strs.str().c_str()));
 }
 
-String String::ValueOf(int64 i)
+String String::ValueOf(int64 i, const fsize prec)
 {
     std::stringstream strs;
 
-    strs << i;
+    if (prec > 0)
+    {
+        strs.precision(prec);
+        strs << std::fixed << i;
+    }
+    else
+        strs << i;
     return (String(strs.str().c_str()));
 }
 
-String String::ValueOf(float f)
+String String::ValueOf(float f, const fsize prec)
 {
     std::stringstream strs;
 
-    strs << f;
+    if (prec > 0)
+    {
+        strs.precision(prec);
+        strs << std::fixed << f;
+    }
+    else
+        strs << f;
     return (String(strs.str().c_str()));
 }
 
-String String::ValueOf(double d)
+String String::ValueOf(double d, const fsize prec)
 {
     std::stringstream strs;
 
-    strs << d;
+    if (prec > 0)
+    {
+        strs.precision(prec);
+        strs << std::fixed << d;
+    }
+    else
+        strs << d;
     return (String(strs.str().c_str()));
 }
 
-String String::ValueOf(void *ptr)
+String String::ValueOf(void *ptr, const fsize prec)
 {
     std::stringstream strs;
 
-    strs << std::hex << (uintptr)ptr;
+    if (prec > 0)
+    {
+        strs.precision(prec);
+        strs << std::hex << std::fixed << ptr;
+    }
+    else
+        strs << std::hex << (uintptr)ptr;
     return (strs.str().c_str());
 }

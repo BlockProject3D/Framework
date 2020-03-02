@@ -31,7 +31,8 @@
 #include <gtest/gtest.h>
 #include <Framework/String.hpp>
 #include <Framework/Collection/List.hpp>
-#include <Framework/Collection/Stringifier.Collection.hpp>
+#include <Framework/Collection/Stringifier.Array.hpp>
+#include <Framework/Collection/Stringifier.List.hpp>
 
 TEST(String, Create)
 {

@@ -31,7 +31,7 @@
 #include <gtest/gtest.h>
 #include <Framework/Collection/ArrayList.hpp>
 #include <Framework/String.hpp>
-#include <Framework/Collection/Stringifier.Collection.hpp>
+#include <Framework/Collection/Stringifier.ArrayList.hpp>
 #include <Framework/Memory/Utility.hpp>
 
 using namespace bpf::memory;

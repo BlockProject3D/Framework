@@ -19,7 +19,7 @@ set(SOURCES
     ./include/Framework/IO/BinaryWriter.hpp
     ./include/Framework/IO/TextReader.hpp
     ./include/Framework/IO/TextWriter.hpp
-    ./include/Framework/IO/Stringifier.IO.hpp
+    ./include/Framework/IO/Stringifier.File.hpp
     ./include/Framework/Math/Vector.hpp
     ./include/Framework/Math/Vector.impl.hpp
     ./include/Framework/Math/Vector2.hpp
@@ -42,6 +42,8 @@ set(SOURCES
     ./include/Framework/Math/Polygon2D.impl.hpp
     ./include/Framework/Math/Polygon3D.hpp
     ./include/Framework/Math/Polygon3D.impl.hpp
+    ./include/Framework/Math/Stringifier.Matrix.hpp
+    ./include/Framework/Math/Stringifier.Vector.hpp
     ./include/Framework/Math/Math.hpp
     ./include/Framework/Math/IncompatibleMatrixSizeException.hpp
     ./include/Framework/Math/NonSquareMatrixException.hpp
@@ -79,7 +81,7 @@ set(SOURCES
     ./include/Framework/System/Mutex.hpp
     ./include/Framework/System/ThreadManager.hpp
     ./include/Framework/System/IModuleInterface.hpp
-    ./include/Framework/System/Stringifier.System.hpp
+    ./include/Framework/System/Stringifier.DateTime.hpp
     ./include/Framework/Collection/Iterator.hpp
     ./include/Framework/Collection/Array.hpp
     ./include/Framework/Collection/Array.impl.hpp
@@ -98,7 +100,11 @@ set(SOURCES
     ./include/Framework/Collection/PriorityQueue.hpp
     ./include/Framework/Collection/PriorityQueue.impl.hpp
     ./include/Framework/Collection/Utility.hpp
-    ./include/Framework/Collection/Stringifier.Collection.hpp
+    ./include/Framework/Collection/Stringifier.List.hpp
+    ./include/Framework/Collection/Stringifier.ArrayList.hpp
+    ./include/Framework/Collection/Stringifier.Array.hpp
+    ./include/Framework/Collection/Stringifier.HashMap.hpp
+    ./include/Framework/Collection/Stringifier.Map.hpp
     ./include/Framework/Collection/StackException.hpp
     ./include/Framework/API.hpp
     ./include/Framework/BinUtils.hpp
@@ -123,7 +129,7 @@ set(SOURCES
     ./include/Framework/BaseConvert.hpp
     ./include/Framework/BaseConvert.impl.hpp
     ./include/Framework/Scalar.hpp
-    ./include/Framework/Stringifier.Base.hpp
+    ./include/Framework/Stringifier.Color.hpp
     ./include/Framework/ParseException.hpp
     ./src/Framework/IO/File.cpp
     ./src/Framework/IO/OSPrivate.hpp
