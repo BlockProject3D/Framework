@@ -28,6 +28,8 @@
 
 #include <iostream>
 #include "Framework/Log/DefaultLogger.hpp"
+#include "Framework/System/DateTime.hpp"
+#include "Framework/System/Stringifier.DateTime.hpp"
 
 using namespace bpf::log;
 using namespace bpf;
@@ -51,7 +53,7 @@ void DefaultLogger::LogMessage(ELogLevel level, const String &category, const St
         lvl = "ERROR";
         break;
     }
-    String res = String('[') + category + "][" + lvl + "] " + msg;
+    String res = String('(') + String::ValueOf(system::DateTime::LocalTime()) + ")[" + category + "][" + lvl + "] " + msg;
     if (level == ELogLevel::ERROR)
         std::cerr << *res << std::endl;
     else

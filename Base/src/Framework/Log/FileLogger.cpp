@@ -26,3 +26,39 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include "Framework/Log/FileLogger.hpp"
+#include "Framework/System/DateTime.hpp"
+#include "Framework/System/Stringifier.DateTime.hpp"
+
+using namespace bpf::log;
+using namespace bpf::io;
+using namespace bpf;
+
+FileLogger::FileLogger(const File &file)
+    : _stream(file, FILE_MODE_WRITE | FILE_MODE_APPEND)
+    , _writer(_stream)
+{
+}
+
+void FileLogger::LogMessage(ELogLevel level, const String &category, const String &msg)
+{
+    String lvl = "";
+
+    switch (level)
+    {
+    case ELogLevel::DEBUG:
+        lvl = "DEBUG";
+        break;
+    case ELogLevel::INFO:
+        lvl = "INFO";
+        break;
+    case ELogLevel::WARNING:
+        lvl = "WARNING";
+        break;
+    case ELogLevel::ERROR:
+        lvl = "ERROR";
+        break;
+    }
+    String res = String('(') + String::ValueOf(system::DateTime::LocalTime()) + ")[" + category + "][" + lvl + "] " + msg;
+    _writer.WriteLine(res);
+}

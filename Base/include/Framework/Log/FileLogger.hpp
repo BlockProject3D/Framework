@@ -27,14 +27,25 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/IO/FileStream.hpp"
+#include "Framework/IO/File.hpp"
+#include "Framework/IO/TextWriter.hpp"
 #include "Framework/Log/ILogHandler.hpp"
 
 namespace bpf
 {
     namespace log
     {
-        class FileLogger //TODO : Implement
+        class FileLogger final : public ILogHandler
         {
+        private:
+            io::FileStream _stream;
+            io::TextWriter _writer;
+
+        public:
+            FileLogger(const io::File &file);
+
+            void LogMessage(ELogLevel level, const String &category, const String &msg);
         };
     }
 }
