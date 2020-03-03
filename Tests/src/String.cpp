@@ -29,6 +29,7 @@
 #include <cassert>
 #include <iostream>
 #include <gtest/gtest.h>
+#include <Framework/TypeInfo.hpp>
 #include <Framework/String.hpp>
 #include <Framework/Collection/List.hpp>
 #include <Framework/Collection/Stringifier.Array.hpp>
@@ -53,6 +54,14 @@ TEST(String, Copy)
     bpf::String ss = str;
     for (int i = 0; i < 100; ++i)
         ss = str;
+}
+
+TEST(String, From_TypeName)
+{
+    bpf::String s = bpf::TypeName<int>();
+    s += bpf::TypeName<float>();
+    s += bpf::TypeName<double>();
+    EXPECT_STREQ(*s, "intfloatdouble");
 }
 
 TEST(String, UTF8)
