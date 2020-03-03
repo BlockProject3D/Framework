@@ -31,6 +31,8 @@
 #include "Framework/System/ModuleManager.hpp"
 #include "Framework/System/Platform.hpp"
 
+using namespace bpf::memory;
+using namespace bpf::system;
 using namespace bpf;
 
 ModuleManager::~ModuleManager()
@@ -46,7 +48,7 @@ void ModuleManager::LoadModule(const char *name)
 
     if (ModuleLoaded(name))
         throw ModuleException("Module already loaded !");
-    ModuleEntry *md = Memory::New<ModuleEntry>(moduleFile, vname);
+    ModuleEntry *md = MemUtils::New<ModuleEntry>(moduleFile, vname);
     String moduleLnkSymbol = md->Name + "_Link";
     String moduleDescSymbol = md->Name + "_Describe";
     ModuleLinkFunc sym = (ModuleLinkFunc)md->Handle.LoadSymbol(moduleLnkSymbol);
@@ -66,7 +68,7 @@ void ModuleManager::LoadModule(const char *name)
 void ModuleManager::UnloadModule(ModuleEntry *entry)
 {
     entry->Interface->OnUnloadModule();
-    delete entry;
+    MemUtils::Delete(entry);
 }
 
 void ModuleManager::UnloadModule(const char *vname)

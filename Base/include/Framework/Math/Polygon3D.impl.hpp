@@ -30,36 +30,39 @@
 
 namespace bpf
 {
-    template <typename T>
-    Vector3<T> Polygon3D<T>::GetNormal() const noexcept
+    namespace math
     {
-        if (Vertices.Size() >= 3)
+        template <typename T>
+        Vector3<T> Polygon3D<T>::GetNormal() const noexcept
         {
-            Vector3<T> v = Vertices[1] - Vertices[0];
-            Vector3<T> w = Vertices[2] - Vertices[0];
-            return (v.Cross(w));
+            if (Vertices.Size() >= 3)
+            {
+                Vector3<T> v = Vertices[1] - Vertices[0];
+                Vector3<T> w = Vertices[2] - Vertices[0];
+                return (v.Cross(w));
+            }
+            return (Vector3<T>::Zero);
         }
-        return (Vector3<T>::Zero);
-    }
 
-    template <typename T>
-    Vector3<T> Polygon3D<T>::GetBarycenter() const noexcept
-    {
-        Vector3<T> res;
-
-        for (const auto &v : Vertices)
-            res += v;
-        return (res / Vertices.Size());
-    }
-
-    template <typename T>
-    void Polygon3D<T>::Transform(const Matrix4<T> &matrix)
-    {
-        for (auto &v : Vertices)
+        template <typename T>
+        Vector3<T> Polygon3D<T>::GetBarycenter() const noexcept
         {
-            Vector4<T> vec(v, 1.0f);
-            auto res = matrix * vec;
-            v = Vector3<T>(res.X, res.Y, res.Z);
+            Vector3<T> res;
+
+            for (const auto &v : Vertices)
+                res += v;
+            return (res / Vertices.Size());
+        }
+
+        template <typename T>
+        void Polygon3D<T>::Transform(const Matrix4<T> &matrix)
+        {
+            for (auto &v : Vertices)
+            {
+                Vector4<T> vec(v, 1.0f);
+                auto res = matrix * vec;
+                v = Vector3<T>(res.X, res.Y, res.Z);
+            }
         }
     }
 }

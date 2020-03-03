@@ -28,21 +28,21 @@
 
 #include <stdlib.h>
 #ifdef WINDOWS
-    #include <Windows.h>
-    #include <intrin.h>
-    #undef ERROR
+#include <Windows.h>
+#include <intrin.h>
+#undef ERROR
 #elif LINUX
-    #include <sys/utsname.h>
-    #include <sys/sysinfo.h>
+#include <sys/utsname.h>
+#include <sys/sysinfo.h>
 #endif
 
 #ifndef WINDOWS //We assume compiler supports GCC style asm
 
-    #define INSTRUCTION_CPUID(val) \
+#define INSTRUCTION_CPUID(val) \
         asm("movl $"#val", %eax"); \
         asm("cpuid")
 
-    #define READ_REGISTER(name, val) \
+#define READ_REGISTER(name, val) \
         asm("movl %%"#name", %0" \
             : "=r"(val) \
             :)
@@ -52,354 +52,232 @@
 #include "Framework/System/Platform.hpp"
 #include "Framework/System/TypeExpander.hpp"
 
-namespace bpf
-{
+using namespace bpf::system;
+using namespace bpf;
+
 #ifdef WINDOWS
-    typedef LONG NTSTATUS, *PNTSTATUS;
-    #define STATUS_SUCCESS (0x00000000)
+typedef LONG NTSTATUS, *PNTSTATUS;
+#define STATUS_SUCCESS (0x00000000)
 
-    typedef NTSTATUS(WINAPI* RtlGetVersionPtr)(PRTL_OSVERSIONINFOW);
+typedef NTSTATUS(WINAPI *RtlGetVersionPtr)(PRTL_OSVERSIONINFOW);
 
-    RTL_OSVERSIONINFOW GetRealOSVersion() {
-        HMODULE hMod = ::GetModuleHandleW(L"ntdll.dll");
-        if (hMod) {
-            RtlGetVersionPtr fxPtr = (RtlGetVersionPtr)::GetProcAddress(hMod, "RtlGetVersion");
-            if (fxPtr != nullptr) {
-                RTL_OSVERSIONINFOW rovi = { 0 };
-                rovi.dwOSVersionInfoSize = sizeof(rovi);
-                if (STATUS_SUCCESS == fxPtr(&rovi)) {
-                    return rovi;
-                }
+RTL_OSVERSIONINFOW GetRealOSVersion() {
+    HMODULE hMod = ::GetModuleHandleW(L"ntdll.dll");
+    if (hMod) {
+        RtlGetVersionPtr fxPtr = (RtlGetVersionPtr)::GetProcAddress(hMod, "RtlGetVersion");
+        if (fxPtr != nullptr) {
+            RTL_OSVERSIONINFOW rovi = { 0 };
+            rovi.dwOSVersionInfoSize = sizeof(rovi);
+            if (STATUS_SUCCESS == fxPtr(&rovi)) {
+                return rovi;
             }
         }
-        RTL_OSVERSIONINFOW rovi = { 0 };
-        return rovi;
     }
+    RTL_OSVERSIONINFOW rovi = { 0 };
+    return rovi;
+}
 #endif
 
-    String Platform::CPUIDIntToStr(fint data)
-    {
-        String res = "";
-        TypeExpander<int> exp(data);
-        res += static_cast<char>(exp.Bytes[0]);
-        res += static_cast<char>(exp.Bytes[1]);
-        res += static_cast<char>(exp.Bytes[2]);
-        res += static_cast<char>(exp.Bytes[3]);
-        return (res);
-    }
+String Platform::CPUIDIntToStr(fint data)
+{
+    String res = "";
+    TypeExpander<int> exp(data);
+    res += static_cast<char>(exp.Bytes[0]);
+    res += static_cast<char>(exp.Bytes[1]);
+    res += static_cast<char>(exp.Bytes[2]);
+    res += static_cast<char>(exp.Bytes[3]);
+    return (res);
+}
 
-    String Platform::IdentifyCPUBranding()
-    {
+String Platform::IdentifyCPUBranding()
+{
 #ifdef WINDOWS
-        fint cpuInfo[4] = { -1 };
-        char CPUBrandString[0x40];
-        memset(CPUBrandString, 0, sizeof(CPUBrandString));
-        __cpuid(cpuInfo, 0x80000002);
-        memcpy(CPUBrandString, cpuInfo, sizeof(cpuInfo));
-        __cpuid(cpuInfo, 0x80000003);
-        memcpy(CPUBrandString + 16, cpuInfo, sizeof(cpuInfo));
-        __cpuid(cpuInfo, 0x80000004);
-        memcpy(CPUBrandString + 32, cpuInfo, sizeof(cpuInfo));
-        return (String(CPUBrandString));
+    fint cpuInfo[4] = { -1 };
+    char CPUBrandString[0x40];
+    memset(CPUBrandString, 0, sizeof(CPUBrandString));
+    __cpuid(cpuInfo, 0x80000002);
+    memcpy(CPUBrandString, cpuInfo, sizeof(cpuInfo));
+    __cpuid(cpuInfo, 0x80000003);
+    memcpy(CPUBrandString + 16, cpuInfo, sizeof(cpuInfo));
+    __cpuid(cpuInfo, 0x80000004);
+    memcpy(CPUBrandString + 32, cpuInfo, sizeof(cpuInfo));
+    return (String(CPUBrandString));
 #else
-        String res = "";
-        fint reg_eax = 0;
-        fint reg_ebx = 0;
-        fint reg_ecx = 0;
-        fint reg_edx = 0;
+    String res = "";
+    fint reg_eax = 0;
+    fint reg_ebx = 0;
+    fint reg_ecx = 0;
+    fint reg_edx = 0;
 
-        INSTRUCTION_CPUID(0x80000002);
-        READ_REGISTER(eax, reg_eax);
-        READ_REGISTER(ebx, reg_ebx);
-        READ_REGISTER(ecx, reg_ecx);
-        READ_REGISTER(edx, reg_edx);
-        res += CPUIDIntToStr(reg_eax);
-        res += CPUIDIntToStr(reg_ebx);
-        res += CPUIDIntToStr(reg_ecx);
-        res += CPUIDIntToStr(reg_edx);
-        INSTRUCTION_CPUID(0x80000003);
-        READ_REGISTER(eax, reg_eax);
-        READ_REGISTER(ebx, reg_ebx);
-        READ_REGISTER(ecx, reg_ecx);
-        READ_REGISTER(edx, reg_edx);
-        res += CPUIDIntToStr(reg_eax);
-        res += CPUIDIntToStr(reg_ebx);
-        res += CPUIDIntToStr(reg_ecx);
-        res += CPUIDIntToStr(reg_edx);
-        INSTRUCTION_CPUID(0x80000004);
-        READ_REGISTER(eax, reg_eax);
-        READ_REGISTER(ebx, reg_ebx);
-        READ_REGISTER(ecx, reg_ecx);
-        READ_REGISTER(edx, reg_edx);
-        res += CPUIDIntToStr(reg_eax);
-        res += CPUIDIntToStr(reg_ebx);
-        res += CPUIDIntToStr(reg_ecx);
-        res += CPUIDIntToStr(reg_edx);
-        return (res);
+    INSTRUCTION_CPUID(0x80000002);
+    READ_REGISTER(eax, reg_eax);
+    READ_REGISTER(ebx, reg_ebx);
+    READ_REGISTER(ecx, reg_ecx);
+    READ_REGISTER(edx, reg_edx);
+    res += CPUIDIntToStr(reg_eax);
+    res += CPUIDIntToStr(reg_ebx);
+    res += CPUIDIntToStr(reg_ecx);
+    res += CPUIDIntToStr(reg_edx);
+    INSTRUCTION_CPUID(0x80000003);
+    READ_REGISTER(eax, reg_eax);
+    READ_REGISTER(ebx, reg_ebx);
+    READ_REGISTER(ecx, reg_ecx);
+    READ_REGISTER(edx, reg_edx);
+    res += CPUIDIntToStr(reg_eax);
+    res += CPUIDIntToStr(reg_ebx);
+    res += CPUIDIntToStr(reg_ecx);
+    res += CPUIDIntToStr(reg_edx);
+    INSTRUCTION_CPUID(0x80000004);
+    READ_REGISTER(eax, reg_eax);
+    READ_REGISTER(ebx, reg_ebx);
+    READ_REGISTER(ecx, reg_ecx);
+    READ_REGISTER(edx, reg_edx);
+    res += CPUIDIntToStr(reg_eax);
+    res += CPUIDIntToStr(reg_ebx);
+    res += CPUIDIntToStr(reg_ecx);
+    res += CPUIDIntToStr(reg_edx);
+    return (res);
 #endif
-    }
+}
 
-    Env Platform::InitEnvInfo()
-    {
-        Env ev;
+Env Platform::InitEnvInfo()
+{
+    Env ev;
 
-        ev.ShortName = "BPF";
-        ev.Name = "BlockProject Framework";
-        ev.Version = "XR";
-        ev.VersionInt = 0x1052;
+    ev.ShortName = "BPF";
+    ev.Name = "BlockProject Framework";
+    ev.Version = "XR";
+    ev.VersionInt = 0x1052;
 #ifdef BUILD_DEBUG
-        ev.VersionInt |= 0x00001;
+    ev.VersionInt |= 0x00001;
 #endif
-        return (ev);
-    }
+    return (ev);
+}
 
-    OS Platform::InitOSInfo()
-    {
-        OS os;
+OS Platform::InitOSInfo()
+{
+    OS os;
 
 #ifdef WINDOWS
-        os.ModuleExt = "dll";
-        os.Name = "Windows";
-        os.NewLine = "\r\n";
-        os.PathSep = "\\";
-        RTL_OSVERSIONINFOW ver = GetRealOSVersion();
-        os.Version = String::ValueOf(static_cast<int>(ver.dwMajorVersion))
-            + "." + String::ValueOf(static_cast<int>(ver.dwMinorVersion));
+    os.ModuleExt = "dll";
+    os.Name = "Windows";
+    os.NewLine = "\r\n";
+    os.PathSep = "\\";
+    RTL_OSVERSIONINFOW ver = GetRealOSVersion();
+    os.Version = String::ValueOf(static_cast<int>(ver.dwMajorVersion))
+        + "." + String::ValueOf(static_cast<int>(ver.dwMinorVersion));
 #elif LINUX
-        os.ModuleExt = "so";
-        os.Name = "Linux";
-        os.NewLine = "\n";
-        os.PathSep = "/";
-        struct utsname st;
-        if (uname(&st) != -1)
-            os.Version = st.version;
+    os.ModuleExt = "so";
+    os.Name = "Linux";
+    os.NewLine = "\n";
+    os.PathSep = "/";
+    struct utsname st;
+    if (uname(&st) != -1)
+        os.Version = st.version;
 #elif MAC
-        os.ModuleExt = "dylib";
-        os.Name = "Mac";
-        os.NewLine = "\n";
-        os.PathSep = "/";
-        os.Version = "Impossible - Ask Apple why they deprecate C++ APIs !";
+    os.ModuleExt = "dylib";
+    os.Name = "Mac";
+    os.NewLine = "\n";
+    os.PathSep = "/";
+    os.Version = "Impossible - Ask Apple why they deprecate C++ APIs !";
 #endif
-        return (os);
-    }
+    return (os);
+}
 
-    Env &Platform::GetEnvInfo()
-    {
-        static Env ev = Platform::InitEnvInfo();
+Env &Platform::GetEnvInfo()
+{
+    static Env ev = Platform::InitEnvInfo();
 
-        return (ev);
-    }
+    return (ev);
+}
 
-    OS &Platform::GetOSInfo()
-    {
-        static OS os = Platform::InitOSInfo();
+OS &Platform::GetOSInfo()
+{
+    static OS os = Platform::InitOSInfo();
 
-        return (os);
-    }
+    return (os);
+}
 
-    CPU &Platform::GetCPUInfo()
-    {
-        static CPU cpi = { IdentifyCPUBranding(), 0, 0 };
+CPU &Platform::GetCPUInfo()
+{
+    static CPU cpi = { IdentifyCPUBranding(), 0, 0 };
 
 #ifdef WINDOWS
-        SYSTEM_INFO sysInfo;
-        GetSystemInfo(&sysInfo);
-        cpi.NumCores = sysInfo.dwNumberOfProcessors;
-        LARGE_INTEGER lg;
-        QueryPerformanceFrequency(&lg);
-        cpi.Freq = lg.HighPart;
+    SYSTEM_INFO sysInfo;
+    GetSystemInfo(&sysInfo);
+    cpi.NumCores = sysInfo.dwNumberOfProcessors;
+    LARGE_INTEGER lg;
+    QueryPerformanceFrequency(&lg);
+    cpi.Freq = lg.HighPart;
 #elif LINUX
-        cpi.NumCores = get_nprocs();
-        cpi.Freq = 0;
+    cpi.NumCores = get_nprocs();
+    cpi.Freq = 0;
 #else
-        cpi.NumCores = 0;
-        cpi.Freq = 0;
+    cpi.NumCores = 0;
+    cpi.Freq = 0;
 #endif
-        return (cpi);
-    }
+    return (cpi);
+}
 
-    RAM Platform::GetRAMInfo()
-    {
-        RAM rami;
+RAM Platform::GetRAMInfo()
+{
+    RAM rami;
 
 #ifdef WINDOWS
-        MEMORYSTATUSEX meminfo;
-        GlobalMemoryStatusEx(&meminfo);
-        rami.MaxPhysical = static_cast<uint64>(meminfo.ullTotalPhys);
-        rami.MaxVirtual = static_cast<uint64>(meminfo.ullTotalVirtual);
+    MEMORYSTATUSEX meminfo;
+    GlobalMemoryStatusEx(&meminfo);
+    rami.MaxPhysical = static_cast<uint64>(meminfo.ullTotalPhys);
+    rami.MaxVirtual = static_cast<uint64>(meminfo.ullTotalVirtual);
 #else
-        rami.MaxPhysical = 0;
-        rami.MaxVirtual = 0;
+    rami.MaxPhysical = 0;
+    rami.MaxVirtual = 0;
 #endif
-        return (rami);
-    }
-
-    EPlatformEndianess Platform::GetEndianess()
-    {
-        TypeExpander<uint32> data = TypeExpander<uint32>(0x1020304);
-
-        if (data.Bytes[0] == 1)
-            return (PLATFORM_BIGENDIAN);
-        return (PLATFORM_LITTLEENDIAN);
-    }
-
-    void Platform::ReverseBuffer(void *buf, const fsize size)
-    {
-        uint8 *out = reinterpret_cast<uint8 *>(buf);
-        fsize i = 0;
-        fsize j = size;
-        uint8 temp;
-
-        while (i < size / 2)
-        {
-            temp = out[i];
-            out[i++] = out[j];
-            out[j] = temp;
-            j--;
-        }
-    }
-
-    void Platform::ReverseBuffer(void *buf, const fsize size, const fsize groupsize)
-    {
-        uint8 *out = reinterpret_cast<uint8 *>(buf);
-        fsize i = 0;
-        fsize j = size;
-        uint8 temp;
-
-        while (i < size / 2)
-        {
-            for (fsize k = 0; k < groupsize; ++k)
-            {
-                if (i + k >= size || j + k >= size)
-                    continue;
-                temp = out[i + k];
-                out[i + k] = out[j + k];
-                out[j + k] = temp;
-            }
-            i += groupsize;
-            j -= groupsize;
-        }
-    }
+    return (rami);
 }
 
-/*using namespace Framework;
-
-bool FPlatform::Exit = false;
-IFileSystem *FPlatform::FileSys = Null;
-ISystemManager *FPlatform::BaseSys = Null;
-bpf::Map<const char *, bpf::String> FPlatform::PropMap;
-
-void FPlatform::RequestExit(bool force)
+EPlatformEndianess Platform::GetEndianess()
 {
-    if (force)
-        exit(1);
-    else
-        Exit = true;
-}
-
-bool FPlatform::IsExiting()
-{
-    return (Exit);
-}
-
-IFileSystem *FPlatform::GetFileSystem()
-{*/
-    /*if (FileSys == NULL)
-        FileSys = FModuleManager::GetModule<IFileSystem>("FileSystem");
-    return (FileSys);*/
-    /*return (Null);
-}
-
-EPlatformEndianess FPlatform::GetPlatformEndianess()
-{
-    bpf::TypeExpander<uint32> data = bpf::TypeExpander<uint32>(0x1020304);
+    TypeExpander<uint32> data = TypeExpander<uint32>(0x1020304);
 
     if (data.Bytes[0] == 1)
         return (PLATFORM_BIGENDIAN);
     return (PLATFORM_LITTLEENDIAN);
 }
 
-void FPlatform::ReverseBuffer(uint8 *buf, const uint32 size)
+void Platform::ReverseBuffer(void *buf, const fsize size)
 {
-    uint32 i = 0;
-    uint32 j = size;
+    uint8 *out = reinterpret_cast<uint8 *>(buf);
+    fsize i = 0;
+    fsize j = size;
     uint8 temp;
 
     while (i < size / 2)
     {
-        temp = buf[i];
-        buf[i++] = buf[j];
-        buf[j] = temp;
+        temp = out[i];
+        out[i++] = out[j];
+        out[j] = temp;
         j--;
     }
 }
 
-void FPlatform::ReverseBuffer(uint8 *buf, const uint32 groupsize, const uint32 size)
+void Platform::ReverseBuffer(void *buf, const fsize size, const fsize groupsize)
 {
-    uint32 i = 0;
-    uint32 j = size;
+    uint8 *out = reinterpret_cast<uint8 *>(buf);
+    fsize i = 0;
+    fsize j = size;
     uint8 temp;
 
     while (i < size / 2)
     {
-        for (uint32 k = 0 ; k < groupsize ; ++k)
+        for (fsize k = 0; k < groupsize; ++k)
         {
             if (i + k >= size || j + k >= size)
                 continue;
-            temp = buf[i + k];
-            buf[i + k] = buf[j + k];
-            buf[j + k] = temp;
+            temp = out[i + k];
+            out[i + k] = out[j + k];
+            out[j + k] = temp;
         }
         i += groupsize;
         j -= groupsize;
     }
 }
-
-ISystemManager *FPlatform::GetBaseSystem()
-{*/
-    /*if (BaseSys == NULL)
-        BaseSys = FModuleManager::GetModule<ISystemManager>("System");
-    return (BaseSys);*/
-    /*return (Null);
-}
-
-void FPlatform::Initialize()
-{
-#if LINUX
-    SetProperty("OS_MODULE_EXT", ".so");
-    SetProperty("OS_NAME", "Linux");
-    SetProperty("RENDER_DEFAULT", "GL33");
-#elif MAC
-    SetProperty("OS_MODULE_EXT", ".dylib");
-    SetProperty("OS_NAME", "Mac OSX");
-    SetProperty("RENDER_DEFAULT", "GL33");
-#elif WINDOWS
-    SetProperty("OS_MODULE_EXT", ".dll");
-    SetProperty("OS_NAME", "Windows");
-    SetProperty("RENDER_DEFAULT", "GL33");
-#endif
-    SetProperty("ENGINE_NAME", "BPEngine");
-    SetProperty("ENGINE_LONG_NAME", "BlockProjectEngine");
-    if (sizeof(int *) > 4)
-        SetProperty("ARCHITECTURE", "x64");
-    else
-        SetProperty("ARCHITECTURE", "x86");
-    //FModuleManager::Initialize();
-}
-
-void FPlatform::Shutdown()
-{
-    //FModuleManager::Shutdown();
-}
-
-const bpf::String &FPlatform::GetProperty(const char *vname)
-{
-    if (PropMap.HasKey(vname))
-        return (PropMap[vname]);
-    return (bpf::String::Empty);
-}
-
-void FPlatform::SetProperty(const char *vname, const bpf::String &prop)
-{
-    PropMap[vname] = prop;
-}*/

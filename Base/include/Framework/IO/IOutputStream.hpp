@@ -31,10 +31,13 @@
 
 namespace bpf
 {
-    class BPF_API IOutputStream
+    namespace io
     {
-    public:
-        virtual ~IOutputStream() {}
-        virtual fsize Write(const void *buf, fsize bufsize) = 0;
-    };
+        class BPF_API IOutputStream
+        {
+        public:
+            virtual ~IOutputStream() {}
+            virtual fsize Write(const void *buf, fsize bufsize) = 0;
+        };
+    }
 }

@@ -19,8 +19,7 @@ set(SOURCES
     ./include/Framework/IO/BinaryWriter.hpp
     ./include/Framework/IO/TextReader.hpp
     ./include/Framework/IO/TextWriter.hpp
-    ./include/Framework/IO/Stringifier.IO.hpp
-    ./include/Framework/Math/Triangle.hpp
+    ./include/Framework/IO/Stringifier.File.hpp
     ./include/Framework/Math/Vector.hpp
     ./include/Framework/Math/Vector.impl.hpp
     ./include/Framework/Math/Vector2.hpp
@@ -29,38 +28,34 @@ set(SOURCES
     ./include/Framework/Math/Vector3.impl.hpp
     ./include/Framework/Math/Vector4.hpp
     ./include/Framework/Math/Vector4.impl.hpp
-    ./include/Framework/Math/Matrix2.hpp
-    ./include/Framework/Math/Matrix3.hpp
-    ./include/Framework/Math/Matrix4.hpp
-    ./include/Framework/Math/Matrix2.impl.hpp
-    ./include/Framework/Math/Matrix3.impl.hpp
-    ./include/Framework/Math/Matrix4.impl.hpp
     ./include/Framework/Math/Viewport.hpp
     ./include/Framework/Math/Viewport.impl.hpp
     ./include/Framework/Math/Quaternion.hpp
     ./include/Framework/Math/Quaternion.impl.hpp
     ./include/Framework/Math/Matrix.hpp
     ./include/Framework/Math/Matrix.impl.hpp
+    ./include/Framework/Math/Transform2D.hpp
+    ./include/Framework/Math/Transform2D.impl.hpp
+    ./include/Framework/Math/Transform3D.hpp
+    ./include/Framework/Math/Transform3D.impl.hpp
+    ./include/Framework/Math/Polygon2D.hpp
+    ./include/Framework/Math/Polygon2D.impl.hpp
+    ./include/Framework/Math/Polygon3D.hpp
+    ./include/Framework/Math/Polygon3D.impl.hpp
+    ./include/Framework/Math/Stringifier.Matrix.hpp
+    ./include/Framework/Math/Stringifier.Vector.hpp
+    ./include/Framework/Math/Math.hpp
     ./include/Framework/Math/IncompatibleMatrixSizeException.hpp
     ./include/Framework/Math/NonSquareMatrixException.hpp
     ./include/Framework/Math/NonInvertibleMatrixException.hpp
-    ./include/Framework/Math/Transform2D.hpp
-    ./include/Framework/Math/Transform3D.hpp
-    ./include/Framework/Math/Transform2D.impl.hpp
-    ./include/Framework/Math/Transform3D.impl.hpp
-    ./include/Framework/Math/Transform.hpp
-    ./include/Framework/Math/Triangle.hpp
-    ./include/Framework/Math/Polygon2D.hpp
-    ./include/Framework/Math/Polygon3D.hpp
-    ./include/Framework/Math/Polygon2D.impl.hpp
-    ./include/Framework/Math/Polygon3D.impl.hpp
-    ./include/Framework/Math/Math.hpp
-    ./include/Framework/Logging/Logger.hpp
-    ./include/Framework/Logging/ILogHandler.hpp
-    ./include/Framework/Logging/ELogLevel.hpp
-    ./include/Framework/Logging/DefaultLogger.hpp
-    ./include/Framework/Logging/FileLogger.hpp
+    ./include/Framework/Log/Logger.hpp
+    ./include/Framework/Log/ILogHandler.hpp
+    ./include/Framework/Log/ELogLevel.hpp
+    ./include/Framework/Log/DefaultLogger.hpp
+    ./include/Framework/Log/FileLogger.hpp
+    ./include/Framework/Memory/ClassCastException.hpp
     ./include/Framework/Memory/Memory.hpp
+    ./include/Framework/Memory/MemUtils.hpp
     ./include/Framework/Memory/Memory.Hash.hpp
     ./include/Framework/Memory/Utility.hpp
     ./include/Framework/Memory/MemoryException.hpp
@@ -70,6 +65,10 @@ set(SOURCES
     ./include/Framework/Memory/UniquePtr.impl.hpp
     ./include/Framework/Memory/WeakPtr.hpp
     ./include/Framework/Memory/WeakPtr.impl.hpp
+    ./include/Framework/Memory/Object.hpp
+    ./include/Framework/Memory/ObjectFactory.hpp
+    ./include/Framework/Memory/IObjectConstructor.hpp
+    ./include/Framework/Memory/ObjectPtr.hpp
     ./include/Framework/Network/Network.hpp
     ./include/Framework/System/Module.hpp
     ./include/Framework/System/ModuleException.hpp
@@ -82,56 +81,55 @@ set(SOURCES
     ./include/Framework/System/Mutex.hpp
     ./include/Framework/System/ThreadManager.hpp
     ./include/Framework/System/IModuleInterface.hpp
-    ./include/Framework/System/Stringifier.System.hpp
+    ./include/Framework/System/Stringifier.DateTime.hpp
+    ./include/Framework/Collection/Iterator.hpp
+    ./include/Framework/Collection/Array.hpp
+    ./include/Framework/Collection/Array.impl.hpp
+    ./include/Framework/Collection/ArrayList.hpp
+    ./include/Framework/Collection/ArrayList.impl.hpp
+    ./include/Framework/Collection/List.hpp
+    ./include/Framework/Collection/List.impl.hpp
+    ./include/Framework/Collection/HashMap.hpp
+    ./include/Framework/Collection/HashMap.impl.hpp
+    ./include/Framework/Collection/Map.hpp
+    ./include/Framework/Collection/Map.impl.hpp
+    ./include/Framework/Collection/Stack.hpp
+    ./include/Framework/Collection/Stack.impl.hpp
+    ./include/Framework/Collection/Queue.hpp
+    ./include/Framework/Collection/Queue.impl.hpp
+    ./include/Framework/Collection/PriorityQueue.hpp
+    ./include/Framework/Collection/PriorityQueue.impl.hpp
+    ./include/Framework/Collection/Utility.hpp
+    ./include/Framework/Collection/Stringifier.List.hpp
+    ./include/Framework/Collection/Stringifier.ArrayList.hpp
+    ./include/Framework/Collection/Stringifier.Array.hpp
+    ./include/Framework/Collection/Stringifier.HashMap.hpp
+    ./include/Framework/Collection/Stringifier.Map.hpp
+    ./include/Framework/Collection/StackException.hpp
     ./include/Framework/API.hpp
     ./include/Framework/BinUtils.hpp
     ./include/Framework/Types.hpp
     ./include/Framework/Tuple.hpp
     ./include/Framework/TypeInfo.hpp
-    ./include/Framework/Array.hpp
-    ./include/Framework/Array.impl.hpp
-    ./include/Framework/ArrayList.hpp
-    ./include/Framework/ArrayList.impl.hpp
     ./include/Framework/Color.hpp
     ./include/Framework/Delegate.hpp
     ./include/Framework/EntryPoint.hpp
     ./include/Framework/Hash.hpp
-    ./include/Framework/BasicHash.hpp
-    ./include/Framework/Iterator.hpp
-    ./include/Framework/List.hpp
-    ./include/Framework/List.impl.hpp
-    ./include/Framework/HashMap.hpp
-    ./include/Framework/HashMap.impl.hpp
-    ./include/Framework/Map.hpp
-    ./include/Framework/Map.impl.hpp
-    ./include/Framework/Object.hpp
-    ./include/Framework/ObjectFactory.hpp
-    ./include/Framework/IObjectConstructor.hpp
-    ./include/Framework/ObjectPtr.hpp
+    ./include/Framework/Hash.Base.hpp
     ./include/Framework/Path.hpp
     ./include/Framework/Profiler.hpp
-    ./include/Framework/Random.hpp
+    ./include/Framework/Math/Random.hpp
     ./include/Framework/Exception.hpp
     ./include/Framework/RuntimeException.hpp
     ./include/Framework/IndexException.hpp
-    ./include/Framework/StackException.hpp
     ./include/Framework/EvalException.hpp
-    ./include/Framework/Stack.hpp
-    ./include/Framework/Stack.impl.hpp
-    ./include/Framework/Queue.hpp
-    ./include/Framework/Queue.impl.hpp
-    ./include/Framework/PriorityQueue.hpp
-    ./include/Framework/PriorityQueue.impl.hpp
-    ./include/Framework/ContainerUtilities.hpp
     ./include/Framework/String.hpp
     ./include/Framework/MathEval.hpp
     ./include/Framework/MathEval.impl.hpp
     ./include/Framework/BaseConvert.hpp
     ./include/Framework/BaseConvert.impl.hpp
     ./include/Framework/Scalar.hpp
-    ./include/Framework/Stringifier.Container.hpp
-    ./include/Framework/Stringifier.Base.hpp
-    ./include/Framework/TreeNode.hpp
+    ./include/Framework/Stringifier.Color.hpp
     ./include/Framework/ParseException.hpp
     ./src/Framework/IO/File.cpp
     ./src/Framework/IO/OSPrivate.hpp
@@ -144,13 +142,12 @@ set(SOURCES
     ./src/Framework/IO/BinaryWriter.cpp
     ./src/Framework/IO/TextReader.cpp
     ./src/Framework/IO/TextWriter.cpp
-    ./src/Framework/Logging/DefaultLogger.cpp
-    ./src/Framework/Logging/FileLogger.cpp
-    ./src/Framework/Math/Transform.cpp
-    ./src/Framework/Math/Triangle.cpp
+    ./src/Framework/Log/DefaultLogger.cpp
+    ./src/Framework/Log/FileLogger.cpp
     ./src/Framework/Math/Math.cpp
-    ./src/Framework/Math/Viewport.cpp
+    ./src/Framework/Math/Random.cpp
     ./src/Framework/Memory/Memory.cpp
+    ./src/Framework/Memory/Object.cpp
     ./src/Framework/System/Platform.cpp
     ./src/Framework/System/Module.cpp
     ./src/Framework/System/ModuleManager.cpp
@@ -159,10 +156,8 @@ set(SOURCES
     ./src/Framework/System/Mutex.cpp
     ./src/Framework/System/ThreadManager.cpp
     ./src/Framework/Color.cpp
-    ./src/Framework/Object.cpp
     ./src/Framework/Path.cpp
     ./src/Framework/Profiler.cpp
-    ./src/Framework/Random.cpp
     ./src/Framework/Exception.cpp
     ./src/Framework/RuntimeException.cpp
     ./src/Framework/IndexException.cpp

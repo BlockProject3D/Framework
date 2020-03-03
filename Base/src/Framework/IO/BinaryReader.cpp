@@ -28,6 +28,7 @@
 
 #include "Framework/IO/BinaryReader.hpp"
 
+using namespace bpf::io;
 using namespace bpf;
 
 uint8 BinaryReader::ReadByte()
@@ -81,8 +82,8 @@ void BinaryReader::ReadSubBuf(void *out, const fsize size)
 
     for (fsize i = 0; i != size; ++i)
         res[i] = ReadByte();
-    if (Platform::GetEndianess() != _targetorder)
-        Platform::ReverseBuffer(res, size);
+    if (system::Platform::GetEndianess() != _targetorder)
+        system::Platform::ReverseBuffer(res, size);
 }
 
 IDataInputStream &BinaryReader::operator>>(bpf::String &str)

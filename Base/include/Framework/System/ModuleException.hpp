@@ -31,12 +31,15 @@
 
 namespace bpf
 {
-    class BPF_API ModuleException : public bpf::RuntimeException
+    namespace system
     {
-    public:
-        explicit inline ModuleException(const bpf::String &msg) noexcept
-            : bpf::RuntimeException("Module", msg)
+        class BPF_API ModuleException : public RuntimeException
         {
-        }
-    };
+        public:
+            explicit inline ModuleException(const String &msg) noexcept
+                : RuntimeException("Module", msg)
+            {
+            }
+        };
+    }
 }

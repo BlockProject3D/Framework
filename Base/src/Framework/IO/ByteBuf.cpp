@@ -30,6 +30,8 @@
 #include "Framework/IO/ByteBuf.hpp"
 #include "Framework/Memory/Memory.hpp"
 
+using namespace bpf::memory;
+using namespace bpf::io;
 using namespace bpf;
 
 ByteBuf::ByteBuf(const fsize size)

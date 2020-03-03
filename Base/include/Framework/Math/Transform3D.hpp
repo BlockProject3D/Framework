@@ -33,64 +33,67 @@
 
 namespace bpf
 {
-    template <typename T>
-    class BP_TPL_API Transform3D
+    namespace math
     {
-    public:
-        class BP_TPL_API MatrixBuilder
+        template <typename T>
+        class BP_TPL_API Transform3D
         {
-        private:
-            Matrix4<T> _matrix;
+        public:
+            class BP_TPL_API MatrixBuilder
+            {
+            private:
+                Matrix4<T> _matrix;
+
+            public:
+                inline MatrixBuilder()
+                    : _matrix(Matrix4<T>::Identity)
+                {
+                }
+                MatrixBuilder &Translate(const Vector3<T> &translation) noexcept;
+                MatrixBuilder &Scale(const Vector3<T> &scale) noexcept;
+                MatrixBuilder &ShearX(const Vector3<T> &shear) noexcept;
+                MatrixBuilder &ShearY(const Vector3<T> &shear) noexcept;
+                MatrixBuilder &ShearZ(const Vector3<T> &shear) noexcept;
+                MatrixBuilder &RotateX(const T &rotation) noexcept;
+                MatrixBuilder &RotateY(const T &rotation) noexcept;
+                MatrixBuilder &RotateZ(const T &rotation) noexcept;
+                inline MatrixBuilder &Rotate(const Quaternion<T> &quat) noexcept
+                {
+                    _matrix *= quat.ToMatrix();
+                    return (*this);
+                }
+                inline Matrix4<T> Build() const noexcept
+                {
+                    return (_matrix);
+                }
+            };
 
         public:
-            inline MatrixBuilder()
-                : _matrix(Matrix4<T>::Identity)
+            Vector3<T> Position;
+            Vector3<T> Scale;
+            Quaternion<T> Rotation;
+
+            explicit inline Transform3D(const Vector3<T> &pos = Vector3<T>::Zero, const Vector3<T> &scale = Vector3<T>::Identity, const Quaternion<T> &rotation = Quaternion<T>::Identity)
+                : Position(pos)
+                , Scale(scale)
+                , Rotation(rotation)
             {
             }
-            MatrixBuilder &Translate(const Vector3<T> &translation) noexcept;
-            MatrixBuilder &Scale(const Vector3<T> &scale) noexcept;
-            MatrixBuilder &ShearX(const Vector3<T> &shear) noexcept;
-            MatrixBuilder &ShearY(const Vector3<T> &shear) noexcept;
-            MatrixBuilder &ShearZ(const Vector3<T> &shear) noexcept;
-            MatrixBuilder &RotateX(const T &rotation) noexcept;
-            MatrixBuilder &RotateY(const T &rotation) noexcept;
-            MatrixBuilder &RotateZ(const T &rotation) noexcept;
-            inline MatrixBuilder &Rotate(const Quaternion<T> &quat) noexcept
+
+            Vector3<T> LocalToWorld(const Vector3<T> &local);
+            Vector3<T> WorldToLocal(const Vector3<T> &world);
+
+            inline Matrix4<T> ToMatrix() const noexcept
             {
-                _matrix *= quat.ToMatrix();
-                return (*this);
+                return (MatrixBuilder().Rotate(Rotation).Scale(Scale).Translate(Position).Build());
             }
-            inline Matrix4<T> Build() const noexcept
-            {
-                return (_matrix);
-            }
+
+            Transform3D operator+(const Transform3D &other) const noexcept;
+            void operator+=(const Transform3D &other);
+
+            void RotateArround(const Vector3<T> &pivot, const Quaternion<T> &rotation) noexcept;
         };
-
-    public:
-        Vector3<T> Position;
-        Vector3<T> Scale;
-        Quaternion<T> Rotation;
-
-        explicit inline Transform3D(const Vector3<T> &pos = Vector3<T>::Zero, const Vector3<T> &scale = Vector3<T>::Identity, const Quaternion<T> &rotation = Quaternion<T>::Identity)
-            : Position(pos)
-            , Scale(scale)
-            , Rotation(rotation)
-        {
-        }
-
-        Vector3<T> LocalToWorld(const Vector3<T> &local);
-        Vector3<T> WorldToLocal(const Vector3<T> &world);
-
-        inline Matrix4<T> ToMatrix() const noexcept
-        {
-            return (MatrixBuilder().Rotate(Rotation).Scale(Scale).Translate(Position).Build());
-        }
-
-        Transform3D operator+(const Transform3D &other) const noexcept;
-        void operator+=(const Transform3D &other);
-
-        void RotateArround(const Vector3<T> &pivot, const Quaternion<T> &rotation) noexcept;
-    };
+    }
 }
 
 #include "Framework/Math/Transform3D.impl.hpp"

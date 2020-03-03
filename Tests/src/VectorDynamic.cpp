@@ -30,8 +30,9 @@
 #include <iostream>
 #include <gtest/gtest.h>
 #include <Framework/Math/Vector.hpp>
+#include <Framework/Math/Stringifier.Vector.hpp>
 
-using Vectorf = bpf::Vector<float>;
+using Vectorf = bpf::math::Vector<float>;
 
 TEST(VectorDynamic, Create)
 {
@@ -151,7 +152,7 @@ TEST(VectorDynamic, Normalize)
     auto v1 = Vectorf::Identity(5);
 
     v1.Normalize();
-    EXPECT_LT(1 - v1.Norm(), bpf::Math::Epsilon<float>());
+    EXPECT_LT(1 - v1.Norm(), bpf::math::Math::Epsilon<float>());
 }
 
 TEST(VectorDynamic, Dot)
@@ -210,4 +211,11 @@ TEST(VectorDynamic, CopyMove_4)
     EXPECT_EQ(mv(2), 1);
     EXPECT_EQ(mv(3), 1);
     EXPECT_EQ(mv(4), 1);
+}
+
+TEST(VectorDynamic, Stringifier)
+{
+    bpf::math::Vector<int> v = { 0, 4, 2, 6 };
+
+    EXPECT_STREQ(*bpf::String::ValueOf(v), "Vector(0, 4, 2, 6)");
 }

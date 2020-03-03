@@ -36,6 +36,7 @@
 #include "Framework/IO/IOException.hpp"
 #include "OSPrivate.hpp"
 
+using namespace bpf::io;
 using namespace bpf;
 
 FileStream::FileStream(const File &file, fint mode)

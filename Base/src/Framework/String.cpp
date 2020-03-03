@@ -33,8 +33,10 @@
 #include "Framework/EvalException.hpp"
 #include "Framework/IndexException.hpp"
 #include "Framework/BinUtils.hpp"
-#include "Framework/ArrayList.hpp"
+#include "Framework/Collection/ArrayList.hpp"
 
+using namespace bpf::memory;
+using namespace bpf::collection;
 using namespace bpf;
 
 const String String::Empty = String();
@@ -731,58 +733,126 @@ String String::Reverse() const
 	return (res);
 }
 
-String String::ValueOf(fint i)
+String String::ValueOf(fint i, const fsize prec)
 {
     std::stringstream strs;
 
-    strs << i;
+    if (prec > 0) //Dev of stringstream you are stupid; let me show you how it's supposed to be done!
+    {
+        strs << i;
+        String str = strs.str().c_str();
+        fisize len = (fisize)(prec - str.Len());
+        if (len < 0)
+            return (str);
+        if (str[0] == '-')
+            str = str.Sub(1);
+        for (fisize j = 0; j < len; ++j)
+            str = String('0') + str;
+        if (i < 0)
+            str = String('-') + str;
+        return (str);
+    }
+    else
+        strs << i;
     return (String(strs.str().c_str()));
 }
 
-String String::ValueOf(uint32 i)
+String String::ValueOf(uint32 i, const fsize prec)
 {
     std::stringstream strs;
 
-    strs << i;
+    if (prec > 0)
+    {
+        strs << i;
+        String str = strs.str().c_str();
+        fisize len = (fisize)(prec - str.Len());
+        if (len < 0)
+            return (str);
+        for (fisize j = 0; j < len; ++j)
+            str = String('0') + str;
+        return (str);
+    }
+    else
+        strs << i;
     return (String(strs.str().c_str()));
 }
 
-String String::ValueOf(uint64 i)
+String String::ValueOf(uint64 i, const fsize prec)
 {
     std::stringstream strs;
 
-    strs << i;
+    if (prec > 0)
+    {
+        strs << i;
+        String str = strs.str().c_str();
+        fisize len = (fisize)(prec - str.Len());
+        if (len < 0)
+            return (str);
+        for (fisize j = 0; j < len; ++j)
+            str = String('0') + str;
+        return (str);
+    }
+    else
+        strs << i;
     return (String(strs.str().c_str()));
 }
 
-String String::ValueOf(int64 i)
+String String::ValueOf(int64 i, const fsize prec)
 {
     std::stringstream strs;
 
-    strs << i;
+    if (prec > 0)
+    {
+        strs << i;
+        String str = strs.str().c_str();
+        fisize len = (fisize)(prec - str.Len());
+        if (len < 0)
+            return (str);
+        if (str[0] == '-')
+            str = str.Sub(1);
+        for (fisize j = 0; j < len; ++j)
+            str = String('0') + str;
+        if (i < 0)
+            str = String('-') + str;
+        return (str);
+    }
+    else
+        strs << i;
     return (String(strs.str().c_str()));
 }
 
-String String::ValueOf(float f)
+String String::ValueOf(float f, const fsize prec)
 {
     std::stringstream strs;
 
-    strs << f;
+    if (prec > 0)
+    {
+        strs.precision(prec);
+        strs << std::fixed << f;
+    }
+    else
+        strs << f;
     return (String(strs.str().c_str()));
 }
 
-String String::ValueOf(double d)
+String String::ValueOf(double d, const fsize prec)
 {
     std::stringstream strs;
 
-    strs << d;
+    if (prec > 0)
+    {
+        strs.precision(prec);
+        strs << std::fixed << d;
+    }
+    else
+        strs << d;
     return (String(strs.str().c_str()));
 }
 
-String String::ValueOf(void *ptr)
+String String::ValueOf(void *ptr, const fsize prec)
 {
     std::stringstream strs;
 
     strs << std::hex << (uintptr)ptr;
-    return (strs.str().c_str());
+    return (String("0x") + strs.str().c_str());
 }

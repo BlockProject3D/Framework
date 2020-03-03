@@ -35,6 +35,7 @@
 #include "Framework/System/ModuleException.hpp"
 #include "Framework/System/Platform.hpp"
 
+using namespace bpf::system;
 using namespace bpf;
 
 Module::Module(const bpf::String &path)

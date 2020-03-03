@@ -31,60 +31,63 @@
 
 namespace bpf
 {
-    class BPF_API MemoryMapper
+    namespace io
     {
-    private:
-        File _file;
-        void *_mem;
-        fint _mode;
-        void *_memoff;
+        class BPF_API MemoryMapper
+        {
+        private:
+            File _file;
+            void *_mem;
+            fint _mode;
+            void *_memoff;
 #ifdef WINDOWS
-        void *_handle;
-        void *_mapper;
+            void *_handle;
+            void *_mapper;
 #else
-        int _handle;
-        fsize _size;
+            int _handle;
+            fsize _size;
 #endif
 
-    public:
-        /**
-         * Creates a new MemoryMapper from the given file and mode
-         * @param file file to open
-         * @param mode file mode
-         * @throws IOException
-         */
-        MemoryMapper(const File &file, fint mode);
-        ~MemoryMapper();
-        
-        /**
-         * Cannot copy a MemoryMapper
-         */
-        MemoryMapper(const MemoryMapper &other) = delete;
-        
-        /**
-         * Cannot copy a MemoryMapper
-         */
-        MemoryMapper operator=(const MemoryMapper &other) = delete;
-        
-        /**
-         * Map or re-map the file in virtual memory
-         * @param pos position in bytes in the file to start mapping
-         * @param size the size in bytes to map,
-         *        if the size is greater than the size of the file,
-         *        this function throws
-         * @throws IOException
-         */
-        void Map(uint64 pos, fsize size);
-        
-        const File &GetFile() const noexcept
-        {
-            return (_file);
-        }
+        public:
+            /**
+             * Creates a new MemoryMapper from the given file and mode
+             * @param file file to open
+             * @param mode file mode
+             * @throws IOException
+             */
+            MemoryMapper(const File &file, fint mode);
+            ~MemoryMapper();
 
-        inline void *operator*()
-        {
-            return (_memoff);
-        }
-    };
+            /**
+             * Cannot copy a MemoryMapper
+             */
+            MemoryMapper(const MemoryMapper &other) = delete;
+
+            /**
+             * Cannot copy a MemoryMapper
+             */
+            MemoryMapper operator=(const MemoryMapper &other) = delete;
+
+            /**
+             * Map or re-map the file in virtual memory
+             * @param pos position in bytes in the file to start mapping
+             * @param size the size in bytes to map,
+             *        if the size is greater than the size of the file,
+             *        this function throws
+             * @throws IOException
+             */
+            void Map(uint64 pos, fsize size);
+
+            const File &GetFile() const noexcept
+            {
+                return (_file);
+            }
+
+            inline void *operator*()
+            {
+                return (_memoff);
+            }
+        };
+    }
 }
 

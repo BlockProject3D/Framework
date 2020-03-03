@@ -29,9 +29,9 @@
 #pragma once
 #include "Framework/Types.hpp"
 #include "Framework/String.hpp"
-#include "Framework/Stack.hpp"
-#include "Framework/Array.hpp"
-#include "Framework/HashMap.hpp"
+#include "Framework/Collection/Stack.hpp"
+#include "Framework/Collection/Array.hpp"
+#include "Framework/Collection/HashMap.hpp"
 
 # ifdef BUILD_DEBUG
 #  define PROFILER_PUSH_SECTION(name) Framework::FProfiler::PushSection(name)
@@ -55,8 +55,8 @@ namespace bpf
     {
     private:
         uint32 CurCreationID;
-        HashMap<String, ProfilerSection> _map;
-        Stack<ProfilerSection> _stack = Stack<ProfilerSection>(32);
+        collection::HashMap<String, ProfilerSection> _map;
+        collection::Stack<ProfilerSection> _stack = collection::Stack<ProfilerSection>(32);
 
         void Push(const String &name);
         void Pop();
@@ -64,7 +64,7 @@ namespace bpf
 
     public:
         static Profiler &Instance();
-        Array<ProfilerSection> GenDisplayList();
+        collection::Array<ProfilerSection> GenDisplayList();
         
         inline static void PushSection(const String &name)
         {

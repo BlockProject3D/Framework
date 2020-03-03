@@ -39,17 +39,18 @@ using ThreadType = pthread_t;
 #ifdef WINDOWS
 DWORD WINAPI ThreadRoutine(void *ptr)
 {
-    reinterpret_cast<bpf::Thread *>(ptr)->Run();
+    reinterpret_cast<bpf::system::Thread *>(ptr)->Run();
     return (0);
 }
 #else
 void *ThreadRoutine(void *ptr)
 {
-    reinterpret_cast<bpf::Thread *>(ptr)->Run();
+    reinterpret_cast<bpf::system::Thread *>(ptr)->Run();
     return (Null);
 }
 #endif
 
+using namespace bpf::system;
 using namespace bpf;
 
 Thread::Thread(const String &name)

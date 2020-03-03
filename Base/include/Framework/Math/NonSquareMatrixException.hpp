@@ -31,12 +31,15 @@
 
 namespace bpf
 {
-    class BPF_API NonSquareMatrixException : public Exception
+    namespace math
     {
-    public:
-        inline virtual const char *GetType() const noexcept
+        class NonSquareMatrixException : public Exception
         {
-            return ("NonSquareMatrix");
-        }
-    };
+        public:
+            inline virtual const char *GetType() const noexcept
+            {
+                return ("NonSquareMatrix");
+            }
+        };
+    }
 }

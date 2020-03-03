@@ -29,12 +29,16 @@
 #include <cassert>
 #include <iostream>
 #include <gtest/gtest.h>
-#include <Framework/Queue.hpp>
-#include <Framework/Memory/Memory.hpp>
+#include <Framework/Collection/Queue.hpp>
+#include <Framework/Memory/Utility.hpp>
+
+using namespace bpf::memory;
+using namespace bpf::collection;
+using namespace bpf;
 
 TEST(Queue, Creation)
 {
-    bpf::Queue<int> queue(8);
+    Queue<int> queue(8);
 
     queue.Push(0);
     queue.Push(42);
@@ -46,7 +50,7 @@ TEST(Queue, Creation)
 
 TEST(Queue, Move)
 {
-    bpf::Queue<int> queue(8);
+    Queue<int> queue(8);
 
     queue.Push(0);
     queue.Push(42);
@@ -61,7 +65,7 @@ TEST(Queue, Move)
 
 TEST(Queue, Creation_List)
 {
-    bpf::Queue<int> queue = { 0, 42, -1 };
+    Queue<int> queue = { 0, 42, -1 };
 
     EXPECT_EQ(queue.Top(), 0);
     EXPECT_EQ(queue.Size(), 3);
@@ -69,7 +73,7 @@ TEST(Queue, Creation_List)
 
 TEST(Queue, Push_Pop_Limited_1)
 {
-    bpf::Queue<int> queue(3);
+    Queue<int> queue(3);
 
     queue.Push(0);
     queue.Push(42);
@@ -79,13 +83,13 @@ TEST(Queue, Push_Pop_Limited_1)
     EXPECT_EQ(queue.Size(), 3);
     queue.Push(1);
     EXPECT_EQ(queue.Pop(), 1);
-    EXPECT_THROW(queue.Pop(), bpf::IndexException);
-    EXPECT_THROW(queue.Top(), bpf::IndexException);
+    EXPECT_THROW(queue.Pop(), IndexException);
+    EXPECT_THROW(queue.Top(), IndexException);
 }
 
 TEST(Queue, Push_Pop_Limited_2)
 {
-    bpf::Queue<int> queue(3);
+    Queue<int> queue(3);
 
     queue.Push(0);
     queue.Push(42);
@@ -96,13 +100,13 @@ TEST(Queue, Push_Pop_Limited_2)
     EXPECT_EQ(queue.Pop(), 0);
     EXPECT_EQ(queue.Pop(), 42);
     EXPECT_EQ(queue.Pop(), -1);
-    EXPECT_THROW(queue.Pop(), bpf::IndexException);
-    EXPECT_THROW(queue.Top(), bpf::IndexException);
+    EXPECT_THROW(queue.Pop(), IndexException);
+    EXPECT_THROW(queue.Top(), IndexException);
 }
 
 TEST(Queue, Push_Pop_Limited_3)
 {
-    bpf::Queue<int> queue(3);
+    Queue<int> queue(3);
     const int a = 0;
     const int b = 42;
     const int c = -1;
@@ -116,13 +120,13 @@ TEST(Queue, Push_Pop_Limited_3)
     EXPECT_EQ(queue.Size(), 3);
     queue.Push(d);
     EXPECT_EQ(queue.Pop(), 1);
-    EXPECT_THROW(queue.Pop(), bpf::IndexException);
-    EXPECT_THROW(queue.Top(), bpf::IndexException);
+    EXPECT_THROW(queue.Pop(), IndexException);
+    EXPECT_THROW(queue.Top(), IndexException);
 }
 
 TEST(Queue, Push_Pop_Limited_4)
 {
-    bpf::Queue<int> queue(3);
+    Queue<int> queue(3);
     const int a = 0;
     const int b = 42;
     const int c = -1;
@@ -136,13 +140,13 @@ TEST(Queue, Push_Pop_Limited_4)
     EXPECT_EQ(queue.Pop(), 0);
     EXPECT_EQ(queue.Pop(), 42);
     EXPECT_EQ(queue.Pop(), -1);
-    EXPECT_THROW(queue.Pop(), bpf::IndexException);
-    EXPECT_THROW(queue.Top(), bpf::IndexException);
+    EXPECT_THROW(queue.Pop(), IndexException);
+    EXPECT_THROW(queue.Top(), IndexException);
 }
 
 TEST(Queue, Push_Pop_Unlimited_1)
 {
-    bpf::Queue<int> queue;
+    Queue<int> queue;
 
     queue.Push(0);
     queue.Push(42);
@@ -157,12 +161,12 @@ TEST(Queue, Push_Pop_Unlimited_1)
     EXPECT_EQ(queue.Pop(), 42);
     EXPECT_EQ(queue.Pop(), -1);
     EXPECT_EQ(queue.Pop(), 1);
-    EXPECT_THROW(queue.Pop(), bpf::IndexException);
+    EXPECT_THROW(queue.Pop(), IndexException);
 }
 
 TEST(Queue, Push_Pop_Unlimited_2)
 {
-    bpf::Queue<int> queue;
+    Queue<int> queue;
 
     queue.Push(1);
     queue.Push(2);
@@ -179,7 +183,7 @@ TEST(Queue, Push_Pop_Unlimited_2)
 
 TEST(Queue, Push_Pop_Unlimited_3)
 {
-    bpf::Queue<int> queue;
+    Queue<int> queue;
     const int a = 0;
     const int b = 42;
     const int c = -1;
@@ -198,12 +202,12 @@ TEST(Queue, Push_Pop_Unlimited_3)
     EXPECT_EQ(queue.Pop(), 42);
     EXPECT_EQ(queue.Pop(), -1);
     EXPECT_EQ(queue.Pop(), 1);
-    EXPECT_THROW(queue.Pop(), bpf::IndexException);
+    EXPECT_THROW(queue.Pop(), IndexException);
 }
 
 TEST(Queue, Push_Pop_Unlimited_4)
 {
-    bpf::Queue<int> queue;
+    Queue<int> queue;
 
     for (int i = 0; i != 10; ++i)
     {
@@ -215,20 +219,20 @@ TEST(Queue, Push_Pop_Unlimited_4)
 
 TEST(Queue, Push_Pop_NonCopy)
 {
-    bpf::Queue<bpf::UniquePtr<int>> queue;
+    Queue<UniquePtr<int>> queue;
 
-    queue.Push(bpf::MakeUnique<int>(0));
-    queue.Push(bpf::MakeUnique<int>(42));
-    queue.Push(bpf::MakeUnique<int>(-1));
+    queue.Push(MakeUnique<int>(0));
+    queue.Push(MakeUnique<int>(42));
+    queue.Push(MakeUnique<int>(-1));
 
     EXPECT_EQ(*queue.Top(), 0);
     EXPECT_EQ(queue.Size(), 3);
-    queue.Push(bpf::MakeUnique<int>(1));
+    queue.Push(MakeUnique<int>(1));
     EXPECT_EQ(queue.Size(), 4);
     EXPECT_EQ(*queue.Top(), 0);
     EXPECT_EQ(*queue.Pop(), 0);
     EXPECT_EQ(*queue.Pop(), 42);
     EXPECT_EQ(*queue.Pop(), -1);
     EXPECT_EQ(*queue.Pop(), 1);
-    EXPECT_THROW(queue.Pop(), bpf::IndexException);
+    EXPECT_THROW(queue.Pop(), IndexException);
 }

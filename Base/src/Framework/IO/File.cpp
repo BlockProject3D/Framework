@@ -41,6 +41,8 @@
 #endif
 #include "Framework/IO/File.hpp"
 
+using namespace bpf::io;
+using namespace bpf::collection;
 using namespace bpf;
 
 File::File(const bpf::String &path)

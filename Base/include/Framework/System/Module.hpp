@@ -31,37 +31,40 @@
 
 namespace bpf
 {
-    class BPF_API Module
+    namespace system
     {
-    private:
-        bpf::String Path;
-        void *Handle;
+        class BPF_API Module
+        {
+        private:
+            bpf::String Path;
+            void *Handle;
 
 #ifdef WINDOWS
-        String ObtainErrorString();
+            String ObtainErrorString();
 #endif
-    public:
-        /**
-         * Opens a module binary at a specified path, file extension omitted.
-         * @param path the path to the binary module without file extension
-         * @throws ModuleException
-         */
-        explicit Module(const bpf::String &path);
-        ~Module();
+        public:
+            /**
+             * Opens a module binary at a specified path, file extension omitted.
+             * @param path the path to the binary module without file extension
+             * @throws ModuleException
+             */
+            explicit Module(const bpf::String &path);
+            ~Module();
 
-        /**
-         * Loads a symbol from the module
-         * @param name the symbol name
-         * @throws ModuleException
-         */
-        void *LoadSymbol(const bpf::String &name);
+            /**
+             * Loads a symbol from the module
+             * @param name the symbol name
+             * @throws ModuleException
+             */
+            void *LoadSymbol(const bpf::String &name);
 
-        /**
-         * Returns the path to this module
-         */
-        inline const bpf::String &GetPath() const
-        {
-            return (Path);
-        }
-    };
+            /**
+             * Returns the path to this module
+             */
+            inline const bpf::String &GetPath() const
+            {
+                return (Path);
+            }
+        };
+    }
 }

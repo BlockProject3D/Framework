@@ -32,28 +32,31 @@
 
 namespace bpf
 {
-    template <typename T>
-    union TypeExpander
+    namespace system
     {
-        T Data;
-        uint8 Bytes[sizeof(T)];
-
-        inline TypeExpander(T d)
-            : Data(d)
+        template <typename T>
+        union TypeExpander
         {
-        }
+            T Data;
+            uint8 Bytes[sizeof(T)];
 
-        inline TypeExpander(std::initializer_list<uint8> d)
-        {
-            fsize i = 0;
+            inline TypeExpander(T d)
+                : Data(d)
+            {
+            }
 
-            for (auto it = d.begin(); it != d.end(); ++it)
-                Bytes[i++] = *it;
-        }
+            inline TypeExpander(std::initializer_list<uint8> d)
+            {
+                fsize i = 0;
 
-        inline TypeExpander()
-            : Data(0)
-        {
-        }
-    };
+                for (auto it = d.begin(); it != d.end(); ++it)
+                    Bytes[i++] = *it;
+            }
+
+            inline TypeExpander()
+                : Data(0)
+            {
+            }
+        };
+    }
 }

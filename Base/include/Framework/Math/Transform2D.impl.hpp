@@ -30,103 +30,106 @@
 
 namespace bpf
 {
-    template <typename T>
-    Transform2D<T>::MatrixBuilder &Transform2D<T>::MatrixBuilder::Translate(const Vector2<T> &translation) noexcept
+    namespace math
     {
-        _matrix *= {
-            1, 0, translation.X,
-            0, 1, translation.Y,
-            0, 0, 1
-        };
-        return (*this);
-    }
+        template <typename T>
+        Transform2D<T>::MatrixBuilder &Transform2D<T>::MatrixBuilder::Translate(const Vector2<T> &translation) noexcept
+        {
+            _matrix *= {
+                1, 0, translation.X,
+                    0, 1, translation.Y,
+                    0, 0, 1
+            };
+            return (*this);
+        }
 
-    template <typename T>
-    Transform2D<T>::MatrixBuilder &Transform2D<T>::MatrixBuilder::Scale(const Vector2<T> &scale) noexcept
-    {
-        _matrix *= {
-            scale.X, 0, 0,
-            0, scale.Y, 0,
-            0, 0, 1
-        };
-        return (*this);
-    }
+        template <typename T>
+        Transform2D<T>::MatrixBuilder &Transform2D<T>::MatrixBuilder::Scale(const Vector2<T> &scale) noexcept
+        {
+            _matrix *= {
+                scale.X, 0, 0,
+                    0, scale.Y, 0,
+                    0, 0, 1
+            };
+            return (*this);
+        }
 
-    template <typename T>
-    Transform2D<T>::MatrixBuilder &Transform2D<T>::MatrixBuilder::ShearX(const T &shear) noexcept
-    {
-        _matrix *= {
-            1, 0, 0,
-            shear.X, 1, 0,
-            0, 0, 1
-        };
-        return (*this);
-    }
+        template <typename T>
+        Transform2D<T>::MatrixBuilder &Transform2D<T>::MatrixBuilder::ShearX(const T &shear) noexcept
+        {
+            _matrix *= {
+                1, 0, 0,
+                    shear.X, 1, 0,
+                    0, 0, 1
+            };
+            return (*this);
+        }
 
-    template <typename T>
-    Transform2D<T>::MatrixBuilder &Transform2D<T>::MatrixBuilder::ShearY(const T &shear) noexcept
-    {
-        _matrix *= {
-            1, shear.Y, 0,
-            0, 1, 0,
-            0, 0, 1
-        };
-        return (*this);
-    }
+        template <typename T>
+        Transform2D<T>::MatrixBuilder &Transform2D<T>::MatrixBuilder::ShearY(const T &shear) noexcept
+        {
+            _matrix *= {
+                1, shear.Y, 0,
+                    0, 1, 0,
+                    0, 0, 1
+            };
+            return (*this);
+        }
 
-    template <typename T>
-    Transform2D<T>::MatrixBuilder &Transform2D<T>::MatrixBuilder::Rotate(const T &rotation) noexcept
-    {
-        _matrix *= {
-            Math::Cos(rotation), -Math::Sin(rotation), 0,
-            Math::Sin(rotation), Math::Cos(rotation), 0,
-            0, 0, 1
-        };
-        return (*this);
-    }
+        template <typename T>
+        Transform2D<T>::MatrixBuilder &Transform2D<T>::MatrixBuilder::Rotate(const T &rotation) noexcept
+        {
+            _matrix *= {
+                Math::Cos(rotation), -Math::Sin(rotation), 0,
+                    Math::Sin(rotation), Math::Cos(rotation), 0,
+                    0, 0, 1
+            };
+            return (*this);
+        }
 
-    template <typename T>
-    Vector2<T> Transform2D<T>::LocalToWorld(const Vector2<T> &local)
-    {
-        auto res = ToMatrix() * Vector3<T>(local, (T)1);
+        template <typename T>
+        Vector2<T> Transform2D<T>::LocalToWorld(const Vector2<T> &local)
+        {
+            auto res = ToMatrix() * Vector3<T>(local, (T)1);
 
-        return (Vector2<T>(res.X, res.Y));
-    }
+            return (Vector2<T>(res.X, res.Y));
+        }
 
-    template <typename T>
-    Vector2<T> Transform2D<T>::WorldToLocal(const Vector2<T> &world)
-    {
-        auto res = ToMatrix().Invert() * Vector3<T>(local, (T)1);
+        template <typename T>
+        Vector2<T> Transform2D<T>::WorldToLocal(const Vector2<T> &world)
+        {
+            auto res = ToMatrix().Invert() * Vector3<T>(local, (T)1);
 
-        return (Vector2<T>(res.X, res.Y));
-    }
+            return (Vector2<T>(res.X, res.Y));
+        }
 
-    template <typename T>
-    Transform2D<T> Transform2D<T>::operator+(const Transform2D &other) const noexcept
-    {
-        Transform2D<T> res(Position + other.Position, Scale * other.Scale, Angle + other.Angle);
+        template <typename T>
+        Transform2D<T> Transform2D<T>::operator+(const Transform2D &other) const noexcept
+        {
+            Transform2D<T> res(Position + other.Position, Scale * other.Scale, Angle + other.Angle);
 
-        return (res);
-    }
+            return (res);
+        }
 
-    template <typename T>
-    void Transform2D<T>::operator+=(const Transform2D &other)
-    {
-        Position += other.Position;
-        Scale *= other.Scale;
-        Angle += other.Angle;
-    }
+        template <typename T>
+        void Transform2D<T>::operator+=(const Transform2D &other)
+        {
+            Position += other.Position;
+            Scale *= other.Scale;
+            Angle += other.Angle;
+        }
 
-    template <typename T>
-    void Transform2D<T>::RotateArround(const Vector2<T> &pivot, const T &rotation)
-    {
-        auto dir = Position - pivot;
-        Matrix2<T> mat = {
-            Math::Cos(rotation), -Math::Sin(rotation),
-            Math::Sin(rotation), Math::Cos(rotation)
-        };
+        template <typename T>
+        void Transform2D<T>::RotateArround(const Vector2<T> &pivot, const T &rotation)
+        {
+            auto dir = Position - pivot;
+            Matrix2<T> mat = {
+                Math::Cos(rotation), -Math::Sin(rotation),
+                Math::Sin(rotation), Math::Cos(rotation)
+            };
 
-        dir = mat * dir;
-        Position = dir + pivot;
+            dir = mat * dir;
+            Position = dir + pivot;
+        }
     }
 }

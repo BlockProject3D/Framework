@@ -28,108 +28,111 @@
 
 #pragma once
 #include "Framework/String.hpp"
-#include "Framework/List.hpp"
+#include "Framework/Collection/List.hpp"
 
 namespace bpf
 {
-    class BPF_API File
+    namespace io
     {
-    private:
-        String FullPath;
-        String FileName;
-        String FileExt;
-    public:
-        explicit File(const String &path);
-        File();
-        ~File();
-
-        /**
-         * Returns true if the file exists
-         */
-        bool Exists() const;
-        
-        /**
-         * Returns true if the file is hidden
-         */
-        bool IsHidden() const;
-
-        /**
-         * Returns true if this file is a directory
-         */
-        bool IsDirectory() const;
-
-        /**
-         * Returns the size in bytes of that file
-         */
-        uint64 GetSizeBytes() const;
-
-        /**
-         * Deletes this file from the file system
-         */
-        void Delete();
-        
-        /**
-         * Hides or shows the file in the file explorer.
-         */
-        void Hide(const bool flag);
-
-        /**
-         * Lists all files in that directory (of course if this is a directory)
-         * @return the output list of files
-         */
-        List<File> ListFiles();
-
-        /**
-         * Creates the directory if this is a directory
-         */
-        void CreateDir();
-
-        /**
-         * Copies this file to the destination, in case destination is a directory, copy in that directory under the same name
-         * @param dst the destination file or directory
-         */
-        void Copy(const File &dst, bool overwrite = false);
-
-        /**
-         * Returns the full path to the file (as given in the constructor)
-         */
-        inline const String &Path() const
+        class BPF_API File
         {
-            return (FullPath);
-        }
+        private:
+            String FullPath;
+            String FileName;
+            String FileExt;
+        public:
+            explicit File(const String &path);
+            File();
+            ~File();
 
-        inline File operator+(const File &other) const
-        {
-            return (File(FullPath + "/" + other.FullPath));
-        }
+            /**
+             * Returns true if the file exists
+             */
+            bool Exists() const;
 
-        inline File operator+(const String &other) const
-        {
-            return (*this + File(other));
-        }
-        
-        File GetParent() const;
-        
-        /**
-         * Returns the absolute path constructed from this path,
-         * That means a path that starts from system's root folder
-         */
-        File GetAbsolutePath() const;
+            /**
+             * Returns true if the file is hidden
+             */
+            bool IsHidden() const;
 
-        /**
-         * Returns the file's name
-         */
-        inline const String &Name() const
-        {
-            return (FileName);
-        }
+            /**
+             * Returns true if this file is a directory
+             */
+            bool IsDirectory() const;
 
-        /**
-         * Returns the file's extension
-         */
-        inline const String &Extension() const
-        {
-            return (FileExt);
-        }
-    };
+            /**
+             * Returns the size in bytes of that file
+             */
+            uint64 GetSizeBytes() const;
+
+            /**
+             * Deletes this file from the file system
+             */
+            void Delete();
+
+            /**
+             * Hides or shows the file in the file explorer.
+             */
+            void Hide(const bool flag);
+
+            /**
+             * Lists all files in that directory (of course if this is a directory)
+             * @return the output list of files
+             */
+            collection::List<File> ListFiles();
+
+            /**
+             * Creates the directory if this is a directory
+             */
+            void CreateDir();
+
+            /**
+             * Copies this file to the destination, in case destination is a directory, copy in that directory under the same name
+             * @param dst the destination file or directory
+             */
+            void Copy(const File &dst, bool overwrite = false);
+
+            /**
+             * Returns the full path to the file (as given in the constructor)
+             */
+            inline const String &Path() const
+            {
+                return (FullPath);
+            }
+
+            inline File operator+(const File &other) const
+            {
+                return (File(FullPath + "/" + other.FullPath));
+            }
+
+            inline File operator+(const String &other) const
+            {
+                return (*this + File(other));
+            }
+
+            File GetParent() const;
+
+            /**
+             * Returns the absolute path constructed from this path,
+             * That means a path that starts from system's root folder
+             */
+            File GetAbsolutePath() const;
+
+            /**
+             * Returns the file's name
+             */
+            inline const String &Name() const
+            {
+                return (FileName);
+            }
+
+            /**
+             * Returns the file's extension
+             */
+            inline const String &Extension() const
+            {
+                return (FileExt);
+            }
+        };
+    }
 };

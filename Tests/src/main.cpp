@@ -66,6 +66,8 @@
     system("PAUSE");
 }*/
 
+#include <Framework/String.hpp>
+
 int main(int ac, char **av)
 {
     ::testing::InitGoogleTest(&ac, av);

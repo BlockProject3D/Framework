@@ -30,58 +30,61 @@
 
 namespace bpf
 {
-    template <typename T>
-    Vector<T, 3>::Vector(const std::initializer_list<T> &lst)
+    namespace math
     {
-        fsize i = 0;
-
-        for (auto &elem : lst)
+        template <typename T>
+        Vector<T, 3>::Vector(const std::initializer_list<T> &lst)
         {
-            switch (i)
+            fsize i = 0;
+
+            for (auto &elem : lst)
+            {
+                switch (i)
+                {
+                case 0:
+                    X = elem;
+                    break;
+                case 1:
+                    Y = elem;
+                    break;
+                case 2:
+                    Z = elem;
+                    break;
+                }
+                ++i;
+            }
+        }
+
+        template <typename T>
+        T &Vector<T, 3>::operator()(const fsize l)
+        {
+            switch (l)
             {
             case 0:
-                X = elem;
-                break;
+                return (X);
             case 1:
-                Y = elem;
-                break;
+                return (Y);
             case 2:
-                Z = elem;
-                break;
+                return (Z);
+            default:
+                throw IndexException((fisize)l);
             }
-            ++i;
         }
-    }
 
-    template <typename T>
-    T &Vector<T, 3>::operator()(const fsize l)
-    {
-        switch (l)
+        template <typename T>
+        const T &Vector<T, 3>::operator()(const fsize l) const
         {
-        case 0:
-            return (X);
-        case 1:
-            return (Y);
-        case 2:
-            return (Z);
-        default:
-            throw IndexException((fisize)l);
-        }
-    }
-
-    template <typename T>
-    const T &Vector<T, 3>::operator()(const fsize l) const
-    {
-        switch (l)
-        {
-        case 0:
-            return (X);
-        case 1:
-            return (Y);
-        case 2:
-            return (Z);
-        default:
-            throw IndexException((fisize)l);
+            switch (l)
+            {
+            case 0:
+                return (X);
+            case 1:
+                return (Y);
+            case 2:
+                return (Z);
+            default:
+                throw IndexException((fisize)l);
+            }
         }
     }
 }

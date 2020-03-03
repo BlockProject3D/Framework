@@ -33,25 +33,28 @@
 
 namespace bpf
 {
-    constexpr fsize WRITE_BUF_SIZE = 128;
-
-    class BPF_API IDataOutputStream : public IOutputStream
+    namespace io
     {
-    public:
-        virtual ~IDataOutputStream() {}
-        virtual IDataOutputStream &operator<<(uint8 u) = 0;
-        virtual IDataOutputStream &operator<<(uint16 u) = 0;
-        virtual IDataOutputStream &operator<<(uint32 u) = 0;
-        virtual IDataOutputStream &operator<<(uint64 u) = 0;
-        virtual IDataOutputStream &operator<<(int8 i) = 0;
-        virtual IDataOutputStream &operator<<(int16 i) = 0;
-        virtual IDataOutputStream &operator<<(fint i) = 0;
-        virtual IDataOutputStream &operator<<(int64 i) = 0;
-        virtual IDataOutputStream &operator<<(float f) = 0;
-        virtual IDataOutputStream &operator<<(double d) = 0;
-        virtual IDataOutputStream &operator<<(bool b) = 0;
-        virtual IDataOutputStream &operator<<(const bpf::String &str) = 0;
-        virtual IDataOutputStream &operator<<(const char *str) = 0;
-        virtual void Flush() = 0;
-    };
+        constexpr fsize WRITE_BUF_SIZE = 128;
+
+        class BPF_API IDataOutputStream : public IOutputStream
+        {
+        public:
+            virtual ~IDataOutputStream() {}
+            virtual IDataOutputStream &operator<<(uint8 u) = 0;
+            virtual IDataOutputStream &operator<<(uint16 u) = 0;
+            virtual IDataOutputStream &operator<<(uint32 u) = 0;
+            virtual IDataOutputStream &operator<<(uint64 u) = 0;
+            virtual IDataOutputStream &operator<<(int8 i) = 0;
+            virtual IDataOutputStream &operator<<(int16 i) = 0;
+            virtual IDataOutputStream &operator<<(fint i) = 0;
+            virtual IDataOutputStream &operator<<(int64 i) = 0;
+            virtual IDataOutputStream &operator<<(float f) = 0;
+            virtual IDataOutputStream &operator<<(double d) = 0;
+            virtual IDataOutputStream &operator<<(bool b) = 0;
+            virtual IDataOutputStream &operator<<(const bpf::String &str) = 0;
+            virtual IDataOutputStream &operator<<(const char *str) = 0;
+            virtual void Flush() = 0;
+        };
+    }
 }

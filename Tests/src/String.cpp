@@ -29,9 +29,11 @@
 #include <cassert>
 #include <iostream>
 #include <gtest/gtest.h>
+#include <Framework/TypeInfo.hpp>
 #include <Framework/String.hpp>
-#include <Framework/List.hpp>
-#include <Framework/Stringifier.Container.hpp>
+#include <Framework/Collection/List.hpp>
+#include <Framework/Collection/Stringifier.Array.hpp>
+#include <Framework/Collection/Stringifier.List.hpp>
 
 TEST(String, Create)
 {
@@ -52,6 +54,14 @@ TEST(String, Copy)
     bpf::String ss = str;
     for (int i = 0; i < 100; ++i)
         ss = str;
+}
+
+TEST(String, From_TypeName)
+{
+    bpf::String s = bpf::TypeName<int>();
+    s += bpf::TypeName<float>();
+    s += bpf::TypeName<double>();
+    EXPECT_STREQ(*s, "intfloatdouble");
 }
 
 TEST(String, UTF8)
@@ -123,6 +133,7 @@ TEST(String, ByteAt)
     EXPECT_TRUE(s.ByteAt(3) == 't');
     EXPECT_TRUE((bpf::uint8)s.ByteAt(4) == 0xC3);
     EXPECT_TRUE(s.ByteAt(s.Size() - 1) == 't');
+    EXPECT_THROW(s.ByteAt(42), bpf::IndexException);
 }
 
 TEST(String, OperatorPlus)
@@ -133,6 +144,8 @@ TEST(String, OperatorPlus)
     bpf::String s1("");
     s1 = s1 + 'T' + ' ' + bpf::String::UTF32("¥") + ' ' + 128224;
     EXPECT_STREQ(*s1, "T ¥ \U0001F4E0");
+    bpf::String ss = bpf::String("test") + bpf::String(bpf::String::UTF32("¥"));
+    EXPECT_STREQ(*ss, "test¥");
 }
 
 TEST(String, OperatorPlusEqual)
@@ -303,6 +316,7 @@ TEST(String, LastIndexOfSingleChar)
     EXPECT_TRUE(ascii.LastIndexOf('u') == ascii.Len() - 1);
     EXPECT_TRUE(ascii.LastIndexOf('A') == -1);
     EXPECT_TRUE(utf8.LastIndexOf('G') == -1);
+    EXPECT_EQ(utf8.LastIndexOf(bpf::String::UTF32("▦")), 12);
 }
 
 TEST(String, LastIndexOfString)
@@ -323,9 +337,9 @@ TEST(String, ExplodeSingleChar)
     bpf::String s = "this is a test";
     bpf::String s1 = "this      is   a                 test";
     bpf::String s2 = "         this      is   a                 test         ";
-    bpf::Array<bpf::String> data = s.Explode(' ');
-    bpf::Array<bpf::String> data1 = s1.Explode(' ');
-    bpf::Array<bpf::String> data2 = s2.Explode(' ');
+    bpf::collection::Array<bpf::String> data = s.Explode(' ');
+    bpf::collection::Array<bpf::String> data1 = s1.Explode(' ');
+    bpf::collection::Array<bpf::String> data2 = s2.Explode(' ');
 
     EXPECT_TRUE(data.Size() == data1.Size());
     EXPECT_TRUE(data.Size() == data2.Size());
@@ -347,7 +361,7 @@ TEST(String, ExplodeSingleChar)
 TEST(String, ExplodeOr)
 {
     bpf::String s = "this is a, test";
-    bpf::Array<bpf::String> data = s.ExplodeOr(" ,");
+    bpf::collection::Array<bpf::String> data = s.ExplodeOr(" ,");
 
     EXPECT_TRUE(data.Size() == 4);
     EXPECT_STREQ("this", *data[0]);
@@ -362,10 +376,10 @@ TEST(String, ExplodeString)
     bpf::String s1 = "this      is    a                  test";
     bpf::String s2 = "        this      is    a                  test          ";
     bpf::String s3 = "this is a test";
-    bpf::Array<bpf::String> data = s.Explode("  ");
-    bpf::Array<bpf::String> data1 = s1.Explode("  ");
-    bpf::Array<bpf::String> data2 = s2.Explode("  ");
-    bpf::Array<bpf::String> data3 = s3.Explode(" ");
+    bpf::collection::Array<bpf::String> data = s.Explode("  ");
+    bpf::collection::Array<bpf::String> data1 = s1.Explode("  ");
+    bpf::collection::Array<bpf::String> data2 = s2.Explode("  ");
+    bpf::collection::Array<bpf::String> data3 = s3.Explode(" ");
 
     EXPECT_TRUE(data.Size() == data1.Size());
     EXPECT_TRUE(data.Size() == data2.Size());
@@ -394,9 +408,9 @@ TEST(String, ExplodeIgnoreSingleChar)
     bpf::String s = "this 'is a' test";
     bpf::String s1 = "this      'is   a'                 test";
     bpf::String s2 = "         this      'is   a'                 test         ";
-    bpf::Array<bpf::String> data = s.ExplodeIgnore(' ', '\'');
-    bpf::Array<bpf::String> data1 = s1.ExplodeIgnore(' ', '\'');
-    bpf::Array<bpf::String> data2 = s2.ExplodeIgnore(' ', '\'');
+    bpf::collection::Array<bpf::String> data = s.ExplodeIgnore(' ', '\'');
+    bpf::collection::Array<bpf::String> data1 = s1.ExplodeIgnore(' ', '\'');
+    bpf::collection::Array<bpf::String> data2 = s2.ExplodeIgnore(' ', '\'');
 
     EXPECT_TRUE(data.Size() == data1.Size());
     EXPECT_TRUE(data.Size() == data2.Size());
@@ -417,9 +431,9 @@ TEST(String, ExplodeIgnoreString_Test1)
     bpf::String s = "this  'is  a'  test";
     bpf::String s1 = "this      'is   a'                  test";
     bpf::String s2 = "        this      'is   a'                test         ";
-    bpf::Array<bpf::String> data = s.ExplodeIgnore("  ", "'");
-    bpf::Array<bpf::String> data1 = s1.ExplodeIgnore("  ", "'");
-    bpf::Array<bpf::String> data2 = s2.ExplodeIgnore("  ", "'");
+    bpf::collection::Array<bpf::String> data = s.ExplodeIgnore("  ", "'");
+    bpf::collection::Array<bpf::String> data1 = s1.ExplodeIgnore("  ", "'");
+    bpf::collection::Array<bpf::String> data2 = s2.ExplodeIgnore("  ", "'");
 
     EXPECT_TRUE(data.Size() == data1.Size());
     EXPECT_TRUE(data.Size() == data2.Size());
@@ -440,9 +454,9 @@ TEST(String, ExplodeIgnoreString_Test2)
     bpf::String s = "this  !'is  a!'  test";
     bpf::String s1 = "this      !'is   a!'                  test";
     bpf::String s2 = "          this      !'is   a!'                  test          ";
-    bpf::Array<bpf::String> data = s.ExplodeIgnore("  ", "!'");
-    bpf::Array<bpf::String> data1 = s1.ExplodeIgnore("  ", "!'");
-    bpf::Array<bpf::String> data2 = s2.ExplodeIgnore("  ", "!'");
+    bpf::collection::Array<bpf::String> data = s.ExplodeIgnore("  ", "!'");
+    bpf::collection::Array<bpf::String> data1 = s1.ExplodeIgnore("  ", "!'");
+    bpf::collection::Array<bpf::String> data2 = s2.ExplodeIgnore("  ", "!'");
 
     EXPECT_TRUE(data.Size() == data1.Size());
     EXPECT_TRUE(data.Size() == data2.Size());
@@ -550,7 +564,7 @@ TEST(String, SubLenUTF8)
 
 TEST(String, Format_Test1)
 {
-    bpf::Array<bpf::String> arr(2);
+    bpf::collection::Array<bpf::String> arr(2);
     arr[0] = "this is a test";
     arr[1] = "yay";
     bpf::String formatted = bpf::String::Format("[16,right, ]\t[16,right, ]\t[]\t[]", -42, 42.42, 42000, arr);
@@ -573,23 +587,48 @@ TEST(String, Format_Test2)
 
 TEST(String, ValueOf)
 {
+    //Int32
     EXPECT_STREQ(*bpf::String::ValueOf(42), "42");
+    EXPECT_STREQ(*bpf::String::ValueOf(42, 4), "0042");
+    EXPECT_STREQ(*bpf::String::ValueOf(42, 1), "42");
+    EXPECT_STREQ(*bpf::String::ValueOf(-42, 1), "-42");
+    EXPECT_STREQ(*bpf::String::ValueOf(-42, 4), "-042");
+    //UInt32
+    EXPECT_STREQ(*bpf::String::ValueOf(42U), "42");
+    EXPECT_STREQ(*bpf::String::ValueOf(42U, 4), "0042");
+    EXPECT_STREQ(*bpf::String::ValueOf(42U, 1), "42");
+    //Int64
+    EXPECT_STREQ(*bpf::String::ValueOf(42LL), "42");
+    EXPECT_STREQ(*bpf::String::ValueOf(42LL, 4), "0042");
+    EXPECT_STREQ(*bpf::String::ValueOf(42LL, 1), "42");
+    EXPECT_STREQ(*bpf::String::ValueOf(-42LL, 1), "-42");
+    EXPECT_STREQ(*bpf::String::ValueOf(-42LL, 4), "-042");
+    //UInt64
+    EXPECT_STREQ(*bpf::String::ValueOf(42ULL), "42");
+    EXPECT_STREQ(*bpf::String::ValueOf(42ULL, 4), "0042");
+    EXPECT_STREQ(*bpf::String::ValueOf(42ULL, 1), "42");
+    //Float
     EXPECT_STREQ(*bpf::String::ValueOf(42.42f), "42.42");
+    EXPECT_STREQ(*bpf::String::ValueOf(42.423f, 2), "42.42");
+    EXPECT_STREQ(*bpf::String::ValueOf(42.42f, 4), "42.4200");
+    //Double
     EXPECT_STREQ(*bpf::String::ValueOf(42.42), "42.42");
+    EXPECT_STREQ(*bpf::String::ValueOf(42.423, 2), "42.42");
+    EXPECT_STREQ(*bpf::String::ValueOf(42.42, 4), "42.4200");
     EXPECT_STREQ(*bpf::String::ValueOf((bpf::uint64)999999999), "999999999");
     EXPECT_STREQ(*bpf::String::ValueOf((bpf::int64)-999999999), "-999999999");
     EXPECT_STREQ(*bpf::String::ValueOf((bpf::uint32)4000000000), "4000000000");
-    bpf::Array<bpf::String> arr(2);
+    bpf::collection::Array<bpf::String> arr(2);
     arr[0] = "this is a test";
     arr[1] = "yay";
     EXPECT_STREQ(*bpf::String::ValueOf(arr), "[this is a test, yay]");
-    bpf::List<int> lst;
+    bpf::collection::List<int> lst;
     lst.Add(0);
     lst.Add(2);
     lst.Add(5);
     EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 2, 5]");
     bpf::uintptr s = 0x456789F;
-    EXPECT_STREQ(*bpf::String::ValueOf((void *)s), "456789f");
+    EXPECT_STREQ(*bpf::String::ValueOf((void *)s), "0x456789f");
 }
 
 TEST(String, Safety)
@@ -654,19 +693,19 @@ TEST(String, IterateUTF8)
 TEST(String, ToArray)
 {
     bpf::String str = "this is a test";
-    bpf::Array<char> arr = str.ToArray();
+    bpf::collection::Array<char> arr = str.ToArray();
 
     EXPECT_STREQ(*str, *arr);
 }
 
 TEST(String, Reverse)
 {
-	bpf::String str = "abc";
-	EXPECT_STREQ(*str.Reverse(), "cba");
-	str = "";
-	EXPECT_STREQ(*str.Reverse(), "");
-	str = "abcd  ef";
-	EXPECT_STREQ(*str.Reverse(), "fe  dcba");
+    bpf::String str = "abc";
+    EXPECT_STREQ(*str.Reverse(), "cba");
+    str = "";
+    EXPECT_STREQ(*str.Reverse(), "");
+    str = "abcd  ef";
+    EXPECT_STREQ(*str.Reverse(), "fe  dcba");
 }
 
 TEST(String, Chinese)

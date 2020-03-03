@@ -33,58 +33,61 @@
 
 namespace bpf
 {
-    class BPF_API ByteBuf : public IInputStream, public IOutputStream
+    namespace io
     {
-    private:
-        uint8 *_buf;
-        fsize _cursor;
-        fsize _size;
-        fsize _written;
-        
-    public:
-        explicit ByteBuf(const fsize size);
-        ByteBuf(ByteBuf &&other);
-        ~ByteBuf();
-    
-        void Clear();
-        
-        void Shift(fsize count);
-        
-        fsize Write(const void *buf, fsize bufsize);
-        fsize Read(void *buf, fsize bufsize);
-    
-        inline uint8 *GetRawData() noexcept
+        class BPF_API ByteBuf : public IInputStream, public IOutputStream
         {
-            return (_buf);
-        }
-        
-        inline fsize Size() const noexcept
-        {
-            return (_size);
-        }
-        
-        inline fsize GetCursor() const noexcept
-        {
-            return (_cursor);
-        }
-        
-        inline fsize GetWrittenBytes() const noexcept
-        {
-            return (_written);
-        }
-        
-        inline void Seek(const fsize pos)
-        {
-            if (pos >= _size)
-                throw IndexException((fint)pos);
-            _cursor = pos;
-        }
-    
-        inline uint8 operator[](const fsize id) const
-        {
-            if (id >= _size)
-                throw IndexException((fint)id);
-            return (_buf[id]);
-        }
-    };
+        private:
+            uint8 *_buf;
+            fsize _cursor;
+            fsize _size;
+            fsize _written;
+
+        public:
+            explicit ByteBuf(const fsize size);
+            ByteBuf(ByteBuf &&other);
+            ~ByteBuf();
+
+            void Clear();
+
+            void Shift(fsize count);
+
+            fsize Write(const void *buf, fsize bufsize);
+            fsize Read(void *buf, fsize bufsize);
+
+            inline uint8 *GetRawData() noexcept
+            {
+                return (_buf);
+            }
+
+            inline fsize Size() const noexcept
+            {
+                return (_size);
+            }
+
+            inline fsize GetCursor() const noexcept
+            {
+                return (_cursor);
+            }
+
+            inline fsize GetWrittenBytes() const noexcept
+            {
+                return (_written);
+            }
+
+            inline void Seek(const fsize pos)
+            {
+                if (pos >= _size)
+                    throw IndexException((fint)pos);
+                _cursor = pos;
+            }
+
+            inline uint8 operator[](const fsize id) const
+            {
+                if (id >= _size)
+                    throw IndexException((fint)id);
+                return (_buf[id]);
+            }
+        };
+    }
 }

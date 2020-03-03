@@ -31,12 +31,15 @@
 
 namespace bpf
 {
-    class BPF_API NonInvertibleMatrixException : public Exception
+    namespace math
     {
-    public:
-        inline virtual const char *GetType() const noexcept
+        class NonInvertibleMatrixException : public Exception
         {
-            return ("NonInvertibleMatrix");
-        }
-    };
+        public:
+            inline virtual const char *GetType() const noexcept
+            {
+                return ("NonInvertibleMatrix");
+            }
+        };
+    }
 }

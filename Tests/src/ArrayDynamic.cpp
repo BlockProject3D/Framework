@@ -29,13 +29,17 @@
 #include <cassert>
 #include <iostream>
 #include <gtest/gtest.h>
-#include <Framework/Stringifier.Container.hpp>
-#include <Framework/Array.hpp>
-#include <Framework/Memory/Memory.hpp>
+#include <Framework/Collection/Stringifier.Array.hpp>
+#include <Framework/Collection/Array.hpp>
+#include <Framework/Memory/Utility.hpp>
+
+using namespace bpf::memory;
+using namespace bpf::collection;
+using namespace bpf;
 
 TEST(ArrayDynamic, Creation)
 {
-    auto arr = bpf::Array<int>(3);
+    auto arr = Array<int>(3);
 
     arr[0] = 1;
     arr[1] = 3;
@@ -47,7 +51,7 @@ TEST(ArrayDynamic, Creation)
 
 TEST(ArrayDynamic, Creation_List)
 {
-    bpf::Array<int> lst = { 0, 3, 7 };
+    Array<int> lst = { 0, 3, 7 };
 
     EXPECT_EQ(lst[0], 0);
     EXPECT_EQ(lst[1], 3);
@@ -56,25 +60,25 @@ TEST(ArrayDynamic, Creation_List)
 
 TEST(ArrayDynamic, Indexer)
 {
-    bpf::Array<int> lst1 = { 0, 3, 7 };
+    Array<int> lst1 = { 0, 3, 7 };
 
     EXPECT_EQ(lst1[0], 0);
     EXPECT_EQ(lst1[1], 3);
     EXPECT_EQ(lst1[2], 7);
-    EXPECT_THROW(lst1[3], bpf::IndexException);
-    EXPECT_THROW(lst1[678], bpf::IndexException);
-    EXPECT_THROW(lst1[(bpf::fsize) - 1], bpf::IndexException);
-    EXPECT_THROW(lst1[(bpf::fsize) - 465], bpf::IndexException);
+    EXPECT_THROW(lst1[3], IndexException);
+    EXPECT_THROW(lst1[678], IndexException);
+    EXPECT_THROW(lst1[(fsize) - 1], IndexException);
+    EXPECT_THROW(lst1[(fsize) - 465], IndexException);
     const auto &lst = lst1;
-    EXPECT_THROW(lst[3], bpf::IndexException);
-    EXPECT_THROW(lst[678], bpf::IndexException);
-    EXPECT_THROW(lst[(bpf::fsize) - 1], bpf::IndexException);
-    EXPECT_THROW(lst[(bpf::fsize) - 465], bpf::IndexException);
+    EXPECT_THROW(lst[3], IndexException);
+    EXPECT_THROW(lst[678], IndexException);
+    EXPECT_THROW(lst[(fsize) - 1], IndexException);
+    EXPECT_THROW(lst[(fsize) - 465], IndexException);
 }
 
 TEST(ArrayDynamic, FindByKey)
 {
-    bpf::Array<int> lst = { 0, 3, 7 };
+    Array<int> lst = { 0, 3, 7 };
 
     EXPECT_EQ(lst.begin(), lst.FindByKey(0));
     EXPECT_EQ(--lst.end(), lst.FindByKey(2));
@@ -83,28 +87,28 @@ TEST(ArrayDynamic, FindByKey)
 
 TEST(ArrayDynamic, FindByValue)
 {
-    bpf::Array<int> lst = { 0, 3, 7 };
+    Array<int> lst = { 0, 3, 7 };
 
     EXPECT_EQ(lst.begin(), lst.FindByValue(0));
     EXPECT_EQ(--lst.end(), lst.FindByValue(7));
-    EXPECT_EQ(--lst.end(), lst.FindByValue<bpf::ops::Greater>(3));
+    EXPECT_EQ(--lst.end(), lst.FindByValue<ops::Greater>(3));
     EXPECT_EQ(lst.end(), lst.FindByValue(42));
 }
 
 TEST(ArrayDynamic, Find)
 {
-    bpf::Array<int> lst = { 0, 3, 7 };
+    Array<int> lst = { 0, 3, 7 };
 
-    EXPECT_EQ(++lst.begin(), lst.Find([](bpf::fsize pos, const int &val) { return (val == 3); }));
-    EXPECT_EQ(lst.end(), lst.Find([](bpf::fsize pos, const int &val) { return (val == 42); }));
+    EXPECT_EQ(++lst.begin(), lst.Find([](fsize pos, const int &val) { return (val == 3); }));
+    EXPECT_EQ(lst.end(), lst.Find([](fsize pos, const int &val) { return (val == 42); }));
 }
 
 TEST(ArrayDynamic, Equal)
 {
-    bpf::Array<int> lst = { 0, 3, 7 };
-    bpf::Array<int> lst1 = { 0, 3, 7 };
-    bpf::Array<int> lst2 = { 0, 3 };
-    bpf::Array<int> lst3 = { 0, 3, 4 };
+    Array<int> lst = { 0, 3, 7 };
+    Array<int> lst1 = { 0, 3, 7 };
+    Array<int> lst2 = { 0, 3 };
+    Array<int> lst3 = { 0, 3, 4 };
 
     EXPECT_TRUE(lst == lst1);
     EXPECT_FALSE(lst != lst1);
@@ -116,35 +120,35 @@ TEST(ArrayDynamic, Equal)
 
 TEST(ArrayDynamic, FirstLast_1)
 {
-    bpf::Array<int> lst = { 0, 3, 7 };
+    Array<int> lst = { 0, 3, 7 };
 
     EXPECT_EQ(lst.First(), 0);
     EXPECT_EQ(lst.Last(), 7);
     lst = {};
-    EXPECT_THROW(lst.First(), bpf::IndexException);
-    EXPECT_THROW(lst.Last(), bpf::IndexException);
+    EXPECT_THROW(lst.First(), IndexException);
+    EXPECT_THROW(lst.Last(), IndexException);
 }
 
 TEST(ArrayDynamic, FirstLast_2)
 {
-    bpf::Array<int> lst = { 0, 1 };
+    Array<int> lst = { 0, 1 };
     const auto &cref = lst;
-    bpf::Array<int> lst1;
+    Array<int> lst1;
     const auto &cref1 = lst1;
 
     EXPECT_EQ(lst.First(), 0);
     EXPECT_EQ(lst.Last(), 1);
     EXPECT_EQ(cref.First(), 0);
     EXPECT_EQ(cref.Last(), 1);
-    EXPECT_THROW(lst1.First(), bpf::IndexException);
-    EXPECT_THROW(lst1.Last(), bpf::IndexException);
-    EXPECT_THROW(cref1.First(), bpf::IndexException);
-    EXPECT_THROW(cref1.Last(), bpf::IndexException);
+    EXPECT_THROW(lst1.First(), IndexException);
+    EXPECT_THROW(lst1.Last(), IndexException);
+    EXPECT_THROW(cref1.First(), IndexException);
+    EXPECT_THROW(cref1.Last(), IndexException);
 }
 
 TEST(ArrayDynamic, Copy_1)
 {
-    bpf::Array<int> lst = { 0, 3, 7 };
+    Array<int> lst = { 0, 3, 7 };
 
     auto copy = lst;
     EXPECT_EQ(lst[0], 0);
@@ -157,7 +161,7 @@ TEST(ArrayDynamic, Copy_1)
 
 TEST(ArrayDynamic, Move_1)
 {
-    bpf::Array<int> lst = { 0, 3, 7 };
+    Array<int> lst = { 0, 3, 7 };
 
     auto mv = std::move(lst);
     EXPECT_EQ(mv[0], 0);
@@ -169,7 +173,7 @@ TEST(ArrayDynamic, Move_1)
 
 TEST(ArrayDynamic, Copy_2)
 {
-    auto arr = bpf::Array<int>(3);
+    auto arr = Array<int>(3);
 
     arr[0] = 1;
     arr[1] = 3;
@@ -185,7 +189,7 @@ TEST(ArrayDynamic, Copy_2)
 
 TEST(ArrayDynamic, Move_2)
 {
-    auto arr = bpf::Array<int>(3);
+    auto arr = Array<int>(3);
 
     arr[0] = 1;
     arr[1] = 3;
@@ -203,7 +207,7 @@ TEST(ArrayDynamic, Move_2)
 
 TEST(ArrayDynamic, Iterator_1)
 {
-    bpf::Array<int> lst = { 0, 3, 7, 0 };
+    Array<int> lst = { 0, 3, 7, 0 };
 
     auto it = lst.begin();
     ++it;
@@ -223,7 +227,7 @@ TEST(ArrayDynamic, Iterator_1)
 
 TEST(ArrayDynamic, Iterator_2)
 {
-    bpf::Array<bpf::String> lst = { "a", "b", "c" };
+    Array<String> lst = { "a", "b", "c" };
 
     EXPECT_EQ(lst.begin()->Size(), 1);
     EXPECT_EQ(lst.begin()->ByteAt(0), 'a');
@@ -231,7 +235,7 @@ TEST(ArrayDynamic, Iterator_2)
 
 TEST(ArrayDynamic, ReverseIterator_1)
 {
-    bpf::Array<int> lst = { 0, 3, 7, 0 };
+    Array<int> lst = { 0, 3, 7, 0 };
 
     auto it = lst.rbegin();
     ++it;
@@ -251,7 +255,7 @@ TEST(ArrayDynamic, ReverseIterator_1)
 
 TEST(ArrayDynamic, ReverseIterator_2)
 {
-    bpf::Array<bpf::String> lst = { "a", "b", "c" };
+    Array<String> lst = { "a", "b", "c" };
 
     EXPECT_EQ(lst.rbegin()->Size(), 1);
     EXPECT_EQ(lst.rbegin()->ByteAt(0), 'c');
@@ -260,7 +264,7 @@ TEST(ArrayDynamic, ReverseIterator_2)
 TEST(ArrayDynamic, IterateForward_Test1)
 {
     int res = 0;
-    bpf::Array<int> lst = { 0, 3, 7 };
+    Array<int> lst = { 0, 3, 7 };
 
     for (auto &i : lst)
         res += i;
@@ -269,8 +273,8 @@ TEST(ArrayDynamic, IterateForward_Test1)
 
 TEST(ArrayDynamic, IterateForward_Test2)
 {
-    bpf::String res = bpf::String::Empty;
-    bpf::Array<bpf::String> lst = { "a", "b", "c", "d", "e" };
+    String res = String::Empty;
+    Array<String> lst = { "a", "b", "c", "d", "e" };
 
     for (auto &i : lst)
         res += i;
@@ -280,28 +284,28 @@ TEST(ArrayDynamic, IterateForward_Test2)
 TEST(ArrayDynamic, IterateBackward_Test1)
 {
     int res = 0;
-    bpf::Array<int> lst = { 0, 3, 7 };
+    Array<int> lst = { 0, 3, 7 };
 
-    for (auto &i : bpf::Reverse(lst))
+    for (auto &i : Reverse(lst))
         res += i;
     EXPECT_EQ(res, 10);
 }
 
 TEST(ArrayDynamic, IterateBackward_Test2)
 {
-    bpf::String res = bpf::String::Empty;
-    bpf::Array<bpf::String> lst = { "a", "b", "c", "d", "e" };
+    String res = String::Empty;
+    Array<String> lst = { "a", "b", "c", "d", "e" };
 
-    for (auto &i : bpf::Reverse(lst))
+    for (auto &i : Reverse(lst))
         res += i;
     EXPECT_STREQ(*res, "edcba");
 }
 
 TEST(ArrayDynamic, ReadWrite_NonCopy_1)
 {
-    bpf::Array<bpf::UniquePtr<int>> lst(1);
+    Array<UniquePtr<int>> lst(1);
 
-    lst[0] = bpf::MakeUnique<int>(32);
+    lst[0] = MakeUnique<int>(32);
     for (auto &it : lst)
         EXPECT_EQ(*it, 32);
     EXPECT_EQ(*lst[0], 32);
@@ -311,57 +315,57 @@ TEST(ArrayDynamic, ReadWrite_NonCopy_1)
 
 TEST(ArrayDynamic, Swap_1)
 {
-    bpf::Array<int> lst = { 0, 3, 7 };
+    Array<int> lst = { 0, 3, 7 };
 
     lst.Swap(lst.begin(), --(--lst.end()));
-    EXPECT_STREQ(*bpf::String::ValueOf(lst), "[3, 0, 7]");
+    EXPECT_STREQ(*String::ValueOf(lst), "[3, 0, 7]");
 }
 
 TEST(ArrayDynamic, Swap_2)
 {
-    bpf::Array<int> lst = { 0, 3, 7 };
+    Array<int> lst = { 0, 3, 7 };
 
     lst.Swap(++lst.begin(), --lst.end());
-    EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 7, 3]");
+    EXPECT_STREQ(*String::ValueOf(lst), "[0, 7, 3]");
 }
 
 TEST(ArrayDynamic, Swap_3)
 {
-    bpf::Array<int> lst = { 0, 7 };
+    Array<int> lst = { 0, 7 };
 
     lst.Swap(lst.begin(), --lst.end());
-    EXPECT_STREQ(*bpf::String::ValueOf(lst), "[7, 0]");
+    EXPECT_STREQ(*String::ValueOf(lst), "[7, 0]");
 }
 
 TEST(ArrayDynamic, Swap_4)
 {
-    bpf::Array<bpf::UniquePtr<int>> lst(2);
+    Array<UniquePtr<int>> lst(2);
 
-    lst[0] = bpf::MakeUnique<int>(0);
-    lst[1] = bpf::MakeUnique<int>(7);
+    lst[0] = MakeUnique<int>(0);
+    lst[1] = MakeUnique<int>(7);
     lst.Swap(lst.begin(), --lst.end());
 }
 
 TEST(ArrayDynamic, Swap_Err_1)
 {
-    bpf::Array<bpf::UniquePtr<int>> lst;
+    Array<UniquePtr<int>> lst;
 
     lst.Swap(lst.begin(), --lst.end());
 }
 
 TEST(ArrayDynamic, Swap_Err_2)
 {
-    bpf::Array<int> lst = { 0, 7 };
+    Array<int> lst = { 0, 7 };
 
     lst.Swap(lst.begin(), lst.begin());
     lst.Swap(lst.end(), lst.end());
     lst.Swap(--lst.end(), --lst.end());
-    EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 7]");
+    EXPECT_STREQ(*String::ValueOf(lst), "[0, 7]");
 }
 
 TEST(ArrayDynamic, Realloc)
 {
-    auto arr = bpf::Array<int>(3);
+    auto arr = Array<int>(3);
 
     arr[0] = 1;
     arr[1] = 3;
@@ -377,7 +381,7 @@ TEST(ArrayDynamic, Realloc)
 
 TEST(ArrayDynamic, ReallocForbidThrow)
 {
-    auto arr = bpf::Array<int>(3);
+    auto arr = Array<int>(3);
     const auto &test = arr;
 
     arr[0] = 1;
@@ -386,14 +390,14 @@ TEST(ArrayDynamic, ReallocForbidThrow)
     EXPECT_EQ(arr[0], 1);
     EXPECT_EQ(arr[1], 3);
     EXPECT_EQ(arr[2], 6);
-    EXPECT_THROW(test[3], bpf::IndexException);
+    EXPECT_THROW(test[3], IndexException);
 }
 
 TEST(ArrayDynamic, ReadWrite_NonCopy_2)
 {
-    bpf::Array<bpf::UniquePtr<int>> arr(2);
-    arr[0] = bpf::MakeUnique<int>(32);
-    arr[1] = bpf::MakeUnique<int>(42);
+    Array<UniquePtr<int>> arr(2);
+    arr[0] = MakeUnique<int>(32);
+    arr[1] = MakeUnique<int>(42);
     EXPECT_EQ(*arr[0], 32);
     EXPECT_EQ(*arr[1], 42);
     *arr[0] = 42;
@@ -403,9 +407,9 @@ TEST(ArrayDynamic, ReadWrite_NonCopy_2)
 
 static void Test_ReadWrite_NonCopy_MemLeak()
 {
-    bpf::Array<bpf::UniquePtr<int>> arr(2);
-    arr[0] = bpf::MakeUnique<int>(32);
-    arr[1] = bpf::MakeUnique<int>(42);
+    Array<UniquePtr<int>> arr(2);
+    arr[0] = MakeUnique<int>(32);
+    arr[1] = MakeUnique<int>(42);
     EXPECT_EQ(*arr[0], 32);
     EXPECT_EQ(*arr[1], 42);
     *arr[0] = 42;
@@ -415,22 +419,22 @@ static void Test_ReadWrite_NonCopy_MemLeak()
 
 TEST(ArrayDynamic, ReadWrite_NonCopy_MemLeak)
 {
-    bpf::fsize cur = bpf::Memory::GetAllocCount();
+    fsize cur = Memory::GetAllocCount();
 
     Test_ReadWrite_NonCopy_MemLeak();
-    EXPECT_EQ(cur, bpf::Memory::GetAllocCount());
+    EXPECT_EQ(cur, Memory::GetAllocCount());
 }
 
 static void Test_CopyMoveObj_MemLeak()
 {
-    bpf::Array<bpf::String> lst = { "a", "b", "c" };
+    Array<String> lst = { "a", "b", "c" };
 
     lst.Resize(4);
     lst[3] = "d";
-    bpf::Array<bpf::String> cpy = lst;
+    Array<String> cpy = lst;
     EXPECT_EQ(lst.Size(), cpy.Size());
     EXPECT_EQ(lst.Size(), 4);
-    bpf::Array<bpf::String> mv = std::move(lst);
+    Array<String> mv = std::move(lst);
     EXPECT_EQ(lst.Size(), 0);
     EXPECT_EQ(mv.Size(), 4);
     EXPECT_EQ(cpy.Size(), 4);
@@ -439,14 +443,14 @@ static void Test_CopyMoveObj_MemLeak()
     EXPECT_EQ(cpy.Size(), 5);
     EXPECT_EQ(mv.Size(), 4);
     EXPECT_EQ(lst.Size(), 0);
-    EXPECT_STREQ(*bpf::String::ValueOf(mv), "[a, b, c, d]");
-    EXPECT_STREQ(*bpf::String::ValueOf(cpy), "[a, b, c, d, e]");
+    EXPECT_STREQ(*String::ValueOf(mv), "[a, b, c, d]");
+    EXPECT_STREQ(*String::ValueOf(cpy), "[a, b, c, d, e]");
 }
 
 TEST(ArrayDynamic, Test_CopyMoveObj_MemLeak)
 {
-    bpf::fsize cur = bpf::Memory::GetAllocCount();
+    fsize cur = Memory::GetAllocCount();
 
     Test_CopyMoveObj_MemLeak();
-    EXPECT_EQ(cur, bpf::Memory::GetAllocCount());
+    EXPECT_EQ(cur, Memory::GetAllocCount());
 }

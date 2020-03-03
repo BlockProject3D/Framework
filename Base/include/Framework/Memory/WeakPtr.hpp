@@ -27,53 +27,70 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/Memory/SharedPtr.hpp"
+#include "Framework/Memory/ClassCastException.hpp"
+#include "Framework/TypeInfo.hpp"
 
 namespace bpf
 {
-    template <typename T>
-    class BP_TPL_API WeakPtr
+    namespace memory
     {
-    private:
-        fint *Count;
-        fint *WCount;
-        T *RawPtr;
-
-        inline WeakPtr(fint *c, T *raw, fint *w)
-            : Count(c), WCount(w), RawPtr(raw)
+        template <typename T>
+        class BP_TPL_API WeakPtr
         {
-            if (Count != Null)
-                ++*WCount;
-        }
+        private:
+            fint *Count;
+            fint *WCount;
+            T *RawPtr;
 
-    public:
-        inline WeakPtr(const SharedPtr<T> &other) noexcept
-            : Count(other.Count), WCount(other.WCount), RawPtr(other.RawPtr)
-        {
-            if (Count != Null)
-                ++*WCount;
-        }
+            inline WeakPtr(fint *c, T *raw, fint *w)
+                : Count(c), WCount(w), RawPtr(raw)
+            {
+                if (Count != Null)
+                    ++ *WCount;
+            }
 
-        inline WeakPtr(const WeakPtr<T> &other) noexcept
-            : Count(other.Count), WCount(other.WCount), RawPtr(other.RawPtr)
-        {
-            if (Count != Null)
-                ++*WCount;
-        }
+        public:
+            inline WeakPtr(const SharedPtr<T> &other) noexcept
+                : Count(other.Count), WCount(other.WCount), RawPtr(other.RawPtr)
+            {
+                if (Count != Null)
+                    ++ *WCount;
+            }
 
-        ~WeakPtr();
+            inline WeakPtr(const WeakPtr<T> &other) noexcept
+                : Count(other.Count), WCount(other.WCount), RawPtr(other.RawPtr)
+            {
+                if (Count != Null)
+                    ++ *WCount;
+            }
 
-        SharedPtr<T> Lock() noexcept;
+            ~WeakPtr();
 
-        //Static casting
-        //TODO : Throw class cast exception in debug build
-        template <typename T1>
-        inline WeakPtr<T1> StaticCast() const noexcept
-        {
-            return (WeakPtr<T1>(Count, static_cast<T1 *>(RawPtr), WCount));
-        }
-        //End
+            SharedPtr<T> Lock() noexcept;
 
-        template <typename T1>
-        friend class WeakPtr;
-    };
+            template <typename T1>
+            inline WeakPtr<T1> Cast() const
+            {
+#ifdef BUILD_DEBUG
+                if (RawPtr == Null)
+                    return (Null);
+                else
+                {
+                    auto ptr = dynamic_cast<T1 *>(RawPtr);
+                    if (ptr == Null)
+                        throw ClassCastException(String("Cannot cast from ") + TypeName<T>() + " to " + TypeName<T1>());
+                    return (WeakPtr<T1>(Count, ptr, WCount));
+                }
+#else
+                return (WeakPtr<T1>(Count, static_cast<T1 *>(RawPtr), WCount));
+#endif
+            }
+
+            template <typename T1>
+            friend class WeakPtr;
+        };
+    }
 }
+
+#include "Framework/Memory/WeakPtr.impl.hpp"

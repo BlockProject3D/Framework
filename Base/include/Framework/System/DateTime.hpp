@@ -31,73 +31,74 @@
 #include "Framework/Types.hpp"
 #include "Framework/String.hpp"
 
-//TODO: Parse and TryParse
-
 namespace bpf
 {
-    class BPF_API DateTime
+    namespace system
     {
-    private:
-        time_t _curtm;
-        uint32 _year;
-        fint _day;
-        fint _dayweek;
-        fint _month;
-        fint _hour;
-        fint _minute;
-        fint _second;
-
-        void RecalcLocal();
-        void RecalcUTC();
-
-    public:
-        explicit DateTime(uint64 seconds);
-        DateTime();
-
-        inline uint32 GetYear() const noexcept
+        class BPF_API DateTime
         {
-            return (_year + 1900);
-        }
+        private:
+            time_t _curtm;
+            uint32 _year;
+            fint _day;
+            fint _dayweek;
+            fint _month;
+            fint _hour;
+            fint _minute;
+            fint _second;
 
-        inline fint GetDay() const noexcept
-        {
-            return (_day);
-        }
+            void RecalcLocal();
+            void RecalcUTC();
 
-        inline fint GetMonth() const noexcept
-        {
-            return (_month + 1);
-        }
+        public:
+            explicit DateTime(uint64 seconds);
+            DateTime();
 
-        inline fint GetHours() const noexcept
-        {
-            return (_hour);
-        }
+            inline uint32 GetYear() const noexcept
+            {
+                return (_year + 1900);
+            }
 
-        inline fint GetMinutes() const noexcept
-        {
-            return (_minute);
-        }
+            inline fint GetDay() const noexcept
+            {
+                return (_day);
+            }
 
-        inline fint GetSeconds() const noexcept
-        {
-            return (_second);
-        }
+            inline fint GetMonth() const noexcept
+            {
+                return (_month + 1);
+            }
 
-        String GetMonthName() const;
-        String GetDayName() const;
-        DateTime operator+(const DateTime &other) const;
-        DateTime operator-(const DateTime &other) const;
-        bool operator>(const DateTime &other) const;
-        bool operator<(const DateTime &other) const;
-        bool operator==(const DateTime &other) const;
-        bool operator!=(const DateTime &other) const;
-        void operator+=(const DateTime &other);
-        void operator-=(const DateTime &other);
-        DateTime ToUTCTime() const;
-        DateTime ToLocalTime() const;
+            inline fint GetHours() const noexcept
+            {
+                return (_hour);
+            }
 
-        static DateTime UTCTime();
-        static DateTime LocalTime();
-    };
+            inline fint GetMinutes() const noexcept
+            {
+                return (_minute);
+            }
+
+            inline fint GetSeconds() const noexcept
+            {
+                return (_second);
+            }
+
+            String GetMonthName() const;
+            String GetDayName() const;
+            DateTime operator+(const DateTime &other) const;
+            DateTime operator-(const DateTime &other) const;
+            bool operator>(const DateTime &other) const;
+            bool operator<(const DateTime &other) const;
+            bool operator==(const DateTime &other) const;
+            bool operator!=(const DateTime &other) const;
+            void operator+=(const DateTime &other);
+            void operator-=(const DateTime &other);
+            DateTime ToUTCTime() const;
+            DateTime ToLocalTime() const;
+
+            static DateTime UTCTime();
+            static DateTime LocalTime();
+        };
+    }
 }

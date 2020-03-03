@@ -31,7 +31,7 @@
 #include <gtest/gtest.h>
 #include <Framework/Tuple.hpp>
 #include <Framework/String.hpp>
-#include <Framework/Memory/Memory.hpp>
+#include <Framework/Memory/Utility.hpp>
 
 TEST(Tuple, Basic)
 {
@@ -177,27 +177,27 @@ TEST(Tuple, IdenticalTypes_Strings)
 
 TEST(Tuple, NonCopy_Types)
 {
-	bpf::Tuple<bpf::UniquePtr<int>, bpf::UniquePtr<int>> tp(bpf::MakeUnique<int>(1), bpf::MakeUnique<int>(-1));
+	bpf::Tuple<bpf::memory::UniquePtr<int>, bpf::memory::UniquePtr<int>> tp(bpf::memory::MakeUnique<int>(1), bpf::memory::MakeUnique<int>(-1));
 
 	EXPECT_EQ(tp.Size(), 2);
-	EXPECT_EQ(*tp.Get<bpf::UniquePtr<int>>(), 1);
+	EXPECT_EQ(*tp.Get<bpf::memory::UniquePtr<int>>(), 1);
 	EXPECT_EQ(*tp.Get<0>(), 1);
 	EXPECT_EQ(*tp.Get<1>(), -1);
 }
 
 TEST(Tuple, Move_NonCopy_Types)
 {
-	bpf::Tuple<bpf::UniquePtr<int>, bpf::UniquePtr<int>> tp(bpf::MakeUnique<int>(1), bpf::MakeUnique<int>(-1));
+	bpf::Tuple<bpf::memory::UniquePtr<int>, bpf::memory::UniquePtr<int>> tp(bpf::memory::MakeUnique<int>(1), bpf::memory::MakeUnique<int>(-1));
 
 	EXPECT_EQ(tp.Size(), 2);
-	EXPECT_EQ(*tp.Get<bpf::UniquePtr<int>>(), 1);
+	EXPECT_EQ(*tp.Get<bpf::memory::UniquePtr<int>>(), 1);
 	EXPECT_EQ(*tp.Get<0>(), 1);
 	EXPECT_EQ(*tp.Get<1>(), -1);
 
 	auto mv = std::move(tp);
 	EXPECT_EQ(tp.Get<0>(), Null);
 	EXPECT_EQ(mv.Size(), 2);
-	EXPECT_EQ(*mv.Get<bpf::UniquePtr<int>>(), 1);
+	EXPECT_EQ(*mv.Get<bpf::memory::UniquePtr<int>>(), 1);
 	EXPECT_EQ(*mv.Get<0>(), 1);
 	EXPECT_EQ(*mv.Get<1>(), -1);
 }

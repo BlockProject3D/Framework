@@ -29,13 +29,17 @@
 #include <cassert>
 #include <iostream>
 #include <gtest/gtest.h>
-#include <Framework/Memory/Memory.hpp>
-#include <Framework/Map.hpp>
-#include <Framework/Stringifier.Container.hpp>
+#include <Framework/Memory/Utility.hpp>
+#include <Framework/Collection/Map.hpp>
+#include <Framework/Collection/Stringifier.Map.hpp>
+
+using namespace bpf::memory;
+using namespace bpf::collection;
+using namespace bpf;
 
 TEST(Map, Creation_1)
 {
-    bpf::Map<bpf::String, int> map;
+    Map<String, int> map;
 
     map["test1"] = 0;
     map["test2"] = 3;
@@ -44,7 +48,7 @@ TEST(Map, Creation_1)
 
 TEST(Map, Creation_2)
 {
-    bpf::Map<int, int> lst;
+    Map<int, int> lst;
 
     lst.Add(0, 0);
     lst.Add(1, 3);
@@ -56,7 +60,7 @@ TEST(Map, Creation_2)
 
 TEST(Map, Creation_List)
 {
-    bpf::Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 } };
+    Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 } };
 
     EXPECT_EQ(lst[0], 0);
     EXPECT_EQ(lst[1], 3);
@@ -66,31 +70,31 @@ TEST(Map, Creation_List)
 TEST(Map, Add_1)
 {
     const int i = 12;
-    bpf::Map<int, int> lst = { { 0, i }, { 1, 2 } };
+    Map<int, int> lst = { { 0, i }, { 1, 2 } };
 
     EXPECT_EQ(lst.Size(), 2);
     lst.Add(2, 3);
     EXPECT_EQ(lst.Size(), 3);
     lst.Add(3, i);
     EXPECT_EQ(lst.Size(), 4);
-    EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'0': 12, '1': 2, '2': 3, '3': 12}");
+    EXPECT_STREQ(*String::ValueOf(lst), "{'0': 12, '1': 2, '2': 3, '3': 12}");
 }
 
 TEST(Map, Add_2)
 {
-    bpf::Map<int, int> lst = { { 0, 0 }, { 1, 1 } };
+    Map<int, int> lst = { { 0, 0 }, { 1, 1 } };
 
     lst.Add(2, 2);
     lst.Add(3, 3);
     lst.Add(-2, -2);
     lst.Add(-1, -1);
     EXPECT_EQ(lst.Size(), 6);
-    EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'-2': -2, '-1': -1, '0': 0, '1': 1, '2': 2, '3': 3}");
+    EXPECT_STREQ(*String::ValueOf(lst), "{'-2': -2, '-1': -1, '0': 0, '1': 1, '2': 2, '3': 3}");
 }
 
 TEST(Map, Add_3)
 {
-    bpf::Map<int, int> lst = { { 0, 0 }, { 1, 1 } };
+    Map<int, int> lst = { { 0, 0 }, { 1, 1 } };
 
     lst.Add(2, 2);
     lst.Add(3, 3);
@@ -101,12 +105,12 @@ TEST(Map, Add_3)
     lst.Add(7, 7);
     lst.Add(6, 6);
     EXPECT_EQ(lst.Size(), 10);
-    EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'-2': -2, '-1': -1, '0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7}");
+    EXPECT_STREQ(*String::ValueOf(lst), "{'-2': -2, '-1': -1, '0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7}");
 }
 
 TEST(Map, Indexer)
 {
-    bpf::Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 } };
+    Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 } };
 
     EXPECT_EQ(lst[0], 0);
     EXPECT_EQ(lst[1], 3);
@@ -115,7 +119,7 @@ TEST(Map, Indexer)
 
 TEST(Map, FindByKey)
 {
-    bpf::Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 } };
+    Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 } };
 
     EXPECT_EQ(lst.begin(), lst.FindByKey(0));
     EXPECT_EQ(--lst.end(), lst.FindByKey(2));
@@ -124,25 +128,25 @@ TEST(Map, FindByKey)
 
 TEST(Map, FindByValue)
 {
-    bpf::Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 } };
+    Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 } };
 
     EXPECT_EQ(lst.begin(), lst.FindByValue(0));
     EXPECT_EQ(--lst.end(), lst.FindByValue(7));
-    EXPECT_EQ(--lst.end(), lst.FindByValue<bpf::ops::Greater>(3));
+    EXPECT_EQ(--lst.end(), lst.FindByValue<ops::Greater>(3));
     EXPECT_EQ(lst.end(), lst.FindByValue(42));
 }
 
 TEST(Map, Find)
 {
-    bpf::Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 } };
+    Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 } };
 
-    EXPECT_EQ(++lst.begin(), lst.Find([](const bpf::Map<int, int>::Node &nd) { return (1 - nd.KeyVal.Key); }));
-    EXPECT_EQ(lst.end(), lst.Find([](const bpf::Map<int, int>::Node &nd) { return (42 - nd.KeyVal.Key); }));
+    EXPECT_EQ(++lst.begin(), lst.Find([](const Map<int, int>::Node &nd) { return (1 - nd.KeyVal.Key); }));
+    EXPECT_EQ(lst.end(), lst.Find([](const Map<int, int>::Node &nd) { return (42 - nd.KeyVal.Key); }));
 }
 
 TEST(Map, FindMinMax)
 {
-    bpf::Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 } };
+    Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 } };
 
     EXPECT_EQ(lst.FindMin()->Key, 0);
     EXPECT_EQ(lst.FindMax()->Key, 2);
@@ -150,10 +154,10 @@ TEST(Map, FindMinMax)
 
 TEST(Map, Equal)
 {
-    bpf::Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 } };
-    bpf::Map<int, int> lst1 = { { 0, 0 }, { 1, 3 }, { 2, 7 } };
-    bpf::Map<int, int> lst2 = { { 0, 0 }, { 1, 3 } };
-    bpf::Map<int, int> lst3 = { { 0, 0 }, { 1, 3 }, { 2, 4 } };
+    Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 } };
+    Map<int, int> lst1 = { { 0, 0 }, { 1, 3 }, { 2, 7 } };
+    Map<int, int> lst2 = { { 0, 0 }, { 1, 3 } };
+    Map<int, int> lst3 = { { 0, 0 }, { 1, 3 }, { 2, 4 } };
 
     EXPECT_TRUE(lst == lst1);
     EXPECT_FALSE(lst != lst1);
@@ -165,19 +169,19 @@ TEST(Map, Equal)
 
 TEST(Map, Concatenate)
 {
-    bpf::Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 } };
-    bpf::Map<int, int> lst1 = { { 3, 0 }, { 1, 5 }, { 4, 7 } };
+    Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 } };
+    Map<int, int> lst1 = { { 3, 0 }, { 1, 5 }, { 4, 7 } };
 
     auto concatenated = lst + lst1;
-    EXPECT_STREQ(*bpf::String::ValueOf(concatenated), "{'0': 0, '1': 5, '2': 7, '3': 0, '4': 7}");
+    EXPECT_STREQ(*String::ValueOf(concatenated), "{'0': 0, '1': 5, '2': 7, '3': 0, '4': 7}");
     lst1 += lst;
-    EXPECT_STREQ(*bpf::String::ValueOf(lst1), "{'0': 0, '1': 3, '2': 7, '3': 0, '4': 7}");
-    EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'0': 0, '1': 3, '2': 7}");
+    EXPECT_STREQ(*String::ValueOf(lst1), "{'0': 0, '1': 3, '2': 7, '3': 0, '4': 7}");
+    EXPECT_STREQ(*String::ValueOf(lst), "{'0': 0, '1': 3, '2': 7}");
 }
 
 TEST(Map, HasKey)
 {
-    bpf::Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 } };
+    Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 } };
 
     EXPECT_EQ(lst[0], 0);
     EXPECT_EQ(lst[1], 3);
@@ -189,7 +193,7 @@ TEST(Map, HasKey)
 
 TEST(Map, Copy)
 {
-    bpf::Map<int, int> lst;
+    Map<int, int> lst;
 
     lst.Add(0, 0);
     lst.Add(1, 3);
@@ -205,7 +209,7 @@ TEST(Map, Copy)
 
 TEST(Map, Move)
 {
-    bpf::Map<int, int> lst;
+    Map<int, int> lst;
 
     lst.Add(0, 0);
     lst.Add(1, 3);
@@ -220,42 +224,42 @@ TEST(Map, Move)
 
 TEST(Map, Remove)
 {
-    bpf::Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
+    Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
 
     lst.Remove(0, false);
-    EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'1': 3, '2': 7, '3': 0}");
+    EXPECT_STREQ(*String::ValueOf(lst), "{'1': 3, '2': 7, '3': 0}");
     lst.Add(0, 0);
-    EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'0': 0, '1': 3, '2': 7, '3': 0}");
+    EXPECT_STREQ(*String::ValueOf(lst), "{'0': 0, '1': 3, '2': 7, '3': 0}");
     lst.Remove(0);
-    EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'1': 3, '2': 7}");
-    lst.Remove<bpf::ops::Less>(7);
-    EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'2': 7}");
+    EXPECT_STREQ(*String::ValueOf(lst), "{'1': 3, '2': 7}");
+    lst.Remove<ops::Less>(7);
+    EXPECT_STREQ(*String::ValueOf(lst), "{'2': 7}");
 }
 
 TEST(Map, RemoveAt)
 {
-    bpf::Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
+    Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
 
     lst.RemoveAt(2);
-    EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'0': 0, '1': 3, '3': 0}");
+    EXPECT_STREQ(*String::ValueOf(lst), "{'0': 0, '1': 3, '3': 0}");
     lst.RemoveAt(++lst.begin());
-    EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'0': 0, '3': 0}");
+    EXPECT_STREQ(*String::ValueOf(lst), "{'0': 0, '3': 0}");
     auto it = lst.begin();
     lst.RemoveAt(it);
-    EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'3': 0}");
+    EXPECT_STREQ(*String::ValueOf(lst), "{'3': 0}");
     EXPECT_NE(it, lst.end());
     lst.RemoveAt(--lst.end());
-    EXPECT_STREQ(*bpf::String::ValueOf(lst), "{}");
+    EXPECT_STREQ(*String::ValueOf(lst), "{}");
     lst = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
     lst.RemoveAt(--(--lst.end()));
-    EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'0': 0, '1': 3, '3': 0}");
+    EXPECT_STREQ(*String::ValueOf(lst), "{'0': 0, '1': 3, '3': 0}");
     lst.RemoveAt(lst.end());
-    EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'0': 0, '1': 3, '3': 0}");
+    EXPECT_STREQ(*String::ValueOf(lst), "{'0': 0, '1': 3, '3': 0}");
 }
 
 TEST(Map, Iterator_1)
 {
-    bpf::Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
+    Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
 
     auto it = lst.begin();
     ++it;
@@ -275,7 +279,7 @@ TEST(Map, Iterator_1)
 
 TEST(Map, Iterator_2)
 {
-    bpf::Map<int, int> lst = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+    Map<int, int> lst = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
 
     auto it = lst.begin();
     ++it;
@@ -295,7 +299,7 @@ TEST(Map, Iterator_2)
 
 TEST(Map, ReverseIterator_1)
 {
-    bpf::Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
+    Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
 
     auto it = lst.rbegin();
     ++it;
@@ -315,7 +319,7 @@ TEST(Map, ReverseIterator_1)
 
 TEST(Map, ReverseIterator_2)
 {
-    bpf::Map<int, int> lst = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+    Map<int, int> lst = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
 
     auto it = lst.rbegin();
     ++it;
@@ -335,7 +339,7 @@ TEST(Map, ReverseIterator_2)
 
 TEST(Map, Clear)
 {
-    bpf::Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
+    Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
 
     EXPECT_EQ(lst.Size(), 4);
     lst.Clear();
@@ -346,7 +350,7 @@ TEST(Map, Clear)
 TEST(Map, IterateForward_Test1)
 {
     int res = 0;
-    bpf::Map<int, int> lst;
+    Map<int, int> lst;
 
     lst.Add(0, 0);
     lst.Add(1, 3);
@@ -358,46 +362,46 @@ TEST(Map, IterateForward_Test1)
 
 TEST(Map, IterateForward_Test2)
 {
-    bpf::String res = bpf::String::Empty;
-    bpf::Map<bpf::String, int> map;
+    String res = String::Empty;
+    Map<String, int> map;
 
     map["test1"] = 0;
     map["test2"] = 3;
     map["test3"] = 7;
     for (auto &i : map)
-        res += i.Key + bpf::String::ValueOf(i.Value) + ";";
+        res += i.Key + String::ValueOf(i.Value) + ";";
     EXPECT_STREQ(*res, "test10;test23;test37;");
 }
 
 TEST(Map, IterateBackward_Test1)
 {
     int res = 0;
-    bpf::Map<int, int> lst;
+    Map<int, int> lst;
 
     lst.Add(0, 0);
     lst.Add(1, 3);
     lst.Add(2, 7);
-    for (auto &i : bpf::Reverse(lst))
+    for (auto &i : Reverse(lst))
         res += i.Key + i.Value;
     EXPECT_EQ(res, 13);
 }
 
 TEST(Map, IterateBackward_Test2)
 {
-    bpf::String res = bpf::String::Empty;
-    bpf::Map<bpf::String, int> map;
+    String res = String::Empty;
+    Map<String, int> map;
 
     map["test1"] = 0;
     map["test2"] = 3;
     map["test3"] = 7;
-    for (auto &i : bpf::Reverse(map))
-        res += i.Key + bpf::String::ValueOf(i.Value) + ";";
+    for (auto &i : Reverse(map))
+        res += i.Key + String::ValueOf(i.Value) + ";";
     EXPECT_STREQ(*res, "test37;test23;test10;");
 }
 
 TEST(Map, ReadWrite)
 {
-    bpf::Map<bpf::String, int> map;
+    Map<String, int> map;
 
     map["test1"] = 0;
     map["test2"] = 3;
@@ -409,7 +413,7 @@ TEST(Map, ReadWrite)
 
 TEST(Map, ReadWrite_NonCopy)
 {
-    bpf::Map<bpf::String, bpf::UniquePtr<int>> map;
+    Map<String, UniquePtr<int>> map;
 
     map["test1"] = Null;
     map["test2"] = Null;
@@ -417,9 +421,9 @@ TEST(Map, ReadWrite_NonCopy)
     EXPECT_EQ(map["test1"], Null);
     EXPECT_EQ(map["test2"], Null);
     EXPECT_EQ(map["test3"], Null);
-    map["test1"] = bpf::MakeUnique<int>(0);
-    map["test2"] = bpf::MakeUnique<int>(5);
-    map["test3"] = bpf::MakeUnique<int>(9);
+    map["test1"] = MakeUnique<int>(0);
+    map["test2"] = MakeUnique<int>(5);
+    map["test3"] = MakeUnique<int>(9);
     EXPECT_EQ(*map["test1"], 0);
     EXPECT_EQ(*map["test2"], 5);
     EXPECT_EQ(*map["test3"], 9);
@@ -427,7 +431,7 @@ TEST(Map, ReadWrite_NonCopy)
 
 static void RunLeakCheckBody()
 {
-    bpf::Map<bpf::String, bpf::UniquePtr<int>> map;
+    Map<String, UniquePtr<int>> map;
 
     map["test1"] = Null;
     map["test2"] = Null;
@@ -435,9 +439,9 @@ static void RunLeakCheckBody()
     EXPECT_EQ(map["test1"], Null);
     EXPECT_EQ(map["test2"], Null);
     EXPECT_EQ(map["test3"], Null);
-    map["test1"] = bpf::MakeUnique<int>(0);
-    map["test2"] = bpf::MakeUnique<int>(5);
-    map["test3"] = bpf::MakeUnique<int>(9);
+    map["test1"] = MakeUnique<int>(0);
+    map["test2"] = MakeUnique<int>(5);
+    map["test3"] = MakeUnique<int>(9);
     EXPECT_EQ(*map["test1"], 0);
     EXPECT_EQ(*map["test2"], 5);
     EXPECT_EQ(*map["test3"], 9);
@@ -446,67 +450,67 @@ static void RunLeakCheckBody()
 
 TEST(Map, ReadWrite_LeakCheck)
 {
-    bpf::fsize count = bpf::Memory::GetAllocCount();
+    fsize count = Memory::GetAllocCount();
     RunLeakCheckBody();
-    EXPECT_EQ(count, bpf::Memory::GetAllocCount());
+    EXPECT_EQ(count, Memory::GetAllocCount());
 }
 
 TEST(Map, Swap_1)
 {
-    bpf::Map<int, int> lst;
+    Map<int, int> lst;
 
     lst.Add(0, 0);
     lst.Add(1, 3);
     lst.Add(2, 7);
     lst.Swap(lst.begin(), --(--lst.end()));
-    EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'0': 3, '1': 0, '2': 7}");
+    EXPECT_STREQ(*String::ValueOf(lst), "{'0': 3, '1': 0, '2': 7}");
 }
 
 TEST(Map, Swap_2)
 {
-    bpf::Map<int, int> lst;
+    Map<int, int> lst;
 
     lst.Add(0, 0);
     lst.Add(1, 3);
     lst.Add(2, 7);
     lst.Swap(++lst.begin(), --lst.end());
-    EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'0': 0, '1': 7, '2': 3}");
+    EXPECT_STREQ(*String::ValueOf(lst), "{'0': 0, '1': 7, '2': 3}");
 }
 
 TEST(Map, Swap_3)
 {
-    bpf::Map<int, int> lst;
+    Map<int, int> lst;
 
     lst.Add(0, 0);
     lst.Add(1, 7);
     lst.Swap(lst.begin(), --lst.end());
-    EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'0': 7, '1': 0}");
+    EXPECT_STREQ(*String::ValueOf(lst), "{'0': 7, '1': 0}");
 }
 
 TEST(Map, Swap_4)
 {
-    bpf::Map<int, bpf::UniquePtr<int>> lst;
+    Map<int, UniquePtr<int>> lst;
 
-    lst.Add(0, bpf::MakeUnique<int>(0));
-    lst.Add(1, bpf::MakeUnique<int>(7));
+    lst.Add(0, MakeUnique<int>(0));
+    lst.Add(1, MakeUnique<int>(7));
     lst.Swap(lst.begin(), --lst.end());
 }
 
 TEST(Map, Swap_Err_1)
 {
-    bpf::Map<int, bpf::UniquePtr<int>> lst;
+    Map<int, UniquePtr<int>> lst;
 
     lst.Swap(lst.begin(), --lst.end());
 }
 
 TEST(Map, Swap_Err_2)
 {
-    bpf::Map<int, int> lst;
+    Map<int, int> lst;
 
     lst.Add(0, 0);
     lst.Add(1, 7);
     lst.Swap(lst.begin(), lst.begin());
     lst.Swap(lst.end(), lst.end());
     lst.Swap(--lst.end(), --lst.end());
-    EXPECT_STREQ(*bpf::String::ValueOf(lst), "{'0': 0, '1': 7}");
+    EXPECT_STREQ(*String::ValueOf(lst), "{'0': 0, '1': 7}");
 }

@@ -33,116 +33,119 @@
 
 namespace bpf
 {
-    class BPF_API BinaryWriter final : public IDataOutputStream
+    namespace io
     {
-    private:
-        IOutputStream &_stream;
-        ByteBuf _buf;
-        EPlatformEndianess _targetorder;
-        bool _buffered;
-        EStringSerializer _serializer;
-
-        void WriteByte(uint8 byte);
-        void WriteSubBuf(void *in, const fsize size);
-    public:
-        explicit inline BinaryWriter(IOutputStream &stream, EPlatformEndianess order = PLATFORM_LITTLEENDIAN, bool buffered = true)
-            : _stream(stream)
-            , _buf(WRITE_BUF_SIZE)
-            , _targetorder(order)
-            , _buffered(buffered)
-            , _serializer(EStringSerializer::VARCHAR_32)
+        class BPF_API BinaryWriter final : public IDataOutputStream
         {
-        }
+        private:
+            IOutputStream & _stream;
+            ByteBuf _buf;
+            system::EPlatformEndianess _targetorder;
+            bool _buffered;
+            EStringSerializer _serializer;
 
-        inline void SetStringSerializer(EStringSerializer ser)
-        {
-            _serializer = ser;
-        }
+            void WriteByte(uint8 byte);
+            void WriteSubBuf(void *in, const fsize size);
+        public:
+            explicit inline BinaryWriter(IOutputStream &stream, system::EPlatformEndianess order = system::PLATFORM_LITTLEENDIAN, bool buffered = true)
+                : _stream(stream)
+                , _buf(WRITE_BUF_SIZE)
+                , _targetorder(order)
+                , _buffered(buffered)
+                , _serializer(EStringSerializer::VARCHAR_32)
+            {
+            }
 
-        inline ~BinaryWriter()
-        {
-            if (_buffered)
-                _stream.Write(_buf.GetRawData(), _buf.GetWrittenBytes());
-        }
+            inline void SetStringSerializer(EStringSerializer ser)
+            {
+                _serializer = ser;
+            }
 
-        inline void Flush()
-        {
-            if (_buffered)
-                _stream.Write(_buf.GetRawData(), _buf.GetWrittenBytes());
-        }
+            inline ~BinaryWriter()
+            {
+                if (_buffered)
+                    _stream.Write(_buf.GetRawData(), _buf.GetWrittenBytes());
+            }
 
-        fsize Write(const void *buf, fsize bufsize);
+            inline void Flush()
+            {
+                if (_buffered)
+                    _stream.Write(_buf.GetRawData(), _buf.GetWrittenBytes());
+            }
 
-        inline IDataOutputStream &operator<<(uint8 u)
-        {
-            WriteByte(u);
-            return (*this);
-        }
+            fsize Write(const void *buf, fsize bufsize);
 
-        inline IDataOutputStream &operator<<(uint16 u)
-        {
-            WriteSubBuf(&u, 2);
-            return (*this);
-        }
+            inline IDataOutputStream &operator<<(uint8 u)
+            {
+                WriteByte(u);
+                return (*this);
+            }
 
-        inline IDataOutputStream &operator<<(uint32 u)
-        {
-            WriteSubBuf(&u, 4);
-            return (*this);
-        }
+            inline IDataOutputStream &operator<<(uint16 u)
+            {
+                WriteSubBuf(&u, 2);
+                return (*this);
+            }
 
-        inline IDataOutputStream &operator<<(uint64 u)
-        {
-            WriteSubBuf(&u, 8);
-            return (*this);
-        }
+            inline IDataOutputStream &operator<<(uint32 u)
+            {
+                WriteSubBuf(&u, 4);
+                return (*this);
+            }
 
-        inline IDataOutputStream &operator<<(int8 i)
-        {
-            WriteByte((uint8)i);
-            return (*this);
-        }
+            inline IDataOutputStream &operator<<(uint64 u)
+            {
+                WriteSubBuf(&u, 8);
+                return (*this);
+            }
 
-        inline IDataOutputStream &operator<<(int16 i)
-        {
-            WriteSubBuf(&i, 2);
-            return (*this);
-        }
+            inline IDataOutputStream &operator<<(int8 i)
+            {
+                WriteByte((uint8)i);
+                return (*this);
+            }
 
-        inline IDataOutputStream &operator<<(fint i)
-        {
-            WriteSubBuf(&i, 4);
-            return (*this);
-        }
+            inline IDataOutputStream &operator<<(int16 i)
+            {
+                WriteSubBuf(&i, 2);
+                return (*this);
+            }
 
-        inline IDataOutputStream &operator<<(int64 i)
-        {
-            WriteSubBuf(&i, 8);
-            return (*this);
-        }
+            inline IDataOutputStream &operator<<(fint i)
+            {
+                WriteSubBuf(&i, 4);
+                return (*this);
+            }
 
-        inline IDataOutputStream &operator<<(float f)
-        {
-            WriteSubBuf(&f, 4);
-            return (*this);
-        }
+            inline IDataOutputStream &operator<<(int64 i)
+            {
+                WriteSubBuf(&i, 8);
+                return (*this);
+            }
 
-        inline IDataOutputStream &operator<<(double d)
-        {
-            WriteSubBuf(&d, 8);
-            return (*this);
-        }
+            inline IDataOutputStream &operator<<(float f)
+            {
+                WriteSubBuf(&f, 4);
+                return (*this);
+            }
 
-        inline IDataOutputStream &operator<<(bool b)
-        {
-            if (b)
-                WriteByte(1);
-            else
-                WriteByte(0);
-            return (*this);
-        }
+            inline IDataOutputStream &operator<<(double d)
+            {
+                WriteSubBuf(&d, 8);
+                return (*this);
+            }
 
-        IDataOutputStream &operator<<(const bpf::String &str);
-        IDataOutputStream &operator<<(const char *str);
-    };
+            inline IDataOutputStream &operator<<(bool b)
+            {
+                if (b)
+                    WriteByte(1);
+                else
+                    WriteByte(0);
+                return (*this);
+            }
+
+            IDataOutputStream &operator<<(const bpf::String &str);
+            IDataOutputStream &operator<<(const char *str);
+        };
+    }
 }

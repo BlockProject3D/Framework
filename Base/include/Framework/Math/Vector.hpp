@@ -34,241 +34,251 @@
 #include "Framework/IndexException.hpp"
 #include "Framework/Math/Math.hpp"
 
+#include "Framework/Memory/MemUtils.hpp"
+
 namespace bpf
 {
-    template <typename T, fsize I = 0>
-    class BP_TPL_API Vector
+    namespace math
     {
-    private:
-        T _arr[I];
-
-    public:
-        static const Vector Zero;
-        static const Vector Identity;
-
-        inline Vector()
+        template <typename T, fsize I = 0>
+        class BP_TPL_API Vector
         {
-            for (fsize i = 0; i != I; ++i)
-                _arr[i] = DefaultOf<T>();
-        }
+        private:
+            T _arr[I];
 
-        explicit inline Vector(const T val)
+        public:
+            static const Vector Zero;
+            static const Vector Identity;
+
+            inline Vector()
+            {
+                for (fsize i = 0; i != I; ++i)
+                    _arr[i] = T();
+            }
+
+            explicit inline Vector(const T val)
+            {
+                for (fsize i = 0; i != I; ++i)
+                    _arr[i] = val;
+            }
+
+            inline Vector(const Vector<T, I - 1> &other, const T val)
+            {
+                for (fsize i = 0; i != I - 1; ++i)
+                    _arr[i] = other(i);
+                _arr[I - 1] = val;
+            }
+
+            Vector(const std::initializer_list<T> &lst);
+
+            inline Vector(const Vector &other)
+            {
+                for (fsize i = 0; i != I; ++i)
+                    _arr[i] = other._arr[i];
+            }
+
+            inline Vector(Vector &&other)
+            {
+                for (fsize i = 0; i != I; ++i)
+                    _arr[i] = std::move(other._arr[i]);
+            }
+
+            constexpr inline fsize Dim() const noexcept
+            {
+                return (I);
+            }
+
+            inline T &operator()(const fsize l)
+            {
+                if (l >= I)
+                    throw IndexException((fisize)l);
+                return (_arr[l]);
+            }
+
+            inline const T &operator()(const fsize l) const
+            {
+                if (l >= I)
+                    throw IndexException((fisize)l);
+                return (_arr[l]);
+            }
+
+            Vector &operator=(const Vector &other);
+            Vector &operator=(Vector &&other);
+
+            Vector operator+(const Vector &other) const;
+            Vector operator-(const Vector &other) const;
+            Vector operator*(const Vector &other) const;
+            Vector operator/(const Vector &other) const;
+
+            Vector operator*(const T other) const;
+            Vector operator/(const T other) const;
+
+            void operator+=(const Vector &other);
+            void operator-=(const Vector &other);
+            void operator*=(const Vector &other);
+            void operator/=(const Vector &other);
+
+            void operator*=(const T other);
+            void operator/=(const T other);
+
+            Vector operator-() const;
+
+            bool operator==(const Vector &other) const;
+
+            T Dot(const Vector &other) const;
+            T Distance(const Vector &other) const;
+            T DistanceSquared(const Vector &other) const;
+            T Norm() const;
+            T NormSquared() const;
+            void Normalize();
+
+            inline const T *operator*() const noexcept
+            {
+                return (_arr);
+            }
+
+            inline T *operator*() noexcept
+            {
+                return (_arr);
+            }
+
+            static Vector Lerp(const Vector &v, const Vector &v1, const T t);
+        };
+
+        template <typename T>
+        class BP_TPL_API Vector<T, 0>
         {
-            for (fsize i = 0; i != I; ++i)
-                _arr[i] = val;
-        }
+        private:
+            T *_arr;
+            fsize _l;
 
-        inline Vector(const Vector<T, I - 1> &other, const T val)
-        {
-            for (fsize i = 0; i != I - 1; ++i)
-                _arr[i] = other(i);
-            _arr[I - 1] = val;
-        }
+        public:
+            inline static Vector Zero(const fsize l)
+            {
+                return (Vector(l, (T)0));
+            }
 
-        Vector(const std::initializer_list<T> &lst);
+            inline static Vector Identity(const fsize l)
+            {
+                return (Vector(l, (T)1));
+            }
 
-        inline Vector(const Vector &other)
-        {
-            for (fsize i = 0; i != I; ++i)
-                _arr[i] = other._arr[i];
-        }
+            inline Vector(const Vector &other, const T val)
+                : _arr(memory::MemUtils::NewArray<T>(other._l + 1))
+                , _l(other._l + 1)
+            {
+                for (fsize i = 0; i != other._l; ++i)
+                    _arr[i] = other(i);
+                _arr[_l - 1] = val;
+            }
 
-        inline Vector(Vector &&other)
-        {
-            for (fsize i = 0; i != I; ++i)
-                _arr[i] = std::move(other._arr[i]);
-        }
+            explicit inline Vector(const fsize l)
+                : _arr(memory::MemUtils::NewArray<T>(l))
+                , _l(l)
+            {
+                for (fsize i = 0; i != l; ++i)
+                    _arr[i] = T();
+            }
 
-        constexpr inline fsize Dim() const noexcept
-        {
-            return (I);
-        }
+            inline Vector(const fsize l, const T val)
+                : _arr(memory::MemUtils::NewArray<T>(l))
+                , _l(l)
+            {
+                for (fsize i = 0; i != l; ++i)
+                    _arr[i] = val;
+            }
 
-        inline T &operator()(const fsize l)
-        {
-            if (l >= I)
-                throw IndexException((fisize)l);
-            return (_arr[l]);
-        }
+            Vector(const std::initializer_list<T> &lst);
 
-        inline const T &operator()(const fsize l) const
-        {
-            if (l >= I)
-                throw IndexException((fisize)l);
-            return (_arr[l]);
-        }
+            inline Vector(const Vector &other)
+                : _arr(memory::MemUtils::NewArray<T>(other._l))
+                , _l(other._l)
+            {
+                for (fsize i = 0; i != _l; ++i)
+                    _arr[i] = other._arr[i];
+            }
 
-        Vector &operator=(const Vector &other);
-        Vector &operator=(Vector &&other);
+            inline Vector(Vector &&other)
+                : _arr(other._arr)
+                , _l(other._l)
+            {
+                other._arr = Null;
+                other._l = 0;
+            }
 
-        Vector operator+(const Vector &other) const;
-        Vector operator-(const Vector &other) const;
-        Vector operator*(const Vector &other) const;
-        Vector operator/(const Vector &other) const;
+            inline ~Vector()
+            {
+                memory::MemUtils::DeleteArray(_arr, _l);
+            }
 
-        Vector operator*(const T other) const;
-        Vector operator/(const T other) const;
+            inline fsize Dim() const noexcept
+            {
+                return (_l);
+            }
 
-        void operator+=(const Vector &other);
-        void operator-=(const Vector &other);
-        void operator*=(const Vector &other);
-        void operator/=(const Vector &other);
+            inline T &operator()(const fsize l)
+            {
+                if (l >= _l)
+                    throw IndexException((fisize)l);
+                return (_arr[l]);
+            }
 
-        void operator*=(const T other);
-        void operator/=(const T other);
+            inline const T &operator()(const fsize l) const
+            {
+                if (l >= _l)
+                    throw IndexException((fisize)l);
+                return (_arr[l]);
+            }
 
-        Vector operator-() const;
+            Vector &operator=(const Vector &other);
+            Vector &operator=(Vector &&other);
 
-        bool operator==(const Vector &other) const;
+            Vector operator+(const Vector &other) const;
+            Vector operator-(const Vector &other) const;
+            Vector operator*(const Vector &other) const;
+            Vector operator/(const Vector &other) const;
 
-        T Dot(const Vector &other) const;
-        T Distance(const Vector &other) const;
-        T DistanceSquared(const Vector &other) const;
-        T Norm() const;
-        T NormSquared() const;
-        void Normalize();
+            Vector operator*(const T other) const;
+            Vector operator/(const T other) const;
 
-        inline const T *operator*() const noexcept
-        {
-            return (_arr);
-        }
+            void operator+=(const Vector &other);
+            void operator-=(const Vector &other);
+            void operator*=(const Vector &other);
+            void operator/=(const Vector &other);
 
-        inline T *operator*() noexcept
-        {
-            return (_arr);
-        }
+            void operator*=(const T other);
+            void operator/=(const T other);
 
-        static Vector Lerp(const Vector &v, const Vector &v1, const T t);
-    };
+            Vector operator-() const;
 
-    template <typename T>
-    class BP_TPL_API Vector<T, 0>
-    {
-    private:
-        T *_arr;
-        fsize _l;
+            bool operator==(const Vector &other) const;
 
-    public:
-        inline static Vector Zero(const fsize l)
-        {
-            return (Vector(l, (T)0));
-        }
+            T Dot(const Vector &other) const;
+            T Distance(const Vector &other) const;
+            T DistanceSquared(const Vector &other) const;
+            T Norm() const;
+            T NormSquared() const;
+            void Normalize();
 
-        inline static Vector Identity(const fsize l)
-        {
-            return (Vector(l, (T)1));
-        }
+            inline const T *operator*() const noexcept
+            {
+                return (_arr);
+            }
 
-        inline Vector(const Vector &other, const T val)
-            : _arr(new T[other._l + 1])
-            , _l(other._l + 1)
-        {
-            for (fsize i = 0; i != other._l; ++i)
-                _arr[i] = other(i);
-            _arr[_l - 1] = val;
-        }
+            inline T *operator*() noexcept
+            {
+                return (_arr);
+            }
 
-        explicit inline Vector(const fsize l)
-            : _arr(new T[l])
-            , _l(l)
-        {
-            for (fsize i = 0; i != l; ++i)
-                _arr[i] = DefaultOf<T>();
-        }
+            static Vector Lerp(const Vector &v, const Vector &v1, const T t);
+        };
 
-        inline Vector(const fsize l, const T val)
-            : _arr(new T[l])
-            , _l(l)
-        {
-            for (fsize i = 0; i != l; ++i)
-                _arr[i] = val;
-        }
+        template <typename T, fsize I>
+        const Vector<T, I> Vector<T, I>::Zero = Vector<T, I>((T)0);
 
-        Vector(const std::initializer_list<T> &lst);
-
-        inline Vector(const Vector &other)
-            : _arr(new T[other._l])
-            , _l(other._l)
-        {
-            for (fsize i = 0; i != _l; ++i)
-                _arr[i] = other._arr[i];
-        }
-
-        inline Vector(Vector &&other)
-            : _arr(other._arr)
-            , _l(other._l)
-        {
-            other._arr = Null;
-            other._l = 0;
-        }
-
-        inline fsize Dim() const noexcept
-        {
-            return (_l);
-        }
-
-        inline T &operator()(const fsize l)
-        {
-            if (l >= _l)
-                throw IndexException((fisize)l);
-            return (_arr[l]);
-        }
-
-        inline const T &operator()(const fsize l) const
-        {
-            if (l >= _l)
-                throw IndexException((fisize)l);
-            return (_arr[l]);
-        }
-
-        Vector &operator=(const Vector &other);
-        Vector &operator=(Vector &&other);
-
-        Vector operator+(const Vector &other) const;
-        Vector operator-(const Vector &other) const;
-        Vector operator*(const Vector &other) const;
-        Vector operator/(const Vector &other) const;
-
-        Vector operator*(const T other) const;
-        Vector operator/(const T other) const;
-
-        void operator+=(const Vector &other);
-        void operator-=(const Vector &other);
-        void operator*=(const Vector &other);
-        void operator/=(const Vector &other);
-
-        void operator*=(const T other);
-        void operator/=(const T other);
-
-        Vector operator-() const;
-
-        bool operator==(const Vector &other) const;
-
-        T Dot(const Vector &other) const;
-        T Distance(const Vector &other) const;
-        T DistanceSquared(const Vector &other) const;
-        T Norm() const;
-        T NormSquared() const;
-        void Normalize();
-
-        inline const T *operator*() const noexcept
-        {
-            return (_arr);
-        }
-
-        inline T *operator*() noexcept
-        {
-            return (_arr);
-        }
-
-        static Vector Lerp(const Vector &v, const Vector &v1, const T t);
-    };
-
-    template <typename T, fsize I>
-    const Vector<T, I> Vector<T, I>::Zero = Vector<T, I>((T)0);
-
-    template <typename T, fsize I>
-    const Vector<T, I> Vector<T, I>::Identity = Vector<T, I>((T)1);
+        template <typename T, fsize I>
+        const Vector<T, I> Vector<T, I>::Identity = Vector<T, I>((T)1);
+    }
 }
 
 #include "Framework/Math/Vector.impl.hpp"
@@ -278,13 +288,16 @@ namespace bpf
 
 namespace bpf
 {
-    template <typename T>
-    using Vector2 = Vector<T, 2>;
-    template <typename T>
-    using Vector3 = Vector<T, 3>;
-    template <typename T>
-    using Vector4 = Vector<T, 4>;
-    using Vector2f = Vector2<float>;
-    using Vector3f = Vector3<float>;
-    using Vector4f = Vector4<float>;
+    namespace math
+    {
+        template <typename T>
+        using Vector2 = Vector<T, 2>;
+        template <typename T>
+        using Vector3 = Vector<T, 3>;
+        template <typename T>
+        using Vector4 = Vector<T, 4>;
+        using Vector2f = Vector2<float>;
+        using Vector3f = Vector3<float>;
+        using Vector4f = Vector4<float>;
+    }
 }

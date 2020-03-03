@@ -33,15 +33,15 @@
 
 TEST(ByteBuf, Construct)
 {
-    bpf::ByteBuf buf(128);
-    bpf::ByteBuf buf1(std::move(buf));
+    bpf::io::ByteBuf buf(128);
+    bpf::io::ByteBuf buf1(std::move(buf));
     
     buf1.Clear();
 }
 
 TEST(ByteBuf, Clear)
 {
-    bpf::ByteBuf buf(128);
+    bpf::io::ByteBuf buf(128);
 
     buf.Clear();
     for (bpf::fsize i = 0 ; i < buf.Size() ; ++i)
@@ -50,7 +50,7 @@ TEST(ByteBuf, Clear)
 
 TEST(ByteBuf, ReadWrite_Test1)
 {
-    bpf::ByteBuf buf(128);
+    bpf::io::ByteBuf buf(128);
     char res[15];
     
     buf.Clear();
@@ -64,7 +64,7 @@ TEST(ByteBuf, ReadWrite_Test1)
 
 TEST(ByteBuf, ReadWrite_Test2)
 {
-    bpf::ByteBuf buf(4);
+    bpf::io::ByteBuf buf(4);
     char res[15];
     
     EXPECT_EQ(buf.Size(), (bpf::fsize)4);
@@ -80,7 +80,7 @@ TEST(ByteBuf, ReadWrite_Test2)
 
 TEST(ByteBuf, ReadWrite_Test3)
 {
-    bpf::ByteBuf buf(128);
+    bpf::io::ByteBuf buf(128);
     char res[15];
     
     EXPECT_EQ(buf.Size(), (bpf::fsize)128);
@@ -98,7 +98,7 @@ TEST(ByteBuf, ReadWrite_Test3)
 
 TEST(ByteBuf, ReadWrite_Test4)
 {
-    bpf::ByteBuf buf(128);
+    bpf::io::ByteBuf buf(128);
     char res[15];
 
     EXPECT_EQ(buf.Size(), (bpf::fsize)128);

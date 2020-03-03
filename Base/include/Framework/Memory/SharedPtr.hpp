@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -27,129 +27,146 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/Memory/MemUtils.hpp"
+#include "Framework/Memory/ClassCastException.hpp"
+#include "Framework/TypeInfo.hpp"
 
 namespace bpf
 {
-    template<typename T>
-    class BP_TPL_API WeakPtr;
-
-    template <typename T>
-    class BP_TPL_API SharedPtr
+    namespace memory
     {
-    private:
-        fint *Count;
-        fint *WCount;
-        T *RawPtr;
+        template<typename T>
+        class BP_TPL_API WeakPtr;
 
-        inline SharedPtr(fint *c, fint *w, T *raw)
-            : Count(c)
-            , WCount(w)
-            , RawPtr(raw)
+        template <typename T>
+        class BP_TPL_API SharedPtr
         {
-            if (Count != Null)
-                ++*Count;
-        }
+        private:
+            fint *Count;
+            fint *WCount;
+            T *RawPtr;
 
-    public:
-        inline SharedPtr() noexcept
-            : Count(Null)
-            , WCount(Null)
-            , RawPtr(Null)
-        {
-        }
+            inline SharedPtr(fint *c, fint *w, T *raw)
+                : Count(c)
+                , WCount(w)
+                , RawPtr(raw)
+            {
+                if (Count != Null)
+                    ++ *Count;
+            }
 
-        inline SharedPtr(T *raw)
-            : Count(static_cast<fint *>(Memory::Malloc(sizeof(int))))
-            , WCount(static_cast<fint *>(Memory::Malloc(sizeof(int))))
-            , RawPtr(raw)
-        {
-            *Count = 1;
-            *WCount = 0;
-        }
+        public:
+            inline SharedPtr() noexcept
+                : Count(Null)
+                , WCount(Null)
+                , RawPtr(Null)
+            {
+            }
 
-        inline SharedPtr(SharedPtr<T> &&other) noexcept
-            : Count(other.Count)
-            , WCount(other.WCount)
-            , RawPtr(other.RawPtr)
-        {
-            other.Count = Null;
-            other.WCount = Null;
-            other.RawPtr = Null;
-        }
+            inline SharedPtr(T *raw)
+                : Count(static_cast<fint *>(Memory::Malloc(sizeof(int))))
+                , WCount(static_cast<fint *>(Memory::Malloc(sizeof(int))))
+                , RawPtr(raw)
+            {
+                *Count = 1;
+                *WCount = 0;
+            }
 
-        template <typename T1>
-        inline SharedPtr(const SharedPtr<T1> &other) noexcept
-            : Count(other.Count)
-            , WCount(other.WCount)
-            , RawPtr(other.RawPtr)
-        {
-            if (Count != Null)
-                ++*Count;
-        }
+            inline SharedPtr(SharedPtr<T> &&other) noexcept
+                : Count(other.Count)
+                , WCount(other.WCount)
+                , RawPtr(other.RawPtr)
+            {
+                other.Count = Null;
+                other.WCount = Null;
+                other.RawPtr = Null;
+            }
 
-        inline SharedPtr(const SharedPtr<T> &other) noexcept
-            : Count(other.Count)
-            , WCount(other.WCount)
-            , RawPtr(other.RawPtr)
-        {
-            if (Count != Null)
-                ++*Count;
-        }
+            template <typename T1>
+            inline SharedPtr(const SharedPtr<T1> &other) noexcept
+                : Count(other.Count)
+                , WCount(other.WCount)
+                , RawPtr(other.RawPtr)
+            {
+                if (Count != Null)
+                    ++ *Count;
+            }
 
-        ~SharedPtr();
+            inline SharedPtr(const SharedPtr<T> &other) noexcept
+                : Count(other.Count)
+                , WCount(other.WCount)
+                , RawPtr(other.RawPtr)
+            {
+                if (Count != Null)
+                    ++ *Count;
+            }
 
-        SharedPtr<T> &operator=(SharedPtr<T> &&other);
+            ~SharedPtr();
 
-        SharedPtr<T> &operator=(const SharedPtr<T> &other);
+            SharedPtr<T> &operator=(SharedPtr<T> &&other);
 
-        inline T &operator*() const noexcept
-        {
-            return (*RawPtr);
-        }
+            SharedPtr<T> &operator=(const SharedPtr<T> &other);
 
-        inline T *operator->() const noexcept
-        {
-            return (RawPtr);
-        }
+            inline T &operator*() const noexcept
+            {
+                return (*RawPtr);
+            }
 
-        inline T *Raw() const noexcept
-        {
-            return (RawPtr);
-        }
+            inline T *operator->() const noexcept
+            {
+                return (RawPtr);
+            }
 
-        inline bool operator==(const T *other) const noexcept
-        {
-            return (RawPtr == other);
-        }
+            inline T *Raw() const noexcept
+            {
+                return (RawPtr);
+            }
 
-        inline bool operator!=(const T *other) const noexcept
-        {
-            return (RawPtr != other);
-        }
+            inline bool operator==(const T *other) const noexcept
+            {
+                return (RawPtr == other);
+            }
 
-        template <typename T1>
-        inline bool operator==(const SharedPtr<T1> &other) const noexcept
-        {
-            return (RawPtr == other.RawPtr);
-        }
-        template <typename T1>
-        inline bool operator!=(const SharedPtr<T1> &other) const noexcept
-        {
-            return (RawPtr != other.RawPtr);
-        }
+            inline bool operator!=(const T *other) const noexcept
+            {
+                return (RawPtr != other);
+            }
 
-        //Static casting
-        //TODO : Throw class cast exception in debug build
-        template <typename T1>
-        inline SharedPtr<T1> StaticCast() const noexcept
-        {
-            return (SharedPtr<T1>(Count, WCount, static_cast<T1 *>(RawPtr)));
-        }
-        //End
+            template <typename T1>
+            inline bool operator==(const SharedPtr<T1> &other) const noexcept
+            {
+                return (RawPtr == other.RawPtr);
+            }
+            template <typename T1>
+            inline bool operator!=(const SharedPtr<T1> &other) const noexcept
+            {
+                return (RawPtr != other.RawPtr);
+            }
 
-        friend class WeakPtr<T>;
+            template <typename T1>
+            inline SharedPtr<T1> Cast() const
+            {
+#ifdef BUILD_DEBUG
+                if (RawPtr == Null)
+                    return (Null);
+                else
+                {
+                    auto ptr = dynamic_cast<T1 *>(RawPtr);
+                    if (ptr == Null)
+                        throw ClassCastException(String("Cannot cast from ") + TypeName<T>() + " to " + TypeName<T1>());
+                    return (SharedPtr<T1>(Count, WCount, ptr));
+                }
+#else
+                return (SharedPtr<T1>(Count, WCount, static_cast<T1 *>(RawPtr)));
+#endif
+            }
 
-        template <typename T1>
-        friend class SharedPtr;
-    };
+            friend class WeakPtr<T>;
+
+            template <typename T1>
+            friend class SharedPtr;
+        };
+    }
 }
+
+#include "Framework/Memory/SharedPtr.impl.hpp"

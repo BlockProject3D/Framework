@@ -30,6 +30,7 @@
 #include <ctime>
 #include "Framework/System/DateTime.hpp"
 
+using namespace bpf::system;
 using namespace bpf;
 
 DateTime::DateTime(uint64 seconds)

@@ -30,140 +30,143 @@
 
 namespace bpf
 {
-    template <typename T>
-    Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::Translate(const Vector3<T> &translation) noexcept
+    namespace math
     {
-        _matrix *= {
-            1, 0, 0, translation.X,
-            0, 1, 0, translation.Y,
-            0, 0, 1, translation.Z,
-            0, 0, 0, 1
-        };
-        return (*this);
-    }
+        template <typename T>
+        Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::Translate(const Vector3<T> &translation) noexcept
+        {
+            _matrix *= {
+                1, 0, 0, translation.X,
+                    0, 1, 0, translation.Y,
+                    0, 0, 1, translation.Z,
+                    0, 0, 0, 1
+            };
+            return (*this);
+        }
 
-    template <typename T>
-    Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::Scale(const Vector3<T> &scale) noexcept
-    {
-        _matrix *= {
-            scale.X, 0, 0, 0,
-            0, scale.Y, 0, 0,
-            0, 0, scale.Z, 0,
-            0, 0, 0, 1
-        };
-        return (*this);
-    }
+        template <typename T>
+        Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::Scale(const Vector3<T> &scale) noexcept
+        {
+            _matrix *= {
+                scale.X, 0, 0, 0,
+                    0, scale.Y, 0, 0,
+                    0, 0, scale.Z, 0,
+                    0, 0, 0, 1
+            };
+            return (*this);
+        }
 
-    template <typename T>
-    Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::ShearX(const Vector3<T> &shear) noexcept
-    {
-        _matrix *= {
-            1, 0, 0, 0,
-            shear.Y, 1, 0, 0,
-            shear.Z, 0, 1, 0,
-            0, 0, 0, 1
-        };
-        return (*this);
-    }
+        template <typename T>
+        Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::ShearX(const Vector3<T> &shear) noexcept
+        {
+            _matrix *= {
+                1, 0, 0, 0,
+                    shear.Y, 1, 0, 0,
+                    shear.Z, 0, 1, 0,
+                    0, 0, 0, 1
+            };
+            return (*this);
+        }
 
-    template <typename T>
-    Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::ShearY(const Vector3<T> &shear) noexcept
-    {
-        _matrix *= {
-            1, shear.X, 0, 0,
-            0, 1, 0, 0,
-            0, shear.Z, 1, 0,
-            0, 0, 0, 1
-        };
-        return (*this);
-    }
+        template <typename T>
+        Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::ShearY(const Vector3<T> &shear) noexcept
+        {
+            _matrix *= {
+                1, shear.X, 0, 0,
+                    0, 1, 0, 0,
+                    0, shear.Z, 1, 0,
+                    0, 0, 0, 1
+            };
+            return (*this);
+        }
 
-    template <typename T>
-    Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::ShearZ(const Vector3<T> &shear) noexcept
-    {
-        _matrix *= {
-            1, 0, shear.X, 0,
-            0, 1, shear.Z, 0,
-            0, 0, 1, 0,
-            0, 0, 0, 1
-        };
-        return (*this);
-    }
+        template <typename T>
+        Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::ShearZ(const Vector3<T> &shear) noexcept
+        {
+            _matrix *= {
+                1, 0, shear.X, 0,
+                    0, 1, shear.Z, 0,
+                    0, 0, 1, 0,
+                    0, 0, 0, 1
+            };
+            return (*this);
+        }
 
-    template <typename T>
-    Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::RotateX(const T &rotation) noexcept
-    {
-        _matrix *= {
-            1, 0, 0, 0,
-            0, Math::Cos(xyz.x), -Math::Sin(xyz.x), 0,
-            0, Math::Sin(xyz.x), Math::Cos(xyz.x), 0,
-            0, 0, 0, 1
-        };
-        return (*this);
-    }
+        template <typename T>
+        Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::RotateX(const T &rotation) noexcept
+        {
+            _matrix *= {
+                1, 0, 0, 0,
+                    0, Math::Cos(xyz.x), -Math::Sin(xyz.x), 0,
+                    0, Math::Sin(xyz.x), Math::Cos(xyz.x), 0,
+                    0, 0, 0, 1
+            };
+            return (*this);
+        }
 
-    template <typename T>
-    Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::RotateY(const T &rotation) noexcept
-    {
-        _matrix *= {
-            Math::Cos(xyz.y), 0, Math::Sin(xyz.y), 0,
-            0, 1, 0, 0,
-            -Math::Sin(xyz.y), 0, Math::Cos(xyz.y), 0,
-            0, 0, 0, 1
-        };
-        return (*this);
-    }
+        template <typename T>
+        Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::RotateY(const T &rotation) noexcept
+        {
+            _matrix *= {
+                Math::Cos(xyz.y), 0, Math::Sin(xyz.y), 0,
+                    0, 1, 0, 0,
+                    -Math::Sin(xyz.y), 0, Math::Cos(xyz.y), 0,
+                    0, 0, 0, 1
+            };
+            return (*this);
+        }
 
-    template <typename T>
-    Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::RotateZ(const T &rotation) noexcept
-    {
-        _matrix *= {
-            Math::Cos(xyz.z), -Math::Sin(xyz.z), 0, 0,
-            Math::Sin(xyz.z), Math::Cos(xyz.z), 0, 0,
-            0, 0, 1, 0,
-            0, 0, 0, 1
-        };
-        return (*this);
-    }
+        template <typename T>
+        Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::RotateZ(const T &rotation) noexcept
+        {
+            _matrix *= {
+                Math::Cos(xyz.z), -Math::Sin(xyz.z), 0, 0,
+                    Math::Sin(xyz.z), Math::Cos(xyz.z), 0, 0,
+                    0, 0, 1, 0,
+                    0, 0, 0, 1
+            };
+            return (*this);
+        }
 
-    template <typename T>
-    Vector3<T> Transform3D<T>::LocalToWorld(const Vector3<T> &local)
-    {
-        auto res = ToMatrix() * Vector4<T>(local, (T)1);
+        template <typename T>
+        Vector3<T> Transform3D<T>::LocalToWorld(const Vector3<T> &local)
+        {
+            auto res = ToMatrix() * Vector4<T>(local, (T)1);
 
-        return (Vector3<T>(res.X, res.Y, res.Z));
-    }
+            return (Vector3<T>(res.X, res.Y, res.Z));
+        }
 
-    template <typename T>
-    Vector3<T> Transform3D<T>::WorldToLocal(const Vector3<T> &world)
-    {
-        auto res = ToMatrix().Invert() * Vector4<T>(world, (T)1);
+        template <typename T>
+        Vector3<T> Transform3D<T>::WorldToLocal(const Vector3<T> &world)
+        {
+            auto res = ToMatrix().Invert() * Vector4<T>(world, (T)1);
 
-        return (Vector3<T>(res.X, res.Y, res.Z));
-    }
+            return (Vector3<T>(res.X, res.Y, res.Z));
+        }
 
-    template <typename T>
-    Transform3D<T> Transform3D<T>::operator+(const Transform3D &other) const noexcept
-    {
-        Transform3D<T> res(Position + other.Position, Scale * other.Scale, Angle * other.Angle);
+        template <typename T>
+        Transform3D<T> Transform3D<T>::operator+(const Transform3D &other) const noexcept
+        {
+            Transform3D<T> res(Position + other.Position, Scale * other.Scale, Angle * other.Angle);
 
-        return (res);
-    }
+            return (res);
+        }
 
-    template <typename T>
-    void Transform3D<T>::operator+=(const Transform3D &other)
-    {
-        Position += other.Position;
-        Scale *= other.Scale;
-        Angle *= other.Angle;
-    }
+        template <typename T>
+        void Transform3D<T>::operator+=(const Transform3D &other)
+        {
+            Position += other.Position;
+            Scale *= other.Scale;
+            Angle *= other.Angle;
+        }
 
-    template <typename T>
-    void Transform3D<T>::RotateArround(const Vector3<T> &pivot, const Quaternion<T> &rotation) noexcept
-    {
-        auto dir = Position - pivot;
+        template <typename T>
+        void Transform3D<T>::RotateArround(const Vector3<T> &pivot, const Quaternion<T> &rotation) noexcept
+        {
+            auto dir = Position - pivot;
 
-        rotation.Rotate(dir);
-        Position = dir + pivot;
+            rotation.Rotate(dir);
+            Position = dir + pivot;
+        }
     }
 }

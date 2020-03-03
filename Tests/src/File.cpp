@@ -34,7 +34,7 @@
 
 TEST(File, Basics)
 {
-    bpf::File f("./doesnotexist.txt");
+    bpf::io::File f("./doesnotexist.txt");
 
     EXPECT_FALSE(f.Exists());
     f.CreateDir();
@@ -46,13 +46,13 @@ TEST(File, Basics)
 
 TEST(File, Abs)
 {
-    bpf::File f("./doesnotexist.txt");
+    bpf::io::File f("./doesnotexist.txt");
 
     EXPECT_FALSE(f.Exists());
     f.CreateDir();
     EXPECT_TRUE(f.Exists());
     EXPECT_TRUE(f.IsDirectory());
-    bpf::File abs = f.GetAbsolutePath();
+    bpf::io::File abs = f.GetAbsolutePath();
     std::cout << *abs.Path() << std::endl;
     EXPECT_TRUE(abs.Exists());
     EXPECT_TRUE(abs.IsDirectory());
@@ -63,64 +63,64 @@ TEST(File, Abs)
 #ifdef WINDOWS
 TEST(File, AutoBackSlash)
 {
-    bpf::File f("./");
+    bpf::io::File f("./");
 
     EXPECT_STREQ(*f.Path(), ".");
-    bpf::File f1 = f + "../";
+    bpf::io::File f1 = f + "../";
     EXPECT_STREQ(*f1.Path(), ".\\..");
 }
 #else
 TEST(File, AutoSlash)
 {
-    bpf::File f("./");
+    bpf::io::File f("./");
 
     EXPECT_STREQ(*f.Path(), ".");
-    bpf::File f1 = f + "../";
+    bpf::io::File f1 = f + "../";
     EXPECT_STREQ(*f1.Path(), "./..");
 }
 #endif
 
 TEST(File, List_Test1)
 {
-    bpf::File f("./");
-    bpf::List<bpf::File> fls = f.ListFiles();
+    bpf::io::File f("./");
+    bpf::collection::List<bpf::io::File> fls = f.ListFiles();
 
     EXPECT_GT(fls.Size(), static_cast<bpf::uint32>(0));
 }
 
 TEST(File, List_Test2)
 {
-    bpf::File f(".");
-    bpf::List<bpf::File> fls = f.ListFiles();
+    bpf::io::File f(".");
+    bpf::collection::List<bpf::io::File> fls = f.ListFiles();
 
     EXPECT_GT(fls.Size(), static_cast<bpf::uint32>(0));
 }
 
 TEST(File, List_Test3)
 {
-    bpf::File f("..");
-    bpf::List<bpf::File> fls = f.ListFiles();
+    bpf::io::File f("..");
+    bpf::collection::List<bpf::io::File> fls = f.ListFiles();
 
     EXPECT_GT(fls.Size(), static_cast<bpf::uint32>(0));
 }
 
 TEST(File, List_Test4)
 {
-    bpf::File f("../");
-    bpf::List<bpf::File> fls = f.ListFiles();
+    bpf::io::File f("../");
+    bpf::collection::List<bpf::io::File> fls = f.ListFiles();
 
     EXPECT_GT(fls.Size(), static_cast<bpf::uint32>(0));
 }
 
-static void SetupTestFile(bpf::File &f)
+static void SetupTestFile(bpf::io::File &f)
 {
-    bpf::FileStream stream(f, bpf::FILE_MODE_WRITE | bpf::FILE_MODE_TRUNCATE);
+    bpf::io::FileStream stream(f, bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
     EXPECT_EQ(stream.Write("This is a test", 14), (bpf::fsize)14);
 }
 
 TEST(File, GetSizeBytes)
 {
-    bpf::File f("./test_me.txt");
+    bpf::io::File f("./test_me.txt");
     SetupTestFile(f);
     EXPECT_EQ(f.GetSizeBytes(), 14);
     f.Delete();
