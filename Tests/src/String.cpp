@@ -619,7 +619,7 @@ TEST(String, ValueOf)
     lst.Add(5);
     EXPECT_STREQ(*bpf::String::ValueOf(lst), "[0, 2, 5]");
     bpf::uintptr s = 0x456789F;
-    EXPECT_STREQ(*bpf::String::ValueOf((void *)s), "456789f");
+    EXPECT_STREQ(*bpf::String::ValueOf((void *)s), "0x456789f");
 }
 
 TEST(String, Safety)

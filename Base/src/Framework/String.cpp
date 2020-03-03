@@ -853,12 +853,6 @@ String String::ValueOf(void *ptr, const fsize prec)
 {
     std::stringstream strs;
 
-    if (prec > 0)
-    {
-        strs.precision(prec);
-        strs << std::hex << std::fixed << ptr;
-    }
-    else
-        strs << std::hex << (uintptr)ptr;
-    return (strs.str().c_str());
+    strs << std::hex << (uintptr)ptr;
+    return (String("0x") + strs.str().c_str());
 }
