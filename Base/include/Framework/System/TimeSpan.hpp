@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -26,39 +26,36 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Framework/Log/FileLogger.hpp"
-#include "Framework/System/DateTime.hpp"
-#include "Framework/System/Stringifier.DateTime.hpp"
+#pragma once
+#include "Framework/Types.hpp"
 
-using namespace bpf::log;
-using namespace bpf::io;
-using namespace bpf;
-
-FileLogger::FileLogger(const File &file)
-    : _stream(file, FILE_MODE_WRITE | FILE_MODE_APPEND)
-    , _writer(_stream)
+namespace bpf
 {
-}
-
-void FileLogger::LogMessage(ELogLevel level, const String &category, const String &msg)
-{
-    String lvl = "";
-
-    switch (level)
+    namespace system
     {
-    case ELogLevel::DEBUG:
-        lvl = "DEBUG";
-        break;
-    case ELogLevel::INFO:
-        lvl = "INFO";
-        break;
-    case ELogLevel::WARNING:
-        lvl = "WARNING";
-        break;
-    case ELogLevel::ERROR:
-        lvl = "ERROR";
-        break;
+        class BPF_API TimeSpan
+        {
+        private:
+            void SetupValues(uint64 seconds) noexcept;
+
+        public:
+            fint Days;
+            fint Hours;
+            fint Minutes;
+            fint Seconds;
+            uint64 TotalSeconds;
+
+            explicit TimeSpan(uint64 seconds = 0) noexcept;
+            explicit TimeSpan(fint days, fint hours, fint minutes, fint seconds) noexcept;
+
+            TimeSpan operator+(const TimeSpan &other) const noexcept;
+            TimeSpan operator-(const TimeSpan &other) const noexcept;
+            bool operator>(const TimeSpan &other) const noexcept;
+            bool operator<(const TimeSpan &other) const noexcept;
+            bool operator==(const TimeSpan &other) const noexcept;
+            bool operator!=(const TimeSpan &other) const noexcept;
+            void operator+=(const TimeSpan &other) noexcept;
+            void operator-=(const TimeSpan &other) noexcept;
+        };
     }
-    String res = String('(') + String::ValueOf(system::DateTime::Now()) + ")[" + category + "][" + lvl + "] " + msg;
-    _writer.WriteLine(res);
 }

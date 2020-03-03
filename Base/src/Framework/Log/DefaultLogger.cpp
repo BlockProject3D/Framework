@@ -53,7 +53,7 @@ void DefaultLogger::LogMessage(ELogLevel level, const String &category, const St
         lvl = "ERROR";
         break;
     }
-    String res = String('(') + String::ValueOf(system::DateTime::LocalTime()) + ")[" + category + "][" + lvl + "] " + msg;
+    String res = String('(') + String::ValueOf(system::DateTime::Now()) + ")[" + category + "][" + lvl + "] " + msg;
     if (level == ELogLevel::ERROR)
         std::cerr << *res << std::endl;
     else

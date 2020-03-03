@@ -53,6 +53,7 @@ set(SOURCES
     src/PriorityQueue.cpp
     src/VectorStatic.cpp
     src/VectorDynamic.cpp
+    src/DateTime.cpp
 )
 
 bp_setup_program(${PROJECT_NAME} include)
