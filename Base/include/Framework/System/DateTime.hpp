@@ -30,6 +30,7 @@
 #include <ctime>
 #include "Framework/Types.hpp"
 #include "Framework/String.hpp"
+#include "Framework/ParseException.hpp"
 #include "Framework/System/TimeSpan.hpp"
 
 namespace bpf

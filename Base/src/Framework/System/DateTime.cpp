@@ -155,6 +155,7 @@ String DateTime::GetDayName() const
         "Sun",
         "Mon",
         "Tue",
+        "Wed",
         "Thu",
         "Fri",
         "Sat"
@@ -262,6 +263,8 @@ DateTime DateTime::Parse(const String &str)
     case 5:
     {
         Array<String> t = subs[4].Explode(':');
+        if (t.Size() != 3)
+            throw ParseException(String("Unknown time format '") + subs[4] + '\'');
         res._hour = Int::Parse(t[0]);
         res._minute = Int::Parse(t[1]);
         res._second = Int::Parse(t[2]);
@@ -269,7 +272,7 @@ DateTime DateTime::Parse(const String &str)
         {
             ++res._month;
             if (res._month >= 12)
-                throw ParseException(String("Unknown month name ") + subs[1]);
+                throw ParseException(String("Unknown month name '") + subs[1] + '\'');
         }
         res._day = Int::Parse(subs[2]);
         res._year = UInt::Parse(subs[3]) - 1900;
@@ -281,7 +284,7 @@ DateTime DateTime::Parse(const String &str)
         {
             ++res._month;
             if (res._month >= 12)
-                throw ParseException(String("Unknown month name ") + subs[1]);
+                throw ParseException(String("Unknown month name '") + subs[1] + '\'');
         }
         res._day = Int::Parse(subs[2]);
         res._year = UInt::Parse(subs[3]) - 1900;
@@ -293,7 +296,7 @@ DateTime DateTime::Parse(const String &str)
         {
             ++res._month;
             if (res._month >= 12)
-                throw ParseException(String("Unknown month name ") + subs[1]);
+                throw ParseException(String("Unknown month name '") + subs[1] + '\'');
         }
         res._day = Int::Parse(subs[2]);
         res._year = Now().GetYear() - 1900;
@@ -302,10 +305,14 @@ DateTime DateTime::Parse(const String &str)
     case 2:
     {
         Array<String> d = subs[0].Replace('/', '-').Explode('-');
+        if (d.Size() != 3)
+            throw ParseException(String("Unknown date format '") + subs[0] + '\'');
         res._month = Int::Parse(d[0]) - 1;
         res._day = Int::Parse(d[1]);
         res._year = UInt::Parse(d[2]) - 1900;
         Array<String> t = subs[1].Explode(':');
+        if (t.Size() != 3)
+            throw ParseException(String("Unknown time format '") + subs[1] + '\'');
         res._hour = Int::Parse(t[0]);
         res._minute = Int::Parse(t[1]);
         res._second = Int::Parse(t[2]);
@@ -314,6 +321,8 @@ DateTime DateTime::Parse(const String &str)
     case 1:
     {
         Array<String> d = subs[0].Replace('/', '-').Explode('-');
+        if (d.Size() != 2 && d.Size() != 3)
+            throw ParseException(String("Unknown date format '") + subs[0] + '\'');
         res._month = Int::Parse(d[0]) - 1;
         res._day = Int::Parse(d[1]);
         if (d.Size() > 2)
@@ -322,7 +331,18 @@ DateTime DateTime::Parse(const String &str)
             res._year = Now().GetYear() - 1900;
         break;
     }
+    default:
+        throw ParseException(String("Unknown date/time format '") + str + '\'');
     }
+    struct tm t;
+    std::memset(&t, 0, sizeof(t));
+    t.tm_hour = res._hour;
+    t.tm_min = res._minute;
+    t.tm_sec = res._second;
+    t.tm_mon = res._month;
+    t.tm_mday = res._day;
+    t.tm_year = res._year;
+    res._curtm = std::mktime(&t);
     res.RecalcLocal();
     return (res);
 }
@@ -341,6 +361,8 @@ bool DateTime::TryParse(const String &str, DateTime &date)
     case 5:
     {
         Array<String> t = subs[4].Explode(':');
+        if (t.Size() != 3)
+            return (false);
         if (!Int::TryParse(t[0], res._hour))
             return (false);
         if (!Int::TryParse(t[1], res._minute))
@@ -391,6 +413,8 @@ bool DateTime::TryParse(const String &str, DateTime &date)
     case 2:
     {
         Array<String> d = subs[0].Replace('/', '-').Explode('-');
+        if (d.Size() != 3)
+            return (false);
         if (!Int::TryParse(d[0], res._month))
             return (false);
         if (!Int::TryParse(d[1], res._day))
@@ -400,6 +424,8 @@ bool DateTime::TryParse(const String &str, DateTime &date)
         res._year -= 1900;
         res._month -= 1;
         Array<String> t = subs[1].Explode(':');
+        if (t.Size() != 3)
+            return (false);
         if (!Int::TryParse(t[0], res._hour))
             return (false);
         if (!Int::TryParse(t[1], res._minute))
@@ -411,6 +437,8 @@ bool DateTime::TryParse(const String &str, DateTime &date)
     case 1:
     {
         Array<String> d = subs[0].Replace('/', '-').Explode('-');
+        if (d.Size() != 2 && d.Size() != 3)
+            return (false);
         if (!Int::TryParse(d[0], res._month))
             return (false);
         if (!Int::TryParse(d[1], res._day))
@@ -426,7 +454,19 @@ bool DateTime::TryParse(const String &str, DateTime &date)
         res._month -= 1;
         break;
     }
+    default:
+        return (false);
     }
+    struct tm t;
+    std::memset(&t, 0, sizeof(t));
+    t.tm_hour = res._hour;
+    t.tm_min = res._minute;
+    t.tm_sec = res._second;
+    t.tm_mon = res._month;
+    t.tm_mday = res._day;
+    t.tm_year = res._year;
+    res._curtm = std::mktime(&t);
     res.RecalcLocal();
+    date = res;
     return (true);
 }

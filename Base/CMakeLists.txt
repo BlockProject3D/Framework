@@ -76,6 +76,7 @@ set(SOURCES
     ./include/Framework/System/Platform.hpp
     ./include/Framework/System/TypeExpander.hpp
     ./include/Framework/System/DateTime.hpp
+    ./include/Framework/System/TimeSpan.hpp
     ./include/Framework/System/Timer.hpp
     ./include/Framework/System/Thread.hpp
     ./include/Framework/System/Mutex.hpp
@@ -152,6 +153,7 @@ set(SOURCES
     ./src/Framework/System/Module.cpp
     ./src/Framework/System/ModuleManager.cpp
     ./src/Framework/System/DateTime.cpp
+    ./src/Framework/System/TimeSpan.cpp
     ./src/Framework/System/Thread.cpp
     ./src/Framework/System/Mutex.cpp
     ./src/Framework/System/ThreadManager.cpp

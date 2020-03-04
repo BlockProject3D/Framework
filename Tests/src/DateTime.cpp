@@ -99,9 +99,12 @@ TEST(DateTime, Subtract_2)
     EXPECT_EQ(dt, dt1);
 }
 
-/*TEST(DateTime, Parse_1)
+TEST(DateTime, Parse_1)
 {
     bpf::system::DateTime dt = bpf::system::DateTime::Parse("Tue Mar 3 2020 1:50:0");
+    EXPECT_STREQ(*bpf::String::ValueOf(dt), "Tue Mar 3 2020 1:50:0");
+    dt = bpf::system::DateTime();
+    EXPECT_TRUE(bpf::system::DateTime::TryParse("Tue Mar 3 2020 1:50:0", dt));
     EXPECT_STREQ(*bpf::String::ValueOf(dt), "Tue Mar 3 2020 1:50:0");
 }
 
@@ -109,10 +112,109 @@ TEST(DateTime, Parse_2)
 {
     bpf::system::DateTime dt = bpf::system::DateTime::Parse("Tue Mar 3 2020");
     EXPECT_STREQ(*bpf::String::ValueOf(dt), "Tue Mar 3 2020 0:0:0");
+    dt = bpf::system::DateTime();
+    EXPECT_TRUE(bpf::system::DateTime::TryParse("Tue Mar 3 2020", dt));
+    EXPECT_STREQ(*bpf::String::ValueOf(dt), "Tue Mar 3 2020 0:0:0");
 }
 
 TEST(DateTime, Parse_3)
 {
     bpf::system::DateTime dt = bpf::system::DateTime::Parse("Tue Mar 3");
     EXPECT_STREQ(*bpf::String::ValueOf(dt), "Tue Mar 3 2020 0:0:0");
-}*/
+    dt = bpf::system::DateTime();
+    EXPECT_TRUE(bpf::system::DateTime::TryParse("Tue Mar 3", dt));
+    EXPECT_STREQ(*bpf::String::ValueOf(dt), "Tue Mar 3 2020 0:0:0");
+}
+
+TEST(DateTime, Parse_4)
+{
+    bpf::system::DateTime dt = bpf::system::DateTime::Parse("03/04/2020 05:53:3");
+    EXPECT_STREQ(*bpf::String::ValueOf(dt), "Wed Mar 4 2020 5:53:3");
+    dt = bpf::system::DateTime();
+    EXPECT_TRUE(bpf::system::DateTime::TryParse("03/04/2020 05:53:3", dt));
+    EXPECT_STREQ(*bpf::String::ValueOf(dt), "Wed Mar 4 2020 5:53:3");
+}
+
+TEST(DateTime, Parse_5)
+{
+    bpf::system::DateTime dt = bpf::system::DateTime::Parse("03-04-2020 5:53:0");
+    EXPECT_STREQ(*bpf::String::ValueOf(dt), "Wed Mar 4 2020 5:53:0");
+    dt = bpf::system::DateTime();
+    EXPECT_TRUE(bpf::system::DateTime::TryParse("03-04-2020 5:53:0", dt));
+    EXPECT_STREQ(*bpf::String::ValueOf(dt), "Wed Mar 4 2020 5:53:0");
+}
+
+TEST(DateTime, Parse_6)
+{
+    bpf::system::DateTime dt = bpf::system::DateTime::Parse("03/04/2020");
+    EXPECT_STREQ(*bpf::String::ValueOf(dt), "Wed Mar 4 2020 0:0:0");
+    dt = bpf::system::DateTime();
+    EXPECT_TRUE(bpf::system::DateTime::TryParse("03/04/2020", dt));
+    EXPECT_STREQ(*bpf::String::ValueOf(dt), "Wed Mar 4 2020 0:0:0");
+}
+
+TEST(DateTime, Parse_7)
+{
+    bpf::system::DateTime dt = bpf::system::DateTime::Parse("03-04-2020");
+    EXPECT_STREQ(*bpf::String::ValueOf(dt), "Wed Mar 4 2020 0:0:0");
+    dt = bpf::system::DateTime();
+    EXPECT_TRUE(bpf::system::DateTime::TryParse("03-04-2020", dt));
+    EXPECT_STREQ(*bpf::String::ValueOf(dt), "Wed Mar 4 2020 0:0:0");
+}
+
+TEST(DateTime, Parse_8)
+{
+    bpf::system::DateTime dt = bpf::system::DateTime::Parse("03/04");
+    EXPECT_STREQ(*bpf::String::ValueOf(dt), "Wed Mar 4 2020 0:0:0");
+    dt = bpf::system::DateTime();
+    EXPECT_TRUE(bpf::system::DateTime::TryParse("03/04", dt));
+    EXPECT_STREQ(*bpf::String::ValueOf(dt), "Wed Mar 4 2020 0:0:0");
+}
+
+TEST(DateTime, Parse_9)
+{
+    bpf::system::DateTime dt = bpf::system::DateTime::Parse("03-04");
+    EXPECT_STREQ(*bpf::String::ValueOf(dt), "Wed Mar 4 2020 0:0:0");
+    dt = bpf::system::DateTime();
+    EXPECT_TRUE(bpf::system::DateTime::TryParse("03-04", dt));
+    EXPECT_STREQ(*bpf::String::ValueOf(dt), "Wed Mar 4 2020 0:0:0");
+}
+
+TEST(DateTime, Parse_Err_1)
+{
+    bpf::system::DateTime dt;
+    EXPECT_THROW(bpf::system::DateTime::Parse("Tue Dfg 3 2020 1:50:0"), bpf::ParseException);
+    EXPECT_FALSE(bpf::system::DateTime::TryParse("Tue Dfg 3 2020 1:50:0", dt));
+}
+
+TEST(DateTime, Parse_Err_2)
+{
+    bpf::system::DateTime dt;
+    EXPECT_THROW(bpf::system::DateTime::Parse("Tue Dec 3 2020 x:v:n"), bpf::ParseException);
+    EXPECT_THROW(bpf::system::DateTime::Parse("1-x-v x:v:n"), bpf::ParseException);
+    EXPECT_THROW(bpf::system::DateTime::Parse("1/x/4 1:0:1"), bpf::ParseException);
+    EXPECT_THROW(bpf::system::DateTime::Parse("1/x-4 1:0:1"), bpf::ParseException);
+    EXPECT_FALSE(bpf::system::DateTime::TryParse("Tue Dec 3 2020 x:v:n", dt));
+    EXPECT_FALSE(bpf::system::DateTime::TryParse("1-x-v x:v:n", dt));
+    EXPECT_FALSE(bpf::system::DateTime::TryParse("1/x/4 1:0:1", dt));
+    EXPECT_FALSE(bpf::system::DateTime::TryParse("1/x-4 1:0:1", dt));
+}
+
+TEST(DateTime, Parse_Err_3)
+{
+    bpf::system::DateTime dt;
+    EXPECT_THROW(bpf::system::DateTime::Parse("020 0:1"), bpf::ParseException);
+    EXPECT_THROW(bpf::system::DateTime::Parse("Tue 3 2020 1:4"), bpf::ParseException);
+    EXPECT_THROW(bpf::system::DateTime::Parse("Dec 3 2020 1:2"), bpf::ParseException);
+    EXPECT_THROW(bpf::system::DateTime::Parse(" 2020 x:v"), bpf::ParseException);
+    EXPECT_THROW(bpf::system::DateTime::Parse("asjdoq979823"), bpf::ParseException);
+    EXPECT_THROW(bpf::system::DateTime::Parse(""), bpf::ParseException);
+    EXPECT_THROW(bpf::system::DateTime::Parse("\n"), bpf::ParseException);
+    EXPECT_FALSE(bpf::system::DateTime::TryParse("020 0:1", dt));
+    EXPECT_FALSE(bpf::system::DateTime::TryParse("Tue 3 2020 1:4", dt));
+    EXPECT_FALSE(bpf::system::DateTime::TryParse("Dec 3 2020 1:2", dt));
+    EXPECT_FALSE(bpf::system::DateTime::TryParse(" 2020 x:v", dt));
+    EXPECT_FALSE(bpf::system::DateTime::TryParse("asjdoq979823", dt));
+    EXPECT_FALSE(bpf::system::DateTime::TryParse("", dt));
+    EXPECT_FALSE(bpf::system::DateTime::TryParse("\n", dt));
+}
