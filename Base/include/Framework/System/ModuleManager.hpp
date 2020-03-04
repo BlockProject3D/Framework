@@ -28,90 +28,63 @@
 
 #pragma once
 #include "Framework/System/Module.hpp"
-#include "Framework/System/IModuleInterface.hpp"
 #include "Framework/Collection/HashMap.hpp"
-#include "Framework/Collection/List.hpp"
-
-# ifdef WINDOWS
-#  define IMPLEMENT_MODULE(name, clname) \
-extern "C" \
-{ \
-    __declspec(dllexport) IModuleInterface *name##_Link() \
-    { \
-        return (new clname()); \
-    } \
-} \
-
-# else
-#  define IMPLEMENT_MODULE(name, clname) \
-extern "C" \
-{ \
-    Framework::IModuleInterface *name##_Link() \
-    { \
-        return (new clname()); \
-    } \
-    int	name##_Describe() \
-    { \
-        return (VERSION_ENGINE_INT); \
-    } \
-} \
-
-# endif
+#include "Framework/Memory/Utility.hpp"
 
 namespace bpf
 {
     namespace system
     {
-        typedef IModuleInterface *(*ModuleLinkFunc)();
-        typedef int(*ModuleDescribeFunc)();
-
-        class BPF_API ModuleEntry
-        {
-        public:
-            IModuleInterface *Interface;
-            bpf::String Name;
-            Module Handle;
-            inline ModuleEntry(const bpf::String &path, const bpf::String &name)
-                : Interface(Null), Name(name), Handle(path)
-            {
-            }
-        };
-
-        class BPF_API ModuleManager
+        template <typename BaseClass>
+        class BP_TPL_API ModuleManager
         {
         private:
-            bpf::collection::List<ModuleEntry *> ModuleList;
-            bpf::collection::HashMap<const char *, ModuleEntry *> ModuleMap;
+            typedef memory::UniquePtr<BaseClass> (*ModuleLinkFunc)();
+            typedef fint(*ModuleDescribeFunc)();
 
-            void UnloadModule(ModuleEntry *entry);
+            struct Entry
+            {
+                memory::UniquePtr<BaseClass> Interface;
+                Module Handle;
+            };
+
+            String _modulePath;
+            collection::HashMap<String, Entry> _map;
+
         public:
-            inline ModuleManager() {}
-            ~ModuleManager();
+            inline ModuleManager(const String &modulePath)
+                : _modulePath(modulePath)
+            {
+            }
+
+            ModuleManager(const ModuleManager &other) = delete;
+            ModuleManager &operator=(const ModuleManager &other) = delete;
 
             /**
              * Loads the given module name
              * @throws ModuleException
              */
-            void LoadModule(const char *name);
+            void LoadModule(const String &virtualName, const String &fileName);
 
             /**
              * Unloads the given module name
              */
-            void UnloadModule(const char *name);
+            void UnloadModule(const String &virtualName);
 
-            inline bool ModuleLoaded(const char *name)
+            inline bool HasModule(const String &virtualName) const noexcept
             {
-                return (ModuleMap.HasKey(name));
+                return (_map.HasKey(virtualName));
             }
 
-            template <typename T>
-            inline T *GetModule(const char *name)
+            inline const memory::UniquePtr<BaseClass> &GetModule(const String &virtualName) const noexcept
             {
-                if (ModuleMap.HasKey(name))
-                    return (dynamic_cast<T *>(ModuleMap[name]->Interface));
+                if (!HasModule(virtualName))
+                    return (memory::UniquePtr<BaseClass>::NullPtr);
                 else
-                    return (Null);
+                    return (_map[virtualName].Interface);
             }
         };
     }
 };
+
+#include "Framework/System/ModuleManager.impl.hpp"

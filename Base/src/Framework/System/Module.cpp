@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -39,27 +39,42 @@ using namespace bpf::system;
 using namespace bpf;
 
 Module::Module(const bpf::String &path)
-    : Path(path + "." + Platform::GetOSInfo().ModuleExt)
+    : _path(path + "." + Platform::GetOSInfo().ModuleExt)
 {
 #ifdef WINDOWS
-    Handle = LoadLibrary(*Path);
-    if (Handle == NULL)
+    _handle = LoadLibrary(*_path);
+    if (_handle == NULL)
         throw ModuleException(ObtainErrorString());
 #else
-    Handle = dlopen(*Path, RTLD_NOW | RTLD_LOCAL);
-    if (Handle == Null)
+    _handle = dlopen(*_path, RTLD_NOW | RTLD_LOCAL);
+    if (_handle == Null)
         throw ModuleException(dlerror());
 #endif
+}
+
+Module &Module::operator=(Module &&other)
+{
+#ifdef WINDOWS
+    if (_handle != NULL)
+        FreeLibrary((HMODULE)_handle);
+#else
+    if (Handle != Null)
+        dlclose(Handle);
+#endif
+    _handle = other._handle;
+    _path = std::move(other._path);
+    other._handle = Null;
+    return (*this);
 }
 
 Module::~Module()
 {
 #ifdef WINDOWS
-    if (Handle != NULL)
-        FreeLibrary((HMODULE)Handle);
+    if (_handle != NULL)
+        FreeLibrary((HMODULE)_handle);
 #else
-    if (Handle != Null)
-        dlclose(Handle);
+    if (_handle != Null)
+        dlclose(_handle);
 #endif
 }
 
@@ -86,12 +101,12 @@ String Module::ObtainErrorString()
 void *Module::LoadSymbol(const bpf::String &name)
 {
 #ifdef WINDOWS
-    void *res = (void *)GetProcAddress((HMODULE)Handle, *name);
+    void *res = (void *)GetProcAddress((HMODULE)_handle, *name);
     if (res == Null)
         throw ModuleException(ObtainErrorString());
     return (res);
 #else
-    void *res = dlsym(Handle, *name);
+    void *res = dlsym(_handle, *name);
     if (res == Null)
         throw ModuleException(dlerror());
     return (res);

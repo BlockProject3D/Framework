@@ -27,62 +27,42 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/System/ModuleException.hpp"
 
 namespace bpf
 {
     namespace system
     {
-        class BPF_API Module
+        template <typename BaseClass>
+        void ModuleManager<BaseClass>::LoadModule(const String &virtualName, const String &fileName)
         {
-        private:
-            bpf::String _path;
-            void *_handle;
+            String moduleFile = _modulePath + fileName;
 
-#ifdef WINDOWS
-            String ObtainErrorString();
-#endif
-        public:
-            /**
-             * Opens a module binary at a specified path, file extension omitted.
-             * @param path the path to the binary module without file extension
-             * @throws ModuleException
-             */
-            explicit Module(const bpf::String &path);
-            inline Module() noexcept
-                : _path(String::Empty)
-                , _handle(Null)
-            {
-            }
-            ~Module();
+            if (HasModule(virtualName))
+                throw ModuleException("Module already loaded");
+            Entry md;
+            md.Handle = Module(moduleFile);
+            md.Name = virtualName;
+            String moduleLnkSymbol = virtualName + "_Link";
+            String moduleDescSymbol = virtualName + "_Describe";
+            ModuleLinkFunc sym = static_cast<ModuleLinkFunc>(md.Handle.LoadSymbol(moduleLnkSymbol));
+            ModuleDescribeFunc sym1 = static_cast<ModuleDescribeFunc>(md.Handle.LoadSymbol(moduleDescSymbol));
+            fint version = sym1();
+            if (version > Platform::GetEnvInfo().VersionInt)
+                throw ModuleException("Module has been built against a new version of the Framework");
+            else if (version < Platform::GetEnvInfo().VersionInt)
+                throw ModuleException("Module has been built against an older version of the Framework");
+            if ((md.Interface = sym()) == Null)
+                throw ModuleException("Module interface allocation failure");
+            _map.Add(virtualName, std::move(md));
+        }
 
-            inline Module(Module &&other)
-                : _path(std::move(other._path))
-                , _handle(other._handle)
-            {
-                other._handle = Null;
-            }
-
-            Module(const Module &other) = delete;
-
-            Module &operator=(Module &&other);
-
-            Module &operator=(const Module &other) = delete;
-
-            /**
-             * Loads a symbol from the module
-             * @param name the symbol name
-             * @throws ModuleException
-             */
-            void *LoadSymbol(const bpf::String &name);
-
-            /**
-             * Returns the path to this module
-             */
-            inline const bpf::String &Path() const noexcept
-            {
-                return (_path);
-            }
-        };
+        template <typename BaseClass>
+        void ModuleManager<BaseClass>::UnloadModule(const String &virtualName)
+        {
+            if (!HasModule(virtualName))
+                return;
+            _map[virtualName].Handle = Module();
+            _map.RemoveAt(virtualName);
+        }
     }
 }

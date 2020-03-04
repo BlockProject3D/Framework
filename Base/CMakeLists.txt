@@ -73,6 +73,7 @@ set(SOURCES
     ./include/Framework/System/Module.hpp
     ./include/Framework/System/ModuleException.hpp
     ./include/Framework/System/ModuleManager.hpp
+    ./include/Framework/System/ModuleManager.impl.hpp
     ./include/Framework/System/Platform.hpp
     ./include/Framework/System/TypeExpander.hpp
     ./include/Framework/System/DateTime.hpp
@@ -81,7 +82,7 @@ set(SOURCES
     ./include/Framework/System/Thread.hpp
     ./include/Framework/System/Mutex.hpp
     ./include/Framework/System/ThreadManager.hpp
-    ./include/Framework/System/IModuleInterface.hpp
+    ./include/Framework/System/ModuleInterface.hpp
     ./include/Framework/System/Stringifier.DateTime.hpp
     ./include/Framework/Collection/Iterator.hpp
     ./include/Framework/Collection/Array.hpp
@@ -151,7 +152,6 @@ set(SOURCES
     ./src/Framework/Memory/Object.cpp
     ./src/Framework/System/Platform.cpp
     ./src/Framework/System/Module.cpp
-    ./src/Framework/System/ModuleManager.cpp
     ./src/Framework/System/DateTime.cpp
     ./src/Framework/System/TimeSpan.cpp
     ./src/Framework/System/Thread.cpp

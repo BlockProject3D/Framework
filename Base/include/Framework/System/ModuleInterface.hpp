@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -27,17 +27,35 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/Types.hpp"
+#include "Framework/Memory/Utility.hpp"
 
-namespace bpf
-{
-    namespace system
-    {
-        class BPF_API IModuleInterface
-        {
-        public:
-            virtual ~IModuleInterface() {}
-            virtual void OnLoadModule() = 0;
-            virtual void OnUnloadModule() = 0;
-        };
+#define BP_MODULE_VERSION_INT 0x1
+
+#ifdef WINDOWS
+    #define BP_IMPLEMENT_MODULE(Name, BaseClass, Class) \
+    extern "C" \
+    { \
+        __declspec(dllexport) bpf::memory::UniquePtr<BaseClass> Name##_Link() \
+        { \
+            return (bpf::memory::MakeUnique<Class>()); \
+        } \
+        bpf::fint Name##_Version() \
+        { \
+            return (BP_MODULE_VERSION_INT); \
+        } \
     }
-}
+#else
+    #define BP_IMPLEMENT_MODULE(Name, BaseClass, Class) \
+    extern "C" \
+    { \
+        bpf::memory::UniquePtr<BaseClass> Name##_Link() \
+        { \
+            return (bpf::memory::MakeUnique<Class>()); \
+        } \
+        bpf::fint Name##_Version() \
+        { \
+            return (BP_MODULE_VERSION_INT); \
+        } \
+    }
+#endif
