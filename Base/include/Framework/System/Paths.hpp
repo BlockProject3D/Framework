@@ -40,6 +40,8 @@ namespace bpf
             const io::File &UserHome() const noexcept;
             const io::File &UserDesktop() const noexcept;
             const io::File &UserDocuments() const noexcept;
+            const io::File &TempDir() const noexcept;
+            const io::File &CacheDir() const noexcept;
         };
     }
 };
