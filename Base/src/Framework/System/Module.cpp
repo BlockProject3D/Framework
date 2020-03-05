@@ -58,8 +58,8 @@ Module &Module::operator=(Module &&other)
     if (_handle != NULL)
         FreeLibrary((HMODULE)_handle);
 #else
-    if (Handle != Null)
-        dlclose(Handle);
+    if (_handle != Null)
+        dlclose(_handle);
 #endif
     _handle = other._handle;
     _path = std::move(other._path);
