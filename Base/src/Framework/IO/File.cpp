@@ -100,13 +100,15 @@ File::~File()
 File File::GetAbsolutePath() const
 {
     String str;
-    char buf[PATH_MAX];
 
-    std::memset(buf, 0, PATH_MAX);
 #ifdef WINDOWS
-    GetFullPathNameA(*FullPath, PATH_MAX, buf, Null);
-    str = String(buf);
+    WCHAR buf[PATH_MAX];
+    std::memset(buf, 0, PATH_MAX);
+    GetFullPathNameW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), PATH_MAX, buf, Null);
+    str = String::FromUTF16(reinterpret_cast<const bpf::fchar16 *>(buf));
 #else
+    char buf[PATH_MAX];
+    std::memset(buf, 0, PATH_MAX);
     realpath(*FullPath, buf);
     str = String(buf);
 #endif
@@ -118,11 +120,13 @@ File File::GetParent() const
     return (File(FullPath.Sub(0, FullPath.LastIndexOf('/'))));
 }
 
-void File::Copy(const File &dst, bool overwrite)
+bool File::CopyTo(const File &dst, bool overwrite)
 {
 #ifdef WINDOWS
-    CopyFile(*GetAbsolutePath().Path(), *dst.GetAbsolutePath().Path(), !overwrite);
+    BOOL val = CopyFileW(reinterpret_cast<LPCWSTR>(*GetAbsolutePath().Path().ToUTF16()), reinterpret_cast<LPCWSTR>(*dst.GetAbsolutePath().Path().ToUTF16()), !overwrite);
+    return (val == TRUE ? true : false);
 #else
+    return (false);
 #endif
     //TODO : Implement
     //File out = dst;
@@ -137,6 +141,17 @@ void File::Copy(const File &dst, bool overwrite)
         dest->Write(buf, len);
     Close();
     out.Close();*/
+}
+
+bool File::MoveTo(const File &dst)
+{
+#ifdef WINDOWS
+    BOOL val = MoveFileW(reinterpret_cast<LPCWSTR>(*GetAbsolutePath().Path().ToUTF16()), reinterpret_cast<LPCWSTR>(*dst.GetAbsolutePath().Path().ToUTF16()));
+    return (val == TRUE ? true : false);
+#else
+    int val = rename(*GetAbsolutePath().Path(), *dst.GetAbsolutePath().Path());
+    return (val == 0 ? true : false);
+#endif
 }
 
 bool File::Exists() const

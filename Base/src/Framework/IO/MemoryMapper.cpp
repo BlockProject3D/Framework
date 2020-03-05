@@ -70,12 +70,12 @@ MemoryMapper::MemoryMapper(const File &file, fint mode)
         md2 = PAGE_READWRITE;
     else
         md2 = PAGE_READONLY;
-    _handle = CreateFile(*file.GetAbsolutePath().Path(), md, FILE_SHARE_READ, Null, md1, FILE_ATTRIBUTE_NORMAL, Null);
+    _handle = CreateFileW(reinterpret_cast<LPCWSTR>(*file.GetAbsolutePath().Path().ToUTF16()), md, FILE_SHARE_READ, Null, md1, FILE_ATTRIBUTE_NORMAL, Null);
     if (_handle == INVALID_HANDLE_VALUE)
         throw IOException(String("Could not open file '")
                           + file.GetAbsolutePath().Path() + "' : "
                           + OSPrivate::ObtainLastErrorString());
-    _mapper = CreateFileMapping(_handle, Null, md2, 0, 0, Null);
+    _mapper = CreateFileMappingW(_handle, Null, md2, 0, 0, Null);
     if (_mapper == Null)
     {
         CloseHandle(_handle);

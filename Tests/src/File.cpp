@@ -60,6 +60,20 @@ TEST(File, Abs)
     EXPECT_FALSE(f.Exists());
 }
 
+TEST(File, Move)
+{
+    bpf::io::File f("./doesnotexist.txt");
+    bpf::io::File dest("./doesexist.txt");
+
+    EXPECT_FALSE(f.Exists());
+    f.CreateDir();
+    EXPECT_TRUE(f.Exists());
+    EXPECT_FALSE(dest.Exists());
+    EXPECT_TRUE(f.MoveTo(dest));
+    EXPECT_TRUE(dest.Exists());
+    EXPECT_FALSE(f.Exists());
+}
+
 #ifdef WINDOWS
 TEST(File, AutoBackSlash)
 {

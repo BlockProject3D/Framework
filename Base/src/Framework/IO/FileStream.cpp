@@ -59,7 +59,7 @@ FileStream::FileStream(const File &file, fint mode)
         else
             md1 |= OPEN_ALWAYS;
     }
-    _handle = CreateFile(*file.GetAbsolutePath().Path(), md, FILE_SHARE_READ, Null, md1, FILE_ATTRIBUTE_NORMAL, Null);
+    _handle = CreateFileW(reinterpret_cast<LPCWSTR>(*file.GetAbsolutePath().Path().ToUTF16()), md, FILE_SHARE_READ, Null, md1, FILE_ATTRIBUTE_NORMAL, Null);
     if (_handle == INVALID_HANDLE_VALUE)
         throw IOException(String("Could not open file '")
             + file.GetAbsolutePath().Path() + "' : "
