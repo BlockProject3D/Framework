@@ -83,6 +83,8 @@ set(SOURCES
     ./include/Framework/System/Mutex.hpp
     ./include/Framework/System/ThreadManager.hpp
     ./include/Framework/System/ModuleInterface.hpp
+    ./include/Framework/System/IApplication.hpp
+	./include/Framework/System/Paths.hpp
     ./include/Framework/System/Stringifier.DateTime.hpp
     ./include/Framework/Collection/Iterator.hpp
     ./include/Framework/Collection/Array.hpp
