@@ -84,6 +84,8 @@ set(SOURCES
     ./include/Framework/System/ThreadManager.hpp
     ./include/Framework/System/ModuleInterface.hpp
     ./include/Framework/System/IApplication.hpp
+    ./include/Framework/System/WindowsApp.hpp
+    ./include/Framework/System/UnixApp.hpp
 	./include/Framework/System/Paths.hpp
     ./include/Framework/System/Stringifier.DateTime.hpp
     ./include/Framework/Collection/Iterator.hpp
@@ -154,11 +156,14 @@ set(SOURCES
     ./src/Framework/Memory/Object.cpp
     ./src/Framework/System/Platform.cpp
     ./src/Framework/System/Module.cpp
+    ./src/Framework/System/Paths.cpp
     ./src/Framework/System/DateTime.cpp
     ./src/Framework/System/TimeSpan.cpp
     ./src/Framework/System/Thread.cpp
     ./src/Framework/System/Mutex.cpp
     ./src/Framework/System/ThreadManager.cpp
+    ./src/Framework/System/WindowsApp.cpp
+    ./src/Framework/System/UnixApp.cpp
     ./src/Framework/Color.cpp
     ./src/Framework/Path.cpp
     ./src/Framework/Profiler.cpp

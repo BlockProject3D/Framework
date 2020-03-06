@@ -123,7 +123,7 @@ File File::GetParent() const
 bool File::CopyTo(const File &dst, bool overwrite)
 {
 #ifdef WINDOWS
-    BOOL val = CopyFileW(reinterpret_cast<LPCWSTR>(*GetAbsolutePath().Path().ToUTF16()), reinterpret_cast<LPCWSTR>(*dst.GetAbsolutePath().Path().ToUTF16()), !overwrite);
+    BOOL val = CopyFileW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), reinterpret_cast<LPCWSTR>(*dst.FullPath.ToUTF16()), !overwrite);
     return (val == TRUE ? true : false);
 #else
     return (false);
@@ -146,10 +146,10 @@ bool File::CopyTo(const File &dst, bool overwrite)
 bool File::MoveTo(const File &dst)
 {
 #ifdef WINDOWS
-    BOOL val = MoveFileW(reinterpret_cast<LPCWSTR>(*GetAbsolutePath().Path().ToUTF16()), reinterpret_cast<LPCWSTR>(*dst.GetAbsolutePath().Path().ToUTF16()));
+    BOOL val = MoveFileW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), reinterpret_cast<LPCWSTR>(*dst.FullPath.ToUTF16()));
     return (val == TRUE ? true : false);
 #else
-    int val = rename(*GetAbsolutePath().Path(), *dst.GetAbsolutePath().Path());
+    int val = rename(*FullPath, *dst.FullPath);
     return (val == 0 ? true : false);
 #endif
 }
@@ -157,7 +157,7 @@ bool File::MoveTo(const File &dst)
 bool File::Exists() const
 {
 #ifdef WINDOWS
-    DWORD attr = GetFileAttributes(*FullPath);
+    DWORD attr = GetFileAttributesW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()));
     if (attr == INVALID_FILE_ATTRIBUTES)
         return (false);
     return (true);
@@ -171,7 +171,7 @@ bool File::Exists() const
 bool File::IsHidden() const
 {
 #ifdef WINDOWS
-    DWORD attr = GetFileAttributes(*FullPath);
+    DWORD attr = GetFileAttributesW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()));
     if (attr == INVALID_FILE_ATTRIBUTES)
         return (false);
     return (attr & FILE_ATTRIBUTE_HIDDEN);
@@ -183,12 +183,12 @@ bool File::IsHidden() const
 void File::Hide(const bool flag)
 {
 #ifdef WINDOWS
-    DWORD attr = GetFileAttributes(*FullPath);
+    DWORD attr = GetFileAttributesW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()));
     if (flag)
         attr |= FILE_ATTRIBUTE_HIDDEN;
     else
         attr &= ~FILE_ATTRIBUTE_HIDDEN;
-    SetFileAttributes(*FullPath, attr);
+    SetFileAttributesW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), attr);
 #else
     File f = File(GetParent().Path() + "/" + "." + Name());
     rename(*FullPath, *f.Path());
@@ -203,7 +203,7 @@ bool File::IsDirectory() const
     if (!Exists())
         return (false);
 #ifdef WINDOWS
-    DWORD attr = GetFileAttributes(*FullPath);
+    DWORD attr = GetFileAttributesW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()));
     if (attr == INVALID_FILE_ATTRIBUTES)
         return (false);
     return (attr & FILE_ATTRIBUTE_DIRECTORY);
@@ -220,8 +220,8 @@ uint64 File::GetSizeBytes() const
     if (!Exists())
         return (0);
 #ifdef WINDOWS
-    WIN32_FIND_DATA data;
-    HANDLE hdl = FindFirstFile(*FullPath, &data);
+    WIN32_FIND_DATAW data;
+    HANDLE hdl = FindFirstFileW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), &data);
     if (hdl == INVALID_HANDLE_VALUE)
         return (0);
     FindClose(hdl);
@@ -240,9 +240,9 @@ void File::Delete()
         return;
 #ifdef WINDOWS
     if (IsDirectory())
-        RemoveDirectory(*FullPath);
+        RemoveDirectoryW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()));
     else
-        DeleteFile(*FullPath);
+        DeleteFileW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()));
 #else
     if (IsDirectory())
         rmdir(*FullPath);
@@ -258,14 +258,14 @@ List<File> File::ListFiles()
     if (!Exists() || !IsDirectory())
         return (flns);
 #ifdef WINDOWS
-    WIN32_FIND_DATA data;
-    File dir = (*this + "/*").GetAbsolutePath();
-    HANDLE hdl = FindFirstFile(*dir.Path(), &data);
+    WIN32_FIND_DATAW data;
+    File dir = (*this + "/*");
+    HANDLE hdl = FindFirstFileW(reinterpret_cast<LPCWSTR>(*dir.FullPath.ToUTF16()), &data);
     if (hdl != INVALID_HANDLE_VALUE)
     {
-        flns.Add(File(String(data.cFileName)));
-        while (FindNextFile(hdl, &data))
-            flns.Add(File(Path() + "/" + String(data.cFileName)));
+        flns.Add(File(FullPath + "/" + String::FromUTF16(reinterpret_cast<const fchar16 *>(data.cFileName))));
+        while (FindNextFileW(hdl, &data))
+            flns.Add(File(FullPath + "/" + String::FromUTF16(reinterpret_cast<const fchar16 *>(data.cFileName))));
         FindClose(hdl);
     }
 #else
@@ -287,7 +287,7 @@ void File::CreateDir()
     if (Exists())
         return;
 #ifdef WINDOWS
-    CreateDirectory(*FullPath, Null);
+    CreateDirectoryW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), Null);
 #else
     mkdir(*FullPath, 0755);
 #endif

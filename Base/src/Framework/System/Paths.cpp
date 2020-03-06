@@ -26,43 +26,16 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-#include "Framework/IO/File.hpp"
+#include "Framework/System/Paths.hpp"
 
-namespace bpf
+using namespace bpf::system;
+using namespace bpf::io;
+using namespace bpf;
+
+Paths::Paths(const File &root, const File &home, const File &tmp, const File &cache)
+    : _appRoot(root)
+    , _userHome(home)
+    , _tmpDir(tmp)
+    , _cacheDir(cache)
 {
-    namespace system
-    {
-        class BPF_API Paths
-        {
-        private:
-            io::File _appRoot;
-            io::File _userHome;
-            io::File _tmpDir;
-            io::File _cacheDir;
-
-        public:
-            Paths(const io::File &root, const io::File &home, const io::File &tmp, const io::File &cache);
-
-            inline const io::File &AppRoot() const noexcept
-            {
-                return (_appRoot);
-            }
-
-            inline const io::File &UserHome() const noexcept
-            {
-                return (_userHome);
-            }
-
-            inline const io::File &TempDir() const noexcept
-            {
-                return (_tmpDir);
-            }
-
-            inline const io::File &CacheDir() const noexcept
-            {
-                return (_cacheDir);
-            }
-        };
-    }
-};
+}

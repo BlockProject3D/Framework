@@ -27,41 +27,52 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/IO/File.hpp"
+#include "Framework/System/IApplication.hpp"
 
 namespace bpf
 {
     namespace system
     {
-        class BPF_API Paths
+        class BPF_API WindowsApp final : public IApplication
         {
         private:
-            io::File _appRoot;
-            io::File _userHome;
-            io::File _tmpDir;
-            io::File _cacheDir;
+            void *_hInstance;
+            bool _hasConsole;
+            Paths _paths;
+            collection::HashMap<String, String> _env;
+            collection::Array<String> _args;
+            String _fileName;
+
+            void SetupEnvironment();
+            void SetupArgs();
+            void SetupFileName();
+            void SetupPaths();
 
         public:
-            Paths(const io::File &root, const io::File &home, const io::File &tmp, const io::File &cache);
+            WindowsApp(void *hinstance, bool hasConsole);
 
-            inline const io::File &AppRoot() const noexcept
+            void SetConsoleTitle(const String &title);
+
+            void CreateConsole();
+
+            const String &GetExeFileName() const noexcept
             {
-                return (_appRoot);
+                return (_fileName);
             }
 
-            inline const io::File &UserHome() const noexcept
+            const collection::HashMap<String, String> &GetEnvironment() const noexcept
             {
-                return (_userHome);
+                return (_env);
             }
 
-            inline const io::File &TempDir() const noexcept
+            const collection::Array<String> &GetArguments() const noexcept
             {
-                return (_tmpDir);
+                return (_args);
             }
 
-            inline const io::File &CacheDir() const noexcept
+            const Paths &GetPaths() const noexcept
             {
-                return (_cacheDir);
+                return (_paths);
             }
         };
     }

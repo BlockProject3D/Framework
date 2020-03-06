@@ -27,41 +27,43 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/IO/File.hpp"
+#include "Framework/System/IApplication.hpp"
 
 namespace bpf
 {
     namespace system
     {
-        class BPF_API Paths
+        class BPF_API UnixApp final : public IApplication
         {
         private:
-            io::File _appRoot;
-            io::File _userHome;
-            io::File _tmpDir;
-            io::File _cacheDir;
+            collection::HashMap<String, String> _env;
+            collection::Array<String> _args;
+            String _fileName;
+            Paths _paths;
 
         public:
-            Paths(const io::File &root, const io::File &home, const io::File &tmp, const io::File &cache);
+            UnixApp(char **argv, int argc, char **env);
 
-            inline const io::File &AppRoot() const noexcept
+            inline void CreateConsole() {}
+
+            const String &GetExeFileName() const noexcept
             {
-                return (_appRoot);
+                return (_fileName);
             }
 
-            inline const io::File &UserHome() const noexcept
+            const collection::HashMap<String, String> &GetEnvironment() const noexcept
             {
-                return (_userHome);
+                return (_env);
             }
 
-            inline const io::File &TempDir() const noexcept
+            const collection::Array<String> &GetArguments() const noexcept
             {
-                return (_tmpDir);
+                return (_args);
             }
 
-            inline const io::File &CacheDir() const noexcept
+            const Paths &GetPaths() const noexcept
             {
-                return (_cacheDir);
+                return (_paths);
             }
         };
     }

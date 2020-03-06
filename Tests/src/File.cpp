@@ -72,6 +72,8 @@ TEST(File, Move)
     EXPECT_TRUE(f.MoveTo(dest));
     EXPECT_TRUE(dest.Exists());
     EXPECT_FALSE(f.Exists());
+    f.Delete();
+    dest.Delete();
 }
 
 #ifdef WINDOWS
