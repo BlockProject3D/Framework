@@ -736,7 +736,7 @@ TEST(String, Chinese_2)
 TEST(String, Chinese_3)
 {
     bpf::String str = "你好，我是清华大学的留学生";
-    const bpf::fchar16 *expected = reinterpret_cast<const bpf::fchar16 *>(L"你好，我是清华大学的留学生");
+    const bpf::fchar16 *expected = reinterpret_cast<const bpf::fchar16 *>(u"你好，我是清华大学的留学生");
     auto arr = str.ToUTF16();
     auto recover = bpf::String::FromUTF16(*arr);
 

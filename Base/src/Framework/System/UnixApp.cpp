@@ -39,7 +39,7 @@ UnixApp::UnixApp(char **argv, int argc, char **env)
     , _args(argc)
     , _fileName(String(argv[0]))
 {
-    for (int i = 0; i = argc; ++i)
+    for (int i = 0; i != argc; ++i)
         _args[i] = String(argv[i]);
     for (int i = 0; env[i]; ++i)
     {

@@ -54,7 +54,7 @@
 
     #define BP_SETUP_ENTRY_POINT() \
     int Main(bpf::system::IApplication &app, const bpf::collection::Array<bpf::String> &args, const bpf::system::Paths &paths); \
-    int main(char **argv, int argc, char **env) \
+    int main(int argc, char **argv, char **env) \
     { \
         bpf::system::UnixApp app(argv, argc, env); \
         return (Main(app, app.GetArguments(), app.GetPaths())); \
