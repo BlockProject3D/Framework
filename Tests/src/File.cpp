@@ -84,6 +84,10 @@ TEST(File, AutoBackSlash)
     EXPECT_STREQ(*f.PlatformPath(), ".");
     bpf::io::File f1 = f + "../";
     EXPECT_STREQ(*f1.PlatformPath(), ".\\..");
+    f = bpf::io::File("./users////var//cleanup/test");
+    EXPECT_STREQ(*f.PlatformPath(), ".\\users\\var\\cleanup\\test");
+    EXPECT_STREQ(*f.Path(), "./users/var/cleanup/test");
+
 }
 #else
 TEST(File, AutoSlash)
@@ -93,6 +97,9 @@ TEST(File, AutoSlash)
     EXPECT_STREQ(*f.PlatformPath(), ".");
     bpf::io::File f1 = f + "../";
     EXPECT_STREQ(*f1.PlatformPath(), "./..");
+    f = bpf::io::File("./users////var//cleanup/test");
+    EXPECT_STREQ(*f.PlatformPath(), "./users/var/cleanup/test");
+    EXPECT_STREQ(*f.Path(), "./users/var/cleanup/test");
 }
 #endif
 

@@ -52,36 +52,38 @@ File::File(const bpf::String &path)
     , FileExt("")
 {
 #ifdef WINDOWS
-    FullPath = FullPath.Replace("/", "\\");
+    FullPath = FullPath.Replace('/', '\\');
     String result = String::Empty;
     char old = '\0';
-    for (int i = 0; i < FullPath.Size(); ++i)
+    for (fisize i = 0; i < FullPath.Size(); ++i)
     {
         if (FullPath.ByteAt(i) == '\\' && old != '\\')
             result += '\\';
-        else
+        else if (FullPath.ByteAt(i) != '\\')
             result += FullPath.ByteAt(i);
         old = FullPath.ByteAt(i);
     }
     if (result.ByteAt(result.Size() - 1) == '\\')
         result = result.Sub(0, result.Len() - 1);
     FullPath = std::move(result);
+    UserPath = FullPath.Replace('\\', '/');
     FileName = path.Sub(path.LastIndexOf('\\') + 1);
     FileExt = path.Sub(path.LastIndexOf('.') + 1);
 #else
     String result = String::Empty;
     char old = '\0';
-    for (int i = 0; i < FullPath.Size(); ++i)
+    for (fisize i = 0; i < FullPath.Size(); ++i)
     {
         if (FullPath.ByteAt(i) == '/' && old != '/')
             result += '/';
-        else
+        else if (FullPath.ByteAt(i) != '/')
             result += FullPath.ByteAt(i);
         old = FullPath.ByteAt(i);
     }
     if (result.ByteAt(result.Size() - 1) == '/')
         result = result.Sub(0, result.Len() - 1);
     FullPath = std::move(result);
+    UserPath = FullPath;
     FileName = path.Sub(path.LastIndexOf('/') + 1);
     FileExt = path.Sub(path.LastIndexOf('.') + 1);
 #endif
