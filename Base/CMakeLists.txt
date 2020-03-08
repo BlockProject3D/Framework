@@ -84,8 +84,6 @@ set(SOURCES
     ./include/Framework/System/ThreadManager.hpp
     ./include/Framework/System/ModuleInterface.hpp
     ./include/Framework/System/IApplication.hpp
-    ./include/Framework/System/WindowsApp.hpp
-    ./include/Framework/System/UnixApp.hpp
 	./include/Framework/System/Paths.hpp
     ./include/Framework/System/Stringifier.DateTime.hpp
     ./include/Framework/Collection/Iterator.hpp
@@ -112,6 +110,7 @@ set(SOURCES
     ./include/Framework/Collection/Stringifier.HashMap.hpp
     ./include/Framework/Collection/Stringifier.Map.hpp
     ./include/Framework/Collection/StackException.hpp
+    ./include/Framework/System/EntryPoint.hpp
     ./include/Framework/API.hpp
     ./include/Framework/BinUtils.hpp
     ./include/Framework/Types.hpp
@@ -119,10 +118,8 @@ set(SOURCES
     ./include/Framework/TypeInfo.hpp
     ./include/Framework/Color.hpp
     ./include/Framework/Delegate.hpp
-    ./include/Framework/EntryPoint.hpp
     ./include/Framework/Hash.hpp
     ./include/Framework/Hash.Base.hpp
-    ./include/Framework/Path.hpp
     ./include/Framework/Profiler.hpp
     ./include/Framework/Math/Random.hpp
     ./include/Framework/Exception.hpp
@@ -162,10 +159,7 @@ set(SOURCES
     ./src/Framework/System/Thread.cpp
     ./src/Framework/System/Mutex.cpp
     ./src/Framework/System/ThreadManager.cpp
-    ./src/Framework/System/WindowsApp.cpp
-    ./src/Framework/System/UnixApp.cpp
     ./src/Framework/Color.cpp
-    ./src/Framework/Path.cpp
     ./src/Framework/Profiler.cpp
     ./src/Framework/Exception.cpp
     ./src/Framework/RuntimeException.cpp
@@ -173,6 +167,14 @@ set(SOURCES
     ./src/Framework/String.cpp
     ./src/Framework/Scalar.cpp
 )
+
+if (PLATFORM STREQUAL "Windows")
+    list(APPEND SOURCES "./include/Framework/System/WindowsApp.hpp")
+    list(APPEND SOURCES "./src/Framework/System/WindowsApp.cpp")
+else (PLATFORM STREQUAL "Windows")
+    list(APPEND SOURCES "./include/Framework/System/UnixApp.hpp")
+    list(APPEND SOURCES "./src/Framework/System/UnixApp.cpp")
+endif (PLATFORM STREQUAL "Windows")
 
 bp_setup_module(BPF BPF_API)
 if (NOT WIN32)
