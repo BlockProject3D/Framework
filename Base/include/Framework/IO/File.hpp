@@ -38,8 +38,10 @@ namespace bpf
         {
         private:
             String FullPath;
+            String UserPath;
             String FileName;
             String FileExt;
+
         public:
             explicit File(const String &path);
             File();
@@ -99,6 +101,11 @@ namespace bpf
              */
             inline const String &Path() const
             {
+                return (UserPath);
+            }
+
+            inline const String &PlatformPath() const
+            {
                 return (FullPath);
             }
 
@@ -109,7 +116,7 @@ namespace bpf
 
             inline File operator+(const String &other) const
             {
-                return (*this + File(other));
+                return (File(FullPath + "/" + other));
             }
 
             File GetParent() const;

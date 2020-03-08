@@ -47,6 +47,7 @@ using namespace bpf;
 
 File::File(const bpf::String &path)
     : FullPath(path)
+    , UserPath(path)
     , FileName("")
     , FileExt("")
 {

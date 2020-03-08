@@ -70,17 +70,17 @@ MemoryMapper::MemoryMapper(const File &file, fint mode)
         md2 = PAGE_READWRITE;
     else
         md2 = PAGE_READONLY;
-    _handle = CreateFileW(reinterpret_cast<LPCWSTR>(*file.GetAbsolutePath().Path().ToUTF16()), md, FILE_SHARE_READ, Null, md1, FILE_ATTRIBUTE_NORMAL, Null);
+    _handle = CreateFileW(reinterpret_cast<LPCWSTR>(*file.PlatformPath().ToUTF16()), md, FILE_SHARE_READ, Null, md1, FILE_ATTRIBUTE_NORMAL, Null);
     if (_handle == INVALID_HANDLE_VALUE)
         throw IOException(String("Could not open file '")
-                          + file.GetAbsolutePath().Path() + "' : "
+                          + file.PlatformPath() + "' : "
                           + OSPrivate::ObtainLastErrorString());
     _mapper = CreateFileMappingW(_handle, Null, md2, 0, 0, Null);
     if (_mapper == Null)
     {
         CloseHandle(_handle);
         throw IOException(String("Could not create mapper for file '")
-                          + file.GetAbsolutePath().Path() + "' : "
+                          + file.PlatformPath() + "' : "
                           + OSPrivate::ObtainLastErrorString());
     }
 #else
