@@ -28,6 +28,11 @@
 
 #include "Framework/System/WindowsApp.hpp"
 #include <Windows.h>
+#include <stdio.h>
+#include <fcntl.h>
+#include <io.h>
+#include <iostream>
+#include <fstream>
 #undef SetConsoleTitle
 
 using namespace bpf::system;
@@ -109,10 +114,32 @@ void WindowsApp::SetupPaths()
     _paths = Paths(appRoot, userHome, tmpDir, cacheDir);
 }
 
-void WindowsApp::CreateConsole()
+void WindowsApp::CreateConsole(const fint rows, const fint columns)
 {
     if (_hasConsole)
         return;
-    //TODO: AllocConsole
+    CONSOLE_SCREEN_BUFFER_INFO coninfo;
+    FILE *fp;
+    int hConHandle;
+    HANDLE lStdHandle;
+
+    AllocConsole();
+    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &coninfo);
+    coninfo.dwSize.Y = rows;
+    coninfo.dwSize.X = columns;
+    SetConsoleScreenBufferSize(GetStdHandle(STD_OUTPUT_HANDLE), coninfo.dwSize);
+    lStdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+    hConHandle = _open_osfhandle((intptr_t)lStdHandle, _O_TEXT);
+    fp = _fdopen(hConHandle, "w");
+    freopen_s(&fp, "CONOUT$", "w", stdout);
+    lStdHandle = GetStdHandle(STD_INPUT_HANDLE);
+    hConHandle = _open_osfhandle((intptr_t)lStdHandle, _O_TEXT);
+    fp = _fdopen(hConHandle, "r");
+    freopen_s(&fp, "CONIN$", "r", stdin);
+    lStdHandle = GetStdHandle(STD_ERROR_HANDLE);
+    hConHandle = _open_osfhandle((intptr_t)lStdHandle, _O_TEXT);
+    fp = _fdopen(hConHandle, "w");
+    freopen_s(&fp, "CONERR$", "w", stderr);
+    std::ios::sync_with_stdio();
     _hasConsole = true;
 }

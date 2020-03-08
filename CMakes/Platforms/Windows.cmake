@@ -8,4 +8,8 @@ set(BP_LIBRARY_PREFIX "")
 
 function(bp_target_created name)
     target_compile_definitions(${name} PRIVATE "WINDOWS")
+    get_target_property(IS_GUI ${name} WIN32_EXECUTABLE)
+    if (NOT IS_GUI)
+        target_compile_definitions(${name} PRIVATE "CONSOLE")
+    endif (NOT IS_GUI)
 endfunction(bp_target_created)

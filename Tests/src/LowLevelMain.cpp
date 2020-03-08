@@ -1,4 +1,4 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2018, BlockProject
 //
 // All rights reserved.
 //
@@ -26,54 +26,6 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-#include "Framework/System/IApplication.hpp"
+#include <Framework/System/EntryPoint.hpp>
 
-namespace bpf
-{
-    namespace system
-    {
-        class BPF_API WindowsApp final : public IApplication
-        {
-        private:
-            void *_hInstance;
-            bool _hasConsole;
-            Paths _paths;
-            collection::HashMap<String, String> _env;
-            collection::Array<String> _args;
-            String _fileName;
-
-            void SetupEnvironment();
-            void SetupArgs();
-            void SetupFileName();
-            void SetupPaths();
-
-        public:
-            WindowsApp(void *hinstance, bool hasConsole);
-
-            void SetConsoleTitle(const String &title);
-
-            void CreateConsole(const fint rows, const fint columns);
-
-            const String &GetExeFileName() const noexcept
-            {
-                return (_fileName);
-            }
-
-            const collection::HashMap<String, String> &GetEnvironment() const noexcept
-            {
-                return (_env);
-            }
-
-            const collection::Array<String> &GetArguments() const noexcept
-            {
-                return (_args);
-            }
-
-            const Paths &GetPaths() const noexcept
-            {
-                return (_paths);
-            }
-        };
-    }
-};
+BP_SETUP_ENTRY_POINT();

@@ -46,7 +46,7 @@ namespace bpf
 
             void SetConsoleTitle(const String &name);
 
-            inline void CreateConsole() {}
+            inline void CreateConsole(const fint rows, const fint columns) {}
 
             const String &GetExeFileName() const noexcept
             {
