@@ -36,13 +36,15 @@ namespace bpf
         class BPF_API UnixApp final : public IApplication
         {
         private:
-            collection::HashMap<String, String> _env;
+            Paths _paths;
             collection::Array<String> _args;
             String _fileName;
-            Paths _paths;
+            collection::HashMap<String, String> _env;
 
         public:
             UnixApp(char **argv, int argc, char **env);
+
+            void SetConsoleTitle(const String &name);
 
             inline void CreateConsole() {}
 

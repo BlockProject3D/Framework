@@ -69,7 +69,12 @@ void WindowsApp::SetupEnvironment()
             wptr = ptr + i + 1;
             String str = String::FromUTF16(reinterpret_cast<const fchar16 *>(wptr));
             if (str[0] != '=')
-                _env.Add(str.Sub(0, str.IndexOf('=')), str.Sub(str.IndexOf('=') + 1));
+            {
+                auto key = str.Sub(0, str.IndexOf('='));
+                auto value = str.Sub(str.IndexOf('=') + 1);
+                if (key != String::Empty && value != String::Empty)
+                    _env.Add(key, value);
+            }
         }
         ++i;
     }
