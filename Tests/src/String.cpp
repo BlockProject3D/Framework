@@ -740,7 +740,7 @@ TEST(String, Chinese_3)
     auto arr = str.ToUTF16();
     auto recover = bpf::String::FromUTF16(*arr);
 
-    for (bpf::fisize i = 0; i != arr.Size(); ++i)
+    for (bpf::fsize i = 0; i != arr.Size(); ++i)
         EXPECT_EQ(arr[i], expected[i]);
     EXPECT_EQ(str.Len(), 13);
     EXPECT_EQ(str.Size(), 39);
