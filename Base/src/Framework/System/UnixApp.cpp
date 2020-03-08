@@ -51,7 +51,7 @@ UnixApp::UnixApp(char **argv, int argc, char **env)
     }
     File home = File(_env["HOME"]);
     File root = File(_fileName.Sub(0, _fileName.LastIndexOf('/')));
-    File cache = root + "cache";
+    File cache = root + "Cache";
     File tmp = _env.HasKey("TMPDIR") ? File(_env["TMPDIR"]) : File("/tmp");
     _paths = Paths(root, home, tmp, cache);
 }
