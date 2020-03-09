@@ -40,6 +40,8 @@
     #include <dirent.h>
 #endif
 #include "Framework/IO/File.hpp"
+#include "Framework/IO/IOException.hpp"
+#include "./OSPrivate.hpp"
 
 using namespace bpf::io;
 using namespace bpf::collection;
@@ -234,18 +236,18 @@ bool File::IsDirectory() const
 uint64 File::GetSizeBytes() const
 {
     if (!Exists())
-        return (0);
+        throw IOException(String("Could not find file: ") + FullPath);
 #ifdef WINDOWS
     WIN32_FIND_DATAW data;
     HANDLE hdl = FindFirstFileW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), &data);
     if (hdl == INVALID_HANDLE_VALUE)
-        return (0);
+        throw IOException(String("FindFirstFileW failed: ") + OSPrivate::ObtainLastErrorString());
     FindClose(hdl);
     return (data.nFileSizeLow | (uint64)data.nFileSizeHigh << 32);
 #else
     struct stat st;
     if (stat(*FullPath, &st))
-        return (0);
+        throw IOException(String("stat failed: ") + OSPrivate::ObtainLastErrorString());
     return (st.st_size);
 #endif
 }
@@ -272,7 +274,7 @@ List<File> File::ListFiles()
     List<File> flns;
 
     if (!Exists() || !IsDirectory())
-        return (flns);
+        throw IOException(String("File does not exist or is not a directory: ") + FullPath);
 #ifdef WINDOWS
     WIN32_FIND_DATAW data;
     File dir = (*this + "/*");

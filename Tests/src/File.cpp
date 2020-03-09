@@ -31,6 +31,7 @@
 #include <gtest/gtest.h>
 #include <Framework/IO/File.hpp>
 #include <Framework/IO/FileStream.hpp>
+#include <Framework/IO/IOException.hpp>
 
 TEST(File, Basics)
 {
@@ -42,6 +43,7 @@ TEST(File, Basics)
     EXPECT_TRUE(f.IsDirectory());
     f.Delete();
     EXPECT_FALSE(f.Exists());
+    EXPECT_FALSE(f.IsDirectory());
 }
 
 TEST(File, Hide)
@@ -154,10 +156,27 @@ static void SetupTestFile(bpf::io::File &f)
     EXPECT_EQ(stream.Write("This is a test", 14), (bpf::fsize)14);
 }
 
+TEST(File, List_Test_Err_1)
+{
+    bpf::io::File f("DoesNotExist");
+
+    EXPECT_THROW(f.ListFiles(), bpf::io::IOException);
+}
+
+TEST(File, List_Test_Err_2)
+{
+    bpf::io::File f("DoesNotExist");
+
+    SetupTestFile(f);
+    EXPECT_THROW(f.ListFiles(), bpf::io::IOException);
+    f.Delete();
+}
+
 TEST(File, GetSizeBytes)
 {
     bpf::io::File f("./test_me.txt");
     SetupTestFile(f);
     EXPECT_EQ(f.GetSizeBytes(), 14);
     f.Delete();
+    EXPECT_THROW(f.GetSizeBytes(), bpf::io::IOException);
 }
