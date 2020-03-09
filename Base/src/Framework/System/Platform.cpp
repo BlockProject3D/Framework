@@ -184,7 +184,7 @@ OS Platform::InitOSInfo()
     struct utsname st;
     if (uname(&st) != -1)
         os.Version = st.version;
-#elif MAC
+#else
     os.ModuleExt = "dylib";
     os.Name = "Mac";
     os.NewLine = "\n";
@@ -222,7 +222,7 @@ const CPU &Platform::GetCPUInfo()
     cpi.Freq = 1; //Cannot reliably find CPU frequency
 #else
     fint ncores = 1;
-    fsize sz = sizeof(fint);
+    size_t sz = sizeof(fint);
     sysctlbyname("hw.activecpu", &ncores, &sz, Null, 0);
     if (ierr)
         sysctlbyname("hw.ncpu", &ncores, &sz, Null, 0);
