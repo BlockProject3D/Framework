@@ -39,11 +39,13 @@ int Main(bpf::system::IApplication &app, const bpf::collection::Array<bpf::Strin
     assert(app.GetArguments().Size() > 0); //At least we need the file name passed to our arguments
     assert(app.GetExeFileName().Len() > 0);
     assert(paths.AppRoot().Path().Len() > 0);
+    assert(paths.ThirdParty().Path().Len() > 0);
     assert(paths.CacheDir().Path().Len() > 0);
     assert(paths.TempDir().Path().Len() > 0);
     assert(paths.UserHome().Path().Len() > 0);
     std::cout << "<==== Initializing high-level main ====>" << std::endl;
     std::cout << "AppRoot: " << *paths.AppRoot().Path() << std::endl;
+    std::cout << "ThirdParty: " << *paths.ThirdParty().Path() << std::endl;
     std::cout << "CacheDir: " << *paths.CacheDir().Path() << std::endl;
     std::cout << "TempDir: " << *paths.TempDir().Path() << std::endl;
     std::cout << "UserHome: " << *paths.UserHome().Path() << std::endl;

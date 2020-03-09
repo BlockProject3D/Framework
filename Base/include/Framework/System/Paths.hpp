@@ -63,6 +63,11 @@ namespace bpf
             {
                 return (_cacheDir);
             }
+
+            inline const io::File &ThirdParty() const noexcept
+            {
+                return (AppRoot() + "ThirdParty");
+            }
         };
     }
 };
