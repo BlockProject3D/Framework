@@ -49,5 +49,5 @@ TEST(Timer, Test_2)
     bpf::system::Timer timer;
 
     bpf::system::Thread::Sleep(1000);
-    EXPECT_LE(timer.Reset() - 1, 0.001); //Allow a difference of 10ms for Sleep precision
+    EXPECT_LE(timer.Reset() - 1, 0.01); //Allow a difference of 100ms for Sleep precision (Travis Windows is highly inaccurate in times...)
 }

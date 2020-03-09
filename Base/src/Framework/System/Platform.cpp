@@ -223,8 +223,7 @@ const CPU &Platform::GetCPUInfo()
 #else
     fint ncores = 1;
     size_t sz = sizeof(fint);
-    sysctlbyname("hw.activecpu", &ncores, &sz, Null, 0);
-    if (ierr)
+    if (sysctlbyname("hw.activecpu", &ncores, &sz, Null, 0))
         sysctlbyname("hw.ncpu", &ncores, &sz, Null, 0);
     cpi.NumCores = ncores;
     cpi.Freq = 1; //Cannot reliably find CPU frequency
