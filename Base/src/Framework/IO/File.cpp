@@ -193,12 +193,24 @@ void File::Hide(const bool flag)
         attr &= ~FILE_ATTRIBUTE_HIDDEN;
     SetFileAttributesW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), attr);
 #else
-    File f = File(GetParent().Path() + "/" + "." + Name());
-    rename(*FullPath, *f.Path());
-    FileName = f.Name();
-    FullPath = f.PlatformPath();
-    UserPath = f.Path();
-    FileExt = f.Extension();
+    if (flag && !IsHidden())
+    {
+        File f = File(GetParent().Path() + "/" + "." + Name());
+        rename(*FullPath, *f.Path());
+        FileName = f.Name();
+        FullPath = f.PlatformPath();
+        UserPath = f.Path();
+        FileExt = f.Extension();
+    }
+    else if (IsHidden())
+    {
+        File f = File(GetParent().Path() + "/" + Name().Sub(1));
+        rename(*FullPath, *f.Path());
+        FileName = f.Name();
+        FullPath = f.PlatformPath();
+        UserPath = f.Path();
+        FileExt = f.Extension();
+    }
 #endif
 }
 

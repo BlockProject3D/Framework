@@ -44,6 +44,19 @@ TEST(File, Basics)
     EXPECT_FALSE(f.Exists());
 }
 
+TEST(File, Hide)
+{
+    bpf::io::File f("./doesnotexist.txt");
+
+    f.CreateDir();
+    EXPECT_FALSE(f.IsHidden());
+    f.Hide(true);
+    EXPECT_TRUE(f.IsHidden());
+    f.Hide(false);
+    EXPECT_FALSE(f.IsHidden());
+    f.Delete();
+}
+
 TEST(File, Abs)
 {
     bpf::io::File f("./doesnotexist.txt");
