@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -188,21 +188,21 @@ OS Platform::InitOSInfo()
     return (os);
 }
 
-Env &Platform::GetEnvInfo()
+const Env &Platform::GetEnvInfo()
 {
     static Env ev = Platform::InitEnvInfo();
 
     return (ev);
 }
 
-OS &Platform::GetOSInfo()
+const OS &Platform::GetOSInfo()
 {
     static OS os = Platform::InitOSInfo();
 
     return (os);
 }
 
-CPU &Platform::GetCPUInfo()
+const CPU &Platform::GetCPUInfo()
 {
     static CPU cpi = { IdentifyCPUBranding(), 0, 0 };
 
