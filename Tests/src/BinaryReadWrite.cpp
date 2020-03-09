@@ -32,6 +32,7 @@
 #include <Framework/IO/BinaryReader.hpp>
 #include <Framework/IO/BinaryWriter.hpp>
 #include <Framework/IO/FileStream.hpp>
+#include <Framework/Scalar.hpp>
 
 TEST(BinaryReadWrite, Construct_Writer)
 {
@@ -45,7 +46,7 @@ TEST(BinaryReadWrite, Construct_Reader)
     bpf::io::BinaryReader r(f);
 }
 
-TEST(BinaryReadWrite, ReadWrite_Test1)
+TEST(BinaryReadWrite, ReadWrite_Test_1)
 {
     {
         bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
@@ -69,7 +70,82 @@ TEST(BinaryReadWrite, ReadWrite_Test1)
     }
 }
 
-TEST(BinaryReadWrite, ReadWrite_String_Test1)
+TEST(BinaryReadWrite, ReadWrite_Test_2)
+{
+    {
+        bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
+        bpf::io::BinaryWriter w(f);
+
+        w << bpf::Int64::MaxValue << bpf::Int16::MaxValue << bpf::Int8::MaxValue << bpf::UInt64::MaxValue << bpf::UInt::MaxValue << bpf::UInt16::MaxValue << bpf::UInt8::MaxValue << false;
+        w.Flush();
+    }
+    {
+        bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_READ);
+        bpf::io::BinaryReader r(f);
+        bpf::int64 a;
+        bpf::int16 b;
+        bpf::int8 c;
+        bpf::uint64 d;
+        bpf::uint32 e;
+        bpf::uint16 g;
+        bpf::uint8 h;
+        bool i;
+
+        r >> a >> b >> c >> d >> e >> g >> h >> i;
+        EXPECT_EQ(a, bpf::Int64::MaxValue);
+        EXPECT_EQ(b, bpf::Int16::MaxValue);
+        EXPECT_EQ(c, bpf::Int8::MaxValue);
+        EXPECT_EQ(d, bpf::UInt64::MaxValue);
+        EXPECT_EQ(e, bpf::UInt::MaxValue);
+        EXPECT_EQ(g, bpf::UInt16::MaxValue);
+        EXPECT_EQ(h, bpf::UInt8::MaxValue);
+        EXPECT_FALSE(i);
+    }
+}
+
+TEST(BinaryReadWrite, ReadWrite_Test_3)
+{
+    int i;
+    float ff;
+    double d;
+    bool b;
+    bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_READ | bpf::io::FILE_MODE_TRUNCATE);
+    bpf::io::BinaryWriter w(f);
+    bpf::io::BinaryReader r(f);
+
+    w << 42 << 42.42f << 42.4242 << true;
+    w.Flush();
+
+    f.Seek(0);
+    r >> i >> ff >> d >> b;
+    EXPECT_EQ(i, 42);
+    EXPECT_EQ(ff, 42.42f);
+    EXPECT_EQ(d, 42.4242);
+    EXPECT_EQ(b, true);
+}
+
+TEST(BinaryReadWrite, ReadWrite_Test_4)
+{
+    int i;
+    float ff;
+    double d;
+    bool b;
+    bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_READ | bpf::io::FILE_MODE_TRUNCATE);
+    bpf::io::BinaryWriter w(f, bpf::system::PLATFORM_BIGENDIAN);
+    bpf::io::BinaryReader r(f, bpf::system::PLATFORM_BIGENDIAN);
+
+    w << 42 << 42.42f << 42.4242 << true;
+    w.Flush();
+
+    f.Seek(0);
+    r >> i >> ff >> d >> b;
+    EXPECT_EQ(i, 42);
+    EXPECT_EQ(ff, 42.42f);
+    EXPECT_EQ(d, 42.4242);
+    EXPECT_EQ(b, true);
+}
+
+TEST(BinaryReadWrite, ReadWrite_String_Test_1_1)
 {
     {
         bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
@@ -87,7 +163,25 @@ TEST(BinaryReadWrite, ReadWrite_String_Test1)
     }
 }
 
-TEST(BinaryReadWrite, ReadWrite_String_Test2)
+TEST(BinaryReadWrite, ReadWrite_String_Test_1_2)
+{
+    {
+        bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
+        bpf::io::BinaryWriter w(f);
+
+        w << bpf::String("This is a test");
+    }
+    {
+        bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_READ);
+        bpf::io::BinaryReader r(f);
+        bpf::String str;
+
+        r >> str;
+        EXPECT_STREQ(*str, "This is a test");
+    }
+}
+
+TEST(BinaryReadWrite, ReadWrite_String_Test_2_1)
 {
     {
         bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
@@ -107,7 +201,27 @@ TEST(BinaryReadWrite, ReadWrite_String_Test2)
     }
 }
 
-TEST(BinaryReadWrite, ReadWrite_String_Test3)
+TEST(BinaryReadWrite, ReadWrite_String_Test_2_2)
+{
+    {
+        bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
+        bpf::io::BinaryWriter w(f);
+
+        w.SetStringSerializer(bpf::io::EStringSerializer::VARCHAR_16);
+        w << bpf::String("This is a test");
+    }
+    {
+        bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_READ);
+        bpf::io::BinaryReader r(f);
+        bpf::String str;
+
+        r.SetStringSerializer(bpf::io::EStringSerializer::VARCHAR_16);
+        r >> str;
+        EXPECT_STREQ(*str, "This is a test");
+    }
+}
+
+TEST(BinaryReadWrite, ReadWrite_String_Test_3_1)
 {
     {
         bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
@@ -127,7 +241,27 @@ TEST(BinaryReadWrite, ReadWrite_String_Test3)
     }
 }
 
-TEST(BinaryReadWrite, ReadWrite_String_Test4)
+TEST(BinaryReadWrite, ReadWrite_String_Test_3_2)
+{
+    {
+        bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
+        bpf::io::BinaryWriter w(f);
+
+        w.SetStringSerializer(bpf::io::EStringSerializer::VARCHAR_8);
+        w << bpf::String("This is a test");
+    }
+    {
+        bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_READ);
+        bpf::io::BinaryReader r(f);
+        bpf::String str;
+
+        r.SetStringSerializer(bpf::io::EStringSerializer::VARCHAR_8);
+        r >> str;
+        EXPECT_STREQ(*str, "This is a test");
+    }
+}
+
+TEST(BinaryReadWrite, ReadWrite_String_Test_4_1)
 {
     {
         bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
@@ -135,6 +269,26 @@ TEST(BinaryReadWrite, ReadWrite_String_Test4)
 
         w.SetStringSerializer(bpf::io::EStringSerializer::CSTYLE);
         w << "This is a test";
+    }
+    {
+        bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_READ);
+        bpf::io::BinaryReader r(f);
+        bpf::String str;
+
+        r.SetStringSerializer(bpf::io::EStringSerializer::CSTYLE);
+        r >> str;
+        EXPECT_STREQ(*str, "This is a test");
+    }
+}
+
+TEST(BinaryReadWrite, ReadWrite_String_Test_4_2)
+{
+    {
+        bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
+        bpf::io::BinaryWriter w(f);
+
+        w.SetStringSerializer(bpf::io::EStringSerializer::CSTYLE);
+        w << bpf::String("This is a test");
     }
     {
         bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_READ);
