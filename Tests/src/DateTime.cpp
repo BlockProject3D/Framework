@@ -40,6 +40,22 @@ TEST(DateTime, Creation)
     EXPECT_STREQ(*bpf::String::ValueOf(dt1), "Tue Mar 3 2020 0:0:0");
 }
 
+TEST(DateTime, UTCTime)
+{
+    bpf::system::DateTime dt(3, 3, 2020, 1, 50, 0);
+    EXPECT_STREQ(*bpf::String::ValueOf(dt), "Tue Mar 3 2020 1:50:0");
+    EXPECT_STREQ(*bpf::String::ValueOf(dt.ToUTCTime().ToLocalTime()), "Tue Mar 3 2020 1:50:0");
+}
+
+TEST(DateTime, UTCNow)
+{
+    bpf::system::DateTime now = bpf::system::DateTime::Now();
+    bpf::system::DateTime utcnow = bpf::system::DateTime::UTCNow();
+
+    EXPECT_EQ(now.ToUTCTime(), utcnow);
+    EXPECT_EQ(utcnow.ToLocalTime(), now);
+}
+
 TEST(DateTime, Compare)
 {
     bpf::system::DateTime dt = bpf::system::DateTime::Now();
@@ -184,7 +200,11 @@ TEST(DateTime, Parse_Err_1)
 {
     bpf::system::DateTime dt;
     EXPECT_THROW(bpf::system::DateTime::Parse("Tue Dfg 3 2020 1:50:0"), bpf::ParseException);
+    EXPECT_THROW(bpf::system::DateTime::Parse("Tue Dec 3 2020 :0"), bpf::ParseException);
+    EXPECT_THROW(bpf::system::DateTime::Parse("Tue Dec 3 2020 0:0:x"), bpf::ParseException);
     EXPECT_FALSE(bpf::system::DateTime::TryParse("Tue Dfg 3 2020 1:50:0", dt));
+    EXPECT_FALSE(bpf::system::DateTime::TryParse("Tue Dec 3 2020 :0", dt));
+    EXPECT_FALSE(bpf::system::DateTime::TryParse("Tue Dec 3 2020 0:0:x", dt));
 }
 
 TEST(DateTime, Parse_Err_2)
@@ -194,8 +214,14 @@ TEST(DateTime, Parse_Err_2)
     EXPECT_THROW(bpf::system::DateTime::Parse("1-x-v x:v:n"), bpf::ParseException);
     EXPECT_THROW(bpf::system::DateTime::Parse("1/x/4 1:0:1"), bpf::ParseException);
     EXPECT_THROW(bpf::system::DateTime::Parse("1/x-4 1:0:1"), bpf::ParseException);
+    EXPECT_THROW(bpf::system::DateTime::Parse("1-2-3 x:v:n"), bpf::ParseException);
+    EXPECT_THROW(bpf::system::DateTime::Parse("1-2-3 :v"), bpf::ParseException);
+    EXPECT_THROW(bpf::system::DateTime::Parse("Tue Dfg 3"), bpf::ParseException);
     EXPECT_FALSE(bpf::system::DateTime::TryParse("Tue Dec 3 2020 x:v:n", dt));
+    EXPECT_FALSE(bpf::system::DateTime::TryParse("Tue Dfg 3", dt));
     EXPECT_FALSE(bpf::system::DateTime::TryParse("1-x-v x:v:n", dt));
+    EXPECT_FALSE(bpf::system::DateTime::TryParse("1-2-3 x:v:n", dt));
+    EXPECT_FALSE(bpf::system::DateTime::TryParse("1-2-3 :v", dt));
     EXPECT_FALSE(bpf::system::DateTime::TryParse("1/x/4 1:0:1", dt));
     EXPECT_FALSE(bpf::system::DateTime::TryParse("1/x-4 1:0:1", dt));
 }

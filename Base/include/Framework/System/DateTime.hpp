@@ -53,7 +53,6 @@ namespace bpf
             void RecalcUTC();
 
         public:
-            explicit DateTime(uint64 seconds);
             DateTime(fint month, fint day, uint32 year, fint hour = 0, fint minute = 0, fint second = 0);
             DateTime();
 

@@ -30,7 +30,11 @@
 #include "Framework/Types.hpp"
 #include "Framework/Memory/Utility.hpp"
 
-#define BP_MODULE_VERSION_INT 0x1
+#ifdef BUILD_DEBUG
+    #define BP_MODULE_VERSION_INT 0x1 * 0x42
+#else
+    #define BP_MODULE_VERSION_INT 0x1
+#endif
 
 #ifdef WINDOWS
     #define BP_IMPLEMENT_MODULE(Name, BaseClass, Class) \

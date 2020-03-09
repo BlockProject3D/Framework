@@ -35,36 +35,6 @@ using namespace bpf::collection;
 using namespace bpf::system;
 using namespace bpf;
 
-DateTime::DateTime(uint64 seconds)
-    : _curtm(0)
-    , _year(0)
-    , _day(0)
-    , _dayweek(0)
-    , _month(0)
-    , _hour(0)
-    , _minute(0)
-    , _second(0)
-{
-    struct tm t;
-
-    _day = (fint)(seconds / (3600 * 24));
-    seconds -= _day * 3600 * 24;
-    _hour = (fint)(seconds / 3600);
-    seconds -= _hour * 3600;
-    _minute = (fint)(seconds / 60);
-    seconds -= _minute * 60;
-    _second = (fint)seconds;
-    std::memset(&t, 0, sizeof(t));
-    t.tm_hour = _hour;
-    t.tm_min = _minute;
-    t.tm_sec = _second;
-    t.tm_mon = _month;
-    t.tm_mday = _day;
-    t.tm_year = _year;
-    _curtm = std::mktime(&t);
-    RecalcLocal();
-}
-
 DateTime::DateTime(fint month, fint day, uint32 year, fint hour, fint minute, fint second)
     : _curtm(0)
     , _year(year - 1900)

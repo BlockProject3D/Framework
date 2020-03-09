@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -26,36 +26,59 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-#include <ctime>
-#include "Framework/Types.hpp"
+#include <cassert>
+#include <iostream>
+#include <gtest/gtest.h>
+#include <Framework/System/TimeSpan.hpp>
 
-namespace bpf
+TEST(TimeSpan, Creation)
 {
-    namespace system
-    {
-        class Timer
-        {
-        private:
-            clock_t _curtm;
+    bpf::system::TimeSpan ts(1, 2, 50, 40);
 
-        public:
-            inline Timer()
-                : _curtm(clock())
-            {
-            }
+    EXPECT_EQ(ts.Days, 1);
+    EXPECT_EQ(ts.Hours, 2);
+    EXPECT_EQ(ts.Minutes, 50);
+    EXPECT_EQ(ts.Seconds, 40);
+    EXPECT_EQ(ts.TotalSeconds, 96840);
+}
 
-            /**
-             * Returns the time in seconds since last call to Restart
-             */
-            inline double Restart()
-            {
-                clock_t cur = clock();
-                double delta = static_cast<double>(cur - _curtm)
-                    / static_cast<double>(CLOCKS_PER_SEC);
-                _curtm = cur;
-                return (delta);
-            }
-        };
-    }
+TEST(TimeSpan, Addition)
+{
+    bpf::system::TimeSpan ts(1, 0, 0, 0);
+    auto res = ts + bpf::system::TimeSpan(1, 0, 0, 0);
+
+    EXPECT_EQ(res.Days, 2);
+    EXPECT_EQ(res.Hours, 0);
+    EXPECT_EQ(res.Minutes, 0);
+    EXPECT_EQ(res.Seconds, 0);
+    EXPECT_EQ(res.TotalSeconds, 172800);
+    EXPECT_EQ(ts.TotalSeconds, 86400);
+    ts += bpf::system::TimeSpan(1, 0, 0, 0);
+    EXPECT_EQ(ts.TotalSeconds, 172800);
+}
+
+TEST(TimeSpan, Subtraction)
+{
+    bpf::system::TimeSpan ts(3, 0, 0, 0);
+    auto res = ts - bpf::system::TimeSpan(1, 0, 0, 0);
+
+    EXPECT_EQ(res.Days, 2);
+    EXPECT_EQ(res.Hours, 0);
+    EXPECT_EQ(res.Minutes, 0);
+    EXPECT_EQ(res.Seconds, 0);
+    EXPECT_EQ(res.TotalSeconds, 172800);
+    EXPECT_EQ(ts.TotalSeconds, 259200);
+    ts -= bpf::system::TimeSpan(1, 0, 0, 0);
+    EXPECT_EQ(ts.TotalSeconds, 172800);
+}
+
+TEST(TimeSpan, Compare)
+{
+    bpf::system::TimeSpan ts(1, 0, 0, 0);
+    bpf::system::TimeSpan ts1(2, 0, 0, 0);
+
+    EXPECT_GT(ts1, ts);
+    EXPECT_LT(ts, ts1);
+    EXPECT_EQ(ts, bpf::system::TimeSpan(1, 0, 0, 0));
+    EXPECT_NE(ts, ts1);
 }

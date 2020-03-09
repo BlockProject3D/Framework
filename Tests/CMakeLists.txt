@@ -55,6 +55,8 @@ set(SOURCES
     src/VectorStatic.cpp
     src/VectorDynamic.cpp
     src/DateTime.cpp
+    src/TimeSpan.cpp
+    src/Platform.cpp
 )
 
 bp_setup_program(${PROJECT_NAME} include)
