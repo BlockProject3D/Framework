@@ -37,5 +37,6 @@ Paths::Paths(const File &root, const File &home, const File &tmp, const File &ca
     , _userHome(home)
     , _tmpDir(tmp)
     , _cacheDir(cache)
+    , _thirdParty(root + "ThirdParty")
 {
 }

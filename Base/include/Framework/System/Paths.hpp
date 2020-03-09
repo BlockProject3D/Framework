@@ -37,6 +37,7 @@ namespace bpf
         {
         private:
             io::File _appRoot;
+            io::File _thirdParty;
             io::File _userHome;
             io::File _tmpDir;
             io::File _cacheDir;
@@ -66,7 +67,7 @@ namespace bpf
 
             inline const io::File &ThirdParty() const noexcept
             {
-                return (AppRoot() + "ThirdParty");
+                return (_thirdParty);
             }
         };
     }
