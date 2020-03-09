@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -26,41 +26,59 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-#include "Framework/String.hpp"
+#ifdef WINDOWS
+    #include <Windows.h>
+#else
+    #include <time.h> 
+    #include <sys/time.h>   
+    #include <sys/resource.h> 
+#endif
 
-namespace bpf
+#include "Framework/System/OSException.hpp"
+#include "Framework/System/Timer.hpp"
+
+using namespace bpf::system;
+using namespace bpf;
+
+Timer::Timer()
 {
-    namespace system
+#ifdef WINDOWS
+    LARGE_INTEGER li;
+    if (QueryPerformanceFrequency(&li) == FALSE)
+        throw OSException("QueryPerformanceFrequency/Counter is not available on your system");
+    _perfCounterFreq = (double)li.QuadPart / 1000000.0;
+    QueryPerformanceCounter(&li);
+    _curCounter = li.QuadPart;
+#else
+    struct timespec t;
+    clock_gettime(CLOCK_REALTIME, &t);
+    _sec = t.tv_sec;
+    _nsec = t.tv_nsec;
+#endif
+}
+
+double Timer::Reset()
+{
+#ifdef WINDOWS
+    LARGE_INTEGER t;
+    QueryPerformanceCounter(&t);
+    int64 diff = t.QuadPart - _curCounter;
+    double delta = ((double)diff / _perfCounterFreq) / 1000000.0;
+    _curCounter = t.QuadPart;
+    return (delta);
+#else
+    struct timespec t;
+    clock_gettime(CLOCK_REALTIME, &t);
+    time_t seconds = t.tv_sec - _sec;
+    long ns = t.tv_nsec - _nsec;
+    if (_nsec > t.tv_nsec)
     {
-        class BPF_API Thread
-        {
-        private:
-            void *_handle;
-            bool _exit;
-            String _name;
-
-        public:
-            Thread(const String &name);
-            ~Thread();
-
-            void Start();
-            void Kill(const bool force = false);
-            void Join();
-
-            inline bool ShouldExit() const noexcept
-            {
-                return (_exit);
-            }
-
-            inline const String &GetName() const noexcept
-            {
-                return (_name);
-            }
-
-            virtual void Run() = 0;
-
-            static void Sleep(const uint32 milliseconds);
-        };
+        --seconds;
+        ns += 1000000000;
     }
+    double delta = (double)seconds + (double)ns / 1000000000.0;
+    _sec = t.tv_sec;
+    _nsec = t.tv_nsec;
+    return (delta);
+#endif
 }

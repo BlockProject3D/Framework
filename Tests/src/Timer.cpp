@@ -26,41 +26,28 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-#include "Framework/String.hpp"
+#include <cassert>
+#include <iostream>
+#include <gtest/gtest.h>
+#include <Framework/System/Timer.hpp>
+#include <Framework/System/Thread.hpp>
 
-namespace bpf
+TEST(Timer, Test_1)
 {
-    namespace system
-    {
-        class BPF_API Thread
-        {
-        private:
-            void *_handle;
-            bool _exit;
-            String _name;
+    bpf::system::Timer timer;
 
-        public:
-            Thread(const String &name);
-            ~Thread();
+    //Pump CPU
+    int i;
+    int j = 0;
+    for (i = 0; i < 100000000; i++)
+        j += i * i;
+    EXPECT_GT(timer.Reset(), 0);
+}
 
-            void Start();
-            void Kill(const bool force = false);
-            void Join();
+TEST(Timer, Test_2)
+{
+    bpf::system::Timer timer;
 
-            inline bool ShouldExit() const noexcept
-            {
-                return (_exit);
-            }
-
-            inline const String &GetName() const noexcept
-            {
-                return (_name);
-            }
-
-            virtual void Run() = 0;
-
-            static void Sleep(const uint32 milliseconds);
-        };
-    }
+    bpf::system::Thread::Sleep(1000);
+    EXPECT_LE(timer.Reset() - 1, 0.001); //Allow a difference of 10ms for Sleep precision
 }

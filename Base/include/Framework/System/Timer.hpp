@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -27,35 +27,33 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include <ctime>
+#ifndef WINDOWS
+    #include <ctime>
+#endif
 #include "Framework/Types.hpp"
 
 namespace bpf
 {
     namespace system
     {
-        class Timer
+        class BPF_API Timer
         {
         private:
-            clock_t _curtm;
+#ifdef WINDOWS
+            int64 _curCounter;
+            double _perfCounterFreq;
+#else
+            time_t _sec;
+            long _nsec;
+#endif
 
         public:
-            inline Timer()
-                : _curtm(clock())
-            {
-            }
+            Timer();
 
             /**
-             * Returns the time in seconds since last call to Restart
+             * Returns the time in seconds since last call to Reset
              */
-            inline double Restart()
-            {
-                clock_t cur = clock();
-                double delta = static_cast<double>(cur - _curtm)
-                    / static_cast<double>(CLOCKS_PER_SEC);
-                _curtm = cur;
-                return (delta);
-            }
+            double Reset();
         };
     }
 }

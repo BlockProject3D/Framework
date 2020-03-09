@@ -57,6 +57,7 @@ set(SOURCES
     src/DateTime.cpp
     src/TimeSpan.cpp
     src/Platform.cpp
+    src/Timer.cpp
 )
 
 bp_setup_program(${PROJECT_NAME} include)

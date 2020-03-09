@@ -72,6 +72,7 @@ set(SOURCES
     ./include/Framework/Network/Network.hpp
     ./include/Framework/System/Module.hpp
     ./include/Framework/System/ModuleException.hpp
+    ./include/Framework/System/OSException.hpp
     ./include/Framework/System/ModuleManager.hpp
     ./include/Framework/System/ModuleManager.impl.hpp
     ./include/Framework/System/Platform.hpp
@@ -157,6 +158,7 @@ set(SOURCES
     ./src/Framework/System/DateTime.cpp
     ./src/Framework/System/TimeSpan.cpp
     ./src/Framework/System/Thread.cpp
+    ./src/Framework/System/Timer.cpp
     ./src/Framework/System/Mutex.cpp
     ./src/Framework/System/ThreadManager.cpp
     ./src/Framework/Color.cpp

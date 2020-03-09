@@ -27,40 +27,19 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/String.hpp"
+#include "Framework/RuntimeException.hpp"
 
 namespace bpf
 {
     namespace system
     {
-        class BPF_API Thread
+        class BPF_API OSException : public RuntimeException
         {
-        private:
-            void *_handle;
-            bool _exit;
-            String _name;
-
         public:
-            Thread(const String &name);
-            ~Thread();
-
-            void Start();
-            void Kill(const bool force = false);
-            void Join();
-
-            inline bool ShouldExit() const noexcept
+            explicit inline OSException(const String &msg) noexcept
+                : RuntimeException("OS", msg)
             {
-                return (_exit);
             }
-
-            inline const String &GetName() const noexcept
-            {
-                return (_name);
-            }
-
-            virtual void Run() = 0;
-
-            static void Sleep(const uint32 milliseconds);
         };
     }
 }

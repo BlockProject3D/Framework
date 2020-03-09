@@ -30,10 +30,17 @@
 
 #include <stdlib.h>
 #ifdef WINDOWS
-#include <Windows.h>
+    #include <Windows.h>
+#elif _POSIX_C_SOURCE >= 199309L
+    //Posix you mother fucker deprecating usleep for over-compilicated slower functions
+    //Sorry linux gamers but Thread::Sleep will have to be slower
+    #include <time.h>
 #else
-#include <pthread.h>
-using ThreadType = pthread_t;
+    #include <unistd.h>
+#endif
+#ifndef WINDOWS
+    #include <pthread.h>
+    using ThreadType = pthread_t;
 #endif
 
 #ifdef WINDOWS
@@ -108,4 +115,18 @@ void Thread::Kill(const bool force)
         pthread_cancel(*reinterpret_cast<ThreadType *>(_handle));
 #endif
     }
+}
+
+void Thread::Sleep(const uint32 milliseconds)
+{
+#ifdef WINDOWS
+    ::Sleep((DWORD)milliseconds);
+#elif _POSIX_C_SOURCE >= 199309L
+    struct timespec ts;
+    ts.tv_sec = milliseconds / 1000;
+    ts.tv_nsec = (milliseconds % 1000) * 1000000;
+    nanosleep(&ts, NULL);
+#else
+    usleep(milliseconds * 1000);
+#endif
 }
