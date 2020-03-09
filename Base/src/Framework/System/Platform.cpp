@@ -262,7 +262,7 @@ void Platform::ReverseBuffer(void *buf, const fsize size)
 {
     uint8 *out = reinterpret_cast<uint8 *>(buf);
     fsize i = 0;
-    fsize j = size;
+    fsize j = size - 1;
     uint8 temp;
 
     while (i < size / 2)
@@ -278,7 +278,7 @@ void Platform::ReverseBuffer(void *buf, const fsize size, const fsize groupsize)
 {
     uint8 *out = reinterpret_cast<uint8 *>(buf);
     fsize i = 0;
-    fsize j = size;
+    fsize j = size - groupsize;
     uint8 temp;
 
     while (i < size / 2)

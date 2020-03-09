@@ -89,3 +89,19 @@ TEST(Platform, RAM)
     EXPECT_GT(var.MaxPhysical, 0);
     EXPECT_GT(var.MaxVirtual, 0);
 }
+
+TEST(Platform, ReverseBuffer_1)
+{
+    char data[] = "abcd";
+
+    bpf::system::Platform::ReverseBuffer(data, 4);
+    EXPECT_STREQ(data, "dcba");
+}
+
+TEST(Platform, ReverseBuffer_2)
+{
+    char data[] = "abcdefghijklmnop";
+
+    bpf::system::Platform::ReverseBuffer(data, 16, 4);
+    EXPECT_STREQ(data, "mnopijklefghabcd");
+}
