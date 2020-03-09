@@ -28,13 +28,19 @@
 
 #include <stdlib.h>
 #ifdef WINDOWS
-#include <Windows.h>
-#include <intrin.h>
-#undef ERROR
+    #include <Windows.h>
+    #include <intrin.h>
+    #undef ERROR
 #elif LINUX
-#include <sys/utsname.h>
-#include <sys/sysinfo.h>
-#include <time.h>
+    #include <sys/utsname.h>
+    #include <sys/sysinfo.h>
+    #include <time.h>
+#else
+    #include <sys/types.h>
+    #include <sys/sysctl.h>
+#endif
+#ifndef WINDOWS
+    #include <unistd.h>
 #endif
 
 #ifndef WINDOWS //We assume compiler supports GCC style asm
@@ -213,7 +219,6 @@ const CPU &Platform::GetCPUInfo()
     cpi.Freq = 1; //Cannot reliably find CPU frequency
 #elif LINUX
     cpi.NumCores = get_nprocs();
-    clock_gettime();
     cpi.Freq = 1; //Cannot reliably find CPU frequency
 #else
     fint ncores = 1;
