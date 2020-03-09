@@ -196,7 +196,8 @@ void File::Hide(const bool flag)
     File f = File(GetParent().Path() + "/" + "." + Name());
     rename(*FullPath, *f.Path());
     FileName = f.Name();
-    FullPath = f.Path();
+    FullPath = f.PlatformPath();
+    UserPath = f.Path();
     FileExt = f.Extension();
 #endif
 }
