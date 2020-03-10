@@ -214,12 +214,10 @@ namespace bpf
                 return (X * X + Y * Y + Z * Z);
             }
 
-            inline void Normalize()
+            inline Vector Normalize() const
             {
                 auto v = Norm();
-                X /= v;
-                Y /= v;
-                Z /= v;
+                return (Vector(X / v, Y / v, Z / v));
             }
 
             inline Vector Cross(const Vector &other) const

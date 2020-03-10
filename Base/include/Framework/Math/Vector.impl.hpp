@@ -229,12 +229,14 @@ namespace bpf
         }
 
         template <typename T, fsize I>
-        void Vector<T, I>::Normalize()
+        Vector<T, I> Vector<T, I>::Normalize() const
         {
+            Vector<T, I> n = *this;
             auto norm = Norm();
 
             for (fsize i = 0; i != I; ++i)
-                _arr[i] /= norm;
+                n._arr[i] /= norm;
+            return (n);
         }
 
         template <typename T, fsize I>
@@ -471,12 +473,14 @@ namespace bpf
         }
 
         template <typename T>
-        void Vector<T>::Normalize()
+        Vector<T> Vector<T>::Normalize() const
         {
+            Vector<T> n = *this;
             auto norm = Norm();
 
             for (fsize i = 0; i != _l; ++i)
-                _arr[i] /= norm;
+                n._arr[i] /= norm;
+            return (n);
         }
 
         template <typename T>

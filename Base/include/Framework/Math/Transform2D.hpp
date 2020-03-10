@@ -72,7 +72,7 @@ namespace bpf
 
             inline Matrix3<T> ToMatrix() const noexcept
             {
-                return (MatrixBuilder().Rotate(Rotation).Scale(Scale).Translate(Position).Build());
+                return (MatrixBuilder().Translate(Position).Rotate(Rotation).Scale(Scale).Build());
             }
 
             void RotateArround(const Vector2<T> &pivot, const T &rotation);

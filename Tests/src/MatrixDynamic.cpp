@@ -55,7 +55,7 @@ static void ExpectMatrixEq(const bpf::math::Matrix<T> &mat, const bpf::math::Mat
     }
 }
 
-TEST(MatrixDynamic, Create_Test1)
+TEST(MatrixDynamic, Create_Test_1)
 {
     bpf::math::Matrix<int> mat(2, 3);
     bpf::math::Matrix<int> mat1(2, 3);
@@ -72,7 +72,7 @@ TEST(MatrixDynamic, Create_Test1)
     ExpectMatrixEq(mat, mat1);
 }
 
-TEST(MatrixDynamic, Create_Test2)
+TEST(MatrixDynamic, Create_Test_2)
 {
     bpf::math::Matrix<int> mat = bpf::math::Matrix<int>::Identity(3);
     bpf::math::Matrix<int> mat1(3, 3, { 1, 0, 0,

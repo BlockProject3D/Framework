@@ -148,7 +148,7 @@ namespace bpf
                 {
                     T res = 0;
                     for (fsize k = 0; k != N; ++k)
-                        res += _arr[k * N + j] * other._arr[i * N + k];
+                        res += _arr[i * N + k] * other._arr[k * N + j]; //You have got to be kidding me!! Messed up indices there were!!!!
                     mat._arr[i * N + j] = res;
                 }
             }
