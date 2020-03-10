@@ -53,6 +53,9 @@ namespace bpf
         public:
             Thread(const String &name);
             ~Thread();
+            Thread(Thread &&other);
+
+            Thread &operator=(Thread &&other);
 
             void Start();
             void Kill(const bool force = false);

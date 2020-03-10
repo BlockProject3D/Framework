@@ -99,11 +99,31 @@ Thread::Thread(const String &name)
 {
 }
 
+Thread::Thread(Thread &&other)
+    : _state(other._state)
+    , _handle(other._handle)
+    , _name(std::move(other._name))
+{
+    other._handle = Null;
+}
+
 Thread::~Thread()
 {
 #ifndef WINDOWS
     free(_handle);
 #endif
+}
+
+Thread &Thread::operator=(Thread &&other)
+{
+#ifndef WINDOWS
+    free(_handle);
+#endif
+    _state = other._state;
+    _handle = other._handle;
+    _name = std::move(other._name);
+    other._handle = Null;
+    return (*this);
 }
 
 void Thread::Start()
