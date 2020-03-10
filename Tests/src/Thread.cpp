@@ -68,7 +68,7 @@ TEST(Thread, Basic)
     EXPECT_EQ(thread.GetState(), bpf::system::Thread::EXITING);
     thread.Join();
     EXPECT_EQ(thread.GetState(), bpf::system::Thread::FINISHED);
-    EXPECT_EQ(thread._value, 2);
+    EXPECT_LE(thread._value - (bpf::uint32)2, (bpf::uint32)1);
 }
 
 TEST(Thread, Move_1)
@@ -85,7 +85,7 @@ TEST(Thread, Move_1)
     EXPECT_EQ(thread.GetState(), bpf::system::Thread::EXITING);
     thread.Join();
     EXPECT_EQ(thread.GetState(), bpf::system::Thread::FINISHED);
-    EXPECT_EQ(thread._value, 2);
+    EXPECT_EQ(thread._value, (bpf::uint32)2);
 }
 
 TEST(Thread, Move_2)
@@ -102,7 +102,7 @@ TEST(Thread, Move_2)
     EXPECT_EQ(th.GetState(), bpf::system::Thread::EXITING);
     th.Join();
     EXPECT_EQ(th.GetState(), bpf::system::Thread::FINISHED);
-    EXPECT_EQ(th._value, 2);
+    EXPECT_LE(th._value - (bpf::uint32)2, (bpf::uint32)1);
 }
 
 TEST(Thread, KillForce)
