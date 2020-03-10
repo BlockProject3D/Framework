@@ -53,8 +53,17 @@ namespace bpf
         public:
             Thread(const String &name);
             ~Thread();
+
+            /**
+             * Construct a thread by move semantics
+             * Never move a running thread
+             */
             Thread(Thread &&other);
 
+            /**
+             * Assigns this thread by move semantics
+             * Never move a running thread
+             */
             Thread &operator=(Thread &&other);
 
             void Start();

@@ -30,7 +30,7 @@
 #include <iostream>
 #include <gtest/gtest.h>
 #include <Framework/System/Thread.hpp>
-#include <Framework/RuntimeException.hpp>
+#include <Framework/System/OSException.hpp>
 
 class MyThread : public bpf::system::Thread
 {
@@ -69,6 +69,40 @@ TEST(Thread, Basic)
     thread.Join();
     EXPECT_EQ(thread.GetState(), bpf::system::Thread::FINISHED);
     EXPECT_EQ(thread._value, 2);
+}
+
+TEST(Thread, Move_1)
+{
+    MyThread thread(false);
+
+    EXPECT_STREQ(*thread.GetName(), "MyThread");
+    EXPECT_EQ(thread.GetState(), bpf::system::Thread::PENDING);
+    thread.Start();
+    EXPECT_EQ(thread.GetState(), bpf::system::Thread::RUNNING);
+    EXPECT_THROW(MyThread th(std::move(thread)), bpf::system::OSException);
+    bpf::system::Thread::Sleep(500);
+    thread.Kill();
+    EXPECT_EQ(thread.GetState(), bpf::system::Thread::EXITING);
+    thread.Join();
+    EXPECT_EQ(thread.GetState(), bpf::system::Thread::FINISHED);
+    EXPECT_EQ(thread._value, 2);
+}
+
+TEST(Thread, Move_2)
+{
+    MyThread thread(false);
+
+    EXPECT_STREQ(*thread.GetName(), "MyThread");
+    EXPECT_EQ(thread.GetState(), bpf::system::Thread::PENDING);
+    MyThread th = std::move(thread);
+    th.Start();
+    EXPECT_EQ(th.GetState(), bpf::system::Thread::RUNNING);
+    bpf::system::Thread::Sleep(500);
+    th.Kill();
+    EXPECT_EQ(th.GetState(), bpf::system::Thread::EXITING);
+    th.Join();
+    EXPECT_EQ(th.GetState(), bpf::system::Thread::FINISHED);
+    EXPECT_EQ(th._value, 2);
 }
 
 TEST(Thread, KillForce)

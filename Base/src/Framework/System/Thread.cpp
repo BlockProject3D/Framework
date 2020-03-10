@@ -28,6 +28,7 @@
 
 #include "Framework/System/Thread.hpp"
 #include "Framework/Exception.hpp"
+#include "Framework/System/OSException.hpp"
 
 #include <stdlib.h>
 #ifdef WINDOWS
@@ -102,8 +103,10 @@ Thread::Thread(const String &name)
 Thread::Thread(Thread &&other)
     : _state(other._state)
     , _handle(other._handle)
-    , _name(std::move(other._name))
 {
+    if (_state == RUNNING || _state == EXITING)
+        throw OSException("Cannot move a running thread");
+    other._name = std::move(other._name);
     other._handle = Null;
 }
 
@@ -116,6 +119,8 @@ Thread::~Thread()
 
 Thread &Thread::operator=(Thread &&other)
 {
+    if (_state == RUNNING || _state == EXITING)
+        throw OSException("Cannot move a running thread");
 #ifndef WINDOWS
     free(_handle);
 #endif
