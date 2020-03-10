@@ -35,9 +35,19 @@ namespace bpf
     {
         class BPF_API Thread
         {
+        public:
+            enum EState
+            {
+                PENDING,
+                RUNNING,
+                EXITING,
+                STOPPED,
+                FINISHED
+            };
+
         private:
+            EState _state;
             void *_handle;
-            bool _exit;
             String _name;
 
         public:
@@ -48,9 +58,14 @@ namespace bpf
             void Kill(const bool force = false);
             void Join();
 
-            inline bool ShouldExit() const noexcept
+            inline EState GetState() const noexcept
             {
-                return (_exit);
+                return (_state);
+            }
+
+            inline bool IsRunning() const noexcept
+            {
+                return (_state == RUNNING);
             }
 
             inline const String &GetName() const noexcept
@@ -61,6 +76,8 @@ namespace bpf
             virtual void Run() = 0;
 
             static void Sleep(const uint32 milliseconds);
+
+            friend void __internalstate(Thread &ptr, EState state);
         };
     }
 }

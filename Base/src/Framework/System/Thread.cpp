@@ -27,42 +27,74 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Framework/System/Thread.hpp"
+#include "Framework/Exception.hpp"
 
 #include <stdlib.h>
 #ifdef WINDOWS
     #include <Windows.h>
-#elif _POSIX_C_SOURCE >= 199309L
-    //Posix you mother fucker deprecating usleep for over-compilicated slower functions
-    //Sorry linux gamers but Thread::Sleep will have to be slower
-    #include <time.h>
-#else
-    #include <unistd.h>
-#endif
+    #elif _POSIX_C_SOURCE >= 199309L
+        //Posix you mother fucker deprecating usleep for over-compilicated slower functions
+        //Sorry linux gamers but Thread::Sleep will have to be slower
+        #include <time.h>
+    #else
+        #include <unistd.h>
+    #endif
 #ifndef WINDOWS
     #include <pthread.h>
     using ThreadType = pthread_t;
 #endif
 
+using namespace bpf::system;
+using namespace bpf;
+
+namespace bpf
+{
+    namespace system
+    {
+        void __internalstate(Thread &ptr, Thread::EState state)
+        {
+            ptr._state = state;
+        }
+    }
+}
+
 #ifdef WINDOWS
 DWORD WINAPI ThreadRoutine(void *ptr)
 {
-    reinterpret_cast<bpf::system::Thread *>(ptr)->Run();
+    auto thread = reinterpret_cast<bpf::system::Thread *>(ptr);
+    try
+    {
+        thread->Run();
+        __internalstate(*thread, Thread::FINISHED);
+    }
+    catch (const bpf::Exception &)
+    {
+        //TODO: print ex
+        __internalstate(*thread, Thread::STOPPED);
+    }
     return (0);
 }
 #else
 void *ThreadRoutine(void *ptr)
 {
-    reinterpret_cast<bpf::system::Thread *>(ptr)->Run();
+    auto thread = reinterpret_cast<bpf::system::Thread *>(ptr);
+    try
+    {
+        thread->Run();
+        __internalstate(*thread, Thread::FINISHED);
+    }
+    catch (const bpf::Exception &)
+    {
+        //TODO: print ex
+        __internalstate(*thread, Thread::STOPPED);
+    }
     return (Null);
 }
 #endif
 
-using namespace bpf::system;
-using namespace bpf;
-
 Thread::Thread(const String &name)
-    : _handle(Null)
-    , _exit(false)
+    : _state(PENDING)
+    , _handle(Null)
     , _name(name)
 {
 }
@@ -85,6 +117,7 @@ void Thread::Start()
     pthread_create(reinterpret_cast<ThreadType *>(_handle), Null,
                    &ThreadRoutine, this);
 #endif
+    _state = RUNNING;
 }
 
 void Thread::Join()
@@ -103,10 +136,7 @@ void Thread::Kill(const bool force)
     if (_handle == Null)
         return;
     if (!force)
-    {
-        _exit = true;
-        Join();
-    }
+        _state = EXITING;
     else
     {
 #ifdef WINDOWS
@@ -114,6 +144,7 @@ void Thread::Kill(const bool force)
 #else
         pthread_cancel(*reinterpret_cast<ThreadType *>(_handle));
 #endif
+        _state = STOPPED;
     }
 }
 
