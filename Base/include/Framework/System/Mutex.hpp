@@ -47,12 +47,12 @@ namespace bpf
             /**
              * Locks this mutex
              */
-            void Lock();
+            void Lock() const;
 
             /**
              * Unlocks this mutex
              */
-            void Unlock();
+            void Unlock() const;
         };
     }
 }

@@ -35,12 +35,12 @@ namespace bpf
         template <typename T>
         Quaternion<T>::Quaternion(const Vector<T, 3> &euler)
         {
-            T cr = Math::Cos(euler.X / (T)2);
-            T cp = Math::Cos(euler.Y / (T)2);
-            T cy = Math::Cos(euler.Z / (T)2);
-            T sr = Math::Sin(euler.X / (T)2);
-            T sp = Math::Sin(euler.Y / (T)2);
-            T sy = Math::Sin(euler.Z / (T)2);
+            T cr = Math<T>::Cos(euler.X / (T)2);
+            T cp = Math<T>::Cos(euler.Y / (T)2);
+            T cy = Math<T>::Cos(euler.Z / (T)2);
+            T sr = Math<T>::Sin(euler.X / (T)2);
+            T sp = Math<T>::Sin(euler.Y / (T)2);
+            T sy = Math<T>::Sin(euler.Z / (T)2);
 
             W = cr * cp * cy + sr * sp * sy;
             X = sr * cp * cy - cr * sp * sy;
@@ -56,15 +56,15 @@ namespace bpf
             X = a.X;
             Y = a.Y;
             Z = a.Z;
-            W = Math::Sqrt((from.Length() * from.Length()) * (to.Length() * to.Length())) + from.Dot(to);
+            W = Math<T>::Sqrt((from.Length() * from.Length()) * (to.Length() * to.Length())) + from.Dot(to);
         }
 
         template <typename T>
         Quaternion<T>::Quaternion(const Vector<T, 3> &axis, const T ang)
-            : X(axis.X *Math::Sin((ang / (T)2)))
-            , Y(axis.Y *Math::Sin((ang / (T)2)))
-            , Z(axis.Z *Math::Sin((ang / (T)2)))
-            , W(Math::Cos((ang / (T)2)))
+            : X(axis.X *Math<T>::Sin((ang / (T)2)))
+            , Y(axis.Y *Math<T>::Sin((ang / (T)2)))
+            , Z(axis.Z *Math<T>::Sin((ang / (T)2)))
+            , W(Math<T>::Cos((ang / (T)2)))
         {
             Normalize();
         }
@@ -73,7 +73,7 @@ namespace bpf
         Vector<T, 3> Quaternion<T>::Rotate(const Vector<T, 3> &v) const
         {
             Quaternion<T> p(0, v.X, v.Y, v.Z);
-            Quaternion<T> pprime = Invert() * p * *this;
+            Quaternion<T> pprime = Inverse() * p * *this;
 
             return (pprime.GetAxis());
         }
@@ -106,13 +106,13 @@ namespace bpf
         template <typename T>
         bool Quaternion<T>::operator==(const Quaternion<T> &other) const
         {
-            T diffx = Math::Abs(X - other.X);
-            T diffy = Math::Abs(Y - other.Y);
-            T diffz = Math::Abs(Z - other.Z);
-            T diffw = Math::Abs(W - other.W);
+            T diffx = Math<T>::Abs(X - other.X);
+            T diffy = Math<T>::Abs(Y - other.Y);
+            T diffz = Math<T>::Abs(Z - other.Z);
+            T diffw = Math<T>::Abs(W - other.W);
 
-            return (diffx <= Math::Epsilon<T>() && diffy <= Math::Epsilon<T>()
-                && diffz <= Math::Epsilon<T>() && diffw <= Math::Epsilon<T>());
+            return (diffx <= Math<T>::Epsilon && diffy <= Math<T>::Epsilon
+                && diffz <= Math<T>::Epsilon && diffw <= Math<T>::Epsilon);
         }
 
         template <typename T>
@@ -130,36 +130,37 @@ namespace bpf
         template <typename T>
         Quaternion<T> Quaternion<T>::Exp() const
         {
-            T r = Math::Sqrt(X * X + Y * Y + Z * Z);
-            T et = Math::Exp(W);
-            T s = r >= (T)0.00001 ? et * Math::Sin(r) / r : 0;
+            T r = Math<T>::Sqrt(X * X + Y * Y + Z * Z);
+            T et = Math<T>::Exp(W);
+            T s = r >= (T)0.00001 ? et * Math<T>::Sin(r) / r : 0;
 
-            return (Quaternion<T>(et * Math::Cos(r), X * s, Y * s, Z * s));
+            return (Quaternion<T>(et * Math<T>::Cos(r), X * s, Y * s, Z * s));
         }
 
         template <typename T>
         Quaternion<T> Quaternion<T>::Log() const
         {
-            T r = Math::Sqrt(X * X + Y * Y + Z * Z);
-            T et = r > (T)0.00001 ? Math::ArcTan2(r, W) / r : 0;
+            T r = Math<T>::Sqrt(X * X + Y * Y + Z * Z);
+            T et = r > (T)0.00001 ? Math<T>::ArcTan2(r, W) / r : 0;
 
-            return (Quaternion<T>((T)0.5 * Math::Log(W * W + X * X + Y * Y + Z * Z), X * et, Y * et, Z * et));
+            return (Quaternion<T>((T)0.5 * Math<T>::Log(W * W + X * X + Y * Y + Z * Z), X * et, Y * et, Z * et));
         }
 
         template <typename T>
         T Quaternion<T>::Angle(const Quaternion<T> &other) const
         {
-            Quaternion<T> res = other * Invert();
+            Quaternion<T> q = other * Inverse();
+            T a = Math<T>::ArcCos(q.W) * 2;
 
-            return (Math::ArcCos(res.W) * 2);
+            return (a > Math<T>::Pi ? Math<T>::TwoPi - a : a);
         }
 
         template <typename T>
         Vector<T, 3> Quaternion<T>::ToEulerAngles() const
         {
-            T roll = Math::ArcTan2(2 * Y * W + 2 * X * Z, 1 - 2 * Y * Y - 2 * Z * Z);
-            T pitch = Math::ArcTan2(2 * X * W + 2 * Y * Z, 1 - 2 * X * X - 2 * Z * Z);
-            T yaw = Math::ArcSin(2 * X * Y + 2 * Z * W);
+            T roll = Math<T>::ArcTan2(2 * Y * W + 2 * X * Z, 1 - 2 * Y * Y - 2 * Z * Z);
+            T pitch = Math<T>::ArcTan2(2 * X * W + 2 * Y * Z, 1 - 2 * X * X - 2 * Z * Z);
+            T yaw = Math<T>::ArcSin(2 * X * Y + 2 * Z * W);
 
             return (Vector<T, 3>(pitch, yaw, roll));
         }
@@ -167,8 +168,8 @@ namespace bpf
         template <typename T>
         Quaternion<T> Quaternion<T>::Lerp(const Quaternion<T> &q, const Quaternion<T> &q1, const T t)
         {
-            Quaternion<T> res(Math::Lerp(q.W, q1.W, t), Math::Lerp(q.X, q1.X, t),
-                Math::Lerp(q.Y, q1.Y, t), Math::Lerp(q.Z, q1.Z, t));
+            Quaternion<T> res(Math<T>::Lerp(q.W, q1.W, t), Math<T>::Lerp(q.X, q1.X, t),
+                Math<T>::Lerp(q.Y, q1.Y, t), Math<T>::Lerp(q.Z, q1.Z, t));
 
             return (res);
         }
@@ -176,7 +177,7 @@ namespace bpf
         template <typename T>
         Quaternion<T> Quaternion<T>::Slerp(const Quaternion<T> &q, const Quaternion<T> &q1, const T t)
         {
-            Quaternion<T> res = ((q1 * q.Invert()).Pow(t)) * q;
+            Quaternion<T> res = ((q1 * q.Inverse()).Pow(t)) * q;
 
             return (res);
         }

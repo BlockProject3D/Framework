@@ -62,8 +62,8 @@ namespace bpf
         {
             for (fsize i = 0; i != N * M; ++i)
             {
-                T diff = Math::Abs(_arr[i] - other._arr[i]);
-                if (diff > Math::Epsilon<T>())
+                T diff = Math<T>::Abs(_arr[i] - other._arr[i]);
+                if (diff > Math<T>::Epsilon)
                     return (false);
             }
             return (true);
@@ -129,8 +129,8 @@ namespace bpf
         {
             for (fsize i = 0; i != N * N; ++i)
             {
-                T diff = Math::Abs(_arr[i] - other._arr[i]);
-                if (diff > Math::Epsilon<T>())
+                T diff = Math<T>::Abs(_arr[i] - other._arr[i]);
+                if (diff > Math<T>::Epsilon)
                     return (false);
             }
             return (true);
@@ -262,7 +262,7 @@ namespace bpf
         }
 
         template <typename T, fsize N>
-        Matrix<T, N, N> Matrix<T, N, N>::Invert() const
+        Matrix<T, N, N> Matrix<T, N, N>::Inverse() const
         {
             T det = GetDeterminant();
             Matrix<T, N - 1, N - 1> minor;
@@ -432,7 +432,7 @@ namespace bpf
         }
 
         template <typename T>
-        Matrix<T> Matrix<T>::Invert() const
+        Matrix<T> Matrix<T>::Inverse() const
         {
             if (_m != _n)
                 throw NonSquareMatrixException();
@@ -507,8 +507,8 @@ namespace bpf
                 return (false);
             for (fsize i = 0; i != _n * _m; ++i)
             {
-                T diff = Math::Abs(_arr[i] - other._arr[i]);
-                if (diff > Math::Epsilon<T>())
+                T diff = Math<T>::Abs(_arr[i] - other._arr[i]);
+                if (diff > Math<T>::Epsilon)
                     return (false);
             }
             return (true);

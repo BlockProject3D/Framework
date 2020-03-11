@@ -140,7 +140,7 @@ TEST(VectorStatic, Normalize_1)
     auto v1 = bpf::math::Vector2f::Identity;
 
     v1.Normalize();
-    EXPECT_LT(1 - v1.Norm(), bpf::math::Math::Epsilon<float>());
+    EXPECT_LT(1 - v1.Norm(), bpf::math::Mathf::Epsilon);
 }
 
 TEST(VectorStatic, Dot_1)
@@ -300,7 +300,7 @@ TEST(VectorStatic, Normalize_2)
     auto v1 = bpf::math::Vector3f::Identity;
 
     v1.Normalize();
-    EXPECT_LT(1 - v1.Norm(), bpf::math::Math::Epsilon<float>());
+    EXPECT_LT(1 - v1.Norm(), bpf::math::Mathf::Epsilon);
 }
 
 TEST(VectorStatic, Dot_2)
@@ -477,7 +477,7 @@ TEST(VectorStatic, Normalize_3)
     auto v1 = bpf::math::Vector4f::Identity;
 
     v1.Normalize();
-    EXPECT_LT(1 - v1.Norm(), bpf::math::Math::Epsilon<float>());
+    EXPECT_LT(1 - v1.Norm(), bpf::math::Mathf::Epsilon);
 }
 
 TEST(VectorStatic, Dot_3)
@@ -652,7 +652,7 @@ TEST(VectorStatic, Normalize_4)
     auto v1 = Vector5f::Identity;
 
     v1.Normalize();
-    EXPECT_LT(1 - v1.Norm(), bpf::math::Math::Epsilon<float>());
+    EXPECT_LT(1 - v1.Norm(), bpf::math::Mathf::Epsilon);
 }
 
 TEST(VectorStatic, Dot_4)

@@ -42,9 +42,9 @@ const Color Color::Cyan = Color(0, 255, 255);
 
 Color Color::operator+(const Color &other) const
 {
-    uint8 newr = Math::Clamp((uint8)(R + other.R), (uint8)0, (uint8)255);
-    uint8 newg = Math::Clamp((uint8)(G + other.G), (uint8)0, (uint8)255);
-    uint8 newb = Math::Clamp((uint8)(B + other.B), (uint8)0, (uint8)255);
+    uint8 newr = Math<uint8>::Clamp((uint8)(R + other.R), (uint8)0, (uint8)255);
+    uint8 newg = Math<uint8>::Clamp((uint8)(G + other.G), (uint8)0, (uint8)255);
+    uint8 newb = Math<uint8>::Clamp((uint8)(B + other.B), (uint8)0, (uint8)255);
     
     return (Color(newr, newg, newb));
 }

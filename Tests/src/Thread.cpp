@@ -85,7 +85,7 @@ TEST(Thread, Move_1)
     EXPECT_EQ(thread.GetState(), bpf::system::Thread::EXITING);
     thread.Join();
     EXPECT_EQ(thread.GetState(), bpf::system::Thread::FINISHED);
-    EXPECT_LE(thread._value - 2, (bpf::uint32)1);
+    EXPECT_LE(thread._value - (bpf::uint32)2, (bpf::uint32)1);
 }
 
 TEST(Thread, Move_2)

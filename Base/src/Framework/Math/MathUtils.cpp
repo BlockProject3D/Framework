@@ -28,16 +28,12 @@
 
 #include <stdlib.h>
 #include <time.h>
-#include "Framework/Math/Math.hpp"
+#include "Framework/Math/MathUtils.hpp"
 
 using namespace bpf::math;
 using namespace bpf;
 
-constexpr float Math::RadToDeg;
-constexpr float Math::DegToRad;
-constexpr float Math::Pi;
-
-bool Math::IsPrime(const fisize n)
+bool MathUtils::IsPrime(const fisize n)
 {
     fisize a = 2;
 
@@ -50,7 +46,7 @@ bool Math::IsPrime(const fisize n)
     return (true);
 }
 
-fisize Math::FindNextPrime(const fisize n)
+fisize MathUtils::FindNextPrime(const fisize n)
 {
     fisize a = n + 1;
 
@@ -59,7 +55,7 @@ fisize Math::FindNextPrime(const fisize n)
     return (a);
 }
 
-fsize Math::FindNextPowerOfTwo(fsize nb)
+fsize MathUtils::FindNextPowerOfTwo(fsize nb)
 {
     --nb;
     nb |= nb >> 1;
@@ -71,7 +67,7 @@ fsize Math::FindNextPowerOfTwo(fsize nb)
     return (nb);
 }
 
-float Math::InvSqrt(const float nb)
+float MathUtils::InvSqrt(const float nb)
 {
     float y = nb;
     float x2 = nb * 0.5f;

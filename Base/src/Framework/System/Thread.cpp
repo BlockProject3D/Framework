@@ -26,6 +26,7 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include <iostream>
 #include "Framework/System/Thread.hpp"
 #include "Framework/Exception.hpp"
 #include "Framework/System/OSException.hpp"
@@ -83,6 +84,7 @@ void *ThreadRoutine(void *ptr)
         //TODO: print ex
         __internalstate(*thread, Thread::STOPPED);
     }
+    pthread_detach(pthread_self());
     return (Null);
 }
 #endif
@@ -129,6 +131,7 @@ void Thread::Start()
 {
     if (_handle != Null)
         return;
+    __internalstate(*this, RUNNING);
 #ifdef WINDOWS
     _handle = CreateThread(Null, 0, &ThreadRoutine, this, 0, Null);
 #else
@@ -136,7 +139,6 @@ void Thread::Start()
     pthread_create(reinterpret_cast<ThreadType *>(_handle), Null,
                    &ThreadRoutine, this);
 #endif
-    _state = RUNNING;
 }
 
 void Thread::Join()
@@ -155,7 +157,7 @@ void Thread::Kill(const bool force)
     if (_handle == Null)
         return;
     if (!force)
-        _state = EXITING;
+        __internalstate(*this, EXITING);
     else
     {
 #ifdef WINDOWS
@@ -163,7 +165,7 @@ void Thread::Kill(const bool force)
 #else
         pthread_cancel(*reinterpret_cast<ThreadType *>(_handle));
 #endif
-        _state = STOPPED;
+        __internalstate(*this, STOPPED);
     }
 }
 

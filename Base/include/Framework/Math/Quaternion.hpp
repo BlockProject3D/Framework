@@ -104,14 +104,14 @@ namespace bpf
 
             Matrix<T, 4, 4> ToMatrix() const;
 
-            inline Quaternion<T> Invert() const
+            inline Quaternion<T> Inverse() const
             {
                 return (Quaternion<T>(W, -X, -Y, -Z));
             }
 
             inline T Length() const
             {
-                return (Math::Sqrt(W * W + X * X + Y * Y + Z * Z));
+                return (Math<T>::Sqrt(W * W + X * X + Y * Y + Z * Z));
             }
 
             inline void Normalize()
@@ -144,7 +144,7 @@ namespace bpf
             Quaternion<T> Log() const;
 
             /**
-             * Returns the angle in degrees between two quaternions
+             * Returns the angle between two quaternions
              * WARNING : Angle is expressed in radians
              */
             T Angle(const Quaternion<T> &other) const;

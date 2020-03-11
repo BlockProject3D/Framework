@@ -80,8 +80,8 @@ namespace bpf
         typename Transform2D<T>::MatrixBuilder &Transform2D<T>::MatrixBuilder::Rotate(const T &rotation) noexcept
         {
             _matrix = _matrix * Matrix3<T>({
-                Math::Cos(rotation), -Math::Sin(rotation), 0,
-                    Math::Sin(rotation), Math::Cos(rotation), 0,
+                Math<T>::Cos(rotation), -Math<T>::Sin(rotation), 0,
+                    Math<T>::Sin(rotation), Math<T>::Cos(rotation), 0,
                     0, 0, 1
             });
             return (*this);
@@ -98,7 +98,7 @@ namespace bpf
         template <typename T>
         Vector2<T> Transform2D<T>::WorldToLocal(const Vector2<T> &world)
         {
-            auto res = ToMatrix().Invert() * Vector3<T>(local, (T)1);
+            auto res = ToMatrix().Inverse() * Vector3<T>(world, (T)1);
 
             return (Vector2<T>(res.X, res.Y));
         }
@@ -124,8 +124,8 @@ namespace bpf
         {
             auto dir = Position - pivot;
             Matrix2<T> mat = {
-                Math::Cos(rotation), -Math::Sin(rotation),
-                Math::Sin(rotation), Math::Cos(rotation)
+                Math<T>::Cos(rotation), -Math<T>::Sin(rotation),
+                Math<T>::Sin(rotation), Math<T>::Cos(rotation)
             };
 
             dir = mat * dir;

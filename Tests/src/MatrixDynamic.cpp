@@ -298,7 +298,7 @@ TEST(MatrixDynamic, Matrix_Inverse)
         0, 6,
         9, 5
     });
-    bpf::math::Matrix<float> res = mat * mat.Invert();
+    bpf::math::Matrix<float> res = mat * mat.Inverse();
     bpf::math::Matrix<float> expected(2, 2, {
         1, 0,
         0, 1

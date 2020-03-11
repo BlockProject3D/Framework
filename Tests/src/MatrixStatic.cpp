@@ -313,7 +313,7 @@ TEST(MatrixStatic, Matrix_Inverse)
         0, 6,
         9, 5
     };
-    bpf::math::Matrix2f res = mat * mat.Invert();
+    bpf::math::Matrix2f res = mat * mat.Inverse();
     bpf::math::Matrix2f expected = {
         1, 0,
         0, 1

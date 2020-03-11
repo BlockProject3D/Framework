@@ -195,7 +195,7 @@ namespace bpf
 
             inline T Norm() const
             {
-                return (Math::Sqrt(X * X + Y * Y));
+                return (Math<T>::Sqrt(X * X + Y * Y));
             }
 
             inline T NormSquared() const
@@ -211,10 +211,10 @@ namespace bpf
 
             inline bool operator==(const Vector &other) const
             {
-                T diffx = Math::Abs(X - other.X);
-                T diffy = Math::Abs(Y - other.Y);
+                T diffx = Math<T>::Abs(X - other.X);
+                T diffy = Math<T>::Abs(Y - other.Y);
 
-                return (diffx <= Math::Epsilon<T>() && diffy <= Math::Epsilon<T>());
+                return (diffx <= Math<T>::Epsilon && diffy <= Math<T>::Epsilon);
             }
 
             inline bool operator!=(const Vector &other) const
@@ -244,7 +244,7 @@ namespace bpf
 
             inline static Vector Lerp(const Vector &v, const Vector &v1, const T t)
             {
-                return (Vector(Math::Lerp(v.X, v1.X, t), Math::Lerp(v.Y, v1.Y, t)));
+                return (Vector(Math<T>::Lerp(v.X, v1.X, t), Math<T>::Lerp(v.Y, v1.Y, t)));
             }
 
             static const Vector Zero;

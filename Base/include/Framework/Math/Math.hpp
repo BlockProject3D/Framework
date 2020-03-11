@@ -34,38 +34,66 @@ namespace bpf
 {
     namespace math
     {
-        class BPF_API Math
+        namespace __internal_math
+        {
+            template <typename T>
+            inline constexpr T GetEpsilon()
+            {
+                return ((T)0);
+            }
+
+            template <>
+            inline constexpr float GetEpsilon()
+            {
+                return (0.00001f);
+            }
+
+            template <>
+            inline constexpr double GetEpsilon()
+            {
+                return (0.0000001);
+            }
+
+            template <>
+            inline constexpr long double GetEpsilon()
+            {
+                return (0.0000001);
+            }
+        }
+
+        template <typename T>
+        class BP_TPL_API Math
         {
         public:
             /**
              * Radians to degrees multiplier constant
              */
-            static constexpr float RadToDeg = 57.2957795f;
+            static constexpr T RadToDeg = T(57.2957795);
 
             /**
              * Degrees to radians multiplier constant
              */
-            static constexpr float DegToRad = 0.0174533f;
+            static constexpr T DegToRad = T(0.0174533);
 
             /**
              * Pi constant
              */
-            static constexpr float Pi = 3.141592654f;
+            static constexpr T Pi = T(3.141592654);
+
+            /**
+             * 2 * Pi constant
+             */
+            static constexpr T TwoPi = T(2) * Pi;
 
             /**
              * Returns a very small value to represent acceptable rounding errors for various types
              */
-            template <typename T>
-            inline constexpr static T Epsilon()
-            {
-                return ((T)0);
-            }
+            static constexpr T Epsilon = __internal_math::GetEpsilon<T>();
 
             /**
              * Absolute value
              * @param val value to convert to absolute value
              */
-            template <typename T>
             inline static T Abs(T val)
             {
                 return ((val < 0) ? (-val) : (val));
@@ -77,7 +105,6 @@ namespace bpf
              * @param b the target value
              * @param alpha interpolation float
              */
-            template <typename T>
             inline static T Lerp(const T a, const T b, const T alpha)
             {
                 return ((a * (1.0f - alpha)) + (b * alpha));
@@ -91,7 +118,6 @@ namespace bpf
              * @param dstmin the target minimum
              * @param dstmax the target maximum
              */
-            template <typename T>
             inline static T Map(const T val, const T srcmin, const T srcmax, const T dstmin, const T dstmax)
             {
                 return ((val - srcmin) * (dstmax - dstmin) / (srcmax - srcmin) + dstmin);
@@ -103,7 +129,6 @@ namespace bpf
              * @param min the minimum
              * @param max the maximum
              */
-            template <typename T>
             inline static T Clamp(const T val, const T min, const T max)
             {
                 return ((val < min) ? min : (val > max) ? max : val);
@@ -114,77 +139,45 @@ namespace bpf
              * @param val the value to round
              * @param prec the number of decimals
              */
-            template <typename T>
             inline static T Round(const T val, const fsize prec = 0)
             {
                 return ((T)(floor(val * pow(10, prec) + 0.5) / pow(10, prec)));
             }
 
             /**
-             * Returns true if nb is a power of two
-             * @param nb the number to check
-             */
-            inline static bool IsPowerOfTwo(const fsize nb)
-            {
-                return (nb & (nb - 1)) == 0;
-            }
-
-            /**
-             * Finds the next power of two starting at nb + 1
-             * @param nb the number to find the next power of two
-             */
-            static fsize FindNextPowerOfTwo(fsize nb);
-
-            /**
-             * Returns true if a given number is prime
-             * @param nb the number to check
-             */
-            static bool IsPrime(const fisize nb);
-
-            /**
-             * Finds the next prime number starting at nb + 1
-             * @param nb the number to find the next prime
-             */
-            static fisize FindNextPrime(const fisize nb);
-
-            /**
              * Shortcut to the system's square root function
              * @param val number to calculate square root of
              */
-            template <typename T>
             inline static T Sqrt(const T val)
             {
-                return (sqrt(val));
+                return ((T)sqrt(val));
             }
 
             /**
              * Shortcut to the system's exponential function
              * @param val number for e power val
              */
-            template <typename T>
             inline static T Exp(const T val)
             {
-                return (exp(val));
+                return ((T)exp(val));
             }
 
             /**
              * Shortcut to the system's natural logarithm function
              * @param val number for Ln(val)
              */
-            template <typename T>
             inline static T Log(const T val)
             {
-                return (log(val));
+                return ((T)log(val));
             }
 
             /**
              * Shortcut to the system's logarithm base 10 function
              * @param val number for Log(val)
              */
-            template <typename T>
             inline static T Log10(const T val)
             {
-                return (log10(val));
+                return ((T)log10(val));
             }
 
             /**
@@ -192,210 +185,190 @@ namespace bpf
              * @param val number for Log(val)
              * @param base the logarythm base to use
              */
-            template <typename T>
             inline static T Log(const T base, const T val)
             {
                 return (Log(val) / Log(base));
             }
 
-            /**
-             * Returns the inverse square root of a floating point number
-             * Uses the Fast Inverse Square Root
-             * @param nb the number to find the inverse square root
-             */
-            static float InvSqrt(const float nb);
-
-            template <typename T>
             inline static T Cos(const T val)
             {
-                return (cos(val));
+                return ((T)cos(val));
             }
 
-            template <typename T>
             inline static T Sin(const T val)
             {
-                return (sin(val));
+                return ((T)sin(val));
             }
 
-            template <typename T>
             inline static T Tan(const T val)
             {
-                return (tan(val));
+                return ((T)tan(val));
             }
 
-            template <typename T>
             inline static T ArcCos(const T val)
             {
-                return (acos(val));
+                return ((T)acos(val));
             }
 
-            template <typename T>
             inline static T ArcSin(const T val)
             {
-                return (asin(val));
+                return ((T)asin(val));
             }
 
-            template <typename T>
             inline static T ArcTan(const T val)
             {
-                return (atan(val));
+                return ((T)atan(val));
             }
 
-            template <typename T>
             inline static T ArcTan2(const T y, const T x)
             {
-                return (atan2(y, x));
+                return ((T)atan2(y, x));
             }
         };
 
+        template <typename T>
+        constexpr T Math<T>::RadToDeg;
+        template <typename T>
+        constexpr T Math<T>::DegToRad;
+        template <typename T>
+        constexpr T Math<T>::Pi;
+        template <typename T>
+        constexpr T Math<T>::Epsilon;
+
         template <>
-        inline float Math::Sqrt(const float val)
+        inline float Math<float>::Sqrt(const float val)
         {
             return (sqrtf(val));
         }
 
         template <>
-        inline long double Math::Sqrt(const long double val)
+        inline long double Math<long double>::Sqrt(const long double val)
         {
             return (sqrtl(val));
         }
 
         template <>
-        inline float Math::Exp(const float val)
+        inline float Math<float>::Exp(const float val)
         {
             return (expf(val));
         }
 
         template <>
-        inline long double Math::Exp(const long double val)
+        inline long double Math<long double>::Exp(const long double val)
         {
             return (expl(val));
         }
 
         template <>
-        inline float Math::Log(const float val)
+        inline float Math<float>::Log(const float val)
         {
             return (logf(val));
         }
 
         template <>
-        inline long double Math::Log(const long double val)
+        inline long double Math<long double>::Log(const long double val)
         {
             return (logl(val));
         }
 
         template <>
-        inline float Math::Log10(const float val)
+        inline float Math<float>::Log10(const float val)
         {
             return (log10f(val));
         }
 
         template <>
-        inline long double Math::Log10(const long double val)
+        inline long double Math<long double>::Log10(const long double val)
         {
             return (log10l(val));
         }
 
         template <>
-        inline float Math::Cos(const float val)
+        inline float Math<float>::Cos(const float val)
         {
             return (cosf(val));
         }
 
         template <>
-        inline long double Math::Cos(const long double val)
+        inline long double Math<long double>::Cos(const long double val)
         {
             return (cosl(val));
         }
 
         template <>
-        inline float Math::Sin(const float val)
+        inline float Math<float>::Sin(const float val)
         {
             return (sinf(val));
         }
 
         template <>
-        inline long double Math::Sin(const long double val)
+        inline long double Math<long double>::Sin(const long double val)
         {
             return (sinl(val));
         }
 
         template <>
-        inline float Math::Tan(const float val)
+        inline float Math<float>::Tan(const float val)
         {
             return (tanf(val));
         }
 
         template <>
-        inline long double Math::Tan(const long double val)
+        inline long double Math<long double>::Tan(const long double val)
         {
             return (tanl(val));
         }
 
         template <>
-        inline float Math::ArcCos(const float val)
+        inline float Math<float>::ArcCos(const float val)
         {
             return (acosf(val));
         }
 
         template <>
-        inline long double Math::ArcCos(const long double val)
+        inline long double Math<long double>::ArcCos(const long double val)
         {
             return (acosl(val));
         }
 
         template <>
-        inline float Math::ArcSin(const float val)
+        inline float Math<float>::ArcSin(const float val)
         {
             return (asinf(val));
         }
 
         template <>
-        inline long double Math::ArcSin(const long double val)
+        inline long double Math<long double>::ArcSin(const long double val)
         {
             return (asinl(val));
         }
 
         template <>
-        inline float Math::ArcTan(const float val)
+        inline float Math<float>::ArcTan(const float val)
         {
             return (atanf(val));
         }
 
         template <>
-        inline long double Math::ArcTan(const long double val)
+        inline long double Math<long double>::ArcTan(const long double val)
         {
             return (atanl(val));
         }
 
         template <>
-        inline float Math::ArcTan2(const float y, const float x)
+        inline float Math<float>::ArcTan2(const float y, const float x)
         {
             return (atan2f(y, x));
         }
 
         template <>
-        inline long double Math::ArcTan2(const long double y, const long double x)
+        inline long double Math<long double>::ArcTan2(const long double y, const long double x)
         {
             return (atan2l(y, x));
         }
 
-        template <>
-        inline constexpr float Math::Epsilon()
-        {
-            return (0.00001f);
-        }
-
-        template <>
-        inline constexpr double Math::Epsilon()
-        {
-            return (0.0000001);
-        }
-
-        template <>
-        inline constexpr long double Math::Epsilon()
-        {
-            return (0.0000001);
-        }
+        using Mathf = Math<float>;
+        using Mathd = Math<double>;
+        using Mathld = Math<long double>;
     }
 }

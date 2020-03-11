@@ -36,10 +36,10 @@ namespace bpf
         class BPF_API ScopeLock
         {
         private:
-            Mutex &_mutex;
+            const Mutex &_mutex;
 
         public:
-            explicit inline ScopeLock(Mutex &mutex)
+            explicit inline ScopeLock(const Mutex &mutex)
                 : _mutex(mutex)
             {
                 _mutex.Lock();

@@ -166,7 +166,7 @@ TEST(VectorDynamic, Normalize)
     auto v1 = Vectorf::Identity(5);
 
     v1.Normalize();
-    EXPECT_LT(1 - v1.Norm(), bpf::math::Math::Epsilon<float>());
+    EXPECT_LT(1 - v1.Norm(), bpf::math::Mathf::Epsilon);
 }
 
 TEST(VectorDynamic, Dot)
