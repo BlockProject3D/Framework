@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -26,75 +26,29 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <stdlib.h>
-#ifdef WINDOWS
-    #include <Windows.h>
-    using MutexType = CRITICAL_SECTION;
-#else
-    #include <pthread.h>
-    using MutexType = pthread_mutex_t;
-#endif
-#include "Framework/Memory/Memory.hpp"
+#pragma once
 #include "Framework/System/Mutex.hpp"
 
-using namespace bpf::memory;
-using namespace bpf::system;
-using namespace bpf;
-
-Mutex::Mutex()
-    : _handle(malloc(sizeof(MutexType)))
+namespace bpf
 {
-    if (_handle == Null)
-        throw MemoryException();
-#ifdef WINDOWS
-    InitializeCriticalSection(reinterpret_cast<MutexType *>(_handle));
-#else
-    pthread_mutex_init(reinterpret_cast<MutexType *>(_handle), Null);
-#endif
-}
+    namespace system
+    {
+        class BPF_API ScopeLock
+        {
+        private:
+            Mutex &_mutex;
 
-Mutex::~Mutex()
-{
-#ifdef WINDOWS
-    DeleteCriticalSection(reinterpret_cast<MutexType *>(_handle));
-#else
-    pthread_mutex_destroy(reinterpret_cast<MutexType *>(_handle));
-#endif
-    free(_handle);
-}
+        public:
+            inline ScopeLock(Mutex &mutex)
+                : _mutex(mutex)
+            {
+                _mutex.Lock();
+            }
 
-Mutex::Mutex(Mutex &&other)
-    : _handle(other._handle)
-{
-    other._handle = Null;
-}
-
-Mutex &Mutex::operator=(Mutex &&other)
-{
-#ifdef WINDOWS
-    DeleteCriticalSection(reinterpret_cast<MutexType *>(_handle));
-#else
-    pthread_mutex_destroy(reinterpret_cast<MutexType *>(_handle));
-#endif
-    free(_handle);
-    _handle = other._handle;
-    other._handle = Null;
-}
-
-void Mutex::Lock()
-{
-#ifdef WINDOWS
-    EnterCriticalSection(reinterpret_cast<MutexType *>(_handle));
-#else
-    pthread_mutex_lock(reinterpret_cast<MutexType *>(_handle));
-#endif
-}
-
-void Mutex::Unlock()
-{
-#ifdef WINDOWS
-    LeaveCriticalSection(reinterpret_cast<MutexType *>(_handle));
-#else
-    pthread_mutex_unlock(reinterpret_cast<MutexType *>(_handle));
-#endif
+            inline ~ScopeLock()
+            {
+                _mutex.Unlock();
+            }
+        };
+    }
 }
