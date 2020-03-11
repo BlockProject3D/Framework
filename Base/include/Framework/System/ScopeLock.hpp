@@ -39,7 +39,7 @@ namespace bpf
             Mutex &_mutex;
 
         public:
-            inline ScopeLock(Mutex &mutex)
+            explicit inline ScopeLock(Mutex &mutex)
                 : _mutex(mutex)
             {
                 _mutex.Lock();

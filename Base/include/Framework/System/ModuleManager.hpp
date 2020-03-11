@@ -52,7 +52,7 @@ namespace bpf
             collection::HashMap<String, Entry> _map;
 
         public:
-            inline ModuleManager(const String &modulePath)
+            explicit inline ModuleManager(const String &modulePath)
                 : _modulePath(modulePath)
             {
             }

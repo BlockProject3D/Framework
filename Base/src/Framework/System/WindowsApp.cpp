@@ -27,6 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Framework/System/WindowsApp.hpp"
+#include "Framework/System/OSException.hpp"
 #include <Windows.h>
 #include <stdio.h>
 #include <fcntl.h>
@@ -61,7 +62,7 @@ void WindowsApp::SetConsoleTitle(const String &title)
 void WindowsApp::SetupEnvironment()
 {
     LPWCH ptr = GetEnvironmentStringsW();
-    LPWCH wptr = ptr;
+    LPWCH wptr;
     fsize i = 0;
 
     //We ignore first env var cause it's the weird "=::=::\"
@@ -123,7 +124,8 @@ void WindowsApp::CreateConsole(const fint rows, const fint columns)
     int hConHandle;
     HANDLE lStdHandle;
 
-    AllocConsole();
+    if (AllocConsole() == FALSE)
+        throw OSException("Could not allocate console");
     GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &coninfo);
     coninfo.dwSize.Y = rows;
     coninfo.dwSize.X = columns;
@@ -131,15 +133,18 @@ void WindowsApp::CreateConsole(const fint rows, const fint columns)
     lStdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
     hConHandle = _open_osfhandle((intptr_t)lStdHandle, _O_TEXT);
     fp = _fdopen(hConHandle, "w");
-    freopen_s(&fp, "CONOUT$", "w", stdout);
+    if (freopen_s(&fp, "CONOUT$", "w", stdout) != 0)
+        throw OSException("Could not redirect console output");
     lStdHandle = GetStdHandle(STD_INPUT_HANDLE);
     hConHandle = _open_osfhandle((intptr_t)lStdHandle, _O_TEXT);
     fp = _fdopen(hConHandle, "r");
-    freopen_s(&fp, "CONIN$", "r", stdin);
+    if (freopen_s(&fp, "CONIN$", "r", stdin) != 0)
+        throw OSException("Could not redirect console input");
     lStdHandle = GetStdHandle(STD_ERROR_HANDLE);
     hConHandle = _open_osfhandle((intptr_t)lStdHandle, _O_TEXT);
     fp = _fdopen(hConHandle, "w");
-    freopen_s(&fp, "CONERR$", "w", stderr);
+    if (freopen_s(&fp, "CONERR$", "r", stderr) != 0)
+        throw OSException("Could not redirect console error output");
     std::ios::sync_with_stdio();
     _hasConsole = true;
 }

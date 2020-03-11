@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -33,14 +33,8 @@
 #include <stdlib.h>
 #ifdef WINDOWS
     #include <Windows.h>
-    #elif _POSIX_C_SOURCE >= 199309L
-        //Posix you mother fucker deprecating usleep for over-compilicated slower functions
-        //Sorry linux gamers but Thread::Sleep will have to be slower
-        #include <time.h>
-    #else
-        #include <unistd.h>
-    #endif
-#ifndef WINDOWS
+#else
+    #include <time.h>
     #include <pthread.h>
     using ThreadType = pthread_t;
 #endif
@@ -177,12 +171,10 @@ void Thread::Sleep(const uint32 milliseconds)
 {
 #ifdef WINDOWS
     ::Sleep((DWORD)milliseconds);
-#elif _POSIX_C_SOURCE >= 199309L
+#else
     struct timespec ts;
     ts.tv_sec = milliseconds / 1000;
     ts.tv_nsec = (milliseconds % 1000) * 1000000;
     nanosleep(&ts, NULL);
-#else
-    usleep(milliseconds * 1000);
 #endif
 }

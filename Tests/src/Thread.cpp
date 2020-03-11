@@ -37,7 +37,7 @@ class MyThread : public bpf::system::Thread
 public:
     bool except;
     bpf::uint32 _value;
-    MyThread(bool except)
+    explicit MyThread(bool except)
         : bpf::system::Thread("MyThread")
         , except(except)
         , _value(0) //Yeah will work better when initialized...
