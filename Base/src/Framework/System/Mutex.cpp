@@ -79,6 +79,7 @@ Mutex &Mutex::operator=(Mutex &&other)
     free(_handle);
     _handle = other._handle;
     other._handle = Null;
+    return (*this);
 }
 
 void Mutex::Lock()
