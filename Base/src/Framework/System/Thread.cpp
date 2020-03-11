@@ -84,7 +84,6 @@ void *ThreadRoutine(void *ptr)
         //TODO: print ex
         __internalstate(*thread, Thread::STOPPED);
     }
-    pthread_detach(pthread_self());
     return (Null);
 }
 #endif
@@ -108,6 +107,7 @@ Thread::Thread(Thread &&other)
 
 Thread::~Thread()
 {
+    Join();
 #ifndef WINDOWS
     free(_handle);
 #endif
