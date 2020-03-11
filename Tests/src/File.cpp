@@ -31,6 +31,7 @@
 #include <gtest/gtest.h>
 #include <Framework/IO/File.hpp>
 #include <Framework/IO/FileStream.hpp>
+#include <Framework/IO/IOException.hpp>
 
 TEST(File, Basics)
 {
@@ -42,6 +43,20 @@ TEST(File, Basics)
     EXPECT_TRUE(f.IsDirectory());
     f.Delete();
     EXPECT_FALSE(f.Exists());
+    EXPECT_FALSE(f.IsDirectory());
+}
+
+TEST(File, Hide)
+{
+    bpf::io::File f("./doesnotexist.txt");
+
+    f.CreateDir();
+    EXPECT_FALSE(f.IsHidden());
+    f.Hide(true);
+    EXPECT_TRUE(f.IsHidden());
+    f.Hide(false);
+    EXPECT_FALSE(f.IsHidden());
+    f.Delete();
 }
 
 TEST(File, Abs)
@@ -60,23 +75,46 @@ TEST(File, Abs)
     EXPECT_FALSE(f.Exists());
 }
 
+TEST(File, Move)
+{
+    bpf::io::File f("./doesnotexist.txt");
+    bpf::io::File dest("./doesexist.txt");
+
+    EXPECT_FALSE(f.Exists());
+    f.CreateDir();
+    EXPECT_TRUE(f.Exists());
+    EXPECT_FALSE(dest.Exists());
+    EXPECT_TRUE(f.MoveTo(dest));
+    EXPECT_TRUE(dest.Exists());
+    EXPECT_FALSE(f.Exists());
+    f.Delete();
+    dest.Delete();
+}
+
 #ifdef WINDOWS
 TEST(File, AutoBackSlash)
 {
     bpf::io::File f("./");
 
-    EXPECT_STREQ(*f.Path(), ".");
+    EXPECT_STREQ(*f.PlatformPath(), ".");
     bpf::io::File f1 = f + "../";
-    EXPECT_STREQ(*f1.Path(), ".\\..");
+    EXPECT_STREQ(*f1.PlatformPath(), ".\\..");
+    f = bpf::io::File("./users////var//cleanup/test");
+    EXPECT_STREQ(*f.PlatformPath(), ".\\users\\var\\cleanup\\test");
+    EXPECT_STREQ(*f.Path(), "./users/var/cleanup/test");
+
 }
 #else
 TEST(File, AutoSlash)
 {
     bpf::io::File f("./");
 
-    EXPECT_STREQ(*f.Path(), ".");
+    EXPECT_STREQ(*f.PlatformPath(), ".");
     bpf::io::File f1 = f + "../";
-    EXPECT_STREQ(*f1.Path(), "./..");
+    EXPECT_STREQ(*f1.PlatformPath(), "./..");
+    f = bpf::io::File("./users////var//cleanup/test");
+    EXPECT_STREQ(*f.PlatformPath(), "./users/var/cleanup/test");
+    EXPECT_STREQ(*f.Path(), "./users/var/cleanup/test");
 }
 #endif
 
@@ -118,10 +156,27 @@ static void SetupTestFile(bpf::io::File &f)
     EXPECT_EQ(stream.Write("This is a test", 14), (bpf::fsize)14);
 }
 
+TEST(File, List_Test_Err_1)
+{
+    bpf::io::File f("DoesNotExist");
+
+    EXPECT_THROW(f.ListFiles(), bpf::io::IOException);
+}
+
+TEST(File, List_Test_Err_2)
+{
+    bpf::io::File f("DoesNotExist");
+
+    SetupTestFile(f);
+    EXPECT_THROW(f.ListFiles(), bpf::io::IOException);
+    f.Delete();
+}
+
 TEST(File, GetSizeBytes)
 {
     bpf::io::File f("./test_me.txt");
     SetupTestFile(f);
     EXPECT_EQ(f.GetSizeBytes(), 14);
     f.Delete();
+    EXPECT_THROW(f.GetSizeBytes(), bpf::io::IOException);
 }

@@ -35,28 +35,12 @@
 
 TEST(FileStream, OpenExcept)
 {
-    try
-    {
-        bpf::io::FileStream stream(bpf::io::File("./doesnotexist.txt"), bpf::io::FILE_MODE_READ);
-    }
-    catch (const bpf::io::IOException &)
-    {
-        return;
-    }
-    ASSERT_TRUE(false);
+    EXPECT_THROW(bpf::io::FileStream(bpf::io::File("./doesnotexist.txt"), bpf::io::FILE_MODE_READ), bpf::io::IOException);
 }
 
 static void Test_OpenExcept_MemLeak()
 {
-    try
-    {
-        bpf::io::FileStream stream(bpf::io::File("./doesnotexist.txt"), bpf::io::FILE_MODE_READ);
-    }
-    catch (const bpf::io::IOException &)
-    {
-        return;
-    }
-    ASSERT_TRUE(false);
+    EXPECT_THROW(bpf::io::FileStream(bpf::io::File("./doesnotexist.txt"), bpf::io::FILE_MODE_READ), bpf::io::IOException);
 }
 
 TEST(FileStream, OpenExcept_MemLeak)
@@ -71,9 +55,11 @@ TEST(FileStream, Open)
 {
     bpf::io::File f("./doesnotexist.txt");
     bpf::io::FileStream stream(f, bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
+    EXPECT_THROW(stream.Read(Null, 0), bpf::io::IOException);
     EXPECT_EQ(stream.Write("This is a test", 14), (bpf::fsize)14);
     stream.Close();
     bpf::io::FileStream stream1(f, bpf::io::FILE_MODE_READ);
+    EXPECT_THROW(stream1.Write(Null, 0), bpf::io::IOException);
     char buf[15];
     EXPECT_EQ(stream1.Read(buf, 14), (bpf::fsize)14);
     buf[14] = '\0';

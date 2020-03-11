@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -27,37 +27,81 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Framework/System/Thread.hpp"
+#include "Framework/Exception.hpp"
+#include "Framework/System/OSException.hpp"
 
 #include <stdlib.h>
 #ifdef WINDOWS
-#include <Windows.h>
+    #include <Windows.h>
 #else
-#include <pthread.h>
-using ThreadType = pthread_t;
-#endif
-
-#ifdef WINDOWS
-DWORD WINAPI ThreadRoutine(void *ptr)
-{
-    reinterpret_cast<bpf::system::Thread *>(ptr)->Run();
-    return (0);
-}
-#else
-void *ThreadRoutine(void *ptr)
-{
-    reinterpret_cast<bpf::system::Thread *>(ptr)->Run();
-    return (Null);
-}
+    #include <time.h>
+    #include <pthread.h>
+    using ThreadType = pthread_t;
 #endif
 
 using namespace bpf::system;
 using namespace bpf;
 
+namespace bpf
+{
+    namespace system
+    {
+        void __internalstate(Thread &ptr, Thread::EState state)
+        {
+            ptr._state = state;
+        }
+    }
+}
+
+#ifdef WINDOWS
+DWORD WINAPI ThreadRoutine(void *ptr)
+{
+    auto thread = reinterpret_cast<bpf::system::Thread *>(ptr);
+    try
+    {
+        thread->Run();
+        __internalstate(*thread, Thread::FINISHED);
+    }
+    catch (const bpf::Exception &)
+    {
+        //TODO: print ex
+        __internalstate(*thread, Thread::STOPPED);
+    }
+    return (0);
+}
+#else
+void *ThreadRoutine(void *ptr)
+{
+    auto thread = reinterpret_cast<bpf::system::Thread *>(ptr);
+    try
+    {
+        thread->Run();
+        __internalstate(*thread, Thread::FINISHED);
+    }
+    catch (const bpf::Exception &)
+    {
+        //TODO: print ex
+        __internalstate(*thread, Thread::STOPPED);
+    }
+    return (Null);
+}
+#endif
+
 Thread::Thread(const String &name)
-    : _handle(Null)
-    , _exit(false)
+    : _state(PENDING)
+    , _handle(Null)
     , _name(name)
 {
+}
+
+Thread::Thread(Thread &&other)
+    : _state(other._state)
+    , _handle(other._handle)
+{
+    if (_state == RUNNING || _state == EXITING)
+        throw OSException("Cannot move a running thread");
+    other._name = std::move(other._name);
+    other._handle = Null;
 }
 
 Thread::~Thread()
@@ -65,6 +109,20 @@ Thread::~Thread()
 #ifndef WINDOWS
     free(_handle);
 #endif
+}
+
+Thread &Thread::operator=(Thread &&other)
+{
+    if (_state == RUNNING || _state == EXITING)
+        throw OSException("Cannot move a running thread");
+#ifndef WINDOWS
+    free(_handle);
+#endif
+    _state = other._state;
+    _handle = other._handle;
+    _name = std::move(other._name);
+    other._handle = Null;
+    return (*this);
 }
 
 void Thread::Start()
@@ -78,6 +136,7 @@ void Thread::Start()
     pthread_create(reinterpret_cast<ThreadType *>(_handle), Null,
                    &ThreadRoutine, this);
 #endif
+    _state = RUNNING;
 }
 
 void Thread::Join()
@@ -96,10 +155,7 @@ void Thread::Kill(const bool force)
     if (_handle == Null)
         return;
     if (!force)
-    {
-        _exit = true;
-        Join();
-    }
+        _state = EXITING;
     else
     {
 #ifdef WINDOWS
@@ -107,5 +163,18 @@ void Thread::Kill(const bool force)
 #else
         pthread_cancel(*reinterpret_cast<ThreadType *>(_handle));
 #endif
+        _state = STOPPED;
     }
+}
+
+void Thread::Sleep(const uint32 milliseconds)
+{
+#ifdef WINDOWS
+    ::Sleep((DWORD)milliseconds);
+#else
+    struct timespec ts;
+    ts.tv_sec = milliseconds / 1000;
+    ts.tv_nsec = (milliseconds % 1000) * 1000000;
+    nanosleep(&ts, NULL);
+#endif
 }

@@ -165,7 +165,12 @@ namespace bpf
 
             template <typename T1>
             friend class SharedPtr;
+
+            static const SharedPtr<T> NullPtr;
         };
+
+        template <typename T>
+        const SharedPtr<T> SharedPtr<T>::NullPtr = SharedPtr<T>(Null);
     }
 }
 

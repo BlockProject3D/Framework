@@ -33,57 +33,57 @@ namespace bpf
     namespace math
     {
         template <typename T>
-        Transform2D<T>::MatrixBuilder &Transform2D<T>::MatrixBuilder::Translate(const Vector2<T> &translation) noexcept
+        typename Transform2D<T>::MatrixBuilder &Transform2D<T>::MatrixBuilder::Translate(const Vector2<T> &translation) noexcept
         {
-            _matrix *= {
+            _matrix = _matrix * Matrix3<T>({
                 1, 0, translation.X,
                     0, 1, translation.Y,
                     0, 0, 1
-            };
+            });
             return (*this);
         }
 
         template <typename T>
-        Transform2D<T>::MatrixBuilder &Transform2D<T>::MatrixBuilder::Scale(const Vector2<T> &scale) noexcept
+        typename Transform2D<T>::MatrixBuilder &Transform2D<T>::MatrixBuilder::Scale(const Vector2<T> &scale) noexcept
         {
-            _matrix *= {
+            _matrix = _matrix * Matrix3<T>({
                 scale.X, 0, 0,
                     0, scale.Y, 0,
                     0, 0, 1
-            };
+            });
             return (*this);
         }
 
         template <typename T>
-        Transform2D<T>::MatrixBuilder &Transform2D<T>::MatrixBuilder::ShearX(const T &shear) noexcept
+        typename Transform2D<T>::MatrixBuilder &Transform2D<T>::MatrixBuilder::ShearX(const T &shear) noexcept
         {
-            _matrix *= {
+            _matrix = _matrix * Matrix3<T>({
                 1, 0, 0,
-                    shear.X, 1, 0,
+                    shear, 1, 0,
                     0, 0, 1
-            };
+            });
             return (*this);
         }
 
         template <typename T>
-        Transform2D<T>::MatrixBuilder &Transform2D<T>::MatrixBuilder::ShearY(const T &shear) noexcept
+        typename Transform2D<T>::MatrixBuilder &Transform2D<T>::MatrixBuilder::ShearY(const T &shear) noexcept
         {
-            _matrix *= {
-                1, shear.Y, 0,
+            _matrix = _matrix * Matrix3<T>({
+                1, shear, 0,
                     0, 1, 0,
                     0, 0, 1
-            };
+            });
             return (*this);
         }
 
         template <typename T>
-        Transform2D<T>::MatrixBuilder &Transform2D<T>::MatrixBuilder::Rotate(const T &rotation) noexcept
+        typename Transform2D<T>::MatrixBuilder &Transform2D<T>::MatrixBuilder::Rotate(const T &rotation) noexcept
         {
-            _matrix *= {
+            _matrix = _matrix * Matrix3<T>({
                 Math::Cos(rotation), -Math::Sin(rotation), 0,
                     Math::Sin(rotation), Math::Cos(rotation), 0,
                     0, 0, 1
-            };
+            });
             return (*this);
         }
 
@@ -106,7 +106,7 @@ namespace bpf
         template <typename T>
         Transform2D<T> Transform2D<T>::operator+(const Transform2D &other) const noexcept
         {
-            Transform2D<T> res(Position + other.Position, Scale * other.Scale, Angle + other.Angle);
+            Transform2D<T> res(Position + other.Position, Scale * other.Scale, Rotation + other.Rotation);
 
             return (res);
         }
@@ -116,7 +116,7 @@ namespace bpf
         {
             Position += other.Position;
             Scale *= other.Scale;
-            Angle += other.Angle;
+            Rotation += other.Rotation;
         }
 
         template <typename T>

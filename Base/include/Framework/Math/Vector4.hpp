@@ -229,13 +229,10 @@ namespace bpf
                 return (X * X + Y * Y + Z * Z + W * W);
             }
 
-            inline void Normalize()
+            inline Vector Normalize() const
             {
                 auto v = Norm();
-                X /= v;
-                Y /= v;
-                Z /= v;
-                W /= v;
+                return (Vector(X / v, Y / v, Z / v, W / v));
             }
 
             inline bool operator==(const Vector &other) const

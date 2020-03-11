@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -36,8 +36,8 @@ namespace bpf
         class BPF_API Module
         {
         private:
-            bpf::String Path;
-            void *Handle;
+            bpf::String _path;
+            void *_handle;
 
 #ifdef WINDOWS
             String ObtainErrorString();
@@ -49,7 +49,25 @@ namespace bpf
              * @throws ModuleException
              */
             explicit Module(const bpf::String &path);
+            inline Module() noexcept
+                : _path(String::Empty)
+                , _handle(Null)
+            {
+            }
             ~Module();
+
+            inline Module(Module &&other)
+                : _path(std::move(other._path))
+                , _handle(other._handle)
+            {
+                other._handle = Null;
+            }
+
+            Module(const Module &other) = delete;
+
+            Module &operator=(Module &&other);
+
+            Module &operator=(const Module &other) = delete;
 
             /**
              * Loads a symbol from the module
@@ -61,9 +79,9 @@ namespace bpf
             /**
              * Returns the path to this module
              */
-            inline const bpf::String &GetPath() const
+            inline const bpf::String &Path() const noexcept
             {
-                return (Path);
+                return (_path);
             }
         };
     }

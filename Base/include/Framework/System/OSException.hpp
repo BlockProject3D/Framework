@@ -1,4 +1,4 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2018, BlockProject
 //
 // All rights reserved.
 //
@@ -27,33 +27,19 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#ifndef WINDOWS
-    #include <ctime>
-#endif
-#include "Framework/Types.hpp"
+#include "Framework/RuntimeException.hpp"
 
 namespace bpf
 {
     namespace system
     {
-        class BPF_API Timer
+        class BPF_API OSException : public RuntimeException
         {
-        private:
-#ifdef WINDOWS
-            int64 _curCounter;
-            double _perfCounterFreq;
-#else
-            time_t _sec;
-            long _nsec;
-#endif
-
         public:
-            Timer();
-
-            /**
-             * Returns the time in seconds since last call to Reset
-             */
-            double Reset();
+            explicit inline OSException(const String &msg) noexcept
+                : RuntimeException("OS", msg)
+            {
+            }
         };
     }
 }

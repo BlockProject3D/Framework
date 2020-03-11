@@ -27,33 +27,28 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#ifndef WINDOWS
-    #include <ctime>
-#endif
-#include "Framework/Types.hpp"
+#include "Framework/System/Mutex.hpp"
 
 namespace bpf
 {
     namespace system
     {
-        class BPF_API Timer
+        class BPF_API ScopeLock
         {
         private:
-#ifdef WINDOWS
-            int64 _curCounter;
-            double _perfCounterFreq;
-#else
-            time_t _sec;
-            long _nsec;
-#endif
+            Mutex &_mutex;
 
         public:
-            Timer();
+            explicit inline ScopeLock(Mutex &mutex)
+                : _mutex(mutex)
+            {
+                _mutex.Lock();
+            }
 
-            /**
-             * Returns the time in seconds since last call to Reset
-             */
-            double Reset();
+            inline ~ScopeLock()
+            {
+                _mutex.Unlock();
+            }
         };
     }
 }

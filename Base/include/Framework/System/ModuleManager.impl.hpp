@@ -27,33 +27,42 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#ifndef WINDOWS
-    #include <ctime>
-#endif
-#include "Framework/Types.hpp"
 
 namespace bpf
 {
     namespace system
     {
-        class BPF_API Timer
+        template <typename BaseClass>
+        void ModuleManager<BaseClass>::LoadModule(const String &virtualName, const String &fileName)
         {
-        private:
-#ifdef WINDOWS
-            int64 _curCounter;
-            double _perfCounterFreq;
-#else
-            time_t _sec;
-            long _nsec;
-#endif
+            String moduleFile = _modulePath + fileName;
 
-        public:
-            Timer();
+            if (HasModule(virtualName))
+                throw ModuleException("Module already loaded");
+            Entry md;
+            md.Handle = Module(moduleFile);
+            md.Name = virtualName;
+            String moduleLnkSymbol = virtualName + "_Link";
+            String moduleDescSymbol = virtualName + "_Describe";
+            ModuleLinkFunc sym = static_cast<ModuleLinkFunc>(md.Handle.LoadSymbol(moduleLnkSymbol));
+            ModuleDescribeFunc sym1 = static_cast<ModuleDescribeFunc>(md.Handle.LoadSymbol(moduleDescSymbol));
+            fint version = sym1();
+            if (version > Platform::GetEnvInfo().VersionInt)
+                throw ModuleException("Module has been built against a new version of the Framework");
+            else if (version < Platform::GetEnvInfo().VersionInt)
+                throw ModuleException("Module has been built against an older version of the Framework");
+            if ((md.Interface = sym()) == Null)
+                throw ModuleException("Module interface allocation failure");
+            _map.Add(virtualName, std::move(md));
+        }
 
-            /**
-             * Returns the time in seconds since last call to Reset
-             */
-            double Reset();
-        };
+        template <typename BaseClass>
+        void ModuleManager<BaseClass>::UnloadModule(const String &virtualName)
+        {
+            if (!HasModule(virtualName))
+                return;
+            _map[virtualName].Handle = Module();
+            _map.RemoveAt(virtualName);
+        }
     }
 }

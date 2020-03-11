@@ -40,6 +40,8 @@
     #include <dirent.h>
 #endif
 #include "Framework/IO/File.hpp"
+#include "Framework/IO/IOException.hpp"
+#include "./OSPrivate.hpp"
 
 using namespace bpf::io;
 using namespace bpf::collection;
@@ -47,40 +49,43 @@ using namespace bpf;
 
 File::File(const bpf::String &path)
     : FullPath(path)
+    , UserPath(path)
     , FileName("")
     , FileExt("")
 {
 #ifdef WINDOWS
-    FullPath = FullPath.Replace("/", "\\");
+    FullPath = FullPath.Replace('/', '\\');
     String result = String::Empty;
     char old = '\0';
-    for (int i = 0; i < FullPath.Size(); ++i)
+    for (fisize i = 0; i < FullPath.Size(); ++i)
     {
         if (FullPath.ByteAt(i) == '\\' && old != '\\')
             result += '\\';
-        else
+        else if (FullPath.ByteAt(i) != '\\')
             result += FullPath.ByteAt(i);
         old = FullPath.ByteAt(i);
     }
     if (result.ByteAt(result.Size() - 1) == '\\')
         result = result.Sub(0, result.Len() - 1);
     FullPath = std::move(result);
+    UserPath = FullPath.Replace('\\', '/');
     FileName = path.Sub(path.LastIndexOf('\\') + 1);
     FileExt = path.Sub(path.LastIndexOf('.') + 1);
 #else
     String result = String::Empty;
     char old = '\0';
-    for (int i = 0; i < FullPath.Size(); ++i)
+    for (fisize i = 0; i < FullPath.Size(); ++i)
     {
         if (FullPath.ByteAt(i) == '/' && old != '/')
             result += '/';
-        else
+        else if (FullPath.ByteAt(i) != '/')
             result += FullPath.ByteAt(i);
         old = FullPath.ByteAt(i);
     }
     if (result.ByteAt(result.Size() - 1) == '/')
         result = result.Sub(0, result.Len() - 1);
     FullPath = std::move(result);
+    UserPath = FullPath;
     FileName = path.Sub(path.LastIndexOf('/') + 1);
     FileExt = path.Sub(path.LastIndexOf('.') + 1);
 #endif
@@ -100,13 +105,15 @@ File::~File()
 File File::GetAbsolutePath() const
 {
     String str;
-    char buf[PATH_MAX];
 
-    std::memset(buf, 0, PATH_MAX);
 #ifdef WINDOWS
-    GetFullPathNameA(*FullPath, PATH_MAX, buf, Null);
-    str = String(buf);
+    WCHAR buf[PATH_MAX];
+    std::memset(buf, 0, PATH_MAX);
+    GetFullPathNameW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), PATH_MAX, buf, Null);
+    str = String::FromUTF16(reinterpret_cast<const bpf::fchar16 *>(buf));
 #else
+    char buf[PATH_MAX];
+    std::memset(buf, 0, PATH_MAX);
     realpath(*FullPath, buf);
     str = String(buf);
 #endif
@@ -118,11 +125,13 @@ File File::GetParent() const
     return (File(FullPath.Sub(0, FullPath.LastIndexOf('/'))));
 }
 
-void File::Copy(const File &dst, bool overwrite)
+bool File::CopyTo(const File &dst, bool overwrite)
 {
 #ifdef WINDOWS
-    CopyFile(*GetAbsolutePath().Path(), *dst.GetAbsolutePath().Path(), !overwrite);
+    BOOL val = CopyFileW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), reinterpret_cast<LPCWSTR>(*dst.FullPath.ToUTF16()), !overwrite);
+    return (val == TRUE ? true : false);
 #else
+    return (false);
 #endif
     //TODO : Implement
     //File out = dst;
@@ -139,10 +148,21 @@ void File::Copy(const File &dst, bool overwrite)
     out.Close();*/
 }
 
+bool File::MoveTo(const File &dst)
+{
+#ifdef WINDOWS
+    BOOL val = MoveFileW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), reinterpret_cast<LPCWSTR>(*dst.FullPath.ToUTF16()));
+    return (val == TRUE ? true : false);
+#else
+    int val = rename(*FullPath, *dst.FullPath);
+    return (val == 0 ? true : false);
+#endif
+}
+
 bool File::Exists() const
 {
 #ifdef WINDOWS
-    DWORD attr = GetFileAttributes(*FullPath);
+    DWORD attr = GetFileAttributesW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()));
     if (attr == INVALID_FILE_ATTRIBUTES)
         return (false);
     return (true);
@@ -156,7 +176,7 @@ bool File::Exists() const
 bool File::IsHidden() const
 {
 #ifdef WINDOWS
-    DWORD attr = GetFileAttributes(*FullPath);
+    DWORD attr = GetFileAttributesW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()));
     if (attr == INVALID_FILE_ATTRIBUTES)
         return (false);
     return (attr & FILE_ATTRIBUTE_HIDDEN);
@@ -168,18 +188,31 @@ bool File::IsHidden() const
 void File::Hide(const bool flag)
 {
 #ifdef WINDOWS
-    DWORD attr = GetFileAttributes(*FullPath);
+    DWORD attr = GetFileAttributesW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()));
     if (flag)
         attr |= FILE_ATTRIBUTE_HIDDEN;
     else
         attr &= ~FILE_ATTRIBUTE_HIDDEN;
-    SetFileAttributes(*FullPath, attr);
+    SetFileAttributesW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), attr);
 #else
-    File f = File(GetParent().Path() + "/" + "." + Name());
-    rename(*FullPath, *f.Path());
-    FileName = f.Name();
-    FullPath = f.Path();
-    FileExt = f.Extension();
+    if (flag && !IsHidden())
+    {
+        File f = File(GetParent().Path() + "/" + "." + Name());
+        rename(*FullPath, *f.Path());
+        FileName = f.Name();
+        FullPath = f.PlatformPath();
+        UserPath = f.Path();
+        FileExt = f.Extension();
+    }
+    else if (IsHidden())
+    {
+        File f = File(GetParent().Path() + "/" + Name().Sub(1));
+        rename(*FullPath, *f.Path());
+        FileName = f.Name();
+        FullPath = f.PlatformPath();
+        UserPath = f.Path();
+        FileExt = f.Extension();
+    }
 #endif
 }
 
@@ -188,7 +221,7 @@ bool File::IsDirectory() const
     if (!Exists())
         return (false);
 #ifdef WINDOWS
-    DWORD attr = GetFileAttributes(*FullPath);
+    DWORD attr = GetFileAttributesW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()));
     if (attr == INVALID_FILE_ATTRIBUTES)
         return (false);
     return (attr & FILE_ATTRIBUTE_DIRECTORY);
@@ -203,18 +236,18 @@ bool File::IsDirectory() const
 uint64 File::GetSizeBytes() const
 {
     if (!Exists())
-        return (0);
+        throw IOException(String("Could not find file: ") + FullPath);
 #ifdef WINDOWS
-    WIN32_FIND_DATA data;
-    HANDLE hdl = FindFirstFile(*FullPath, &data);
+    WIN32_FIND_DATAW data;
+    HANDLE hdl = FindFirstFileW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), &data);
     if (hdl == INVALID_HANDLE_VALUE)
-        return (0);
+        throw IOException(String("FindFirstFileW failed: ") + OSPrivate::ObtainLastErrorString());
     FindClose(hdl);
     return (data.nFileSizeLow | (uint64)data.nFileSizeHigh << 32);
 #else
     struct stat st;
     if (stat(*FullPath, &st))
-        return (0);
+        throw IOException(String("stat failed: ") + OSPrivate::ObtainLastErrorString());
     return (st.st_size);
 #endif
 }
@@ -225,9 +258,9 @@ void File::Delete()
         return;
 #ifdef WINDOWS
     if (IsDirectory())
-        RemoveDirectory(*FullPath);
+        RemoveDirectoryW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()));
     else
-        DeleteFile(*FullPath);
+        DeleteFileW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()));
 #else
     if (IsDirectory())
         rmdir(*FullPath);
@@ -241,16 +274,16 @@ List<File> File::ListFiles()
     List<File> flns;
 
     if (!Exists() || !IsDirectory())
-        return (flns);
+        throw IOException(String("File does not exist or is not a directory: ") + FullPath);
 #ifdef WINDOWS
-    WIN32_FIND_DATA data;
-    File dir = (*this + "/*").GetAbsolutePath();
-    HANDLE hdl = FindFirstFile(*dir.Path(), &data);
+    WIN32_FIND_DATAW data;
+    File dir = (*this + "/*");
+    HANDLE hdl = FindFirstFileW(reinterpret_cast<LPCWSTR>(*dir.FullPath.ToUTF16()), &data);
     if (hdl != INVALID_HANDLE_VALUE)
     {
-        flns.Add(File(String(data.cFileName)));
-        while (FindNextFile(hdl, &data))
-            flns.Add(File(Path() + "/" + String(data.cFileName)));
+        flns.Add(File(FullPath + "/" + String::FromUTF16(reinterpret_cast<const fchar16 *>(data.cFileName))));
+        while (FindNextFileW(hdl, &data))
+            flns.Add(File(FullPath + "/" + String::FromUTF16(reinterpret_cast<const fchar16 *>(data.cFileName))));
         FindClose(hdl);
     }
 #else
@@ -272,7 +305,7 @@ void File::CreateDir()
     if (Exists())
         return;
 #ifdef WINDOWS
-    CreateDirectory(*FullPath, Null);
+    CreateDirectoryW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), Null);
 #else
     mkdir(*FullPath, 0755);
 #endif

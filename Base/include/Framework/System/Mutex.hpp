@@ -40,6 +40,9 @@ namespace bpf
         public:
             Mutex();
             ~Mutex();
+            Mutex(Mutex &&other);
+
+            Mutex &operator=(Mutex &&other);
 
             /**
              * Locks this mutex

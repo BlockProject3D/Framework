@@ -26,34 +26,28 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-#ifndef WINDOWS
-    #include <ctime>
-#endif
-#include "Framework/Types.hpp"
+#include <cassert>
+#include <iostream>
+#include <gtest/gtest.h>
+#include <Framework/System/Timer.hpp>
+#include <Framework/System/Thread.hpp>
 
-namespace bpf
+TEST(Timer, Test_1)
 {
-    namespace system
-    {
-        class BPF_API Timer
-        {
-        private:
-#ifdef WINDOWS
-            int64 _curCounter;
-            double _perfCounterFreq;
-#else
-            time_t _sec;
-            long _nsec;
-#endif
+    bpf::system::Timer timer;
 
-        public:
-            Timer();
+    //Pump CPU
+    int i;
+    int j = 0;
+    for (i = 0; i < 100000000; i++)
+        j += i * i;
+    EXPECT_GT(timer.Reset(), 0);
+}
 
-            /**
-             * Returns the time in seconds since last call to Reset
-             */
-            double Reset();
-        };
-    }
+TEST(Timer, Test_2)
+{
+    bpf::system::Timer timer;
+
+    bpf::system::Thread::Sleep(1000);
+    EXPECT_LE(timer.Reset() - 1, 0.1); //Allow a difference of 100ms for Sleep precision (Travis Windows and Mac are highly inaccurate in times...)
 }

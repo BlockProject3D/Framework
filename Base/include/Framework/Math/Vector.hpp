@@ -130,7 +130,7 @@ namespace bpf
             T DistanceSquared(const Vector &other) const;
             T Norm() const;
             T NormSquared() const;
-            void Normalize();
+            Vector Normalize() const;
 
             inline const T *operator*() const noexcept
             {
@@ -258,7 +258,7 @@ namespace bpf
             T DistanceSquared(const Vector &other) const;
             T Norm() const;
             T NormSquared() const;
-            void Normalize();
+            Vector Normalize() const;
 
             inline const T *operator*() const noexcept
             {

@@ -26,34 +26,59 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-#ifndef WINDOWS
-    #include <ctime>
-#endif
-#include "Framework/Types.hpp"
+#include <cassert>
+#include <iostream>
+#include <gtest/gtest.h>
+#include <Framework/System/TimeSpan.hpp>
 
-namespace bpf
+TEST(TimeSpan, Creation)
 {
-    namespace system
-    {
-        class BPF_API Timer
-        {
-        private:
-#ifdef WINDOWS
-            int64 _curCounter;
-            double _perfCounterFreq;
-#else
-            time_t _sec;
-            long _nsec;
-#endif
+    bpf::system::TimeSpan ts(1, 2, 50, 40);
 
-        public:
-            Timer();
+    EXPECT_EQ(ts.Days, 1);
+    EXPECT_EQ(ts.Hours, 2);
+    EXPECT_EQ(ts.Minutes, 50);
+    EXPECT_EQ(ts.Seconds, 40);
+    EXPECT_EQ(ts.TotalSeconds, 96840);
+}
 
-            /**
-             * Returns the time in seconds since last call to Reset
-             */
-            double Reset();
-        };
-    }
+TEST(TimeSpan, Addition)
+{
+    bpf::system::TimeSpan ts(1, 0, 0, 0);
+    auto res = ts + bpf::system::TimeSpan(1, 0, 0, 0);
+
+    EXPECT_EQ(res.Days, 2);
+    EXPECT_EQ(res.Hours, 0);
+    EXPECT_EQ(res.Minutes, 0);
+    EXPECT_EQ(res.Seconds, 0);
+    EXPECT_EQ(res.TotalSeconds, 172800);
+    EXPECT_EQ(ts.TotalSeconds, 86400);
+    ts += bpf::system::TimeSpan(1, 0, 0, 0);
+    EXPECT_EQ(ts.TotalSeconds, 172800);
+}
+
+TEST(TimeSpan, Subtraction)
+{
+    bpf::system::TimeSpan ts(3, 0, 0, 0);
+    auto res = ts - bpf::system::TimeSpan(1, 0, 0, 0);
+
+    EXPECT_EQ(res.Days, 2);
+    EXPECT_EQ(res.Hours, 0);
+    EXPECT_EQ(res.Minutes, 0);
+    EXPECT_EQ(res.Seconds, 0);
+    EXPECT_EQ(res.TotalSeconds, 172800);
+    EXPECT_EQ(ts.TotalSeconds, 259200);
+    ts -= bpf::system::TimeSpan(1, 0, 0, 0);
+    EXPECT_EQ(ts.TotalSeconds, 172800);
+}
+
+TEST(TimeSpan, Compare)
+{
+    bpf::system::TimeSpan ts(1, 0, 0, 0);
+    bpf::system::TimeSpan ts1(2, 0, 0, 0);
+
+    EXPECT_GT(ts1, ts);
+    EXPECT_LT(ts, ts1);
+    EXPECT_EQ(ts, bpf::system::TimeSpan(1, 0, 0, 0));
+    EXPECT_NE(ts, ts1);
 }

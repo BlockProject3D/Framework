@@ -233,6 +233,10 @@ namespace bpf
         }
 
         collection::Array<char> ToArray() const;
+        collection::Array<fchar> ToUTF32() const;
+        collection::Array<fchar16> ToUTF16() const;
+        static String FromUTF16(const fchar16 *str);
+        static String FromUTF32(const fchar *str);
 
         /**
          * Returns the number of characters in this string

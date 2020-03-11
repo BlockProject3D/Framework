@@ -63,6 +63,25 @@ Mutex::~Mutex()
     free(_handle);
 }
 
+Mutex::Mutex(Mutex &&other)
+    : _handle(other._handle)
+{
+    other._handle = Null;
+}
+
+Mutex &Mutex::operator=(Mutex &&other)
+{
+#ifdef WINDOWS
+    DeleteCriticalSection(reinterpret_cast<MutexType *>(_handle));
+#else
+    pthread_mutex_destroy(reinterpret_cast<MutexType *>(_handle));
+#endif
+    free(_handle);
+    _handle = other._handle;
+    other._handle = Null;
+    return (*this);
+}
+
 void Mutex::Lock()
 {
 #ifdef WINDOWS

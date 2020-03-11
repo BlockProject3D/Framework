@@ -27,33 +27,53 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#ifndef WINDOWS
-    #include <ctime>
-#endif
-#include "Framework/Types.hpp"
+#include "Framework/System/IApplication.hpp"
 
 namespace bpf
 {
     namespace system
     {
-        class BPF_API Timer
+        class BPF_API WindowsApp final : public IApplication
         {
         private:
-#ifdef WINDOWS
-            int64 _curCounter;
-            double _perfCounterFreq;
-#else
-            time_t _sec;
-            long _nsec;
-#endif
+            void *_hInstance;
+            bool _hasConsole;
+            Paths _paths;
+            collection::HashMap<String, String> _env;
+            collection::Array<String> _args;
+            String _fileName;
+
+            void SetupEnvironment();
+            void SetupArgs();
+            void SetupFileName();
+            void SetupPaths();
 
         public:
-            Timer();
+            WindowsApp(void *hinstance, bool hasConsole);
 
-            /**
-             * Returns the time in seconds since last call to Reset
-             */
-            double Reset();
+            void SetConsoleTitle(const String &title);
+
+            void CreateConsole(const fint rows, const fint columns);
+
+            const String &GetExeFileName() const noexcept
+            {
+                return (_fileName);
+            }
+
+            const collection::HashMap<String, String> &GetEnvironment() const noexcept
+            {
+                return (_env);
+            }
+
+            const collection::Array<String> &GetArguments() const noexcept
+            {
+                return (_args);
+            }
+
+            const Paths &GetPaths() const noexcept
+            {
+                return (_paths);
+            }
         };
     }
-}
+};

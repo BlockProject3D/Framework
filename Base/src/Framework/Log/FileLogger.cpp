@@ -59,6 +59,6 @@ void FileLogger::LogMessage(ELogLevel level, const String &category, const Strin
         lvl = "ERROR";
         break;
     }
-    String res = String('(') + String::ValueOf(system::DateTime::LocalTime()) + ")[" + category + "][" + lvl + "] " + msg;
+    String res = String('(') + String::ValueOf(system::DateTime::Now()) + ")[" + category + "][" + lvl + "] " + msg;
     _writer.WriteLine(res);
 }

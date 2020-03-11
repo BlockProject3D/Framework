@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -28,12 +28,19 @@
 
 #include <stdlib.h>
 #ifdef WINDOWS
-#include <Windows.h>
-#include <intrin.h>
-#undef ERROR
+    #include <Windows.h>
+    #include <intrin.h>
+    #undef ERROR
 #elif LINUX
-#include <sys/utsname.h>
-#include <sys/sysinfo.h>
+    #include <sys/utsname.h>
+    #include <sys/sysinfo.h>
+    #include <time.h>
+#else
+    #include <sys/types.h>
+    #include <sys/sysctl.h>
+#endif
+#ifndef WINDOWS
+    #include <unistd.h>
 #endif
 
 #ifndef WINDOWS //We assume compiler supports GCC style asm
@@ -51,6 +58,7 @@
 
 #include "Framework/System/Platform.hpp"
 #include "Framework/System/TypeExpander.hpp"
+#include "Framework/System/ModuleInterface.hpp"
 
 using namespace bpf::system;
 using namespace bpf;
@@ -103,40 +111,45 @@ String Platform::IdentifyCPUBranding()
     memcpy(CPUBrandString + 32, cpuInfo, sizeof(cpuInfo));
     return (String(CPUBrandString));
 #else
-    String res = "";
-    fint reg_eax = 0;
-    fint reg_ebx = 0;
-    fint reg_ecx = 0;
-    fint reg_edx = 0;
+    #ifdef __arm__
+        //For getting a name here go ask ARM architecture team to provide the missing cpuid instruction or an instruction that can obtain brand name
+        return ("Generic ARM Processor");
+    #else
+        String res = "";
+        fint reg_eax = 0;
+        fint reg_ebx = 0;
+        fint reg_ecx = 0;
+        fint reg_edx = 0;
 
-    INSTRUCTION_CPUID(0x80000002);
-    READ_REGISTER(eax, reg_eax);
-    READ_REGISTER(ebx, reg_ebx);
-    READ_REGISTER(ecx, reg_ecx);
-    READ_REGISTER(edx, reg_edx);
-    res += CPUIDIntToStr(reg_eax);
-    res += CPUIDIntToStr(reg_ebx);
-    res += CPUIDIntToStr(reg_ecx);
-    res += CPUIDIntToStr(reg_edx);
-    INSTRUCTION_CPUID(0x80000003);
-    READ_REGISTER(eax, reg_eax);
-    READ_REGISTER(ebx, reg_ebx);
-    READ_REGISTER(ecx, reg_ecx);
-    READ_REGISTER(edx, reg_edx);
-    res += CPUIDIntToStr(reg_eax);
-    res += CPUIDIntToStr(reg_ebx);
-    res += CPUIDIntToStr(reg_ecx);
-    res += CPUIDIntToStr(reg_edx);
-    INSTRUCTION_CPUID(0x80000004);
-    READ_REGISTER(eax, reg_eax);
-    READ_REGISTER(ebx, reg_ebx);
-    READ_REGISTER(ecx, reg_ecx);
-    READ_REGISTER(edx, reg_edx);
-    res += CPUIDIntToStr(reg_eax);
-    res += CPUIDIntToStr(reg_ebx);
-    res += CPUIDIntToStr(reg_ecx);
-    res += CPUIDIntToStr(reg_edx);
-    return (res);
+        INSTRUCTION_CPUID(0x80000002);
+        READ_REGISTER(eax, reg_eax);
+        READ_REGISTER(ebx, reg_ebx);
+        READ_REGISTER(ecx, reg_ecx);
+        READ_REGISTER(edx, reg_edx);
+        res += CPUIDIntToStr(reg_eax);
+        res += CPUIDIntToStr(reg_ebx);
+        res += CPUIDIntToStr(reg_ecx);
+        res += CPUIDIntToStr(reg_edx);
+        INSTRUCTION_CPUID(0x80000003);
+        READ_REGISTER(eax, reg_eax);
+        READ_REGISTER(ebx, reg_ebx);
+        READ_REGISTER(ecx, reg_ecx);
+        READ_REGISTER(edx, reg_edx);
+        res += CPUIDIntToStr(reg_eax);
+        res += CPUIDIntToStr(reg_ebx);
+        res += CPUIDIntToStr(reg_ecx);
+        res += CPUIDIntToStr(reg_edx);
+        INSTRUCTION_CPUID(0x80000004);
+        READ_REGISTER(eax, reg_eax);
+        READ_REGISTER(ebx, reg_ebx);
+        READ_REGISTER(ecx, reg_ecx);
+        READ_REGISTER(edx, reg_edx);
+        res += CPUIDIntToStr(reg_eax);
+        res += CPUIDIntToStr(reg_ebx);
+        res += CPUIDIntToStr(reg_ecx);
+        res += CPUIDIntToStr(reg_edx);
+        return (res);
+    #endif
 #endif
 }
 
@@ -146,11 +159,8 @@ Env Platform::InitEnvInfo()
 
     ev.ShortName = "BPF";
     ev.Name = "BlockProject Framework";
-    ev.Version = "XR";
-    ev.VersionInt = 0x1052;
-#ifdef BUILD_DEBUG
-    ev.VersionInt |= 0x00001;
-#endif
+    ev.Version = "2.0";
+    ev.VersionInt = BP_MODULE_VERSION_INT;
     return (ev);
 }
 
@@ -174,7 +184,7 @@ OS Platform::InitOSInfo()
     struct utsname st;
     if (uname(&st) != -1)
         os.Version = st.version;
-#elif MAC
+#else
     os.ModuleExt = "dylib";
     os.Name = "Mac";
     os.NewLine = "\n";
@@ -184,21 +194,21 @@ OS Platform::InitOSInfo()
     return (os);
 }
 
-Env &Platform::GetEnvInfo()
+const Env &Platform::GetEnvInfo()
 {
     static Env ev = Platform::InitEnvInfo();
 
     return (ev);
 }
 
-OS &Platform::GetOSInfo()
+const OS &Platform::GetOSInfo()
 {
     static OS os = Platform::InitOSInfo();
 
     return (os);
 }
 
-CPU &Platform::GetCPUInfo()
+const CPU &Platform::GetCPUInfo()
 {
     static CPU cpi = { IdentifyCPUBranding(), 0, 0 };
 
@@ -206,15 +216,17 @@ CPU &Platform::GetCPUInfo()
     SYSTEM_INFO sysInfo;
     GetSystemInfo(&sysInfo);
     cpi.NumCores = sysInfo.dwNumberOfProcessors;
-    LARGE_INTEGER lg;
-    QueryPerformanceFrequency(&lg);
-    cpi.Freq = lg.HighPart;
+    cpi.Freq = 1; //Cannot reliably find CPU frequency
 #elif LINUX
     cpi.NumCores = get_nprocs();
-    cpi.Freq = 0;
+    cpi.Freq = 1; //Cannot reliably find CPU frequency
 #else
-    cpi.NumCores = 0;
-    cpi.Freq = 0;
+    fint ncores = 1;
+    size_t sz = sizeof(fint);
+    if (sysctlbyname("hw.activecpu", &ncores, &sz, Null, 0))
+        sysctlbyname("hw.ncpu", &ncores, &sz, Null, 0);
+    cpi.NumCores = ncores;
+    cpi.Freq = 1; //Cannot reliably find CPU frequency
 #endif
     return (cpi);
 }
@@ -229,8 +241,10 @@ RAM Platform::GetRAMInfo()
     rami.MaxPhysical = static_cast<uint64>(meminfo.ullTotalPhys);
     rami.MaxVirtual = static_cast<uint64>(meminfo.ullTotalVirtual);
 #else
-    rami.MaxPhysical = 0;
-    rami.MaxVirtual = 0;
+    auto pages = sysconf(_SC_PHYS_PAGES);
+    auto page_size = sysconf(_SC_PAGE_SIZE);
+    rami.MaxPhysical = static_cast<uint64>(pages * page_size);
+    rami.MaxVirtual = static_cast<uint64>(pages * page_size);
 #endif
     return (rami);
 }
@@ -248,7 +262,7 @@ void Platform::ReverseBuffer(void *buf, const fsize size)
 {
     uint8 *out = reinterpret_cast<uint8 *>(buf);
     fsize i = 0;
-    fsize j = size;
+    fsize j = size - 1;
     uint8 temp;
 
     while (i < size / 2)
@@ -264,7 +278,7 @@ void Platform::ReverseBuffer(void *buf, const fsize size, const fsize groupsize)
 {
     uint8 *out = reinterpret_cast<uint8 *>(buf);
     fsize i = 0;
-    fsize j = size;
+    fsize j = size - groupsize;
     uint8 temp;
 
     while (i < size / 2)

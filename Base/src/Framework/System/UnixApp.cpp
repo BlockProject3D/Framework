@@ -26,34 +26,37 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-#ifndef WINDOWS
-    #include <ctime>
-#endif
-#include "Framework/Types.hpp"
+#include <iostream>
+#include "Framework/System/UnixApp.hpp"
 
-namespace bpf
+using namespace bpf::system;
+using namespace bpf::collection;
+using namespace bpf::io;
+using namespace bpf;
+
+UnixApp::UnixApp(char **argv, int argc, char **env)
+    : _paths(File(), File(), File(), File())
+    , _args(argc)
+    , _fileName(String(argv[0]))
 {
-    namespace system
+    for (int i = 0; i != argc; ++i)
+        _args[i] = String(argv[i]);
+    for (int i = 0; env[i]; ++i)
     {
-        class BPF_API Timer
-        {
-        private:
-#ifdef WINDOWS
-            int64 _curCounter;
-            double _perfCounterFreq;
-#else
-            time_t _sec;
-            long _nsec;
-#endif
-
-        public:
-            Timer();
-
-            /**
-             * Returns the time in seconds since last call to Reset
-             */
-            double Reset();
-        };
+        String str(env[i]);
+        auto key = str.Sub(0, str.IndexOf('='));
+        auto value = str.Sub(str.IndexOf('=') + 1);
+        if (key != String::Empty && value != String::Empty)
+            _env.Add(key, value);
     }
+    File home = File(_env["HOME"]);
+    File root = File(_fileName.Sub(0, _fileName.LastIndexOf('/')));
+    File cache = root + "Cache";
+    File tmp = _env.HasKey("TMPDIR") ? File(_env["TMPDIR"]) : File("/tmp");
+    _paths = Paths(root, home, tmp, cache);
+}
+
+void UnixApp::SetConsoleTitle(const String &name)
+{
+    std::cout << "\033]0;" << *name << "\007";
 }

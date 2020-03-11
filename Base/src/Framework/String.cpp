@@ -176,6 +176,83 @@ String String::UTF8(const fchar utf32char)
     }
 }
 
+Array<fchar> String::ToUTF32() const
+{
+    Array<fchar> arr(Len() + 1);
+
+    for (fisize i = 0; i != Len(); ++i)
+        arr[i] = operator[](i);
+    return (arr);
+}
+
+String String::FromUTF32(const fchar *str)
+{
+    String res;
+    fisize i = 0;
+
+    while (str[i])
+        res += str[i++];
+    return (res);
+}
+
+Array<fchar16> String::ToUTF16() const
+{
+    ArrayList<fchar16> arr;
+
+    for (fisize i = 0; i != Len(); ++i)
+    {
+        fchar u = operator[](i);
+        if (u > 0x10FFFF)
+            throw EvalException(String("Cannot represent U+") + ValueOf((void *)((intptr)u)) + " in UTF-16");
+        if (u < 0x10000)
+            arr.Add((fchar16)u);
+        else
+        {
+            fchar up = u - 0x10000;
+            fchar16 w1 = 0xD800;
+            fchar16 w2 = 0xDC00;
+            for (fint i = 0; i != 10; ++i)
+            {
+                SetBit(w1, 9 - i, GetBit(up, 19 - i));
+                SetBit(w2, 9 - i, GetBit(up, 9 - i));
+            }
+            arr.Add(w1);
+            arr.Add(w2);
+        }
+    }
+    arr.Add(0);
+    return (arr.ToArray());
+}
+
+String String::FromUTF16(const fchar16 *str)
+{
+    String res;
+    fisize i = 0;
+
+    while (str[i])
+    {
+        fchar16 w1 = str[i++];
+        if (w1 < 0xD800 || w1 > 0xDFFF)
+            res += (fchar)w1;
+        else if (w1 >= 0xD800 && w1 <= 0xDBFF)
+        {
+            fchar16 w2 = str[i++];
+            if (w2 == 0 || w2 < 0xDC00 || w2 > 0xDFFF)
+                throw EvalException("Ill-formed UTF-16 code");
+            fchar u = 0;
+            for (fint i = 0; i != 10; ++i)
+            {
+                SetBit(u, 19 - i, GetBit(w1, 9 - i));
+                SetBit(u, 9 - i, GetBit(w2, 9 - i));
+            }
+            res += (u + 0x10000);
+        }
+        else
+            throw EvalException("Ill-formed UTF-16 code");
+    }
+    return (res);
+}
+
 String::String(const char *str)
     : Data(Null), StrLen(0), UnicodeLen(0)
 {

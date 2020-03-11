@@ -136,7 +136,12 @@ namespace bpf
 
             template <typename T1>
             friend class UniquePtr;
+
+            static const UniquePtr<T> NullPtr;
         };
+
+        template <typename T>
+        const UniquePtr<T> UniquePtr<T>::NullPtr = UniquePtr<T>(Null);
     }
 }
 

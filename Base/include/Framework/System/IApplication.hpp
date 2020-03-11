@@ -27,33 +27,24 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#ifndef WINDOWS
-    #include <ctime>
-#endif
-#include "Framework/Types.hpp"
+#include "Framework/String.hpp"
+#include "Framework/System/Paths.hpp"
+#include "Framework/Collection/HashMap.hpp"
 
 namespace bpf
 {
     namespace system
     {
-        class BPF_API Timer
+        class BPF_API IApplication
         {
-        private:
-#ifdef WINDOWS
-            int64 _curCounter;
-            double _perfCounterFreq;
-#else
-            time_t _sec;
-            long _nsec;
-#endif
-
         public:
-            Timer();
-
-            /**
-             * Returns the time in seconds since last call to Reset
-             */
-            double Reset();
+            virtual ~IApplication() {}
+            virtual void SetConsoleTitle(const String &title) = 0;
+            virtual void CreateConsole(const fint rows = 32, const fint columns = 80) = 0; //Only usefull when the system do not create a console
+            virtual const String &GetExeFileName() const noexcept = 0;
+            virtual const collection::HashMap<String, String> &GetEnvironment() const noexcept = 0;
+            virtual const collection::Array<String> &GetArguments() const noexcept = 0;
+            virtual const Paths &GetPaths() const noexcept = 0;
         };
     }
-}
+};

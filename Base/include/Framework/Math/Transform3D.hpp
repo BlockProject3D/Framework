@@ -54,12 +54,10 @@ namespace bpf
                 MatrixBuilder &ShearX(const Vector3<T> &shear) noexcept;
                 MatrixBuilder &ShearY(const Vector3<T> &shear) noexcept;
                 MatrixBuilder &ShearZ(const Vector3<T> &shear) noexcept;
-                MatrixBuilder &RotateX(const T &rotation) noexcept;
-                MatrixBuilder &RotateY(const T &rotation) noexcept;
-                MatrixBuilder &RotateZ(const T &rotation) noexcept;
+                MatrixBuilder &Rotate(const Vector3<T> &axis, const T angle) noexcept;
                 inline MatrixBuilder &Rotate(const Quaternion<T> &quat) noexcept
                 {
-                    _matrix *= quat.ToMatrix();
+                    _matrix = _matrix * quat.ToMatrix();
                     return (*this);
                 }
                 inline Matrix4<T> Build() const noexcept
@@ -85,7 +83,7 @@ namespace bpf
 
             inline Matrix4<T> ToMatrix() const noexcept
             {
-                return (MatrixBuilder().Rotate(Rotation).Scale(Scale).Translate(Position).Build());
+                return (MatrixBuilder().Translate(Position).Rotate(Rotation).Scale(Scale).Build());
             }
 
             Transform3D operator+(const Transform3D &other) const noexcept;

@@ -26,34 +26,17 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-#ifndef WINDOWS
-    #include <ctime>
-#endif
-#include "Framework/Types.hpp"
+#include "Framework/System/Paths.hpp"
 
-namespace bpf
+using namespace bpf::system;
+using namespace bpf::io;
+using namespace bpf;
+
+Paths::Paths(const File &root, const File &home, const File &tmp, const File &cache)
+    : _appRoot(root)
+    , _thirdParty(root + "ThirdParty")
+    , _userHome(home)
+    , _tmpDir(tmp)
+    , _cacheDir(cache)
 {
-    namespace system
-    {
-        class BPF_API Timer
-        {
-        private:
-#ifdef WINDOWS
-            int64 _curCounter;
-            double _perfCounterFreq;
-#else
-            time_t _sec;
-            long _nsec;
-#endif
-
-        public:
-            Timer();
-
-            /**
-             * Returns the time in seconds since last call to Reset
-             */
-            double Reset();
-        };
-    }
 }

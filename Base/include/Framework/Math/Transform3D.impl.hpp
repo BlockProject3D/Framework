@@ -33,98 +33,79 @@ namespace bpf
     namespace math
     {
         template <typename T>
-        Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::Translate(const Vector3<T> &translation) noexcept
+        typename Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::Translate(const Vector3<T> &translation) noexcept
         {
-            _matrix *= {
+            _matrix = _matrix * Matrix4<T>({
                 1, 0, 0, translation.X,
                     0, 1, 0, translation.Y,
                     0, 0, 1, translation.Z,
                     0, 0, 0, 1
-            };
+            });
             return (*this);
         }
 
         template <typename T>
-        Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::Scale(const Vector3<T> &scale) noexcept
+        typename Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::Scale(const Vector3<T> &scale) noexcept
         {
-            _matrix *= {
+            _matrix = _matrix * Matrix4<T>({
                 scale.X, 0, 0, 0,
                     0, scale.Y, 0, 0,
                     0, 0, scale.Z, 0,
                     0, 0, 0, 1
-            };
+            });
             return (*this);
         }
 
         template <typename T>
-        Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::ShearX(const Vector3<T> &shear) noexcept
+        typename Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::ShearX(const Vector3<T> &shear) noexcept
         {
-            _matrix *= {
+            _matrix = _matrix * Matrix4<T>({
                 1, 0, 0, 0,
                     shear.Y, 1, 0, 0,
                     shear.Z, 0, 1, 0,
                     0, 0, 0, 1
-            };
+            });
             return (*this);
         }
 
         template <typename T>
-        Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::ShearY(const Vector3<T> &shear) noexcept
+        typename Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::ShearY(const Vector3<T> &shear) noexcept
         {
-            _matrix *= {
+            _matrix = _matrix * Matrix4<T>({
                 1, shear.X, 0, 0,
                     0, 1, 0, 0,
                     0, shear.Z, 1, 0,
                     0, 0, 0, 1
-            };
+            });
             return (*this);
         }
 
         template <typename T>
-        Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::ShearZ(const Vector3<T> &shear) noexcept
+        typename Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::ShearZ(const Vector3<T> &shear) noexcept
         {
-            _matrix *= {
+            _matrix = _matrix * Matrix4<T>({
                 1, 0, shear.X, 0,
                     0, 1, shear.Z, 0,
                     0, 0, 1, 0,
                     0, 0, 0, 1
-            };
+            });
             return (*this);
         }
 
         template <typename T>
-        Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::RotateX(const T &rotation) noexcept
+        typename Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::Rotate(const Vector3<T> &axis, const T angle) noexcept
         {
-            _matrix *= {
-                1, 0, 0, 0,
-                    0, Math::Cos(xyz.x), -Math::Sin(xyz.x), 0,
-                    0, Math::Sin(xyz.x), Math::Cos(xyz.x), 0,
-                    0, 0, 0, 1
-            };
-            return (*this);
-        }
+            T c = Math::Cos(angle);
+            T s = Math::Sin(angle);
+            T t = (T)1 - c;
+            Vector3<T> a = axis.Normalize();
 
-        template <typename T>
-        Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::RotateY(const T &rotation) noexcept
-        {
-            _matrix *= {
-                Math::Cos(xyz.y), 0, Math::Sin(xyz.y), 0,
-                    0, 1, 0, 0,
-                    -Math::Sin(xyz.y), 0, Math::Cos(xyz.y), 0,
-                    0, 0, 0, 1
-            };
-            return (*this);
-        }
-
-        template <typename T>
-        Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::RotateZ(const T &rotation) noexcept
-        {
-            _matrix *= {
-                Math::Cos(xyz.z), -Math::Sin(xyz.z), 0, 0,
-                    Math::Sin(xyz.z), Math::Cos(xyz.z), 0, 0,
-                    0, 0, 1, 0,
-                    0, 0, 0, 1
-            };
+            _matrix = _matrix * Matrix4<T>({
+                t * a.X * a.X + c, t * a.X * a.Y - a.Z * s, t * a.X * a.Z + a.Y * s, 0,
+                t * a.X * a.Y + a.Z * s, t * a.Y * a.Y + c, t * a.Y * a.Z - a.X * s, 0,
+                t * a.X * a.Z - a.Y * s, t * a.Y * a.Z + a.X * s, t * a.Z * a.Z + c, 0,
+                0, 0, 0, 1
+            });
             return (*this);
         }
 
@@ -147,7 +128,7 @@ namespace bpf
         template <typename T>
         Transform3D<T> Transform3D<T>::operator+(const Transform3D &other) const noexcept
         {
-            Transform3D<T> res(Position + other.Position, Scale * other.Scale, Angle * other.Angle);
+            Transform3D<T> res(Position + other.Position, Scale * other.Scale, Rotation * other.Rotation);
 
             return (res);
         }
@@ -157,7 +138,7 @@ namespace bpf
         {
             Position += other.Position;
             Scale *= other.Scale;
-            Angle *= other.Angle;
+            Rotation *= other.Rotation;
         }
 
         template <typename T>

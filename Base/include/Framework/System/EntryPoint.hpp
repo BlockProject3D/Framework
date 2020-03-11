@@ -26,28 +26,37 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef ENTRYPOINT_H_
-# define ENTRYPOINT_H_
+#pragma once
 
-# ifdef WINDOWS
+#ifdef WINDOWS
+    #include "Framework/System/WindowsApp.hpp"
+    #include <Windows.h>
 
-# else
+    #ifdef CONSOLE
+        #define BP_SETUP_ENTRY_POINT() \
+        int Main(bpf::system::IApplication &app, const bpf::collection::Array<bpf::String> &args, const bpf::system::Paths &paths); \
+        int main() \
+        { \
+            bpf::system::WindowsApp app(reinterpret_cast<void *>(GetModuleHandle(Null)), true); \
+            return (Main(app, app.GetArguments(), app.GetPaths())); \
+        }
+    #else
+        #define BP_SETUP_ENTRY_POINT() \
+        int Main(bpf::system::IApplication &app, const bpf::collection::Array<bpf::String> &args, const bpf::system::Paths &paths); \
+        int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) \
+        { \
+            bpf::system::WindowsApp app(reinterpret_cast<void *>(hInstance), false); \
+            return (Main(app, app.GetArguments(), app.GetPaths())); \
+        }
+    #endif
+#else
+    #include "Framework/System/UnixApp.hpp"
 
-#  define IMPLEMENT_ENTRY_POINT() \
-int main(int ac, char **av) \
-{ \
-    Framework::FArray<Framework::FString> arr(ac); \
-    \
-    for (int i = 0 ; i < ac ; i++) \
-        arr[i] = av[i]; \
-    Framework::FPlatform::Initialize(); \
-    Framework::FPaths::SetGameRoot(arr[0]); \
-    Framework::FPaths::SetModuleRoot(Framework::FPaths::GameRoot() + "Modules/"); \
-    int res = Main(arr); \
-    Framework::FPlatform::Shutdown(); \
-    return (res); \
-} \
-
-# endif
-
-#endif /* !ENTRYPOINT_H_ */
+    #define BP_SETUP_ENTRY_POINT() \
+    int Main(bpf::system::IApplication &app, const bpf::collection::Array<bpf::String> &args, const bpf::system::Paths &paths); \
+    int main(int argc, char **argv, char **env) \
+    { \
+        bpf::system::UnixApp app(argv, argc, env); \
+        return (Main(app, app.GetArguments(), app.GetPaths())); \
+    }
+#endif

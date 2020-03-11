@@ -708,11 +708,75 @@ TEST(String, Reverse)
     EXPECT_STREQ(*str.Reverse(), "fe  dcba");
 }
 
-TEST(String, Chinese)
+TEST(String, Chinese_1)
 {
     bpf::String str = "你好，我是清华大学的留学生";
 
     EXPECT_EQ(str.Len(), 13);
     EXPECT_EQ(str.Size(), 39);
     EXPECT_STREQ(*str.Sub(str.IndexOf("我是") + 2), "清华大学的留学生");
+}
+
+TEST(String, Chinese_2)
+{
+    bpf::String str = "你好，我是清华大学的留学生";
+    auto arr = str.ToUTF32();
+    auto recover = bpf::String::FromUTF32(*arr);
+
+    EXPECT_EQ(str.Len(), 13);
+    EXPECT_EQ(str.Size(), 39);
+    EXPECT_EQ(arr.Size(), 14);
+    EXPECT_EQ(recover.Len(), 13);
+    EXPECT_EQ(recover.Size(), 39);
+    EXPECT_STREQ(*recover, "你好，我是清华大学的留学生");
+    EXPECT_STREQ(*str, "你好，我是清华大学的留学生");
+}
+
+
+TEST(String, Chinese_3)
+{
+    bpf::String str = "你好，我是清华大学的留学生";
+    const bpf::fchar16 *expected = reinterpret_cast<const bpf::fchar16 *>(u"你好，我是清华大学的留学生");
+    auto arr = str.ToUTF16();
+    auto recover = bpf::String::FromUTF16(*arr);
+
+    for (bpf::fsize i = 0; i != arr.Size(); ++i)
+        EXPECT_EQ(arr[i], expected[i]);
+    EXPECT_EQ(str.Len(), 13);
+    EXPECT_EQ(str.Size(), 39);
+    EXPECT_EQ(arr.Size(), 14);
+    EXPECT_EQ(recover.Len(), 13);
+    EXPECT_EQ(recover.Size(), 39);
+    EXPECT_STREQ(*recover, "你好，我是清华大学的留学生");
+    EXPECT_STREQ(*str, "你好，我是清华大学的留学生");
+}
+
+TEST(String, Convert_U16_1)
+{
+    bpf::String str = (bpf::fchar)0x10000; //U+10000
+    auto arr = str.ToUTF16();
+    auto recover = bpf::String::FromUTF16(*arr);
+
+    EXPECT_EQ(str.Len(), 1);
+    EXPECT_EQ(str.Size(), 4);
+    EXPECT_EQ(arr.Size(), 3); //Null terminated
+    EXPECT_EQ(recover.Len(), 1);
+    EXPECT_EQ(recover.Size(), 4);
+    EXPECT_EQ(recover[0], (bpf::fchar)0x10000);
+    EXPECT_EQ(str[0], (bpf::fchar)0x10000);
+}
+
+TEST(String, Convert_U16_2)
+{
+    bpf::String str = (bpf::fchar)0x100BB; //U+10000
+    auto arr = str.ToUTF16();
+    auto recover = bpf::String::FromUTF16(*arr);
+
+    EXPECT_EQ(str.Len(), 1);
+    EXPECT_EQ(str.Size(), 4);
+    EXPECT_EQ(arr.Size(), 3); //Null terminated
+    EXPECT_EQ(recover.Len(), 1);
+    EXPECT_EQ(recover.Size(), 4);
+    EXPECT_EQ(recover[0], (bpf::fchar)0x100BB);
+    EXPECT_EQ(str[0], (bpf::fchar)0x100BB);
 }

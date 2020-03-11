@@ -29,47 +29,33 @@
 #include <cassert>
 #include <iostream>
 #include <gtest/gtest.h>
+#include <Framework/System/IApplication.hpp>
+#include <Framework/Collection/Stringifier.Array.hpp>
 
-/*int main()
+int Main(bpf::system::IApplication &app, const bpf::collection::Array<bpf::String> &args, const bpf::system::Paths &paths)
 {
-    bpf::String str = "é This is a test !";
-    bpf::Tuple<int, float, double> tp;
-    bpf::List<bpf::ModuleEntry *> testlst;
-
-    tp.Get<0>() = 42;
-    tp.Get<1>() = 42.42f;
-    tp.Get<2>() = 423.423;
-
-    std::cout << "--------------" << std::endl;
-    std::cout << tp.Size() << std::endl;
-    std::cout << tp.Get<int>() << std::endl;
-    std::cout << tp.Get<float>() << std::endl;
-    std::cout << tp.Get<double>() << std::endl;
-    std::cout << "--------------" << std::endl;
-
-    std::cout << str.Size() << std::endl;
-    std::cout << str.Len() << std::endl;
-    std::cout << (str[0] == bpf::String::UTF32("é")) << std::endl;
-
-    bpf::DateTime dt = bpf::DateTime::LocalTime();
-    std::cout << *dt.ToString() << std::endl;
-    bpf::DateTime dt1 = dt + bpf::DateTime(3600) + bpf::DateTime(61);
-    std::cout << *dt1.ToString() << std::endl;
-
-    assert(dt < dt1);
-    assert(dt1 > dt);
-    assert(dt == dt);
-    assert(dt1 == dt1);
-    assert(dt != dt1);
-    assert(dt1 != dt);
-
-    system("PAUSE");
-}*/
-
-#include <Framework/String.hpp>
-
-int main(int ac, char **av)
-{
-    ::testing::InitGoogleTest(&ac, av);
-    return (RUN_ALL_TESTS());
+    app.SetConsoleTitle("BPF Unit Test Console");
+    assert(app.GetEnvironment().Size() > 0);
+    assert(app.GetArguments().Size() > 0); //At least we need the file name passed to our arguments
+    assert(app.GetExeFileName().Len() > 0);
+    assert(paths.AppRoot().Path().Len() > 0);
+    assert(paths.ThirdParty().Path().Len() > 0);
+    assert(paths.CacheDir().Path().Len() > 0);
+    assert(paths.TempDir().Path().Len() > 0);
+    assert(paths.UserHome().Path().Len() > 0);
+    std::cout << "<==== Initializing high-level main ====>" << std::endl;
+    std::cout << "AppRoot: " << *paths.AppRoot().Path() << std::endl;
+    std::cout << "ThirdParty: " << *paths.ThirdParty().Path() << std::endl;
+    std::cout << "CacheDir: " << *paths.CacheDir().Path() << std::endl;
+    std::cout << "TempDir: " << *paths.TempDir().Path() << std::endl;
+    std::cout << "UserHome: " << *paths.UserHome().Path() << std::endl;
+    std::cout << "Program args: " << *bpf::String::ValueOf(args) << std::endl;
+    std::cout << "Program file name: " << *app.GetExeFileName() << std::endl;
+    std::cout << "Number of environment variables: " << app.GetEnvironment().Size() << std::endl;
+    std::cout << "<======================================>" << std::endl;
+    std::cout << std::endl;
+    std::cout << "<==== Initializing GoogleTest ====>" << std::endl;
+    ::testing::InitGoogleTest();
+    int val = RUN_ALL_TESTS();
+    return (val);
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -27,17 +27,35 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/Types.hpp"
 
 namespace bpf
 {
     namespace system
     {
-        class BPF_API IModuleInterface
+        class BPF_API TimeSpan
         {
+        private:
+            void SetupValues(uint64 seconds) noexcept;
+
         public:
-            virtual ~IModuleInterface() {}
-            virtual void OnLoadModule() = 0;
-            virtual void OnUnloadModule() = 0;
+            fint Days;
+            fint Hours;
+            fint Minutes;
+            fint Seconds;
+            uint64 TotalSeconds;
+
+            explicit TimeSpan(uint64 seconds = 0) noexcept;
+            explicit TimeSpan(fint days, fint hours, fint minutes, fint seconds) noexcept;
+
+            TimeSpan operator+(const TimeSpan &other) const noexcept;
+            TimeSpan operator-(const TimeSpan &other) const noexcept;
+            bool operator>(const TimeSpan &other) const noexcept;
+            bool operator<(const TimeSpan &other) const noexcept;
+            bool operator==(const TimeSpan &other) const noexcept;
+            bool operator!=(const TimeSpan &other) const noexcept;
+            void operator+=(const TimeSpan &other) noexcept;
+            void operator-=(const TimeSpan &other) noexcept;
         };
     }
 }

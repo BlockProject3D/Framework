@@ -38,8 +38,10 @@ namespace bpf
         {
         private:
             String FullPath;
+            String UserPath;
             String FileName;
             String FileExt;
+
         public:
             explicit File(const String &path);
             File();
@@ -90,12 +92,19 @@ namespace bpf
              * Copies this file to the destination, in case destination is a directory, copy in that directory under the same name
              * @param dst the destination file or directory
              */
-            void Copy(const File &dst, bool overwrite = false);
+            bool CopyTo(const File &dst, bool overwrite = false);
+
+            bool MoveTo(const File &dst);
 
             /**
              * Returns the full path to the file (as given in the constructor)
              */
             inline const String &Path() const
+            {
+                return (UserPath);
+            }
+
+            inline const String &PlatformPath() const
             {
                 return (FullPath);
             }
@@ -107,7 +116,7 @@ namespace bpf
 
             inline File operator+(const String &other) const
             {
-                return (*this + File(other));
+                return (File(FullPath + "/" + other));
             }
 
             File GetParent() const;

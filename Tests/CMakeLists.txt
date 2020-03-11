@@ -29,6 +29,7 @@ include_directories("${gtest_SOURCE_DIR}/include")
 
 set(SOURCES
     src/main.cpp
+    src/LowLevelMain.cpp
     src/String.cpp
     src/MathEval.cpp
     src/Scalar.cpp
@@ -53,6 +54,11 @@ set(SOURCES
     src/PriorityQueue.cpp
     src/VectorStatic.cpp
     src/VectorDynamic.cpp
+    src/DateTime.cpp
+    src/TimeSpan.cpp
+    src/Platform.cpp
+    src/Timer.cpp
+    src/Thread.cpp
 )
 
 bp_setup_program(${PROJECT_NAME} include)

@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -79,9 +79,9 @@ namespace bpf
             static String CPUIDIntToStr(fint data);
 
         public:
-            static Env &GetEnvInfo();
-            static OS &GetOSInfo();
-            static CPU &GetCPUInfo();
+            static const Env &GetEnvInfo();
+            static const OS &GetOSInfo();
+            static const CPU &GetCPUInfo();
             static RAM GetRAMInfo();
             static EPlatformEndianess GetEndianess();
 

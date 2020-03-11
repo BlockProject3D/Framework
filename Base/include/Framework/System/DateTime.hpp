@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -30,6 +30,8 @@
 #include <ctime>
 #include "Framework/Types.hpp"
 #include "Framework/String.hpp"
+#include "Framework/ParseException.hpp"
+#include "Framework/System/TimeSpan.hpp"
 
 namespace bpf
 {
@@ -51,7 +53,7 @@ namespace bpf
             void RecalcUTC();
 
         public:
-            explicit DateTime(uint64 seconds);
+            DateTime(fint month, fint day, uint32 year, fint hour = 0, fint minute = 0, fint second = 0);
             DateTime();
 
             inline uint32 GetYear() const noexcept
@@ -86,19 +88,21 @@ namespace bpf
 
             String GetMonthName() const;
             String GetDayName() const;
-            DateTime operator+(const DateTime &other) const;
-            DateTime operator-(const DateTime &other) const;
+            DateTime operator+(const TimeSpan &other) const;
+            TimeSpan operator-(const DateTime &other) const;
+            DateTime operator-(const TimeSpan &other) const;
             bool operator>(const DateTime &other) const;
             bool operator<(const DateTime &other) const;
             bool operator==(const DateTime &other) const;
             bool operator!=(const DateTime &other) const;
-            void operator+=(const DateTime &other);
-            void operator-=(const DateTime &other);
             DateTime ToUTCTime() const;
             DateTime ToLocalTime() const;
 
-            static DateTime UTCTime();
-            static DateTime LocalTime();
+            static DateTime UTCNow();
+            static DateTime Now();
+
+            static DateTime Parse(const String &str);
+            static bool TryParse(const String &str, DateTime &date);
         };
     }
 }

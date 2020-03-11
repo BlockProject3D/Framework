@@ -1,4 +1,4 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2018, BlockProject
 //
 // All rights reserved.
 //
@@ -26,34 +26,6 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-#ifndef WINDOWS
-    #include <ctime>
-#endif
-#include "Framework/Types.hpp"
+#include <Framework/System/EntryPoint.hpp>
 
-namespace bpf
-{
-    namespace system
-    {
-        class BPF_API Timer
-        {
-        private:
-#ifdef WINDOWS
-            int64 _curCounter;
-            double _perfCounterFreq;
-#else
-            time_t _sec;
-            long _nsec;
-#endif
-
-        public:
-            Timer();
-
-            /**
-             * Returns the time in seconds since last call to Reset
-             */
-            double Reset();
-        };
-    }
-}
+BP_SETUP_ENTRY_POINT();

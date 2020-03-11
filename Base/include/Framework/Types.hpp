@@ -57,6 +57,7 @@ namespace bpf
     using uint16 = unsigned short;
 
     using fchar = uint32;
+    using fchar16 = uint16;
 
     /**
      * Custom int type guarenteed to be ALWAYS 32bits no matter the platform
