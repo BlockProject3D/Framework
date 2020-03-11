@@ -59,6 +59,9 @@ set(SOURCES
     src/Platform.cpp
     src/Timer.cpp
     src/Thread.cpp
+    src/BoundingBox.cpp
+    src/Transform3D.cpp
+    src/Transform2D.cpp
 )
 
 bp_setup_program(${PROJECT_NAME} include)

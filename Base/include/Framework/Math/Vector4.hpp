@@ -101,6 +101,16 @@ namespace bpf
 
             const T &operator()(const fsize l) const;
 
+            inline const T *operator*() const noexcept
+            {
+                return (&X);
+            }
+
+            inline T *operator*() noexcept
+            {
+                return (&X);
+            }
+
             inline Vector &operator=(const Vector &other)
             {
                 X = other.X;
@@ -243,6 +253,31 @@ namespace bpf
                 T diffw = Math::Abs(W - other.W);
 
                 return (diffx <= Math::Epsilon<T>() && diffy <= Math::Epsilon<T>() && diffz <= Math::Epsilon<T>() && diffw <= Math::Epsilon<T>());
+            }
+
+            inline bool operator!=(const Vector &other) const
+            {
+                return (!operator==(other));
+            }
+
+            inline bool operator<(const Vector &other) const
+            {
+                return (X < other.X && Y < other.Y && Z < other.Z && W < other.W);
+            }
+
+            inline bool operator>(const Vector &other) const
+            {
+                return (X > other.X &&Y > other.Y &&Z > other.Z && W > other.W);
+            }
+
+            inline bool operator<=(const Vector &other) const
+            {
+                return (X <= other.X && Y <= other.Y && Z <= other.Z && W <= other.W);
+            }
+
+            inline bool operator>=(const Vector &other) const
+            {
+                return (X >= other.X && Y >= other.Y && Z >= other.Z && W >= other.W);
             }
 
             inline static Vector Lerp(const Vector &v, const Vector &v1, const T t)

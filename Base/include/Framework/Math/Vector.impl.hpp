@@ -183,6 +183,50 @@ namespace bpf
         }
 
         template <typename T, fsize I>
+        bool Vector<T, I>::operator<(const Vector &other) const
+        {
+            for (fsize i = 0; i != I; ++i)
+            {
+                if (_arr[i] >= other._arr[i])
+                    return (false);
+            }
+            return (true);
+        }
+
+        template <typename T, fsize I>
+        bool Vector<T, I>::operator>(const Vector &other) const
+        {
+            for (fsize i = 0; i != I; ++i)
+            {
+                if (_arr[i] <= other._arr[i])
+                    return (false);
+            }
+            return (true);
+        }
+
+        template <typename T, fsize I>
+        bool Vector<T, I>::operator<=(const Vector &other) const
+        {
+            for (fsize i = 0; i != I; ++i)
+            {
+                if (_arr[i] > other._arr[i])
+                    return (false);
+            }
+            return (true);
+        }
+
+        template <typename T, fsize I>
+        bool Vector<T, I>::operator>=(const Vector &other) const
+        {
+            for (fsize i = 0; i != I; ++i)
+            {
+                if (_arr[i] < other._arr[i])
+                    return (false);
+            }
+            return (true);
+        }
+
+        template <typename T, fsize I>
         T Vector<T, I>::Dot(const Vector &other) const
         {
             T res = T();
@@ -419,6 +463,58 @@ namespace bpf
             {
                 T diff = Math::Abs(_arr[i] - other(i));
                 if (diff >= Math::Epsilon<T>())
+                    return (false);
+            }
+            return (true);
+        }
+
+        template <typename T>
+        bool Vector<T>::operator<(const Vector &other) const
+        {
+            if (_l != other._l)
+                throw IncompatibleMatrixSizeException((fisize)_l, (fisize)other._l);
+            for (fsize i = 0; i != _l; ++i)
+            {
+                if (_arr[i] >= other._arr[i])
+                    return (false);
+            }
+            return (true);
+        }
+
+        template <typename T>
+        bool Vector<T>::operator>(const Vector &other) const
+        {
+            if (_l != other._l)
+                throw IncompatibleMatrixSizeException((fisize)_l, (fisize)other._l);
+            for (fsize i = 0; i != _l; ++i)
+            {
+                if (_arr[i] <= other._arr[i])
+                    return (false);
+            }
+            return (true);
+        }
+
+        template <typename T>
+        bool Vector<T>::operator<=(const Vector &other) const
+        {
+            if (_l != other._l)
+                throw IncompatibleMatrixSizeException((fisize)_l, (fisize)other._l);
+            for (fsize i = 0; i != _l; ++i)
+            {
+                if (_arr[i] > other._arr[i])
+                    return (false);
+            }
+            return (true);
+        }
+
+        template <typename T>
+        bool Vector<T>::operator>=(const Vector &other) const
+        {
+            if (_l != other._l)
+                throw IncompatibleMatrixSizeException((fisize)_l, (fisize)other._l);
+            for (fsize i = 0; i != _l; ++i)
+            {
+                if (_arr[i] < other._arr[i])
                     return (false);
             }
             return (true);

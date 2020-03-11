@@ -121,7 +121,21 @@ TEST(VectorDynamic, Operators)
     EXPECT_EQ(identity, Vectorf(5, 2));
     EXPECT_EQ(-identity, Vectorf(5, -2));
     EXPECT_FALSE(Vectorf::Identity(5) == Vectorf::Zero(5));
+    EXPECT_NE(Vectorf::Identity(5), Vectorf::Zero(5));
     EXPECT_THROW((void)(identity == Vectorf(4)), bpf::IncompatibleMatrixSizeException);
+}
+
+TEST(VectorDynamic, Comparision)
+{
+    auto identity = Vectorf::Identity(5);
+    auto zero = Vectorf::Zero(5);
+
+    EXPECT_LT(zero, identity);
+    EXPECT_GT(identity, zero);
+    EXPECT_LE(zero, identity);
+    EXPECT_LE(identity, identity);
+    EXPECT_GE(identity, zero);
+    EXPECT_GE(identity, identity);
 }
 
 TEST(VectorDynamic, Norm)

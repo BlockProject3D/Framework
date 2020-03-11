@@ -124,6 +124,14 @@ namespace bpf
             Vector operator-() const;
 
             bool operator==(const Vector &other) const;
+            inline bool operator!=(const Vector &other) const
+            {
+                return (!operator==(other));
+            }
+            bool operator<(const Vector &other) const;
+            bool operator>(const Vector &other) const;
+            bool operator<=(const Vector &other) const;
+            bool operator>=(const Vector &other) const;
 
             T Dot(const Vector &other) const;
             T Distance(const Vector &other) const;
@@ -252,6 +260,14 @@ namespace bpf
             Vector operator-() const;
 
             bool operator==(const Vector &other) const;
+            inline bool operator!=(const Vector &other) const
+            {
+                return (!operator==(other));
+            }
+            bool operator<(const Vector &other) const;
+            bool operator>(const Vector &other) const;
+            bool operator<=(const Vector &other) const;
+            bool operator>=(const Vector &other) const;
 
             T Dot(const Vector &other) const;
             T Distance(const Vector &other) const;

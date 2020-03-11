@@ -375,30 +375,3 @@ TEST(MatrixStatic, Stringifier)
 
     EXPECT_STREQ(*bpf::String::ValueOf(mat), "Matrix(\n\t5\t9\t8\t5\n\t7\t2\t6\t7\n\t3\t4\t1\t6\n\t4\t5\t8\t1\n)");
 }
-
-/*TEST(MatrixStatic, HomogeneousCoords_2D)
-{
-    bpf::Matrix3f mat = bpf::Matrix3f::Identity;
-    bpf::Matrix3f expected = {
-        1, 0, 2,
-        0, 1, 2,
-        0, 0, 1
-    };
-
-    mat.Translate(bpf::Vector2<float>(2, 2));
-    ExpectMatrixEq(mat, expected);
-}
-
-TEST(MatrixStatic, HomogeneousCoords_3D)
-{
-    bpf::Matrix4f mat = bpf::Matrix4f::Identity;
-    bpf::Matrix4f expected = {
-        1, 0, 0, 2,
-        0, 1, 0, 2,
-        0, 0, 1, 2,
-        0, 0, 0, 1
-    };
-
-    mat.Translate(bpf::Vector3<float>(2, 2, 2));
-    ExpectMatrixEq(mat, expected);
-}*/

@@ -28,63 +28,46 @@
 
 #pragma once
 #include "Framework/Math/Vector.hpp"
-#include "Framework/Math/Matrix.hpp"
 
 namespace bpf
 {
     namespace math
     {
         template <typename T>
-        class BP_TPL_API Transform2D
+        class BP_TPL_API BoundingBox
         {
         public:
-            class BP_TPL_API MatrixBuilder
-            {
-            private:
-                Matrix3<T> _matrix;
+            Vector3<T> Origin;
+            Vector3<T> Extent;
 
-            public:
-                inline MatrixBuilder()
-                    : _matrix(Matrix3<T>::Identity)
-                {
-                }
-                MatrixBuilder &Translate(const Vector2<T> &translation) noexcept;
-                MatrixBuilder &Scale(const Vector2<T> &scale) noexcept;
-                MatrixBuilder &ShearX(const T &shear) noexcept;
-                MatrixBuilder &ShearY(const T &shear) noexcept;
-                MatrixBuilder &Rotate(const T &rotation) noexcept;
-                inline Matrix3<T> Build() const noexcept
-                {
-                    return (_matrix);
-                }
-            };
-
-        public:
-            Vector2<T> Position;
-            Vector2<T> Scale;
-            T Rotation;
-
-            explicit inline Transform2D(const Vector2<T> &pos = Vector2<T>::Zero, const Vector2<T> &scale = Vector2<T>::Identity, const T &rotation = 0)
-                : Position(pos)
-                , Scale(scale)
-                , Rotation(rotation)
+            inline BoundingBox(const Vector3<T> &origin, const Vector3<T> &ext) noexcept
+                : Origin(origin)
+                , Extent(ext)
             {
             }
 
-            Vector2<T> LocalToWorld(const Vector2<T> &local);
-            Vector2<T> WorldToLocal(const Vector2<T> &world);
-
-            inline Matrix3<T> ToMatrix() const noexcept
+            inline BoundingBox() noexcept
+                : Origin(Vector3<T>::Zero)
+                , Extent(Vector3<T>::Identity)
             {
-                return (MatrixBuilder().Translate(Position).Rotate(Rotation).Scale(Scale).Build());
             }
 
-            void RotateArround(const Vector2<T> &pivot, const T &rotation);
+            inline Vector3<T> GetMin() const noexcept
+            {
+                return (Origin - Extent);
+            }
 
-            Transform2D operator+(const Transform2D &other) const noexcept;
-            void operator+=(const Transform2D &other);
+            inline Vector3<T> GetMax() const noexcept
+            {
+                return (Origin + Extent);
+            }
+
+            inline static BoundingBox FromMinMax(const Vector3<T> &min, const Vector3<T> &max) noexcept
+            {
+                Vector3<T> origin = (min + max) / 2;
+                Vector3<T> ext = max - origin;
+                return (BoundingBox(origin, ext));
+            }
         };
     }
 }
-
-#include "Framework/Math/Transform2D.impl.hpp"

@@ -45,6 +45,7 @@ set(SOURCES
     ./include/Framework/Math/Stringifier.Matrix.hpp
     ./include/Framework/Math/Stringifier.Vector.hpp
     ./include/Framework/Math/Math.hpp
+    ./include/Framework/Math/BoundingBox.hpp
     ./include/Framework/Math/IncompatibleMatrixSizeException.hpp
     ./include/Framework/Math/NonSquareMatrixException.hpp
     ./include/Framework/Math/NonInvertibleMatrixException.hpp
