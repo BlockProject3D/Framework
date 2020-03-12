@@ -107,8 +107,11 @@ TEST(VectorStatic, Comparision_1)
     auto zero = bpf::math::Vector2f::Zero;
 
     EXPECT_LT(zero, identity);
+    EXPECT_FALSE(zero > identity);
     EXPECT_GT(identity, zero);
+    EXPECT_FALSE(identity < zero);
     EXPECT_LE(zero, identity);
+    EXPECT_FALSE(zero >= identity);
     EXPECT_LE(identity, identity);
     EXPECT_GE(identity, zero);
     EXPECT_GE(identity, identity);
@@ -267,8 +270,11 @@ TEST(VectorStatic, Comparision_2)
     auto zero = bpf::math::Vector3f::Zero;
 
     EXPECT_LT(zero, identity);
+    EXPECT_FALSE(zero > identity);
     EXPECT_GT(identity, zero);
+    EXPECT_FALSE(identity < zero);
     EXPECT_LE(zero, identity);
+    EXPECT_FALSE(zero >= identity);
     EXPECT_LE(identity, identity);
     EXPECT_GE(identity, zero);
     EXPECT_GE(identity, identity);
@@ -446,8 +452,11 @@ TEST(VectorStatic, Comparision_3)
     auto zero = bpf::math::Vector4f::Zero;
 
     EXPECT_LT(zero, identity);
+    EXPECT_FALSE(zero > identity);
     EXPECT_GT(identity, zero);
+    EXPECT_FALSE(identity < zero);
     EXPECT_LE(zero, identity);
+    EXPECT_FALSE(zero >= identity);
     EXPECT_LE(identity, identity);
     EXPECT_GE(identity, zero);
     EXPECT_GE(identity, identity);
@@ -619,8 +628,11 @@ TEST(VectorStatic, Comparision_4)
     auto zero = Vector5f::Zero;
 
     EXPECT_LT(zero, identity);
+    EXPECT_FALSE(zero > identity);
     EXPECT_GT(identity, zero);
+    EXPECT_FALSE(identity < zero);
     EXPECT_LE(zero, identity);
+    EXPECT_FALSE(zero >= identity);
     EXPECT_LE(identity, identity);
     EXPECT_GE(identity, zero);
     EXPECT_GE(identity, identity);

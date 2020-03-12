@@ -32,32 +32,35 @@
 
 namespace bpf
 {
-    class IncompatibleMatrixSizeException : public Exception
+    namespace math
     {
-    private:
-        fisize _sizea;
-        fisize _sizeb;
-
-    public:
-        inline IncompatibleMatrixSizeException(fisize sizea, fisize sizeb) noexcept
-            : _sizea(sizea)
-            , _sizeb(sizeb)
+        class IncompatibleMatrixSizeException : public Exception
         {
-        }
+        private:
+            fisize _sizea;
+            fisize _sizeb;
 
-        inline fsize SizeA() const noexcept
-        {
-            return (_sizea);
-        }
+        public:
+            inline IncompatibleMatrixSizeException(fisize sizea, fisize sizeb) noexcept
+                : _sizea(sizea)
+                , _sizeb(sizeb)
+            {
+            }
 
-        inline fsize SizeB() const noexcept
-        {
-            return (_sizeb);
-        }
+            inline fsize SizeA() const noexcept
+            {
+                return (_sizea);
+            }
 
-        inline virtual const char *GetType() const noexcept
-        {
-            return ("IncompatibleMatrixSize");
-        }
-    };
+            inline fsize SizeB() const noexcept
+            {
+                return (_sizeb);
+            }
+
+            inline virtual const char *GetType() const noexcept
+            {
+                return ("IncompatibleMatrixSize");
+            }
+        };
+    }
 }

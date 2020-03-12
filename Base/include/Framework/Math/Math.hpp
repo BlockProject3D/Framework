@@ -43,19 +43,19 @@ namespace bpf
             }
 
             template <>
-            inline constexpr float GetEpsilon()
+            inline constexpr float GetEpsilon<float>()
             {
                 return (0.00001f);
             }
 
             template <>
-            inline constexpr double GetEpsilon()
+            inline constexpr double GetEpsilon<double>()
             {
                 return (0.0000001);
             }
 
             template <>
-            inline constexpr long double GetEpsilon()
+            inline constexpr long double GetEpsilon<long double>()
             {
                 return (0.0000001);
             }

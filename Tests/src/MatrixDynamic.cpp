@@ -32,35 +32,12 @@
 #include <Framework/Math/Matrix.hpp>
 #include <Framework/Math/Stringifier.Matrix.hpp>
 
-template <typename T>
-static void PrintMatrix(const bpf::math::Matrix<T> &other)
-{
-    for (bpf::fsize y = 0; y != other.Rows(); ++y)
-    {
-        for (bpf::fsize x = 0; x != other.Columns(); ++x)
-            std::cout << other(y, x) << "\t";
-        std::cout << std::endl;
-    }
-}
-
-template <typename T>
-static void ExpectMatrixEq(const bpf::math::Matrix<T> &mat, const bpf::math::Matrix<T> &mat1)
-{
-    ASSERT_EQ(mat.Rows(), mat1.Rows());
-    ASSERT_EQ(mat.Columns(), mat1.Columns());
-    for (bpf::fsize y = 0; y != mat.Rows(); ++y)
-    {
-        for (bpf::fsize x = 0; x != mat.Columns(); ++x)
-            EXPECT_EQ(mat(y, x), mat1(y, x));
-    }
-}
-
 TEST(MatrixDynamic, Create_Test_1)
 {
     bpf::math::Matrix<int> mat(2, 3);
     bpf::math::Matrix<int> mat1(2, 3);
 
-    ExpectMatrixEq(mat, mat1);
+    EXPECT_EQ(mat, mat1);
     mat(0, 0) = 1;
     mat(1, 1) = 1;
     mat(1, 2) = 1;
@@ -69,7 +46,7 @@ TEST(MatrixDynamic, Create_Test_1)
     mat1(1, 1) = 1;
     mat1(1, 2) = 1;
     mat1(0, 2) = 3;
-    ExpectMatrixEq(mat, mat1);
+    EXPECT_EQ(mat, mat1);
 }
 
 TEST(MatrixDynamic, Create_Test_2)
@@ -79,15 +56,30 @@ TEST(MatrixDynamic, Create_Test_2)
                                   0, 1, 0,
                                   0, 0, 1 });
 
-    ExpectMatrixEq(mat, mat1);
+    EXPECT_EQ(mat, mat1);
 }
 
-TEST(MatrixDynamic, Transpose_Square)
+TEST(MatrixDynamic, Transpose_Square_1)
 {
     bpf::math::Matrix<int> mat = bpf::math::Matrix<int>::Identity(3);
     bpf::math::Matrix<int> mat1 = mat.Transpose();
 
-    ExpectMatrixEq(mat, mat1);
+    EXPECT_EQ(mat, mat1);
+}
+
+TEST(MatrixDynamic, Transpose_Square_2)
+{
+    bpf::math::Matrix<int> mat = bpf::math::Matrix<int>(2, 2, {
+        2, 3,
+        4, 1
+    });
+    bpf::math::Matrix<int> expected = bpf::math::Matrix<int>(2, 2, {
+        2, 4,
+        3, 1
+    });
+
+    EXPECT_EQ(mat.Transpose(), expected);
+    EXPECT_FALSE(mat == expected);
 }
 
 TEST(MatrixDynamic, Transpose_NonSquare)
@@ -103,7 +95,8 @@ TEST(MatrixDynamic, Transpose_NonSquare)
     mat(1, 1) = 1;
     mat(1, 2) = 1;
     mat(0, 2) = 3;
-    ExpectMatrixEq(mat.Transpose(), mat1);
+    EXPECT_EQ(mat.Transpose(), mat1);
+    EXPECT_FALSE(mat == mat1);
 }
 
 TEST(MatrixDynamic, SwapRows_Square)
@@ -127,7 +120,7 @@ TEST(MatrixDynamic, SwapRows_Square)
     mat(1, 2) = 2;
     mat(2, 0) = 4;
     mat.SwapRows(0, 2);
-    ExpectMatrixEq(mat, mat1);
+    EXPECT_EQ(mat, mat1);
 }
 
 TEST(MatrixDynamic, SwapRows_NonSquare)
@@ -149,7 +142,7 @@ TEST(MatrixDynamic, SwapRows_NonSquare)
     mat(0, 2) = 3;
     mat(1, 2) = 2;
     mat.SwapRows(0, 1);
-    ExpectMatrixEq(mat, mat1);
+    EXPECT_EQ(mat, mat1);
 }
 
 TEST(MatrixDynamic, SwapColumns_Square)
@@ -173,7 +166,7 @@ TEST(MatrixDynamic, SwapColumns_Square)
     mat(1, 2) = 2;
     mat(2, 0) = 4;
     mat.SwapColumns(0, 2);
-    ExpectMatrixEq(mat, mat1);
+    EXPECT_EQ(mat, mat1);
 }
 
 TEST(MatrixDynamic, SwapColumns_NonSquare)
@@ -195,7 +188,7 @@ TEST(MatrixDynamic, SwapColumns_NonSquare)
     mat(0, 2) = 3;
     mat(1, 2) = 2;
     mat.SwapColumns(0, 1);
-    ExpectMatrixEq(mat, mat1);
+    EXPECT_EQ(mat, mat1);
 }
 
 TEST(MatrixDynamic, Multiply_Square_Test1)
@@ -203,7 +196,7 @@ TEST(MatrixDynamic, Multiply_Square_Test1)
     bpf::math::Matrix<int> mat = bpf::math::Matrix<int>::Identity(3);
     bpf::math::Matrix<int> mat1 = bpf::math::Matrix<int>::Identity(3);
 
-    ExpectMatrixEq(mat, mat * mat1);
+    EXPECT_EQ(mat, mat * mat1);
 }
 
 TEST(MatrixDynamic, Multiply_Square_Test2)
@@ -215,7 +208,7 @@ TEST(MatrixDynamic, Multiply_Square_Test2)
     });
     bpf::math::Matrix<int> mat1 = bpf::math::Matrix<int>::Identity(3);
 
-    ExpectMatrixEq(mat, mat * mat1);
+    EXPECT_EQ(mat, mat * mat1);
 }
 
 TEST(MatrixDynamic, Multiply_NonSquare_Test1)
@@ -239,7 +232,7 @@ TEST(MatrixDynamic, Multiply_NonSquare_Test1)
         0, 0, 0, 0
     });
 
-    ExpectMatrixEq(res, expected);
+    EXPECT_EQ(res, expected);
 }
 
 TEST(MatrixDynamic, Multiply_NonSquare_Test2)
@@ -263,7 +256,7 @@ TEST(MatrixDynamic, Multiply_NonSquare_Test2)
         67, 77, 76, 17
     });
 
-    ExpectMatrixEq(res, expected);
+    EXPECT_EQ(res, expected);
 }
 
 TEST(MatrixDynamic, Multiply_NonSquare_Test3)
@@ -289,10 +282,11 @@ TEST(MatrixDynamic, Multiply_NonSquare_Test3)
         73, 79, 76, 19, 0, 114
     });
 
-    ExpectMatrixEq(res, expected);
+    EXPECT_EQ(res, expected);
+    EXPECT_THROW(mat * expected, bpf::math::IncompatibleMatrixSizeException);
 }
 
-TEST(MatrixDynamic, Matrix_Inverse)
+TEST(MatrixDynamic, Matrix_Inverse_1)
 {
     bpf::math::Matrix<float> mat(2, 2, {
         0, 6,
@@ -304,7 +298,17 @@ TEST(MatrixDynamic, Matrix_Inverse)
         0, 1
     });
     
-    ExpectMatrixEq(res, expected);
+    EXPECT_EQ(res, expected);
+}
+
+TEST(MatrixDynamic, Matrix_Inverse_2)
+{
+    bpf::math::Matrix<float> mat(2, 2);
+    bpf::math::Matrix<float> mat1(2, 3);
+
+    EXPECT_THROW(mat.Inverse(), bpf::math::NonInvertibleMatrixException);
+    EXPECT_THROW(mat1.Inverse(), bpf::math::NonSquareMatrixException);
+    EXPECT_THROW(mat1.GetDeterminant(), bpf::math::NonSquareMatrixException);
 }
 
 TEST(MatrixDynamic, Stringifier)
