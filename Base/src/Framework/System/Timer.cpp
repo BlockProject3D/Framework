@@ -71,11 +71,6 @@ double Timer::Reset()
     clock_gettime(CLOCK_REALTIME, &t);
     time_t seconds = t.tv_sec - _sec;
     long ns = t.tv_nsec - _nsec;
-    if (_nsec > t.tv_nsec)
-    {
-        --seconds;
-        ns += 1000000000;
-    }
     double delta = (double)seconds + (double)ns / 1000000000.0;
     _sec = t.tv_sec;
     _nsec = t.tv_nsec;
