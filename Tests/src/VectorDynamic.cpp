@@ -138,11 +138,12 @@ TEST(VectorDynamic, Comparision)
     EXPECT_FALSE(zero >= identity);
     EXPECT_LE(identity, identity);
     EXPECT_GE(identity, zero);
+    EXPECT_FALSE(identity <= zero);
     EXPECT_GE(identity, identity);
-    EXPECT_THROW(zero < Vectorf(4), bpf::math::IncompatibleMatrixSizeException);
-    EXPECT_THROW(zero > Vectorf(4), bpf::math::IncompatibleMatrixSizeException);
-    EXPECT_THROW(zero <= Vectorf(4), bpf::math::IncompatibleMatrixSizeException);
-    EXPECT_THROW(zero >= Vectorf(4), bpf::math::IncompatibleMatrixSizeException);
+    EXPECT_THROW((void)(zero < Vectorf(4)), bpf::math::IncompatibleMatrixSizeException);
+    EXPECT_THROW((void)(zero > Vectorf(4)), bpf::math::IncompatibleMatrixSizeException);
+    EXPECT_THROW((void)(zero <= Vectorf(4)), bpf::math::IncompatibleMatrixSizeException);
+    EXPECT_THROW((void)(zero >= Vectorf(4)), bpf::math::IncompatibleMatrixSizeException);
 }
 
 TEST(VectorDynamic, Norm)

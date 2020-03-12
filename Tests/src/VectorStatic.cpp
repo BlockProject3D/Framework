@@ -114,6 +114,7 @@ TEST(VectorStatic, Comparision_1)
     EXPECT_FALSE(zero >= identity);
     EXPECT_LE(identity, identity);
     EXPECT_GE(identity, zero);
+    EXPECT_FALSE(identity <= zero);
     EXPECT_GE(identity, identity);
 }
 
@@ -277,6 +278,7 @@ TEST(VectorStatic, Comparision_2)
     EXPECT_FALSE(zero >= identity);
     EXPECT_LE(identity, identity);
     EXPECT_GE(identity, zero);
+    EXPECT_FALSE(identity <= zero);
     EXPECT_GE(identity, identity);
 }
 
@@ -459,6 +461,7 @@ TEST(VectorStatic, Comparision_3)
     EXPECT_FALSE(zero >= identity);
     EXPECT_LE(identity, identity);
     EXPECT_GE(identity, zero);
+    EXPECT_FALSE(identity <= zero);
     EXPECT_GE(identity, identity);
 }
 
@@ -635,6 +638,7 @@ TEST(VectorStatic, Comparision_4)
     EXPECT_FALSE(zero >= identity);
     EXPECT_LE(identity, identity);
     EXPECT_GE(identity, zero);
+    EXPECT_FALSE(identity <= zero);
     EXPECT_GE(identity, identity);
 }
 
