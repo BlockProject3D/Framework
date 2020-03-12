@@ -115,7 +115,7 @@ Thread::~Thread()
 
 Thread &Thread::operator=(Thread &&other)
 {
-    if (_state == RUNNING || _state == EXITING)
+    if (_state == RUNNING || _state == EXITING || other._state == RUNNING || other._state == EXITING)
         throw OSException("Cannot move a running thread");
     Join();
 #ifndef WINDOWS

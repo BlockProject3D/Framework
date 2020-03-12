@@ -98,6 +98,7 @@ TEST(Thread, Move_2)
     EXPECT_EQ(thread.GetState(), bpf::system::Thread::PENDING);
     MyThread th = std::move(thread);
     th.Start();
+    EXPECT_THROW(thread = std::move(th), bpf::system::OSException);
     EXPECT_EQ(th.GetState(), bpf::system::Thread::RUNNING);
     bpf::system::Thread::Sleep(500);
     th.Kill();
