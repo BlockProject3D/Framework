@@ -38,13 +38,12 @@ namespace bpf
         template <typename T>
         class BP_TPL_API Quaternion
         {
-        private:
+        public:
             T X;
             T Y;
             T Z;
             T W;
 
-        public:
             inline Quaternion()
                 : X(0)
                 , Y(0)
@@ -150,22 +149,6 @@ namespace bpf
              * WARNING : Angles are expressed in radians
              */
             Vector<T, 3> ToEulerAngles() const;
-
-            /**
-             * Returns the axis of that quaternion
-             */
-            inline Vector<T, 3> GetAxis() const
-            {
-                return (Vector<T, 3>(X, Y, Z));
-            }
-
-            /**
-             * Returns the W component of that quaternion
-             */
-            inline T GetW() const
-            {
-                return (W);
-            }
 
             /**
              * Linear Interpolation between two quaternions

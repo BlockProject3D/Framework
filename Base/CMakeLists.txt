@@ -44,6 +44,7 @@ set(SOURCES
     ./include/Framework/Math/Polygon3D.impl.hpp
     ./include/Framework/Math/Stringifier.Matrix.hpp
     ./include/Framework/Math/Stringifier.Vector.hpp
+	./include/Framework/Math/Stringifier.Quaternion.hpp
     ./include/Framework/Math/Math.hpp
     ./include/Framework/Math/MathUtils.hpp
     ./include/Framework/Math/BoundingBox.hpp

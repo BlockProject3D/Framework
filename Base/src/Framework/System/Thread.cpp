@@ -117,6 +117,7 @@ Thread &Thread::operator=(Thread &&other)
 {
     if (_state == RUNNING || _state == EXITING)
         throw OSException("Cannot move a running thread");
+    Join();
 #ifndef WINDOWS
     free(_handle);
 #endif

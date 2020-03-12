@@ -497,6 +497,13 @@ namespace bpf
         static String ValueOf(double d, const fsize prec = 0);
 
         /**
+         * Converts a double to it's string representation
+         * @param d value to convert to a string
+         * @param prec precision for numeric types (0 means max precision)
+         */
+        static String ValueOf(long double d, const fsize prec = 0);
+
+        /**
          * Converts a raw pointer to it's string representation
          * @param ptr value to convert to a string
          * @param prec precision for numeric types (0 means max precision)
