@@ -109,19 +109,15 @@ namespace bpf
                 return (Quaternion<T>(W, -X, -Y, -Z));
             }
 
-            inline T Length() const
+            inline T Norm() const noexcept
             {
                 return (Math<T>::Sqrt(W * W + X * X + Y * Y + Z * Z));
             }
 
-            inline void Normalize()
+            inline Quaternion<T> Normalize() const noexcept
             {
-                T mag = Length();
-
-                X /= mag;
-                Y /= mag;
-                Z /= mag;
-                W /= mag;
+                T v = Norm();
+                return (Quaternion<T>(W / v, X / v, Y / v, Z / v));
             }
 
             bool operator==(const Quaternion<T> &other) const;
