@@ -26,41 +26,25 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-#include "Framework/Types.hpp"
-#include "Framework/Exception.hpp"
+#include <cassert>
+#include <iostream>
+#include <gtest/gtest.h>
+#include <Framework/Math/BoundingBox.hpp>
 
-namespace bpf
+TEST(BoundingBox, Basic)
 {
-    namespace math
-    {
-        class IncompatibleMatrixSizeException : public Exception
-        {
-        private:
-            fisize _sizea;
-            fisize _sizeb;
+    auto box = bpf::math::BoundingBox<float>::FromMinMax(-bpf::math::Vector3f::Identity, bpf::math::Vector3f::Identity);
 
-        public:
-            inline IncompatibleMatrixSizeException(fisize sizea, fisize sizeb) noexcept
-                : _sizea(sizea)
-                , _sizeb(sizeb)
-            {
-            }
+    EXPECT_EQ(box.Origin, bpf::math::Vector3f::Zero);
+    EXPECT_EQ(box.Extent, bpf::math::Vector3f::Identity);
+    EXPECT_EQ(box.GetMax(), bpf::math::Vector3f::Identity);
+    EXPECT_EQ(box.GetMin(), -bpf::math::Vector3f::Identity);
+}
 
-            inline fsize SizeA() const noexcept
-            {
-                return (_sizea);
-            }
+TEST(BoundingBox, Constructor)
+{
+    auto box = bpf::math::BoundingBox<float>(bpf::math::Vector3f::Zero, bpf::math::Vector3f(0.5f));
 
-            inline fsize SizeB() const noexcept
-            {
-                return (_sizeb);
-            }
-
-            inline virtual const char *GetType() const noexcept
-            {
-                return ("IncompatibleMatrixSize");
-            }
-        };
-    }
+    EXPECT_EQ(box.GetMax(), bpf::math::Vector3f(0.5f));
+    EXPECT_EQ(box.GetMin(), bpf::math::Vector3f(-0.5f));
 }

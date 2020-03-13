@@ -92,25 +92,25 @@ TEST(VectorDynamic, Operators)
     auto zero = Vectorf::Zero(5);
 
     EXPECT_EQ(identity * zero, zero);
-    EXPECT_THROW(identity * Vectorf(4), bpf::IncompatibleMatrixSizeException);
+    EXPECT_THROW(identity * Vectorf(4), bpf::math::IncompatibleMatrixSizeException);
     EXPECT_EQ(identity * 0, zero);
     EXPECT_EQ(identity / 1, identity);
     EXPECT_EQ(identity - zero, identity);
-    EXPECT_THROW(identity - Vectorf(4), bpf::IncompatibleMatrixSizeException);
+    EXPECT_THROW(identity - Vectorf(4), bpf::math::IncompatibleMatrixSizeException);
     EXPECT_EQ(identity + zero, identity);
-    EXPECT_THROW(identity + Vectorf(4), bpf::IncompatibleMatrixSizeException);
+    EXPECT_THROW(identity + Vectorf(4), bpf::math::IncompatibleMatrixSizeException);
     EXPECT_EQ(identity + identity, Vectorf(5, 2));
     EXPECT_EQ(zero / identity, zero);
-    EXPECT_THROW(identity / Vectorf(4), bpf::IncompatibleMatrixSizeException);
+    EXPECT_THROW(identity / Vectorf(4), bpf::math::IncompatibleMatrixSizeException);
     identity -= zero;
-    EXPECT_THROW(identity -= Vectorf(4), bpf::IncompatibleMatrixSizeException);
+    EXPECT_THROW(identity -= Vectorf(4), bpf::math::IncompatibleMatrixSizeException);
     identity += zero;
-    EXPECT_THROW(identity += Vectorf(4), bpf::IncompatibleMatrixSizeException);
+    EXPECT_THROW(identity += Vectorf(4), bpf::math::IncompatibleMatrixSizeException);
     identity /= identity;
-    EXPECT_THROW(identity /= Vectorf(4), bpf::IncompatibleMatrixSizeException);
+    EXPECT_THROW(identity /= Vectorf(4), bpf::math::IncompatibleMatrixSizeException);
     EXPECT_EQ(identity, Vectorf::Identity(5));
     identity *= zero;
-    EXPECT_THROW(identity *= Vectorf(4), bpf::IncompatibleMatrixSizeException);
+    EXPECT_THROW(identity *= Vectorf(4), bpf::math::IncompatibleMatrixSizeException);
     EXPECT_EQ(identity, Vectorf::Zero(5));
     identity += Vectorf::Identity(5);
     identity += Vectorf::Identity(5);
@@ -121,7 +121,29 @@ TEST(VectorDynamic, Operators)
     EXPECT_EQ(identity, Vectorf(5, 2));
     EXPECT_EQ(-identity, Vectorf(5, -2));
     EXPECT_FALSE(Vectorf::Identity(5) == Vectorf::Zero(5));
-    EXPECT_THROW((void)(identity == Vectorf(4)), bpf::IncompatibleMatrixSizeException);
+    EXPECT_NE(Vectorf::Identity(5), Vectorf::Zero(5));
+    EXPECT_THROW((void)(identity == Vectorf(4)), bpf::math::IncompatibleMatrixSizeException);
+}
+
+TEST(VectorDynamic, Comparision)
+{
+    auto identity = Vectorf::Identity(5);
+    auto zero = Vectorf::Zero(5);
+
+    EXPECT_LT(zero, identity);
+    EXPECT_FALSE(zero > identity);
+    EXPECT_GT(identity, zero);
+    EXPECT_FALSE(identity < zero);
+    EXPECT_LE(zero, identity);
+    EXPECT_FALSE(zero >= identity);
+    EXPECT_LE(identity, identity);
+    EXPECT_GE(identity, zero);
+    EXPECT_FALSE(identity <= zero);
+    EXPECT_GE(identity, identity);
+    EXPECT_THROW((void)(zero < Vectorf(4)), bpf::math::IncompatibleMatrixSizeException);
+    EXPECT_THROW((void)(zero > Vectorf(4)), bpf::math::IncompatibleMatrixSizeException);
+    EXPECT_THROW((void)(zero <= Vectorf(4)), bpf::math::IncompatibleMatrixSizeException);
+    EXPECT_THROW((void)(zero >= Vectorf(4)), bpf::math::IncompatibleMatrixSizeException);
 }
 
 TEST(VectorDynamic, Norm)
@@ -143,8 +165,8 @@ TEST(VectorDynamic, Distance)
     EXPECT_LT(v1.Distance(v2), 2.3);
     EXPECT_EQ(v1.DistanceSquared(v1), 0);
     EXPECT_EQ(v1.DistanceSquared(v2), 5);
-    EXPECT_THROW(v1.Distance(Vectorf(4)), bpf::IncompatibleMatrixSizeException);
-    EXPECT_THROW(v1.DistanceSquared(Vectorf(4)), bpf::IncompatibleMatrixSizeException);
+    EXPECT_THROW(v1.Distance(Vectorf(4)), bpf::math::IncompatibleMatrixSizeException);
+    EXPECT_THROW(v1.DistanceSquared(Vectorf(4)), bpf::math::IncompatibleMatrixSizeException);
 }
 
 TEST(VectorDynamic, Normalize)
@@ -152,7 +174,7 @@ TEST(VectorDynamic, Normalize)
     auto v1 = Vectorf::Identity(5);
 
     v1.Normalize();
-    EXPECT_LT(1 - v1.Norm(), bpf::math::Math::Epsilon<float>());
+    EXPECT_LT(1 - v1.Norm(), bpf::math::Mathf::Epsilon);
 }
 
 TEST(VectorDynamic, Dot)
@@ -163,7 +185,7 @@ TEST(VectorDynamic, Dot)
 
     EXPECT_EQ(v1.Dot(v2), 0);
     EXPECT_EQ(v2.Dot(v3), 10);
-    EXPECT_THROW(v1.Dot(Vectorf(4)), bpf::IncompatibleMatrixSizeException);
+    EXPECT_THROW(v1.Dot(Vectorf(4)), bpf::math::IncompatibleMatrixSizeException);
 }
 
 TEST(VectorDynamic, Lerp)
@@ -173,7 +195,7 @@ TEST(VectorDynamic, Lerp)
     auto lerp = Vectorf::Lerp(v1, v2, 0.5f);
 
     EXPECT_EQ(lerp, Vectorf(5, 0.5f));
-    EXPECT_THROW(Vectorf::Lerp(v1, Vectorf(4), 0.5f), bpf::IncompatibleMatrixSizeException);
+    EXPECT_THROW(Vectorf::Lerp(v1, Vectorf(4), 0.5f), bpf::math::IncompatibleMatrixSizeException);
 }
 
 TEST(VectorDynamic, CopyMove_4)

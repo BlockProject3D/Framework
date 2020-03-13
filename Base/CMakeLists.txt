@@ -44,7 +44,10 @@ set(SOURCES
     ./include/Framework/Math/Polygon3D.impl.hpp
     ./include/Framework/Math/Stringifier.Matrix.hpp
     ./include/Framework/Math/Stringifier.Vector.hpp
+	./include/Framework/Math/Stringifier.Quaternion.hpp
     ./include/Framework/Math/Math.hpp
+    ./include/Framework/Math/MathUtils.hpp
+    ./include/Framework/Math/BoundingBox.hpp
     ./include/Framework/Math/IncompatibleMatrixSizeException.hpp
     ./include/Framework/Math/NonSquareMatrixException.hpp
     ./include/Framework/Math/NonInvertibleMatrixException.hpp
@@ -149,7 +152,7 @@ set(SOURCES
     ./src/Framework/IO/TextWriter.cpp
     ./src/Framework/Log/DefaultLogger.cpp
     ./src/Framework/Log/FileLogger.cpp
-    ./src/Framework/Math/Math.cpp
+    ./src/Framework/Math/MathUtils.cpp
     ./src/Framework/Math/Random.cpp
     ./src/Framework/Memory/Memory.cpp
     ./src/Framework/Memory/Object.cpp

@@ -224,11 +224,11 @@ namespace bpf
             }
 
             /**
-             * Inverts this matrix
+             * Calculates the inverse of this matrix
              * @throws MatrixException if the matrix is not invertible (ie determinant is null)
              * @return the inverse of this matrix
              */
-            Matrix<T, N, N> Invert() const;
+            Matrix<T, N, N> Inverse() const;
             T GetDeterminant() const;
             template <fsize P>
             void GetMinor(Matrix<T, P, P> &dest, fsize row, fsize col) const;
@@ -357,11 +357,11 @@ namespace bpf
             }
 
             /**
-             * Inverts this matrix
+             * Calculates the inverse of this matrix
              * @throws MatrixException if the matrix is not invertible (ie determinant is null) or if it is not a square matrix
              * @return the inverse of this matrix
              */
-            Matrix<T> Invert() const;
+            Matrix<T> Inverse() const;
 
             /**
              * Calculates the determinant of this matrix

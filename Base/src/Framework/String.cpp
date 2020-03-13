@@ -926,6 +926,20 @@ String String::ValueOf(double d, const fsize prec)
     return (String(strs.str().c_str()));
 }
 
+String String::ValueOf(long double d, const fsize prec)
+{
+    std::stringstream strs;
+
+    if (prec > 0)
+    {
+        strs.precision(prec);
+        strs << std::fixed << d;
+    }
+    else
+        strs << d;
+    return (String(strs.str().c_str()));
+}
+
 String String::ValueOf(void *ptr, const fsize prec)
 {
     std::stringstream strs;

@@ -38,13 +38,12 @@ namespace bpf
         template <typename T>
         class BP_TPL_API Quaternion
         {
-        private:
+        public:
             T X;
             T Y;
             T Z;
             T W;
 
-        public:
             inline Quaternion()
                 : X(0)
                 , Y(0)
@@ -104,24 +103,20 @@ namespace bpf
 
             Matrix<T, 4, 4> ToMatrix() const;
 
-            inline Quaternion<T> Invert() const
+            inline Quaternion<T> Inverse() const
             {
                 return (Quaternion<T>(W, -X, -Y, -Z));
             }
 
-            inline T Length() const
+            inline T Norm() const noexcept
             {
-                return (Math::Sqrt(W * W + X * X + Y * Y + Z * Z));
+                return (Math<T>::Sqrt(W * W + X * X + Y * Y + Z * Z));
             }
 
-            inline void Normalize()
+            inline Quaternion<T> Normalize() const noexcept
             {
-                T mag = Length();
-
-                X /= mag;
-                Y /= mag;
-                Z /= mag;
-                W /= mag;
+                T v = Norm();
+                return (Quaternion<T>(W / v, X / v, Y / v, Z / v));
             }
 
             bool operator==(const Quaternion<T> &other) const;
@@ -144,7 +139,7 @@ namespace bpf
             Quaternion<T> Log() const;
 
             /**
-             * Returns the angle in degrees between two quaternions
+             * Returns the angle between two quaternions
              * WARNING : Angle is expressed in radians
              */
             T Angle(const Quaternion<T> &other) const;
@@ -154,22 +149,6 @@ namespace bpf
              * WARNING : Angles are expressed in radians
              */
             Vector<T, 3> ToEulerAngles() const;
-
-            /**
-             * Returns the axis of that quaternion
-             */
-            inline Vector<T, 3> GetAxis() const
-            {
-                return (Vector<T, 3>(X, Y, Z));
-            }
-
-            /**
-             * Returns the W component of that quaternion
-             */
-            inline T GetW() const
-            {
-                return (W);
-            }
 
             /**
              * Linear Interpolation between two quaternions

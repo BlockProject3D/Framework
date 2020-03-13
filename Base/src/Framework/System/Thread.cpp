@@ -26,6 +26,7 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include <iostream>
 #include "Framework/System/Thread.hpp"
 #include "Framework/Exception.hpp"
 #include "Framework/System/OSException.hpp"
@@ -106,6 +107,7 @@ Thread::Thread(Thread &&other)
 
 Thread::~Thread()
 {
+    Join();
 #ifndef WINDOWS
     free(_handle);
 #endif
@@ -113,8 +115,9 @@ Thread::~Thread()
 
 Thread &Thread::operator=(Thread &&other)
 {
-    if (_state == RUNNING || _state == EXITING)
+    if (_state == RUNNING || _state == EXITING || other._state == RUNNING || other._state == EXITING)
         throw OSException("Cannot move a running thread");
+    Join();
 #ifndef WINDOWS
     free(_handle);
 #endif
@@ -129,6 +132,7 @@ void Thread::Start()
 {
     if (_handle != Null)
         return;
+    __internalstate(*this, RUNNING);
 #ifdef WINDOWS
     _handle = CreateThread(Null, 0, &ThreadRoutine, this, 0, Null);
 #else
@@ -136,7 +140,6 @@ void Thread::Start()
     pthread_create(reinterpret_cast<ThreadType *>(_handle), Null,
                    &ThreadRoutine, this);
 #endif
-    _state = RUNNING;
 }
 
 void Thread::Join()
@@ -155,7 +158,7 @@ void Thread::Kill(const bool force)
     if (_handle == Null)
         return;
     if (!force)
-        _state = EXITING;
+        __internalstate(*this, EXITING);
     else
     {
 #ifdef WINDOWS
@@ -163,7 +166,7 @@ void Thread::Kill(const bool force)
 #else
         pthread_cancel(*reinterpret_cast<ThreadType *>(_handle));
 #endif
-        _state = STOPPED;
+        __internalstate(*this, STOPPED);
     }
 }
 

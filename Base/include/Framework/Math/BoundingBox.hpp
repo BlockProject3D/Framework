@@ -27,39 +27,46 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Types.hpp"
-#include "Framework/Exception.hpp"
+#include "Framework/Math/Vector.hpp"
 
 namespace bpf
 {
     namespace math
     {
-        class IncompatibleMatrixSizeException : public Exception
+        template <typename T>
+        class BP_TPL_API BoundingBox
         {
-        private:
-            fisize _sizea;
-            fisize _sizeb;
-
         public:
-            inline IncompatibleMatrixSizeException(fisize sizea, fisize sizeb) noexcept
-                : _sizea(sizea)
-                , _sizeb(sizeb)
+            Vector3<T> Origin;
+            Vector3<T> Extent;
+
+            inline BoundingBox(const Vector3<T> &origin, const Vector3<T> &ext) noexcept
+                : Origin(origin)
+                , Extent(ext)
             {
             }
 
-            inline fsize SizeA() const noexcept
+            inline BoundingBox() noexcept
+                : Origin(Vector3<T>::Zero)
+                , Extent(Vector3<T>::Identity)
             {
-                return (_sizea);
             }
 
-            inline fsize SizeB() const noexcept
+            inline Vector3<T> GetMin() const noexcept
             {
-                return (_sizeb);
+                return (Origin - Extent);
             }
 
-            inline virtual const char *GetType() const noexcept
+            inline Vector3<T> GetMax() const noexcept
             {
-                return ("IncompatibleMatrixSize");
+                return (Origin + Extent);
+            }
+
+            inline static BoundingBox FromMinMax(const Vector3<T> &min, const Vector3<T> &max) noexcept
+            {
+                Vector3<T> origin = (min + max) / 2;
+                Vector3<T> ext = max - origin;
+                return (BoundingBox(origin, ext));
             }
         };
     }

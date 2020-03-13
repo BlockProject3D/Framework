@@ -27,40 +27,26 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Types.hpp"
-#include "Framework/Exception.hpp"
+#include "Framework/String.hpp"
+#include "Framework/Math/Quaternion.hpp"
 
 namespace bpf
 {
-    namespace math
+    template <typename T>
+    class String::Stringifier<math::Quaternion<T>>
     {
-        class IncompatibleMatrixSizeException : public Exception
+    public:
+        inline static String Stringify(const math::Quaternion<T> &q, const fsize prec = 0)
         {
-        private:
-            fisize _sizea;
-            fisize _sizeb;
-
-        public:
-            inline IncompatibleMatrixSizeException(fisize sizea, fisize sizeb) noexcept
-                : _sizea(sizea)
-                , _sizeb(sizeb)
-            {
-            }
-
-            inline fsize SizeA() const noexcept
-            {
-                return (_sizea);
-            }
-
-            inline fsize SizeB() const noexcept
-            {
-                return (_sizeb);
-            }
-
-            inline virtual const char *GetType() const noexcept
-            {
-                return ("IncompatibleMatrixSize");
-            }
-        };
-    }
+            return (String("Quaternion(")
+                + String::ValueOf(q.W, prec)
+                + " + "
+                + String::ValueOf(q.X, prec)
+                + "i + "
+                + String::ValueOf(q.Y, prec)
+                + "j + "
+                + String::ValueOf(q.Z, prec)
+                + "k)");
+        }
+    };
 }

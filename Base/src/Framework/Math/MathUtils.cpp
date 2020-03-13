@@ -27,75 +27,58 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <stdlib.h>
-#ifdef WINDOWS
-    #include <Windows.h>
-    using MutexType = CRITICAL_SECTION;
-#else
-    #include <pthread.h>
-    using MutexType = pthread_mutex_t;
-#endif
-#include "Framework/Memory/Memory.hpp"
-#include "Framework/System/Mutex.hpp"
+#include <time.h>
+#include "Framework/Math/MathUtils.hpp"
 
-using namespace bpf::memory;
-using namespace bpf::system;
+using namespace bpf::math;
 using namespace bpf;
 
-Mutex::Mutex()
-    : _handle(malloc(sizeof(MutexType)))
+bool MathUtils::IsPrime(const fisize n)
 {
-    if (_handle == Null)
-        throw MemoryException();
-#ifdef WINDOWS
-    InitializeCriticalSection(reinterpret_cast<MutexType *>(_handle));
-#else
-    pthread_mutex_init(reinterpret_cast<MutexType *>(_handle), Null);
-#endif
+    fisize a = 2;
+
+    if (n == 0 || n == 1)
+        return (false);
+    while (a < n)
+    {
+        if ((n % a) == 0)
+            return (false);
+        ++a;
+    }
+    return (true);
 }
 
-Mutex::~Mutex()
+fisize MathUtils::FindNextPrime(const fisize n)
 {
-#ifdef WINDOWS
-    DeleteCriticalSection(reinterpret_cast<MutexType *>(_handle));
-#else
-    pthread_mutex_destroy(reinterpret_cast<MutexType *>(_handle));
-#endif
-    free(_handle);
+    fisize a = n + 1;
+
+    while (!IsPrime(a))
+        ++a;
+    return (a);
 }
 
-Mutex::Mutex(Mutex &&other)
-    : _handle(other._handle)
+fsize MathUtils::FindNextPowerOfTwo(fsize nb)
 {
-    other._handle = Null;
+    ++nb;
+    --nb;
+    nb |= nb >> 1;
+    nb |= nb >> 2;
+    nb |= nb >> 4;
+    nb |= nb >> 8;
+    nb |= nb >> 16;
+    ++nb;
+    return (nb);
 }
 
-Mutex &Mutex::operator=(Mutex &&other)
+float MathUtils::InvSqrt(const float nb)
 {
-#ifdef WINDOWS
-    DeleteCriticalSection(reinterpret_cast<MutexType *>(_handle));
-#else
-    pthread_mutex_destroy(reinterpret_cast<MutexType *>(_handle));
-#endif
-    free(_handle);
-    _handle = other._handle;
-    other._handle = Null;
-    return (*this);
-}
+    float y = nb;
+    float x2 = nb * 0.5f;
+    uint32 nbu = *(uint32 *)&y;
+    const float threehalfs = 1.5f;
 
-void Mutex::Lock() const
-{
-#ifdef WINDOWS
-    EnterCriticalSection(reinterpret_cast<MutexType *>(_handle));
-#else
-    pthread_mutex_lock(reinterpret_cast<MutexType *>(_handle));
-#endif
-}
-
-void Mutex::Unlock() const
-{
-#ifdef WINDOWS
-    LeaveCriticalSection(reinterpret_cast<MutexType *>(_handle));
-#else
-    pthread_mutex_unlock(reinterpret_cast<MutexType *>(_handle));
-#endif
+    nbu = 0x5F3759DF - (nbu >> 1);
+    y = *(float *)&nbu;
+    y = y * (threehalfs - (x2 * y * y));
+    return (y);
 }

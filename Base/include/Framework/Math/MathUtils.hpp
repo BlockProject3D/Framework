@@ -26,76 +26,49 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <stdlib.h>
-#ifdef WINDOWS
-    #include <Windows.h>
-    using MutexType = CRITICAL_SECTION;
-#else
-    #include <pthread.h>
-    using MutexType = pthread_mutex_t;
-#endif
-#include "Framework/Memory/Memory.hpp"
-#include "Framework/System/Mutex.hpp"
+#pragma once
+#include "Framework/Types.hpp"
 
-using namespace bpf::memory;
-using namespace bpf::system;
-using namespace bpf;
-
-Mutex::Mutex()
-    : _handle(malloc(sizeof(MutexType)))
+namespace bpf
 {
-    if (_handle == Null)
-        throw MemoryException();
-#ifdef WINDOWS
-    InitializeCriticalSection(reinterpret_cast<MutexType *>(_handle));
-#else
-    pthread_mutex_init(reinterpret_cast<MutexType *>(_handle), Null);
-#endif
-}
+    namespace math
+    {
+        class BPF_API MathUtils
+        {
+        public:
+            /**
+             * Returns true if nb is a power of two
+             * @param nb the number to check
+             */
+            inline static bool IsPowerOfTwo(const fsize nb)
+            {
+                return (nb & (nb - 1)) == 0;
+            }
 
-Mutex::~Mutex()
-{
-#ifdef WINDOWS
-    DeleteCriticalSection(reinterpret_cast<MutexType *>(_handle));
-#else
-    pthread_mutex_destroy(reinterpret_cast<MutexType *>(_handle));
-#endif
-    free(_handle);
-}
+            /**
+             * Finds the next power of two starting at nb + 1
+             * @param nb the number to find the next power of two
+             */
+            static fsize FindNextPowerOfTwo(fsize nb);
 
-Mutex::Mutex(Mutex &&other)
-    : _handle(other._handle)
-{
-    other._handle = Null;
-}
+            /**
+             * Returns true if a given number is prime
+             * @param nb the number to check
+             */
+            static bool IsPrime(const fisize nb);
 
-Mutex &Mutex::operator=(Mutex &&other)
-{
-#ifdef WINDOWS
-    DeleteCriticalSection(reinterpret_cast<MutexType *>(_handle));
-#else
-    pthread_mutex_destroy(reinterpret_cast<MutexType *>(_handle));
-#endif
-    free(_handle);
-    _handle = other._handle;
-    other._handle = Null;
-    return (*this);
-}
+            /**
+             * Finds the next prime number starting at nb + 1
+             * @param nb the number to find the next prime
+             */
+            static fisize FindNextPrime(const fisize nb);
 
-void Mutex::Lock() const
-{
-#ifdef WINDOWS
-    EnterCriticalSection(reinterpret_cast<MutexType *>(_handle));
-#else
-    pthread_mutex_lock(reinterpret_cast<MutexType *>(_handle));
-#endif
-}
-
-void Mutex::Unlock() const
-{
-#ifdef WINDOWS
-    LeaveCriticalSection(reinterpret_cast<MutexType *>(_handle));
-#else
-    pthread_mutex_unlock(reinterpret_cast<MutexType *>(_handle));
-#endif
+            /**
+             * Returns the inverse square root of a floating point number
+             * Uses the Fast Inverse Square Root
+             * @param nb the number to find the inverse square root
+             */
+            static float InvSqrt(const float nb);
+        };
+    }
 }

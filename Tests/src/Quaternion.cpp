@@ -30,6 +30,7 @@
 #include <iostream>
 #include <gtest/gtest.h>
 #include <Framework/Math/Quaternion.hpp>
+#include <Framework/Math/Stringifier.Quaternion.hpp>
 
 namespace bpf
 {
@@ -47,26 +48,32 @@ TEST(Quat, Construct)
 
 TEST(Quat, EulerAngles)
 {
-    bpf::Quatld q = bpf::Quatld(bpf::Vector3ld(bpf::math::Math::Pi / 2.0, bpf::math::Math::Pi / 2.0, bpf::math::Math::Pi / 4.0));
+    bpf::Quatld q = bpf::Quatld(bpf::Vector3ld(bpf::math::Mathld::Pi / 2.0, bpf::math::Mathld::Pi / 2.0, bpf::math::Mathld::Pi / 4.0));
     bpf::Quatld expected = bpf::Quatld(0.6532815, 0.2705981, 0.6532815, -0.2705981);
 
-    /*std::cout << q.GetW() << ", " << q.GetAxis().X << ", " << q.GetAxis().Y << ", " << q.GetAxis().Z << std::endl;
-    std::cout << euler.X * bpf::Math::RadToDeg << ", " << euler.Y * bpf::Math::RadToDeg << ", " << euler.Z * bpf::Math::RadToDeg << std::endl;*/
     EXPECT_EQ(q, expected);
 }
 
 TEST(Quat, AxisAngle)
 {
-    bpf::Quatld q = bpf::Quatld(bpf::Vector3ld::Forward, bpf::math::Math::Pi / 2);
+    bpf::Quatld q = bpf::Quatld(bpf::Vector3ld::Forward, bpf::math::Mathld::Pi / 2);
     bpf::Quatld expected = bpf::Quatld(0.7071068, 0, 0.7071068, 0);
 
     EXPECT_EQ(q, expected);
 }
 
+TEST(Quat, Angle)
+{
+    bpf::Quatld q = bpf::Quatld(bpf::Vector3ld::Forward, bpf::math::Mathld::Pi / 2);
+    auto angle = q.Angle(bpf::Quatld::Identity);
+
+    EXPECT_LE(bpf::math::Mathld::Abs(angle * bpf::math::Mathld::RadToDeg - 90), bpf::math::Mathld::Epsilon);
+}
+
 TEST(Quat, Multiply)
 {
-    bpf::Quatld q = bpf::Quatld(bpf::Vector3ld::Forward, bpf::math::Math::Pi / 2);
-    bpf::Quatld q1 = bpf::Quatld(bpf::Vector3ld::Forward, bpf::math::Math::Pi / 2);
+    bpf::Quatld q = bpf::Quatld(bpf::Vector3ld::Forward, bpf::math::Mathld::Pi / 2);
+    bpf::Quatld q1 = bpf::Quatld(bpf::Vector3ld::Forward, bpf::math::Mathld::Pi / 2);
     bpf::Quatld expected = bpf::Quatld(0, 0, 1, 0);
 
     EXPECT_EQ(q * q1, expected);
@@ -74,8 +81,8 @@ TEST(Quat, Multiply)
 
 TEST(Quat, Add)
 {
-    bpf::Quatld q = bpf::Quatld(bpf::Vector3ld::Forward, bpf::math::Math::Pi / 2);
-    bpf::Quatld q1 = bpf::Quatld(bpf::Vector3ld::Forward, bpf::math::Math::Pi / 2);
+    bpf::Quatld q = bpf::Quatld(bpf::Vector3ld::Forward, bpf::math::Mathld::Pi / 2);
+    bpf::Quatld q1 = bpf::Quatld(bpf::Vector3ld::Forward, bpf::math::Mathld::Pi / 2);
     bpf::Quatld expected = bpf::Quatld(1.4142136, 0, 1.4142136, 0);
 
     EXPECT_EQ(q + q1, expected);
@@ -83,8 +90,8 @@ TEST(Quat, Add)
 
 TEST(Quat, Invert_Test1)
 {
-    bpf::Quatld q = bpf::Quatld(bpf::Vector3ld::Forward, bpf::math::Math::Pi / 2);
-    bpf::Quatld res = q * q.Invert();
+    bpf::Quatld q = bpf::Quatld(bpf::Vector3ld::Forward, bpf::math::Mathld::Pi / 2);
+    bpf::Quatld res = q * q.Inverse();
     bpf::Quatld expected = bpf::Quatld::Identity;
 
     EXPECT_EQ(res, expected);
@@ -92,9 +99,27 @@ TEST(Quat, Invert_Test1)
 
 TEST(Quat, Invert_Test2)
 {
-    bpf::Quatld q = bpf::Quatld(bpf::Vector3ld(bpf::math::Math::Pi / 2.0, bpf::math::Math::Pi / 2.0, bpf::math::Math::Pi / 4.0));
-    bpf::Quatld res = q * q.Invert();
+    bpf::Quatld q = bpf::Quatld(bpf::Vector3ld(bpf::math::Mathld::Pi / 2.0, bpf::math::Mathld::Pi / 2.0, bpf::math::Mathld::Pi / 4.0));
+    bpf::Quatld res = q * q.Inverse();
     bpf::Quatld expected = bpf::Quatld::Identity;
 
     EXPECT_EQ(res, expected);
+}
+
+TEST(Quat, Norm)
+{
+    bpf::Quatld q = bpf::Quatld(bpf::Vector3ld(bpf::math::Mathld::Pi / 2.0, bpf::math::Mathld::Pi / 2.0, bpf::math::Mathld::Pi / 4.0));
+
+    EXPECT_LE(bpf::math::Mathld::Abs(q.Norm()) - 1, bpf::math::Mathld::Epsilon);
+    q = q + q + q + q;
+    EXPECT_GT(bpf::math::Mathld::Abs(q.Norm()) - 1, bpf::math::Mathld::Epsilon);
+    q = q.Normalize();
+    EXPECT_LE(bpf::math::Mathld::Abs(q.Norm()) - 1, bpf::math::Mathld::Epsilon);
+}
+
+TEST(Quat, Stringifier)
+{
+    bpf::Quatld q = bpf::Quatld(1, 2, 3, 4);
+
+    EXPECT_STREQ(*bpf::String::ValueOf(q), "Quaternion(1 + 2i + 3j + 4k)");
 }

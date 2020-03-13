@@ -95,8 +95,8 @@ namespace bpf
         template <typename T>
         typename Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::Rotate(const Vector3<T> &axis, const T angle) noexcept
         {
-            T c = Math::Cos(angle);
-            T s = Math::Sin(angle);
+            T c = Math<T>::Cos(angle);
+            T s = Math<T>::Sin(angle);
             T t = (T)1 - c;
             Vector3<T> a = axis.Normalize();
 

@@ -97,7 +97,25 @@ TEST(VectorStatic, Operators_1)
     EXPECT_EQ(identity, bpf::math::Vector2f::Identity);
     identity *= 2;
     EXPECT_EQ(identity, bpf::math::Vector2f(2));
+    EXPECT_NE(identity * 2, bpf::math::Vector2f(2));
     EXPECT_EQ(-identity, bpf::math::Vector2f(-2));
+}
+
+TEST(VectorStatic, Comparision_1)
+{
+    auto identity = bpf::math::Vector2f::Identity;
+    auto zero = bpf::math::Vector2f::Zero;
+
+    EXPECT_LT(zero, identity);
+    EXPECT_FALSE(zero > identity);
+    EXPECT_GT(identity, zero);
+    EXPECT_FALSE(identity < zero);
+    EXPECT_LE(zero, identity);
+    EXPECT_FALSE(zero >= identity);
+    EXPECT_LE(identity, identity);
+    EXPECT_GE(identity, zero);
+    EXPECT_FALSE(identity <= zero);
+    EXPECT_GE(identity, identity);
 }
 
 TEST(VectorStatic, Norm_1)
@@ -126,7 +144,7 @@ TEST(VectorStatic, Normalize_1)
     auto v1 = bpf::math::Vector2f::Identity;
 
     v1.Normalize();
-    EXPECT_LT(1 - v1.Norm(), bpf::math::Math::Epsilon<float>());
+    EXPECT_LT(1 - v1.Norm(), bpf::math::Mathf::Epsilon);
 }
 
 TEST(VectorStatic, Dot_1)
@@ -243,7 +261,25 @@ TEST(VectorStatic, Operators_2)
     EXPECT_EQ(identity, bpf::math::Vector3f::Identity);
     identity *= 2;
     EXPECT_EQ(identity, bpf::math::Vector3f(2));
+    EXPECT_NE(identity * 2, bpf::math::Vector3f(2));
     EXPECT_EQ(-identity, bpf::math::Vector3f(-2));
+}
+
+TEST(VectorStatic, Comparision_2)
+{
+    auto identity = bpf::math::Vector3f::Identity;
+    auto zero = bpf::math::Vector3f::Zero;
+
+    EXPECT_LT(zero, identity);
+    EXPECT_FALSE(zero > identity);
+    EXPECT_GT(identity, zero);
+    EXPECT_FALSE(identity < zero);
+    EXPECT_LE(zero, identity);
+    EXPECT_FALSE(zero >= identity);
+    EXPECT_LE(identity, identity);
+    EXPECT_GE(identity, zero);
+    EXPECT_FALSE(identity <= zero);
+    EXPECT_GE(identity, identity);
 }
 
 TEST(VectorStatic, Norm_2)
@@ -272,7 +308,7 @@ TEST(VectorStatic, Normalize_2)
     auto v1 = bpf::math::Vector3f::Identity;
 
     v1.Normalize();
-    EXPECT_LT(1 - v1.Norm(), bpf::math::Math::Epsilon<float>());
+    EXPECT_LT(1 - v1.Norm(), bpf::math::Mathf::Epsilon);
 }
 
 TEST(VectorStatic, Dot_2)
@@ -408,7 +444,25 @@ TEST(VectorStatic, Operators_3)
     EXPECT_EQ(identity, bpf::math::Vector4f::Identity);
     identity *= 2;
     EXPECT_EQ(identity, bpf::math::Vector4f(2));
+    EXPECT_NE(identity * 2, bpf::math::Vector4f(2));
     EXPECT_EQ(-identity, bpf::math::Vector4f(-2));
+}
+
+TEST(VectorStatic, Comparision_3)
+{
+    auto identity = bpf::math::Vector4f::Identity;
+    auto zero = bpf::math::Vector4f::Zero;
+
+    EXPECT_LT(zero, identity);
+    EXPECT_FALSE(zero > identity);
+    EXPECT_GT(identity, zero);
+    EXPECT_FALSE(identity < zero);
+    EXPECT_LE(zero, identity);
+    EXPECT_FALSE(zero >= identity);
+    EXPECT_LE(identity, identity);
+    EXPECT_GE(identity, zero);
+    EXPECT_FALSE(identity <= zero);
+    EXPECT_GE(identity, identity);
 }
 
 TEST(VectorStatic, Norm_3)
@@ -435,7 +489,7 @@ TEST(VectorStatic, Normalize_3)
     auto v1 = bpf::math::Vector4f::Identity;
 
     v1.Normalize();
-    EXPECT_LT(1 - v1.Norm(), bpf::math::Math::Epsilon<float>());
+    EXPECT_LT(1 - v1.Norm(), bpf::math::Mathf::Epsilon);
 }
 
 TEST(VectorStatic, Dot_3)
@@ -567,7 +621,25 @@ TEST(VectorStatic, Operators_4)
     identity *= 2;
     EXPECT_EQ(identity, Vector5f(2));
     EXPECT_EQ(-identity, Vector5f(-2));
+    EXPECT_NE(Vector5f::Identity, Vector5f::Zero);
     EXPECT_FALSE(Vector5f::Identity == Vector5f::Zero);
+}
+
+TEST(VectorStatic, Comparision_4)
+{
+    auto identity = Vector5f::Identity;
+    auto zero = Vector5f::Zero;
+
+    EXPECT_LT(zero, identity);
+    EXPECT_FALSE(zero > identity);
+    EXPECT_GT(identity, zero);
+    EXPECT_FALSE(identity < zero);
+    EXPECT_LE(zero, identity);
+    EXPECT_FALSE(zero >= identity);
+    EXPECT_LE(identity, identity);
+    EXPECT_GE(identity, zero);
+    EXPECT_FALSE(identity <= zero);
+    EXPECT_GE(identity, identity);
 }
 
 TEST(VectorStatic, Norm_4)
@@ -596,7 +668,7 @@ TEST(VectorStatic, Normalize_4)
     auto v1 = Vector5f::Identity;
 
     v1.Normalize();
-    EXPECT_LT(1 - v1.Norm(), bpf::math::Math::Epsilon<float>());
+    EXPECT_LT(1 - v1.Norm(), bpf::math::Mathf::Epsilon);
 }
 
 TEST(VectorStatic, Dot_4)

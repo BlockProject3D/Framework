@@ -175,8 +175,52 @@ namespace bpf
         {
             for (fsize i = 0; i != I; ++i)
             {
-                T diff = Math::Abs(_arr[i] - other(i));
-                if (diff >= Math::Epsilon<T>())
+                T diff = Math<T>::Abs(_arr[i] - other(i));
+                if (diff >= Math<T>::Epsilon)
+                    return (false);
+            }
+            return (true);
+        }
+
+        template <typename T, fsize I>
+        bool Vector<T, I>::operator<(const Vector &other) const
+        {
+            for (fsize i = 0; i != I; ++i)
+            {
+                if (_arr[i] >= other._arr[i])
+                    return (false);
+            }
+            return (true);
+        }
+
+        template <typename T, fsize I>
+        bool Vector<T, I>::operator>(const Vector &other) const
+        {
+            for (fsize i = 0; i != I; ++i)
+            {
+                if (_arr[i] <= other._arr[i])
+                    return (false);
+            }
+            return (true);
+        }
+
+        template <typename T, fsize I>
+        bool Vector<T, I>::operator<=(const Vector &other) const
+        {
+            for (fsize i = 0; i != I; ++i)
+            {
+                if (_arr[i] > other._arr[i])
+                    return (false);
+            }
+            return (true);
+        }
+
+        template <typename T, fsize I>
+        bool Vector<T, I>::operator>=(const Vector &other) const
+        {
+            for (fsize i = 0; i != I; ++i)
+            {
+                if (_arr[i] < other._arr[i])
                     return (false);
             }
             return (true);
@@ -215,7 +259,7 @@ namespace bpf
 
             for (fsize i = 0; i != I; ++i)
                 res += _arr[i] * _arr[i];
-            return (Math::Sqrt(res));
+            return (Math<T>::Sqrt(res));
         }
 
         template <typename T, fsize I>
@@ -245,7 +289,7 @@ namespace bpf
             auto res = Vector();
 
             for (fsize i = 0; i != I; ++i)
-                res(i) = Math::Lerp(v(i), v1(i), t);
+                res(i) = Math<T>::Lerp(v(i), v1(i), t);
             return (res);
         }
 
@@ -417,8 +461,60 @@ namespace bpf
                 throw IncompatibleMatrixSizeException((fisize)_l, (fisize)other._l);
             for (fsize i = 0; i != _l; ++i)
             {
-                T diff = Math::Abs(_arr[i] - other(i));
-                if (diff >= Math::Epsilon<T>())
+                T diff = Math<T>::Abs(_arr[i] - other(i));
+                if (diff >= Math<T>::Epsilon)
+                    return (false);
+            }
+            return (true);
+        }
+
+        template <typename T>
+        bool Vector<T>::operator<(const Vector &other) const
+        {
+            if (_l != other._l)
+                throw IncompatibleMatrixSizeException((fisize)_l, (fisize)other._l);
+            for (fsize i = 0; i != _l; ++i)
+            {
+                if (_arr[i] >= other._arr[i])
+                    return (false);
+            }
+            return (true);
+        }
+
+        template <typename T>
+        bool Vector<T>::operator>(const Vector &other) const
+        {
+            if (_l != other._l)
+                throw IncompatibleMatrixSizeException((fisize)_l, (fisize)other._l);
+            for (fsize i = 0; i != _l; ++i)
+            {
+                if (_arr[i] <= other._arr[i])
+                    return (false);
+            }
+            return (true);
+        }
+
+        template <typename T>
+        bool Vector<T>::operator<=(const Vector &other) const
+        {
+            if (_l != other._l)
+                throw IncompatibleMatrixSizeException((fisize)_l, (fisize)other._l);
+            for (fsize i = 0; i != _l; ++i)
+            {
+                if (_arr[i] > other._arr[i])
+                    return (false);
+            }
+            return (true);
+        }
+
+        template <typename T>
+        bool Vector<T>::operator>=(const Vector &other) const
+        {
+            if (_l != other._l)
+                throw IncompatibleMatrixSizeException((fisize)_l, (fisize)other._l);
+            for (fsize i = 0; i != _l; ++i)
+            {
+                if (_arr[i] < other._arr[i])
                     return (false);
             }
             return (true);
@@ -459,7 +555,7 @@ namespace bpf
 
             for (fsize i = 0; i != _l; ++i)
                 res += _arr[i] * _arr[i];
-            return (Math::Sqrt(res));
+            return (Math<T>::Sqrt(res));
         }
 
         template <typename T>
@@ -491,7 +587,7 @@ namespace bpf
             auto res = Vector(v._l);
 
             for (fsize i = 0; i != v._l; ++i)
-                res(i) = Math::Lerp(v(i), v1(i), t);
+                res(i) = Math<T>::Lerp(v(i), v1(i), t);
             return (res);
         }
     }

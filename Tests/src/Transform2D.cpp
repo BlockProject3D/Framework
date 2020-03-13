@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -26,60 +26,19 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <stdlib.h>
-#include <time.h>
-#include "Framework/Math/Math.hpp"
+#include <cassert>
+#include <iostream>
+#include <gtest/gtest.h>
+#include <Framework/Math/Transform2D.hpp>
 
-using namespace bpf::math;
-using namespace bpf;
-
-constexpr float Math::RadToDeg;
-constexpr float Math::DegToRad;
-constexpr float Math::Pi;
-
-bool Math::IsPrime(const fisize n)
+TEST(Transform2D, HomogeneousCoords)
 {
-    fisize a = 2;
+    auto mat = bpf::math::Transform2D<float>::MatrixBuilder().Translate(bpf::math::Vector2f(2)).Build();
+    bpf::math::Matrix3f expected = {
+        1, 0, 2,
+        0, 1, 2,
+        0, 0, 1
+    };
 
-    while (a < n)
-    {
-        if ((n % a) == 0)
-            return (false);
-        ++a;
-    }
-    return (true);
-}
-
-fisize Math::FindNextPrime(const fisize n)
-{
-    fisize a = n + 1;
-
-    while (!IsPrime(a))
-        ++a;
-    return (a);
-}
-
-fsize Math::FindNextPowerOfTwo(fsize nb)
-{
-    --nb;
-    nb |= nb >> 1;
-    nb |= nb >> 2;
-    nb |= nb >> 4;
-    nb |= nb >> 8;
-    nb |= nb >> 16;
-    ++nb;
-    return (nb);
-}
-
-float Math::InvSqrt(const float nb)
-{
-    float y = nb;
-    float x2 = nb * 0.5f;
-    uint32 nbu = *(uint32 *)&y;
-    const float threehalfs = 1.5f;
-
-    nbu = 0x5F3759DF - (nbu >> 1);
-    y = *(float *)&nbu;
-    y = y * (threehalfs - (x2 * y * y));
-    return (y);
+    EXPECT_EQ(mat, expected);
 }

@@ -44,6 +44,10 @@ namespace bpf
                 Matrix3<T> _matrix;
 
             public:
+                inline MatrixBuilder()
+                    : _matrix(Matrix3<T>::Identity)
+                {
+                }
                 MatrixBuilder &Translate(const Vector2<T> &translation) noexcept;
                 MatrixBuilder &Scale(const Vector2<T> &scale) noexcept;
                 MatrixBuilder &ShearX(const T &shear) noexcept;

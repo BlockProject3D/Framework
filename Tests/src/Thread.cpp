@@ -61,7 +61,9 @@ TEST(Thread, Basic)
 
     EXPECT_STREQ(*thread.GetName(), "MyThread");
     EXPECT_EQ(thread.GetState(), bpf::system::Thread::PENDING);
+    thread.Kill(); //Should just silently return as the thread is not yet running
     thread.Start();
+    thread.Start(); //Should just silently return as the thread already runs
     EXPECT_EQ(thread.GetState(), bpf::system::Thread::RUNNING);
     bpf::system::Thread::Sleep(500);
     thread.Kill();
@@ -85,7 +87,7 @@ TEST(Thread, Move_1)
     EXPECT_EQ(thread.GetState(), bpf::system::Thread::EXITING);
     thread.Join();
     EXPECT_EQ(thread.GetState(), bpf::system::Thread::FINISHED);
-    EXPECT_EQ(thread._value, (bpf::uint32)2);
+    EXPECT_LE(thread._value - (bpf::uint32)2, (bpf::uint32)1);
 }
 
 TEST(Thread, Move_2)
@@ -96,6 +98,7 @@ TEST(Thread, Move_2)
     EXPECT_EQ(thread.GetState(), bpf::system::Thread::PENDING);
     MyThread th = std::move(thread);
     th.Start();
+    EXPECT_THROW(thread = std::move(th), bpf::system::OSException);
     EXPECT_EQ(th.GetState(), bpf::system::Thread::RUNNING);
     bpf::system::Thread::Sleep(500);
     th.Kill();
@@ -103,6 +106,7 @@ TEST(Thread, Move_2)
     th.Join();
     EXPECT_EQ(th.GetState(), bpf::system::Thread::FINISHED);
     EXPECT_LE(th._value - (bpf::uint32)2, (bpf::uint32)1);
+    thread = std::move(th);
 }
 
 TEST(Thread, KillForce)

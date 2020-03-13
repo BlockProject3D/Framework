@@ -101,6 +101,16 @@ namespace bpf
 
             const T &operator()(const fsize l) const;
 
+            inline const T *operator*() const noexcept
+            {
+                return (&X);
+            }
+
+            inline T *operator*() noexcept
+            {
+                return (&X);
+            }
+
             inline Vector &operator=(const Vector &other)
             {
                 X = other.X;
@@ -221,7 +231,7 @@ namespace bpf
 
             inline T Norm() const
             {
-                return (Math::Sqrt(X * X + Y * Y + Z * Z + W * W));
+                return (Math<T>::Sqrt(X * X + Y * Y + Z * Z + W * W));
             }
 
             inline T NormSquared() const
@@ -237,17 +247,42 @@ namespace bpf
 
             inline bool operator==(const Vector &other) const
             {
-                T diffx = Math::Abs(X - other.X);
-                T diffy = Math::Abs(Y - other.Y);
-                T diffz = Math::Abs(Z - other.Z);
-                T diffw = Math::Abs(W - other.W);
+                T diffx = Math<T>::Abs(X - other.X);
+                T diffy = Math<T>::Abs(Y - other.Y);
+                T diffz = Math<T>::Abs(Z - other.Z);
+                T diffw = Math<T>::Abs(W - other.W);
 
-                return (diffx <= Math::Epsilon<T>() && diffy <= Math::Epsilon<T>() && diffz <= Math::Epsilon<T>() && diffw <= Math::Epsilon<T>());
+                return (diffx <= Math<T>::Epsilon && diffy <= Math<T>::Epsilon && diffz <= Math<T>::Epsilon && diffw <= Math<T>::Epsilon);
+            }
+
+            inline bool operator!=(const Vector &other) const
+            {
+                return (!operator==(other));
+            }
+
+            inline bool operator<(const Vector &other) const
+            {
+                return (X < other.X && Y < other.Y && Z < other.Z && W < other.W);
+            }
+
+            inline bool operator>(const Vector &other) const
+            {
+                return (X > other.X &&Y > other.Y &&Z > other.Z && W > other.W);
+            }
+
+            inline bool operator<=(const Vector &other) const
+            {
+                return (X <= other.X && Y <= other.Y && Z <= other.Z && W <= other.W);
+            }
+
+            inline bool operator>=(const Vector &other) const
+            {
+                return (X >= other.X && Y >= other.Y && Z >= other.Z && W >= other.W);
             }
 
             inline static Vector Lerp(const Vector &v, const Vector &v1, const T t)
             {
-                return (Vector(Math::Lerp(v.X, v1.X, t), Math::Lerp(v.Y, v1.Y, t), Math::Lerp(v.Z, v1.Z, t), Math::Lerp(v.W, v1.W, t)));
+                return (Vector(Math<T>::Lerp(v.X, v1.X, t), Math<T>::Lerp(v.Y, v1.Y, t), Math<T>::Lerp(v.Z, v1.Z, t), Math<T>::Lerp(v.W, v1.W, t)));
             }
 
             static const Vector Zero;

@@ -26,41 +26,20 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-#include "Framework/Types.hpp"
-#include "Framework/Exception.hpp"
+#include <cassert>
+#include <iostream>
+#include <gtest/gtest.h>
+#include <Framework/Math/Transform3D.hpp>
 
-namespace bpf
+TEST(Transform3D, HomogeneousCoords)
 {
-    namespace math
-    {
-        class IncompatibleMatrixSizeException : public Exception
-        {
-        private:
-            fisize _sizea;
-            fisize _sizeb;
+    auto mat = bpf::math::Transform3D<float>::MatrixBuilder().Translate(bpf::math::Vector3f(2)).Build();
+    bpf::math::Matrix4f expected = {
+        1, 0, 0, 2,
+        0, 1, 0, 2,
+        0, 0, 1, 2,
+        0, 0, 0, 1
+    };
 
-        public:
-            inline IncompatibleMatrixSizeException(fisize sizea, fisize sizeb) noexcept
-                : _sizea(sizea)
-                , _sizeb(sizeb)
-            {
-            }
-
-            inline fsize SizeA() const noexcept
-            {
-                return (_sizea);
-            }
-
-            inline fsize SizeB() const noexcept
-            {
-                return (_sizeb);
-            }
-
-            inline virtual const char *GetType() const noexcept
-            {
-                return ("IncompatibleMatrixSize");
-            }
-        };
-    }
+    EXPECT_EQ(mat, expected);
 }

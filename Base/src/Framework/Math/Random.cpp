@@ -85,14 +85,14 @@ uint16 Random::NextShort(const uint16 min, const uint16 max)
 
 float Random::NextFloat(const float min)
 {
-    fint start = Math::Abs(rand() % 256);
+    fint start = Math<fint>::Abs(rand() % 256);
 
     return (((float)start / 256.0f) + min);
 }
 
 double Random::NextDouble()
 {
-    fint start = Math::Abs(rand() % 256);
+    fint start = Math<fint>::Abs(rand() % 256);
 
     return ((double)start / 256.0f);
 }
