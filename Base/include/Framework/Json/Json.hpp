@@ -296,27 +296,6 @@ namespace bpf
 
             Json &operator=(Json &&other);
 
-            inline Json &operator=(const int val)
-            {
-                _type = EType::NUMBER;
-                _number = (double)val;
-                return (*this);
-            }
-
-            inline Json &operator=(const uint32 val)
-            {
-                _type = EType::NUMBER;
-                _number = (double)val;
-                return (*this);
-            }
-
-            inline Json &operator=(const float val)
-            {
-                _type = EType::NUMBER;
-                _number = (float)val;
-                return (*this);
-            }
-
             inline Json &operator=(const double val)
             {
                 _type = EType::NUMBER;
