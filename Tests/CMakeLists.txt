@@ -62,6 +62,7 @@ set(SOURCES
     src/BoundingBox.cpp
     src/Transform3D.cpp
     src/Transform2D.cpp
+    src/Math.cpp
 )
 
 bp_setup_program(${PROJECT_NAME} include)
