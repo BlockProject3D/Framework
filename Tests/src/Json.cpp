@@ -140,3 +140,14 @@ TEST(Json, LexerParser)
     EXPECT_STREQ(*testObject["MyString"].AsString(), "This is a true test of false and null containing 0.1 42.42 numbers and even \"strings\"");
     EXPECT_STREQ(*bpf::String::ValueOf(testObject["Array"].AsArray()), "[TRUE, FALSE, null, 0.1, 1, 42, 4242, 0.4242]");
 }
+
+TEST(Json, Stringifier)
+{
+    J::Object obj{
+        {"MyBool", true},
+        {"MyNum", 42.42},
+        {"MyArr", J::Array {"a", "b"}}
+    };
+
+    EXPECT_STREQ(*bpf::String::ValueOf(obj), "{'MyArr': [a, b], 'MyNum': 42.42, 'MyBool': TRUE}");
+}
