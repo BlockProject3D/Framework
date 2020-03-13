@@ -37,7 +37,7 @@ TEST(Name, Creation)
     auto name1 = bpf::Name(bpf::String("Test"));
     auto name2 = bpf::Name(name1.Hash());
 
-    EXPECT_GT(name.Hash(), 0);
+    EXPECT_GT(name.Hash(), (bpf::fsize)0);
     EXPECT_EQ(name.Hash(), name1.Hash());
     EXPECT_EQ(name.Hash(), name2.Hash());
 }
