@@ -36,7 +36,7 @@ using J = bpf::json::Json;
 
 TEST(Json, API_1)
 {
-    J::Object obj = {
+    J::Object obj {
         {"Test", 0.0},
         {"Test1", true},
         {"TestArray", J::Array {"A", "B", "TrouDuCul"}},
@@ -48,6 +48,7 @@ TEST(Json, API_1)
             }
         }
     };
+
     EXPECT_EQ(obj["Test"], 0.0);
     EXPECT_EQ(obj["Test1"], true);
     const bpf::json::Json::Array &arr = obj["TestArray"];
@@ -57,7 +58,7 @@ TEST(Json, API_1)
 
 TEST(Json, API_2)
 {
-    J::Array arr = {
+    J::Array arr {
         J::Object
         {
             {"Test", "a"},
@@ -74,6 +75,7 @@ TEST(Json, API_2)
             {"Test1", "b"}
         }
     };
+
     const J::Object &obj = arr[0];
     EXPECT_EQ(obj["Test"], "a");
     EXPECT_EQ(obj["Test1"], "b");
@@ -85,7 +87,7 @@ TEST(Json, API_2)
 
 TEST(Json, API_3)
 {
-    J::Object obj = {
+    J::Object obj {
         {"Property1", true},
         {"Property2", 0.0},
         {"Property1", false},
@@ -94,6 +96,20 @@ TEST(Json, API_3)
 
     EXPECT_EQ(obj["Property1"], false);
     EXPECT_EQ(obj["Property2"], 42.0);
+}
+
+TEST(Json, API_4)
+{
+    J::Object myObj = J::Object
+    {
+        {"MyBool", true},
+        {"MyVec", J::Array {0.0, 1.0, 0.0}}
+    };
+
+    EXPECT_EQ(myObj["MyBool"], true);
+    EXPECT_EQ(myObj["MyVec"].AsArray()[0], 0.0);
+    EXPECT_EQ(myObj["MyVec"].AsArray()[1], 1.0);
+    EXPECT_EQ(myObj["MyVec"].AsArray()[2], 0.0);
 }
 
 TEST(Json, LexerParser)
@@ -105,6 +121,7 @@ TEST(Json, LexerParser)
         "   \"Array\": [ true, false, null, 0.1, 1, 42, 42.42e2, 42.42e-2 ],"
         "   \"MyString\": \"This is a true test of false and null containing 0.1 42.42 numbers and even \\\"strings\\\"\""
         "}";
+
     bpf::json::Lexer lexer;
     lexer.LoadString(str);
     J testObj = bpf::json::Parser(std::move(lexer)).Parse();

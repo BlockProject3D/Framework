@@ -59,7 +59,15 @@ namespace bpf
                 Object()
                 {
                 }
-                Object(const std::initializer_list<std::pair<String, Json>> &lst);
+                explicit Object(const std::initializer_list<std::pair<String, Json>> &lst);
+                explicit inline Object(const collection::Map<String, Json> &map)
+                    : _data(map)
+                {
+                }
+                explicit inline Object(collection::Map<String, Json> &&map)
+                    : _data(std::move(map))
+                {
+                }
 
                 inline Json &operator[](const String &name)
                 {
@@ -106,7 +114,15 @@ namespace bpf
                 Array()
                 {
                 }
-                Array(const std::initializer_list<Json> &vals);
+                explicit Array(const std::initializer_list<Json> &vals);
+                explicit inline Array(const collection::List<Json> &vals)
+                    : _data(vals)
+                {
+                }
+                explicit inline Array(collection::List<Json> &&vals)
+                    : _data(std::move(vals))
+                {
+                }
 
                 inline void Add(const Json &json)
                 {
