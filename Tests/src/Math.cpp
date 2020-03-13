@@ -41,6 +41,11 @@ TEST(Math, Epislon)
     EXPECT_EQ(bpf::math::Math<int>::Epsilon, 0);
 }
 
+TEST(Math, Map)
+{
+    EXPECT_TRUE(bpf::math::Mathf::Map(3000, 1000, 4000, 0, 360) >= 0 && bpf::math::Mathf::Map(3000, 1000, 4000, 0, 360) <= 360);
+}
+
 TEST(Math, Clamp)
 {
     EXPECT_EQ(bpf::math::Mathf::Clamp(3000, 0, 360), 360);
