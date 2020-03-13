@@ -40,7 +40,7 @@ Name::Name(const char *str) noexcept
 Name::Name(const String &str) noexcept
     : _hash(5381)
 {
-    for (fsize i = 0; i != str.Size(); ++i)
+    for (fisize i = 0; i != str.Size(); ++i)
         _hash = ((_hash << 5) + _hash) + str.ByteAt(i);
 }
 
