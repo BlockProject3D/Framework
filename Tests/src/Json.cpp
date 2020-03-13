@@ -59,22 +59,15 @@ TEST(Json, API_1)
 
 TEST(Json, API_2)
 {
+    bpf::collection::Map<bpf::String, J> vals = { {"Test", "a"}, {"Test1", "b"} };
     J::Array arr {
         J::Object
         {
             {"Test", "a"},
             {"Test1", "b"}
         },
-        J::Object
-        {
-            {"Test", "a"},
-            {"Test1", "b"}
-        },
-        J::Object
-        {
-            {"Test", "a"},
-            {"Test1", "b"}
-        }
+        J::Object(bpf::collection::Map<bpf::String, J> { {"Test", "a"}, {"Test1", "b"} }),
+        J::Object(vals)
     };
 
     const J::Object &obj = arr[0];
@@ -99,7 +92,7 @@ TEST(Json, API_3)
     EXPECT_EQ(obj["Property2"], 42.0);
 }
 
-TEST(Json, API_4)
+TEST(Json, API_4_1)
 {
     J::Object myObj = J::Object
     {
@@ -108,6 +101,31 @@ TEST(Json, API_4)
     };
 
     EXPECT_EQ(myObj["MyBool"], true);
+    EXPECT_EQ(myObj["MyVec"].AsArray()[0], 0.0);
+    EXPECT_EQ(myObj["MyVec"].AsArray()[1], 1.0);
+    EXPECT_EQ(myObj["MyVec"].AsArray()[2], 0.0);
+}
+
+TEST(Json, API_4_2)
+{
+    J::Object myObj = J::Object
+    {
+        {"MyVec", J::Array(bpf::collection::List<J> { 0.0, 1.0, 0.0})}
+    };
+
+    EXPECT_EQ(myObj["MyVec"].AsArray()[0], 0.0);
+    EXPECT_EQ(myObj["MyVec"].AsArray()[1], 1.0);
+    EXPECT_EQ(myObj["MyVec"].AsArray()[2], 0.0);
+}
+
+TEST(Json, API_4_3)
+{
+    bpf::collection::List<J> lst = { 0.0, 1.0, 0.0 };
+    J::Object myObj = J::Object
+    {
+        {"MyVec", J::Array(lst)}
+    };
+
     EXPECT_EQ(myObj["MyVec"].AsArray()[0], 0.0);
     EXPECT_EQ(myObj["MyVec"].AsArray()[1], 1.0);
     EXPECT_EQ(myObj["MyVec"].AsArray()[2], 0.0);
