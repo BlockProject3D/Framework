@@ -37,6 +37,8 @@ TEST(Math, Epislon)
     EXPECT_EQ(bpf::math::__internal_math::GetEpsilon<float>(), bpf::math::Mathf::Epsilon);
     EXPECT_EQ(bpf::math::__internal_math::GetEpsilon<double>(), bpf::math::Mathd::Epsilon);
     EXPECT_EQ(bpf::math::__internal_math::GetEpsilon<long double>(), bpf::math::Mathld::Epsilon);
+    EXPECT_EQ(bpf::math::__internal_math::GetEpsilon<int>(), bpf::math::Math<int>::Epsilon);
+    EXPECT_EQ(bpf::math::Math<int>::Epsilon, 0);
 }
 
 TEST(Math, Clamp)
