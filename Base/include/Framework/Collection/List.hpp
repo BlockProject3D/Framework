@@ -201,6 +201,7 @@ namespace bpf
              * @throws IndexException if the position is outside the bounds of the list
              */
             const T &operator[](const fsize id) const;
+            T &operator[](const fsize id);
 
             List<T> operator+(const List<T> &other) const;
 

@@ -44,7 +44,7 @@ set(SOURCES
     ./include/Framework/Math/Polygon3D.impl.hpp
     ./include/Framework/Math/Stringifier.Matrix.hpp
     ./include/Framework/Math/Stringifier.Vector.hpp
-	./include/Framework/Math/Stringifier.Quaternion.hpp
+    ./include/Framework/Math/Stringifier.Quaternion.hpp
     ./include/Framework/Math/Math.hpp
     ./include/Framework/Math/MathUtils.hpp
     ./include/Framework/Math/BoundingBox.hpp
@@ -91,6 +91,7 @@ set(SOURCES
     ./include/Framework/System/ScopeLock.hpp
     ./include/Framework/System/Paths.hpp
     ./include/Framework/System/Stringifier.DateTime.hpp
+    ./include/Framework/System/EntryPoint.hpp
     ./include/Framework/Collection/Iterator.hpp
     ./include/Framework/Collection/Array.hpp
     ./include/Framework/Collection/Array.impl.hpp
@@ -115,7 +116,10 @@ set(SOURCES
     ./include/Framework/Collection/Stringifier.HashMap.hpp
     ./include/Framework/Collection/Stringifier.Map.hpp
     ./include/Framework/Collection/StackException.hpp
-    ./include/Framework/System/EntryPoint.hpp
+    ./include/Framework/Json/Json.hpp
+    ./include/Framework/Json/Lexer.hpp
+    ./include/Framework/Json/Parser.hpp
+    ./include/Framework/Json/JsonException.hpp
     ./include/Framework/API.hpp
     ./include/Framework/BinUtils.hpp
     ./include/Framework/Types.hpp
@@ -166,6 +170,9 @@ set(SOURCES
     ./src/Framework/System/Timer.cpp
     ./src/Framework/System/Mutex.cpp
     ./src/Framework/System/ThreadManager.cpp
+    ./src/Framework/Json/Json.cpp
+    ./src/Framework/Json/Lexer.cpp
+    ./src/Framework/Json/Parser.cpp
     ./src/Framework/Color.cpp
     ./src/Framework/Profiler.cpp
     ./src/Framework/Exception.cpp
