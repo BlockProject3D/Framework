@@ -37,6 +37,8 @@ bool MathUtils::IsPrime(const fisize n)
 {
     fisize a = 2;
 
+    if (n == 0 || n == 1)
+        return (false);
     while (a < n)
     {
         if ((n % a) == 0)
@@ -57,6 +59,7 @@ fisize MathUtils::FindNextPrime(const fisize n)
 
 fsize MathUtils::FindNextPowerOfTwo(fsize nb)
 {
+    ++nb;
     --nb;
     nb |= nb >> 1;
     nb |= nb >> 2;

@@ -29,6 +29,7 @@
 #include <cassert>
 #include <iostream>
 #include <gtest/gtest.h>
+#include <Framework/Math/MathUtils.hpp>
 #include <Framework/Math/Math.hpp>
 
 TEST(Math, Epislon)
@@ -43,4 +44,42 @@ TEST(Math, Clamp)
     EXPECT_EQ(bpf::math::Mathf::Clamp(3000, 0, 360), 360);
     EXPECT_EQ(bpf::math::Mathf::Clamp(-2, 0, 360), 0);
     EXPECT_EQ(bpf::math::Mathf::Clamp(2, 0, 360), 2);
+}
+
+TEST(MathUtils, IsPowerOfTwo)
+{
+    EXPECT_TRUE(bpf::math::MathUtils::IsPowerOfTwo(2));
+    EXPECT_TRUE(bpf::math::MathUtils::IsPowerOfTwo(1));
+    EXPECT_TRUE(bpf::math::MathUtils::IsPowerOfTwo(4));
+    EXPECT_TRUE(bpf::math::MathUtils::IsPowerOfTwo(8));
+    EXPECT_FALSE(bpf::math::MathUtils::IsPowerOfTwo(7));
+    EXPECT_FALSE(bpf::math::MathUtils::IsPowerOfTwo(6));
+}
+
+TEST(MathUtils, NextPowerOfTwo)
+{
+    EXPECT_EQ(bpf::math::MathUtils::FindNextPowerOfTwo(2), 4);
+    EXPECT_EQ(bpf::math::MathUtils::FindNextPowerOfTwo(1), 2);
+    EXPECT_EQ(bpf::math::MathUtils::FindNextPowerOfTwo(7), 8);
+    EXPECT_EQ(bpf::math::MathUtils::FindNextPowerOfTwo(9), 16);
+}
+
+TEST(MathUtils, IsPrime)
+{
+    EXPECT_TRUE(bpf::math::MathUtils::IsPrime(3));
+    EXPECT_TRUE(bpf::math::MathUtils::IsPrime(13));
+    EXPECT_TRUE(bpf::math::MathUtils::IsPrime(2));
+    EXPECT_TRUE(bpf::math::MathUtils::IsPrime(23));
+    EXPECT_FALSE(bpf::math::MathUtils::IsPrime(1));
+    EXPECT_FALSE(bpf::math::MathUtils::IsPrime(0));
+}
+
+TEST(MathUtils, NextPrime)
+{
+    EXPECT_EQ(bpf::math::MathUtils::FindNextPrime(2), 3);
+    EXPECT_EQ(bpf::math::MathUtils::FindNextPrime(1), 2);
+    EXPECT_EQ(bpf::math::MathUtils::FindNextPrime(0), 2);
+    EXPECT_EQ(bpf::math::MathUtils::FindNextPrime(3), 5);
+    EXPECT_EQ(bpf::math::MathUtils::FindNextPrime(4), 5);
+    EXPECT_EQ(bpf::math::MathUtils::FindNextPrime(5), 7);
 }
