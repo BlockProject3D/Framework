@@ -327,7 +327,7 @@ bool String::operator==(const String &other) const
 {
     if (StrLen != other.StrLen)
         return (false);
-    for (uint32 i = 0; i < StrLen; i++)
+    for (fsize i = 0; i < StrLen; i++)
     {
         if (other.Data[i] != Data[i])
             return (false);
@@ -337,7 +337,11 @@ bool String::operator==(const String &other) const
 
 bool String::operator<(const String &other) const
 {
-    for (uint32 i = 0 ; i < StrLen ; i++)
+    if (StrLen < other.StrLen)
+        return (true);
+    if (StrLen > other.StrLen)
+        return (false);
+    for (fsize i = 0 ; i < StrLen ; i++)
     {
         if (Data[i] != other.Data[i])
             return (Data[i] < other.Data[i]);
@@ -347,7 +351,11 @@ bool String::operator<(const String &other) const
 
 bool String::operator>(const String &other) const
 {
-    for (uint32 i = 0 ; i < StrLen ; i++)
+    if (StrLen > other.StrLen)
+        return (true);
+    if (StrLen < other.StrLen)
+        return (false);
+    for (fsize i = 0 ; i < StrLen ; i++)
     {
         if (Data[i] != other.Data[i])
             return (Data[i] > other.Data[i]);
