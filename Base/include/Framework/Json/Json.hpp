@@ -103,6 +103,11 @@ namespace bpf
                 {
                     return (_data.rend());
                 }
+
+                inline const collection::Map<String, Json> &Properties() const noexcept
+                {
+                    return (_data);
+                }
             };
 
             class BPF_API Array
@@ -177,6 +182,11 @@ namespace bpf
                 inline collection::List<Json>::ReverseIterator rend() const
                 {
                     return (_data.rend());
+                }
+
+                inline const collection::List<Json> &Items() const noexcept
+                {
+                    return (_data);
                 }
             };
 
@@ -385,7 +395,7 @@ namespace bpf
                 return (*_object);
             }
 
-            inline double AsDouble() const
+            inline double AsNumber() const
             {
                 if (_type != EType::NUMBER)
                     throw JsonException("Incompatible value type");

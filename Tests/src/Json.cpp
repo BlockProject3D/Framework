@@ -31,6 +31,7 @@
 #include <gtest/gtest.h>
 #include <Framework/Json/Json.hpp>
 #include <Framework/Json/Parser.hpp>
+#include <Framework/Json/Stringifier.Json.hpp>
 
 using J = bpf::json::Json;
 
@@ -137,4 +138,5 @@ TEST(Json, LexerParser)
     bpf::String str1 = testObject["MyString"];
     EXPECT_STREQ(*str1, "This is a true test of false and null containing 0.1 42.42 numbers and even \"strings\"");
     EXPECT_STREQ(*testObject["MyString"].AsString(), "This is a true test of false and null containing 0.1 42.42 numbers and even \"strings\"");
+    EXPECT_STREQ(*bpf::String::ValueOf(testObject["Array"].AsArray()), "[TRUE, FALSE, null, 0.1, 1, 42, 4242, 0.4242]");
 }
