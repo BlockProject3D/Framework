@@ -63,6 +63,7 @@ set(SOURCES
     src/Transform3D.cpp
     src/Transform2D.cpp
     src/Math.cpp
+    src/Name.cpp
 )
 
 bp_setup_program(${PROJECT_NAME} include)

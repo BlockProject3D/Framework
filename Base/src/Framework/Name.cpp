@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -26,41 +26,25 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-#include "Framework/Hash.hpp"
-#include "Framework/String.hpp"
-#include "Framework/Color.hpp"
 #include "Framework/Name.hpp"
 
-namespace bpf
+using namespace bpf;
+
+Name::Name(const char *str) noexcept
+    : _hash(5381)
 {
-    template <>
-    class Hash<Name>
-    {
-    public:
-        inline static fsize HashCode(const Name &val)
-        {
-            return (val.Hash());
-        }
-    };
+    for (fsize i = 0; str[i]; ++i)
+        _hash = ((_hash << 5) + _hash) + str[i];
+}
 
-    template <>
-    class Hash<String>
-    {
-    public:
-        inline static fsize HashCode(const String &val)
-        {
-            return (Hash<Name>::HashCode(Name(val)));
-        }
-    };
+Name::Name(const String &str) noexcept
+    : _hash(5381)
+{
+    for (fsize i = 0; i != str.Size(); ++i)
+        _hash = ((_hash << 5) + _hash) + str.ByteAt(i);
+}
 
-    template <>
-    class Hash<Color>
-    {
-    public:
-        inline static fsize HashCode(const Color &val)
-        {
-            return (val.GetCode());
-        }
-    };
+Name::Name(const fsize hash) noexcept
+    : _hash(hash)
+{
 }
