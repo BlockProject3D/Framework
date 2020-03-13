@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -26,41 +26,18 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-#include "Framework/Hash.hpp"
-#include "Framework/String.hpp"
-#include "Framework/Color.hpp"
-#include "Framework/Name.hpp"
+#include <cassert>
+#include <iostream>
+#include <gtest/gtest.h>
+#include <Framework/Name.hpp>
 
-namespace bpf
+TEST(Name, Creation)
 {
-    template <>
-    class Hash<Name>
-    {
-    public:
-        inline static fsize HashCode(const Name &val)
-        {
-            return (val.Hash());
-        }
-    };
+    auto name = bpf::Name("Test");
+    auto name1 = bpf::Name(bpf::String("Test"));
+    auto name2 = bpf::Name(name1.Hash());
 
-    template <>
-    class Hash<String>
-    {
-    public:
-        inline static fsize HashCode(const String &val)
-        {
-            return (Hash<Name>::HashCode(Name(val)));
-        }
-    };
-
-    template <>
-    class Hash<Color>
-    {
-    public:
-        inline static fsize HashCode(const Color &val)
-        {
-            return (val.GetCode());
-        }
-    };
+    EXPECT_GT(name.Hash(), (bpf::fsize)0);
+    EXPECT_EQ(name.Hash(), name1.Hash());
+    EXPECT_EQ(name.Hash(), name2.Hash());
 }

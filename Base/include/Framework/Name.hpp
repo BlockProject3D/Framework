@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -27,40 +27,23 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Hash.hpp"
 #include "Framework/String.hpp"
-#include "Framework/Color.hpp"
-#include "Framework/Name.hpp"
 
 namespace bpf
 {
-    template <>
-    class Hash<Name>
+    class BPF_API Name
     {
-    public:
-        inline static fsize HashCode(const Name &val)
-        {
-            return (val.Hash());
-        }
-    };
+    private:
+        fsize _hash;
 
-    template <>
-    class Hash<String>
-    {
     public:
-        inline static fsize HashCode(const String &val)
-        {
-            return (Hash<Name>::HashCode(Name(val)));
-        }
-    };
+        explicit Name(const char *str) noexcept;
+        explicit Name(const String &str) noexcept;
+        explicit Name(const fsize hash) noexcept;
 
-    template <>
-    class Hash<Color>
-    {
-    public:
-        inline static fsize HashCode(const Color &val)
+        inline fsize Hash() const noexcept
         {
-            return (val.GetCode());
+            return (_hash);
         }
     };
 }

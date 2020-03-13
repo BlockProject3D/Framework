@@ -132,6 +132,7 @@ set(SOURCES
     ./include/Framework/IndexException.hpp
     ./include/Framework/EvalException.hpp
     ./include/Framework/String.hpp
+    ./include/Framework/Name.hpp
     ./include/Framework/MathEval.hpp
     ./include/Framework/MathEval.impl.hpp
     ./include/Framework/BaseConvert.hpp
@@ -171,6 +172,7 @@ set(SOURCES
     ./src/Framework/RuntimeException.cpp
     ./src/Framework/IndexException.cpp
     ./src/Framework/String.cpp
+    ./src/Framework/Name.cpp
     ./src/Framework/Scalar.cpp
 )
 
