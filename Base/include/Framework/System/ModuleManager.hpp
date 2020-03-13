@@ -30,6 +30,7 @@
 #include "Framework/System/Module.hpp"
 #include "Framework/Collection/HashMap.hpp"
 #include "Framework/Memory/Utility.hpp"
+#include "Framework/Name.hpp"
 
 namespace bpf
 {
@@ -64,19 +65,19 @@ namespace bpf
              * Loads the given module name
              * @throws ModuleException
              */
-            void LoadModule(const String &virtualName, const String &fileName);
+            void LoadModule(const Name &virtualName, const String &fileName);
 
             /**
              * Unloads the given module name
              */
-            void UnloadModule(const String &virtualName);
+            void UnloadModule(const Name &virtualName);
 
-            inline bool HasModule(const String &virtualName) const noexcept
+            inline bool HasModule(const Name &virtualName) const noexcept
             {
                 return (_map.HasKey(virtualName));
             }
 
-            inline const memory::UniquePtr<BaseClass> &GetModule(const String &virtualName) const noexcept
+            inline const memory::UniquePtr<BaseClass> &GetModule(const Name &virtualName) const noexcept
             {
                 if (!HasModule(virtualName))
                     return (memory::UniquePtr<BaseClass>::NullPtr);

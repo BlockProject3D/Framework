@@ -33,7 +33,7 @@ namespace bpf
     namespace system
     {
         template <typename BaseClass>
-        void ModuleManager<BaseClass>::LoadModule(const String &virtualName, const String &fileName)
+        void ModuleManager<BaseClass>::LoadModule(const Name &virtualName, const String &fileName)
         {
             String moduleFile = _modulePath + fileName;
 
@@ -57,7 +57,7 @@ namespace bpf
         }
 
         template <typename BaseClass>
-        void ModuleManager<BaseClass>::UnloadModule(const String &virtualName)
+        void ModuleManager<BaseClass>::UnloadModule(const Name &virtualName)
         {
             if (!HasModule(virtualName))
                 return;
