@@ -32,21 +32,23 @@
 #include <Framework/Json/Json.hpp>
 #include <Framework/Json/Parser.hpp>
 
+using J = bpf::json::Json;
+
 TEST(Json, API_1)
 {
-    bpf::json::Json::Object obj = {
+    J::Object obj = {
         {"Test", 0.0},
         {"Test1", true},
-        {"TestArray", bpf::json::Json::Array {"A", "B", "TrouDuCul"}},
-        {"TestObject", bpf::json::Json::Object
+        {"TestArray", J::Array {"A", "B", "TrouDuCul"}},
+        {"TestObject", J::Object
             {
-                {"a", 0},
+                {"a", 0.0},
                 {"b", 0.1},
                 {"c", true}
             }
         }
     };
-    EXPECT_EQ((int)obj["Test"], 0);
+    EXPECT_EQ(obj["Test"], 0.0);
     EXPECT_EQ(obj["Test1"], true);
     const bpf::json::Json::Array &arr = obj["TestArray"];
     EXPECT_EQ(arr[0], "A");
@@ -55,30 +57,43 @@ TEST(Json, API_1)
 
 TEST(Json, API_2)
 {
-    bpf::json::Json::Array arr = {
-        bpf::json::Json::Object
+    J::Array arr = {
+        J::Object
         {
             {"Test", "a"},
             {"Test1", "b"}
         },
-        bpf::json::Json::Object
+        J::Object
         {
             {"Test", "a"},
             {"Test1", "b"}
         },
-        bpf::json::Json::Object
+        J::Object
         {
             {"Test", "a"},
             {"Test1", "b"}
         }
     };
-    const bpf::json::Json::Object &obj = arr[0];
+    const J::Object &obj = arr[0];
     EXPECT_EQ(obj["Test"], "a");
     EXPECT_EQ(obj["Test1"], "b");
     EXPECT_STREQ(*arr[0].AsObject()["Test"].AsString(), "a");
     EXPECT_STREQ(*arr[1].AsObject()["Test"].AsString(), "a");
     EXPECT_STREQ(*arr[2].AsObject()["Test"].AsString(), "a");
     EXPECT_STREQ(*arr[0].AsObject()["Test1"].AsString(), "b");
+}
+
+TEST(Json, API_3)
+{
+    J::Object obj = {
+        {"Property1", true},
+        {"Property2", 0.0},
+        {"Property1", false},
+        {"Property2", 42.0},
+    };
+
+    EXPECT_EQ(obj["Property1"], false);
+    EXPECT_EQ(obj["Property2"], 42.0);
 }
 
 TEST(Json, LexerParser)
@@ -92,9 +107,9 @@ TEST(Json, LexerParser)
         "}";
     bpf::json::Lexer lexer;
     lexer.LoadString(str);
-    bpf::json::Json testObj = bpf::json::Parser(std::move(lexer)).Parse();
+    J testObj = bpf::json::Parser(std::move(lexer)).Parse();
     EXPECT_EQ(testObj.Type(), bpf::json::Json::EType::OBJECT);
-    bpf::json::Json::Object testObject = testObj;
+    J::Object testObject = testObj;
     EXPECT_EQ(testObject["test"], true);
     EXPECT_EQ(testObject["test"], true);
     EXPECT_EQ(testObject["TheNull"], bpf::json::Json());

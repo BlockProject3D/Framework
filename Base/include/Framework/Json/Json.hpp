@@ -200,30 +200,9 @@ namespace bpf
             {
             }
 
-            inline Json(const int val)
-                : _type(EType::NUMBER)
-                , _number((double)val)
-                , _bool(false)
-            {
-            }
-
-            inline Json(const uint32 val)
-                : _type(EType::NUMBER)
-                , _number((double)val)
-                , _bool(false)
-            {
-            }
-
             inline Json(const double val)
                 : _type(EType::NUMBER)
                 , _number(val)
-                , _bool(false)
-            {
-            }
-
-            inline Json(const float val)
-                : _type(EType::NUMBER)
-                , _number((double)val)
                 , _bool(false)
             {
             }
@@ -376,32 +355,11 @@ namespace bpf
                 return (!operator==(other));
             }
 
-            inline explicit operator int() const
-            {
-                if (_type != EType::NUMBER)
-                    throw JsonException("Incompatible value type");
-                return ((int)_number);
-            }
-
-            inline explicit operator uint32() const
-            {
-                if (_type != EType::NUMBER)
-                    throw JsonException("Incompatible value type");
-                return ((uint32)_number);
-            }
-
             inline explicit operator double() const
             {
                 if (_type != EType::NUMBER)
                     throw JsonException("Incompatible value type");
                 return (_number);
-            }
-
-            inline explicit operator float() const
-            {
-                if (_type != EType::NUMBER)
-                    throw JsonException("Incompatible value type");
-                return ((float)_number);
             }
 
             inline explicit operator bool() const
@@ -432,32 +390,11 @@ namespace bpf
                 return (*_object);
             }
 
-            inline int AsInt() const
-            {
-                if (_type != EType::NUMBER)
-                    throw JsonException("Incompatible value type");
-                return ((int)_number);
-            }
-
-            inline uint32 AsUInt() const
-            {
-                if (_type != EType::NUMBER)
-                    throw JsonException("Incompatible value type");
-                return ((uint32)_number);
-            }
-
             inline double AsDouble() const
             {
                 if (_type != EType::NUMBER)
                     throw JsonException("Incompatible value type");
                 return (_number);
-            }
-
-            inline float AsFloat() const
-            {
-                if (_type != EType::NUMBER)
-                    throw JsonException("Incompatible value type");
-                return ((float)_number);
             }
 
             inline bool AsBool() const
