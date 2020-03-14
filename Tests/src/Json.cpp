@@ -274,6 +274,7 @@ TEST(Json, Stringifier)
         {"MyNum", 42.42},
         {"MyArr", J::Array {"a", "b"}}
     };
+    J val = std::move(obj);
 
-    EXPECT_STREQ(*bpf::String::ValueOf(obj), "{'MyArr': [a, b], 'MyNum': 42.42, 'MyBool': TRUE}");
+    EXPECT_STREQ(*bpf::String::ValueOf(val), "{'MyArr': [a, b], 'MyNum': 42.42, 'MyBool': TRUE}");
 }
