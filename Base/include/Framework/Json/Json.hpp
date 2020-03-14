@@ -373,21 +373,44 @@ namespace bpf
                 return (_type);
             }
 
-            bool operator==(const Json &other) const;
-
-            inline bool operator!=(const Json &other) const
+            inline bool operator==(double other) const
             {
-                return (!operator==(other));
+                if (_type != EType::NUMBER)
+                    return (false);
+                return (_number == other);
             }
 
-            inline explicit operator double() const
+            inline bool operator==(bool other) const
+            {
+                if (_type != EType::BOOLEAN)
+                    return (false);
+                return (_bool == other);
+            }
+
+            inline bool operator==(const String &other) const
+            {
+                if (_type != EType::STRING)
+                    return (false);
+                return (_string == other);
+            }
+
+            inline bool operator==(const char *other) const
+            {
+                if (_type == EType::NONE && other == Null)
+                    return (true);
+                if (_type != EType::STRING)
+                    return (false);
+                return (_string == String(other));
+            }
+
+            inline operator double() const
             {
                 if (_type != EType::NUMBER)
                     throw JsonException("Incompatible value type");
                 return (_number);
             }
 
-            inline explicit operator bool() const
+            inline operator bool() const
             {
                 if (_type != EType::BOOLEAN)
                     throw JsonException("Incompatible value type");

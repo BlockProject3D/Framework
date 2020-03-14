@@ -32,28 +32,6 @@ using namespace bpf::memory;
 using namespace bpf::json;
 using namespace bpf;
 
-bool Json::operator==(const Json &other) const
-{
-    if (_type != other._type)
-        return (false);
-    switch (_type)
-    {
-    case EType::NONE:
-        return (true);
-    case EType::NUMBER:
-        return (_number == other._number);
-    case EType::BOOLEAN:
-        return (_bool == other._bool);
-    case EType::STRING:
-        return (_string == other._string);
-    case EType::ARRAY:
-        return (false);
-    case EType::OBJECT:
-        return (false);
-    }
-    return (false);
-}
-
 Json::Array::Array(const std::initializer_list<Json> &vals)
 {
     for (auto &it : vals)
