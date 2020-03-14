@@ -79,6 +79,21 @@ namespace bpf
                     return (_data[name]);
                 }
 
+                inline void Add(const String &name, const Json &json)
+                {
+                    _data.Add(name, json);
+                }
+
+                inline void Add(const String &name, Json &&data)
+                {
+                    _data.Add(name, std::move(data));
+                }
+
+                inline void RemoveAt(const String &name)
+                {
+                    _data.RemoveAt(name);
+                }
+
                 inline fsize Size() const noexcept
                 {
                     return (_data.Size());
@@ -105,6 +120,11 @@ namespace bpf
                 }
 
                 inline const collection::Map<String, Json> &Properties() const noexcept
+                {
+                    return (_data);
+                }
+
+                inline collection::Map<String, Json> &Properties() noexcept
                 {
                     return (_data);
                 }
@@ -136,12 +156,7 @@ namespace bpf
 
                 inline void Add(Json &&data)
                 {
-                    _data.Add(data);
-                }
-
-                inline void Remove(const Json &val)
-                {
-                    _data.Remove(val);
+                    _data.Add(std::move(data));
                 }
 
                 inline void RemoveAt(const uint32 id)
@@ -185,6 +200,11 @@ namespace bpf
                 }
 
                 inline const collection::List<Json> &Items() const noexcept
+                {
+                    return (_data);
+                }
+
+                inline collection::List<Json> &Items() noexcept
                 {
                     return (_data);
                 }
@@ -389,6 +409,20 @@ namespace bpf
             }
 
             inline operator const Object &() const
+            {
+                if (_type != EType::OBJECT)
+                    throw JsonException("Incompatible value type");
+                return (*_object);
+            }
+
+            inline operator Array &()
+            {
+                if (_type != EType::ARRAY)
+                    throw JsonException("Incompatible value type");
+                return (*_array);
+            }
+
+            inline operator Object &()
             {
                 if (_type != EType::OBJECT)
                     throw JsonException("Incompatible value type");
