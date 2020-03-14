@@ -55,26 +55,36 @@ TEST(Json, API_1)
     EXPECT_FALSE(obj["Test"] == "test");
     EXPECT_FALSE(obj["Test"] == bpf::String("test"));
     EXPECT_EQ(obj["Test1"], true);
-    const J::Array &carr = obj["TestArray"];
+    EXPECT_FALSE(obj["Test1"] == 0.0);
+    const J::Object &objConst = obj;
+    const J::Array &carr = objConst["TestArray"];
     EXPECT_EQ(carr[0], "A");
     EXPECT_STREQ(*carr[0].AsString(), "A");
     J::Array &arr = obj["TestArray"];
+    J v = 42.42;
     arr.Add(42.42);
+    arr.Add(v);
     EXPECT_EQ(carr[3], 42.42);
+    EXPECT_EQ(carr[4], 42.42);
+    arr.RemoveAt(4);
     arr.RemoveAt(0);
     EXPECT_EQ(carr.Size(), 3);
     EXPECT_EQ(arr.Size(), 3);
     arr.Items().Clear();
     EXPECT_EQ(carr.Size(), 0);
     EXPECT_EQ(arr.Size(), 0);
-    const J::Object &cobj = obj["TestObject"];
+    const J::Object &cobj = objConst["TestObject"];
     EXPECT_EQ(cobj["a"], 0.0);
     EXPECT_EQ(cobj["b"], 0.1);
     EXPECT_EQ(cobj["c"], true);
     J::Object &mobj = obj["TestObject"];
     mobj.Add("test", 42.42);
+    mobj.Add("test1", v);
     EXPECT_EQ(cobj["test"], 42.42);
     EXPECT_EQ(mobj["test"], 42.42);
+    EXPECT_EQ(cobj["test1"], 42.42);
+    EXPECT_EQ(mobj["test1"], 42.42);
+    mobj.RemoveAt("test1");
     mobj.RemoveAt("a");
     EXPECT_EQ(mobj.Size(), 3);
     EXPECT_EQ(cobj.Size(), 3);
@@ -99,10 +109,35 @@ TEST(Json, API_2)
     const J::Object &obj = arr[0];
     EXPECT_EQ(obj["Test"], "a");
     EXPECT_EQ(obj["Test1"], "b");
+    EXPECT_EQ(obj["Test1"], bpf::String("b"));
     EXPECT_STREQ(*arr[0].AsObject()["Test"].AsString(), "a");
     EXPECT_STREQ(*arr[1].AsObject()["Test"].AsString(), "a");
     EXPECT_STREQ(*arr[2].AsObject()["Test"].AsString(), "a");
     EXPECT_STREQ(*arr[0].AsObject()["Test1"].AsString(), "b");
+    for (auto &json : arr)
+    {
+        EXPECT_EQ(json.Type(), J::EType::OBJECT);
+        EXPECT_EQ(json.AsObject()["Test"], "a");
+        EXPECT_EQ(json.AsObject()["Test1"], "b");
+        const J::Object &jobj = json;
+        for (auto &sjson : jobj)
+        {
+            EXPECT_EQ(sjson.Value.Type(), J::EType::STRING);
+            EXPECT_TRUE(sjson.Key == "Test" || sjson.Key == "Test1");
+        }
+    }
+    for (auto &json : bpf::collection::Reverse(arr))
+    {
+        EXPECT_EQ(json.Type(), J::EType::OBJECT);
+        EXPECT_EQ(json.AsObject()["Test"], "a");
+        EXPECT_EQ(json.AsObject()["Test1"], "b");
+        const J::Object &jobj = json;
+        for (auto &sjson : bpf::collection::Reverse(jobj))
+        {
+            EXPECT_EQ(sjson.Value.Type(), J::EType::STRING);
+            EXPECT_TRUE(sjson.Key == "Test" || sjson.Key == "Test1");
+        }
+    }
 }
 
 TEST(Json, API_3)
@@ -179,13 +214,15 @@ TEST(Json, API_6)
     J::Array myArr = J::Array{ 1.0, true };
     J val = myObj;
     J val1 = myArr;
+    const J &valConst = val;
+    const J &val1Const = val1;
 
     EXPECT_THROW((void)((const bpf::String &)val), bpf::json::JsonException);
     EXPECT_THROW(val.AsString(), bpf::json::JsonException);
-    EXPECT_THROW((void)((const J::Array &)val), bpf::json::JsonException);
+    EXPECT_THROW((void)((const J::Array &)valConst), bpf::json::JsonException);
     EXPECT_THROW(val.AsArray(), bpf::json::JsonException);
     EXPECT_THROW((void)((J::Array &)val), bpf::json::JsonException);
-    EXPECT_THROW((void)((const J::Object &)val1), bpf::json::JsonException);
+    EXPECT_THROW((void)((const J::Object &)val1Const), bpf::json::JsonException);
     EXPECT_THROW((void)((J::Object &)val1), bpf::json::JsonException);
     EXPECT_THROW(val1.AsObject(), bpf::json::JsonException);
     EXPECT_THROW((void)((double)val), bpf::json::JsonException);

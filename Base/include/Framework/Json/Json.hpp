@@ -56,6 +56,9 @@ namespace bpf
                 collection::Map<String, Json> _data;
 
             public:
+                using Iterator = collection::Map<String, Json>::Iterator;
+                using ReverseIterator = collection::Map<String, Json>::ReverseIterator;
+
                 Object()
                 {
                 }
@@ -99,22 +102,22 @@ namespace bpf
                     return (_data.Size());
                 }
 
-                inline collection::Map<String, Json>::Iterator begin() const
+                inline Iterator begin() const
                 {
                     return (_data.begin());
                 }
 
-                inline collection::Map<String, Json>::Iterator end() const
+                inline Iterator end() const
                 {
                     return (_data.end());
                 }
 
-                inline collection::Map<String, Json>::ReverseIterator rbegin() const
+                inline ReverseIterator rbegin() const
                 {
                     return (_data.rbegin());
                 }
 
-                inline collection::Map<String, Json>::ReverseIterator rend() const
+                inline ReverseIterator rend() const
                 {
                     return (_data.rend());
                 }
@@ -136,6 +139,9 @@ namespace bpf
                 collection::List<Json> _data;
 
             public:
+                using Iterator = collection::List<Json>::Iterator;
+                using ReverseIterator = collection::List<Json>::ReverseIterator;
+
                 Array()
                 {
                 }
@@ -179,22 +185,22 @@ namespace bpf
                     return (_data.Size());
                 }
 
-                inline collection::List<Json>::Iterator begin() const
+                inline Iterator begin() const
                 {
                     return (_data.begin());
                 }
 
-                inline collection::List<Json>::Iterator end() const
+                inline Iterator end() const
                 {
                     return (_data.end());
                 }
 
-                inline collection::List<Json>::ReverseIterator rbegin() const
+                inline ReverseIterator rbegin() const
                 {
                     return (_data.rbegin());
                 }
 
-                inline collection::List<Json>::ReverseIterator rend() const
+                inline ReverseIterator rend() const
                 {
                     return (_data.rend());
                 }
