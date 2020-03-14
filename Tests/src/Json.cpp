@@ -180,24 +180,26 @@ TEST(Json, API_6)
     J val = myObj;
     J val1 = myArr;
 
-    EXPECT_THROW((const bpf::String &)val, bpf::json::JsonException);
+    EXPECT_THROW((void)((const bpf::String &)val), bpf::json::JsonException);
     EXPECT_THROW(val.AsString(), bpf::json::JsonException);
-    EXPECT_THROW((const J::Array &)val, bpf::json::JsonException);
+    EXPECT_THROW((void)((const J::Array &)val), bpf::json::JsonException);
     EXPECT_THROW(val.AsArray(), bpf::json::JsonException);
-    EXPECT_THROW((J::Array &)val, bpf::json::JsonException);
-    EXPECT_THROW((const J::Object &)val1, bpf::json::JsonException);
-    EXPECT_THROW((J::Object &)val1, bpf::json::JsonException);
+    EXPECT_THROW((void)((J::Array &)val), bpf::json::JsonException);
+    EXPECT_THROW((void)((const J::Object &)val1), bpf::json::JsonException);
+    EXPECT_THROW((void)((J::Object &)val1), bpf::json::JsonException);
     EXPECT_THROW(val1.AsObject(), bpf::json::JsonException);
-    EXPECT_THROW((double)val, bpf::json::JsonException);
+    EXPECT_THROW((void)((double)val), bpf::json::JsonException);
     EXPECT_THROW(val.AsNumber(), bpf::json::JsonException);
-    EXPECT_THROW((bool)val, bpf::json::JsonException);
+    EXPECT_THROW((void)((bool)val), bpf::json::JsonException);
     EXPECT_THROW(val.AsBool(), bpf::json::JsonException);
     EXPECT_STREQ(*val.AsObject()["MyStr"].AsString(), "Test");
     EXPECT_EQ(val1.AsArray()[0], 1.0);
     val = "this is a test";
     EXPECT_STREQ(*val.AsString(), "this is a test");
     double d = myArr[0];
+    EXPECT_EQ(d, 1.0);
     bool b = myArr[1];
+    EXPECT_EQ(b, true);
 }
 
 TEST(Json, LexerParser)
