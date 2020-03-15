@@ -29,11 +29,15 @@
 #include <gtest/gtest.h>
 #include <Framework/System/EntryPoint.hpp>
 
-int Main(bpf::system::IApplication &app, const bpf::collection::Array<bpf::String> &args, const bpf::system::Paths &paths);
+BP_DECLARE_HIGH_MAIN;
 
 int main(int argc, char **argv)
 {
+#ifdef WINDOWS
     bpf::system::WindowsApp app(Null, true);
+#else
+    bpf::system::UnixApp app(argc, argv);
+#endif
 
     Main(app, app.GetArguments(), app.GetPaths());
     ::testing::InitGoogleTest(&argc, argv);
