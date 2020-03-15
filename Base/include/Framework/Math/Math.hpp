@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -141,7 +141,7 @@ namespace bpf
              */
             inline static T Round(const T val, const fsize prec = 0)
             {
-                return ((T)(floor(val * pow(10, prec) + 0.5) / pow(10, prec)));
+                return ((T)(::floor(val * pow(10, prec) + 0.5) / pow(10, prec)));
             }
 
             /**
@@ -150,7 +150,7 @@ namespace bpf
              */
             inline static T Sqrt(const T val)
             {
-                return ((T)sqrt(val));
+                return ((T)::sqrt(val));
             }
 
             /**
@@ -159,7 +159,7 @@ namespace bpf
              */
             inline static T Exp(const T val)
             {
-                return ((T)exp(val));
+                return ((T)::exp(val));
             }
 
             /**
@@ -168,7 +168,7 @@ namespace bpf
              */
             inline static T Log(const T val)
             {
-                return ((T)log(val));
+                return ((T)::log(val));
             }
 
             /**
@@ -177,7 +177,7 @@ namespace bpf
              */
             inline static T Log10(const T val)
             {
-                return ((T)log10(val));
+                return ((T)::log10(val));
             }
 
             /**
@@ -192,37 +192,37 @@ namespace bpf
 
             inline static T Cos(const T val)
             {
-                return ((T)cos(val));
+                return ((T)::cos(val));
             }
 
             inline static T Sin(const T val)
             {
-                return ((T)sin(val));
+                return ((T)::sin(val));
             }
 
             inline static T Tan(const T val)
             {
-                return ((T)tan(val));
+                return ((T)::tan(val));
             }
 
             inline static T ArcCos(const T val)
             {
-                return ((T)acos(val));
+                return ((T)::acos(val));
             }
 
             inline static T ArcSin(const T val)
             {
-                return ((T)asin(val));
+                return ((T)::asin(val));
             }
 
             inline static T ArcTan(const T val)
             {
-                return ((T)atan(val));
+                return ((T)::atan(val));
             }
 
             inline static T ArcTan2(const T y, const T x)
             {
-                return ((T)atan2(y, x));
+                return ((T)::atan2(y, x));
             }
         };
 
@@ -238,133 +238,133 @@ namespace bpf
         template <>
         inline float Math<float>::Sqrt(const float val)
         {
-            return (sqrtf(val));
+            return (::sqrtf(val));
         }
 
         template <>
         inline long double Math<long double>::Sqrt(const long double val)
         {
-            return (sqrtl(val));
+            return (::sqrtl(val));
         }
 
         template <>
         inline float Math<float>::Exp(const float val)
         {
-            return (expf(val));
+            return (::expf(val));
         }
 
         template <>
         inline long double Math<long double>::Exp(const long double val)
         {
-            return (expl(val));
+            return (::expl(val));
         }
 
         template <>
         inline float Math<float>::Log(const float val)
         {
-            return (logf(val));
+            return (::logf(val));
         }
 
         template <>
         inline long double Math<long double>::Log(const long double val)
         {
-            return (logl(val));
+            return (::logl(val));
         }
 
         template <>
         inline float Math<float>::Log10(const float val)
         {
-            return (log10f(val));
+            return (::log10f(val));
         }
 
         template <>
         inline long double Math<long double>::Log10(const long double val)
         {
-            return (log10l(val));
+            return (::log10l(val));
         }
 
         template <>
         inline float Math<float>::Cos(const float val)
         {
-            return (cosf(val));
+            return (::cosf(val));
         }
 
         template <>
         inline long double Math<long double>::Cos(const long double val)
         {
-            return (cosl(val));
+            return (::cosl(val));
         }
 
         template <>
         inline float Math<float>::Sin(const float val)
         {
-            return (sinf(val));
+            return (::sinf(val));
         }
 
         template <>
         inline long double Math<long double>::Sin(const long double val)
         {
-            return (sinl(val));
+            return (::sinl(val));
         }
 
         template <>
         inline float Math<float>::Tan(const float val)
         {
-            return (tanf(val));
+            return (::tanf(val));
         }
 
         template <>
         inline long double Math<long double>::Tan(const long double val)
         {
-            return (tanl(val));
+            return (::tanl(val));
         }
 
         template <>
         inline float Math<float>::ArcCos(const float val)
         {
-            return (acosf(val));
+            return (::acosf(val));
         }
 
         template <>
         inline long double Math<long double>::ArcCos(const long double val)
         {
-            return (acosl(val));
+            return (::acosl(val));
         }
 
         template <>
         inline float Math<float>::ArcSin(const float val)
         {
-            return (asinf(val));
+            return (::asinf(val));
         }
 
         template <>
         inline long double Math<long double>::ArcSin(const long double val)
         {
-            return (asinl(val));
+            return (::asinl(val));
         }
 
         template <>
         inline float Math<float>::ArcTan(const float val)
         {
-            return (atanf(val));
+            return (::atanf(val));
         }
 
         template <>
         inline long double Math<long double>::ArcTan(const long double val)
         {
-            return (atanl(val));
+            return (::atanl(val));
         }
 
         template <>
         inline float Math<float>::ArcTan2(const float y, const float x)
         {
-            return (atan2f(y, x));
+            return (::atan2f(y, x));
         }
 
         template <>
         inline long double Math<long double>::ArcTan2(const long double y, const long double x)
         {
-            return (atan2l(y, x));
+            return (::atan2l(y, x));
         }
 
         using Mathf = Math<float>;

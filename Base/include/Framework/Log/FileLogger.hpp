@@ -36,7 +36,7 @@ namespace bpf
 {
     namespace log
     {
-        class FileLogger final : public ILogHandler
+        class BPF_API FileLogger final : public ILogHandler
         {
         private:
             io::FileStream _stream;

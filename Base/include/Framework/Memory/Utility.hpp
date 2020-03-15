@@ -39,13 +39,13 @@ namespace bpf
         template <typename T, typename ...Args>
         inline BP_TPL_API UniquePtr<T> MakeUnique(Args &&...args)
         {
-            return (UniquePtr<T>(MemUtils::New<T>(std::forward<Args>(args)...)));
+            return (UniquePtr<T>(MemUtils::New<T>(std::forward<Args &&>(args)...)));
         }
 
         template <typename T, typename ...Args>
         inline BP_TPL_API SharedPtr<T> MakeShared(Args &&...args)
         {
-            return (SharedPtr<T>(MemUtils::New<T>(std::forward<Args>(args)...)));
+            return (SharedPtr<T>(MemUtils::New<T>(std::forward<Args &&>(args)...)));
         }
     }
 }
