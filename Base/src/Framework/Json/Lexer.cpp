@@ -140,7 +140,7 @@ bool Lexer::CheckNumber(const String &token, const fchar next)
 {
     if (_string || token.Len() <= 0)
         return (false);
-    if (token[0] == '-' && _curNbr.Len() > 0 && _curExponent.Len() > 1)
+    if (token[0] == '-' && ((_curNbr.Len() > 0 && _curExponent.Len() > 1) || (_curNbr.Len() > 0 && _curExponent.Len() == 0)))
         throw JsonException(String("Line ") + String::ValueOf(_line) + ": Invalid number format");
     else if (token[0] == '-')
     {

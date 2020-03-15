@@ -243,12 +243,13 @@ TEST(Json, LexerParser)
 {
     bpf::String str =
         "{"
-        "   \"test\": true,"
-        "   \"TheNull\": null,"
+        "   \"test\": true,\n"
+        "   \"TheNull\": null,\r\n"
         "   \"-42\": -42,"
         "   \"Array\": [ true, false, null, 0.1, 1, 42, 42.42e2, 42.42e-2 ],"
         "   \"AdvTestStr\": \"String with special \b\t characters\b\t.\","
         "   \"Unicode\": \"\\u233\","
+        "   \"Special\": \"\\t\\b\","
         "   \"MyString\": \"This is a true test of false and null containing 0.1 42.42 numbers and even \\\"strings\\\"\""
         "}";
 
@@ -271,6 +272,50 @@ TEST(Json, LexerParser)
     EXPECT_STREQ(*bpf::String::ValueOf(testObject["Array"].AsArray()), "[TRUE, FALSE, null, 0.1, 1, 42, 4242, 0.4242]");
     EXPECT_STREQ(*bpf::String::ValueOf(testObject["AdvTestStr"]), "String with special \b\t characters\b\t.");
     EXPECT_STREQ(*bpf::String::ValueOf(testObject["Unicode"]), "é");
+    EXPECT_STREQ(*bpf::String::ValueOf(testObject["Special"]), "\t\b");
+}
+
+TEST(Json, Lexer_Err)
+{
+    bpf::json::Lexer lexer;
+
+    EXPECT_THROW(lexer.LoadString("{\"test"), bpf::json::JsonException);
+    EXPECT_THROW(lexer.LoadString("{\"test\": --2}"), bpf::json::JsonException);
+    EXPECT_THROW(lexer.LoadString("{\"test\": -2e--2}"), bpf::json::JsonException);
+    EXPECT_THROW(lexer.LoadString("{\"test\": 2e3e2}"), bpf::json::JsonException);
+    EXPECT_THROW(lexer.LoadString("{\"test\": 2ee2}"), bpf::json::JsonException);
+}
+
+TEST(Json, Parser_Err_1)
+{
+    bpf::json::Lexer lexer;
+
+    lexer.LoadString("{\"test\": ");
+    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonException);
+}
+
+TEST(Json, Parser_Err_2)
+{
+    bpf::json::Lexer lexer;
+
+    lexer.LoadString("{\"test\": 2");
+    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonException);
+}
+
+TEST(Json, Parser_Err_3)
+{
+    bpf::json::Lexer lexer;
+
+    lexer.LoadString("{\"test\" 2}");
+    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonException);
+}
+
+TEST(Json, Parser_Err_4)
+{
+    bpf::json::Lexer lexer;
+
+    lexer.LoadString("{\"test\"}");
+    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonException);
 }
 
 TEST(Json, Stringifier)
