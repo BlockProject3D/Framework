@@ -44,6 +44,7 @@ int Main(bpf::system::IApplication &app, const bpf::collection::Array<bpf::Strin
     assert(paths.TempDir().Path().Len() > 0);
     assert(paths.UserHome().Path().Len() > 0);
     std::cout << "<==== Initializing high-level main ====>" << std::endl;
+    std::cout << "WorkDir: " << *bpf::io::File(".").GetAbsolutePath().PlatformPath() << std::endl;
     std::cout << "AppRoot: " << *paths.AppRoot().Path() << std::endl;
     std::cout << "ThirdParty: " << *paths.ThirdParty().Path() << std::endl;
     std::cout << "CacheDir: " << *paths.CacheDir().Path() << std::endl;
@@ -55,7 +56,5 @@ int Main(bpf::system::IApplication &app, const bpf::collection::Array<bpf::Strin
     std::cout << "<======================================>" << std::endl;
     std::cout << std::endl;
     std::cout << "<==== Initializing GoogleTest ====>" << std::endl;
-    ::testing::InitGoogleTest();
-    int val = RUN_ALL_TESTS();
-    return (val);
+    return (0);
 }

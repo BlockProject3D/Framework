@@ -245,7 +245,10 @@ TEST(Json, LexerParser)
         "{"
         "   \"test\": true,"
         "   \"TheNull\": null,"
+        "   \"-42\": -42,"
         "   \"Array\": [ true, false, null, 0.1, 1, 42, 42.42e2, 42.42e-2 ],"
+        "   \"AdvTestStr\": \"String with special \b\t characters\b\t.\","
+        "   \"Unicode\": \"\\u233\","
         "   \"MyString\": \"This is a true test of false and null containing 0.1 42.42 numbers and even \\\"strings\\\"\""
         "}";
 
@@ -256,6 +259,7 @@ TEST(Json, LexerParser)
     J::Object testObject = testObj;
     EXPECT_EQ(testObject["test"], true);
     EXPECT_EQ(testObject["test"], true);
+    EXPECT_EQ(testObject["-42"], -42.0);
     EXPECT_EQ(testObject["TheNull"], Null);
     EXPECT_EQ(testObject["TheNull"], Null);
     EXPECT_EQ(testObject["TheNull"], Null);
@@ -265,6 +269,8 @@ TEST(Json, LexerParser)
     EXPECT_STREQ(*str1, "This is a true test of false and null containing 0.1 42.42 numbers and even \"strings\"");
     EXPECT_STREQ(*testObject["MyString"].AsString(), "This is a true test of false and null containing 0.1 42.42 numbers and even \"strings\"");
     EXPECT_STREQ(*bpf::String::ValueOf(testObject["Array"].AsArray()), "[TRUE, FALSE, null, 0.1, 1, 42, 4242, 0.4242]");
+    EXPECT_STREQ(*bpf::String::ValueOf(testObject["AdvTestStr"]), "String with special \b\t characters\b\t.");
+    EXPECT_STREQ(*bpf::String::ValueOf(testObject["Unicode"]), "é");
 }
 
 TEST(Json, Stringifier)

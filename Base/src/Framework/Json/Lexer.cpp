@@ -75,7 +75,7 @@ fchar Lexer::ProcessUnicode(const String &str, int &pos)
         if (str[i] >= 48 && str[i] <= 57)
             nbr += str[i];
     }
-    pos += i;
+    pos = i;
     return (UInt::Parse(nbr));
 }
 
@@ -103,7 +103,7 @@ String Lexer::ReProcessString(const String &str)
     String copy = str.Sub(1, str.Len() - 1);
     String res = String::Empty;
 
-    for (int i = 0; i != copy.Len(); ++i)
+    for (int i = 0; i < copy.Len(); ++i)
     {
         if (copy[i] == '\\')
         {

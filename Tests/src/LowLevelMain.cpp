@@ -26,6 +26,17 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include <gtest/gtest.h>
 #include <Framework/System/EntryPoint.hpp>
 
-BP_SETUP_ENTRY_POINT();
+int Main(bpf::system::IApplication &app, const bpf::collection::Array<bpf::String> &args, const bpf::system::Paths &paths);
+
+int main(int argc, char **argv)
+{
+    bpf::system::WindowsApp app(Null, true);
+
+    Main(app, app.GetArguments(), app.GetPaths());
+    ::testing::InitGoogleTest(&argc, argv);
+    int val = RUN_ALL_TESTS();
+    return (val);
+}
