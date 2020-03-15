@@ -31,12 +31,12 @@
 
 BP_DECLARE_HIGH_MAIN;
 
-int main(int argc, char **argv)
+int main(int argc, char **argv, char **envp)
 {
 #ifdef WINDOWS
     bpf::system::WindowsApp app(Null, true);
 #else
-    bpf::system::UnixApp app(argc, argv);
+    bpf::system::UnixApp app(argv, argc, envp);
 #endif
 
     Main(app, app.GetArguments(), app.GetPaths());
