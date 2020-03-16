@@ -247,6 +247,7 @@ TEST(Json, LexerParser)
         "   \"TheNull\": null,\r\n"
         "   \"-42\": -42,"
         "   \"Array\": [ true, false, null, 0.1, 1, 42, 42.42e2, 42.42e-2 ],"
+        "   \"StrArray\": [\"test\",\"test1\",\"test2\"],"
         "   \"AdvTestStr\": \"String with special \b\t characters\b\t.\","
         "   \"Unicode\": \"\\u233\","
         "   \"Special\": \"\\t\\b\","
@@ -270,9 +271,71 @@ TEST(Json, LexerParser)
     EXPECT_STREQ(*str1, "This is a true test of false and null containing 0.1 42.42 numbers and even \"strings\"");
     EXPECT_STREQ(*testObject["MyString"].AsString(), "This is a true test of false and null containing 0.1 42.42 numbers and even \"strings\"");
     EXPECT_STREQ(*bpf::String::ValueOf(testObject["Array"].AsArray()), "[TRUE, FALSE, null, 0.1, 1, 42, 4242, 0.4242]");
+    EXPECT_STREQ(*bpf::String::ValueOf(testObject["StrArray"].AsArray()), "[test, test1, test2]");
     EXPECT_STREQ(*bpf::String::ValueOf(testObject["AdvTestStr"]), "String with special \b\t characters\b\t.");
     EXPECT_STREQ(*bpf::String::ValueOf(testObject["Unicode"]), "é");
     EXPECT_STREQ(*bpf::String::ValueOf(testObject["Special"]), "\t\b");
+}
+
+TEST(Json, LexerParser_Comments)
+{
+    bpf::String str =
+        "{"
+        "   \"test\": true, /* This is a test comment */\n"
+        "   \"TheNull\": /*this is an inline comment*/ null,\r\n"
+        "   \"-42\": -42, //Single line comment 1\n"
+        "   \"Array\": [ true, false, null, 0.1, 1, 42, 42.42e2, 42.42e-2 ], //Single line comment 2\r\n"
+        "   \"StrArray\": [\"test\",\"test1\"/*,\"test2\"*/],"
+        "   \"AdvTestStr\": \"String with special \b\t characters\b\t.\","
+        "   /*\"Unicode\": \"\\u233\",*///Remove the key for testing\n"
+        "   \"Special\": \"\\t\\b\","
+        "   \"MyString\": \"This is a true test of false and /*comments*/ with null containing 0.1 42.42 numbers and even \\\"strings\\\"\""
+        "}";
+
+    bpf::json::Lexer lexer;
+    lexer.EnableComments(true);
+    lexer.LoadString(str);
+    J testObj = bpf::json::Parser(std::move(lexer)).Parse();
+    EXPECT_EQ(testObj.Type(), bpf::json::Json::EType::OBJECT);
+    J::Object testObject = testObj;
+    EXPECT_EQ(testObject["test"], true);
+    EXPECT_EQ(testObject["test"], true);
+    EXPECT_EQ(testObject["-42"], -42.0);
+    EXPECT_EQ(testObject["TheNull"], Null);
+    EXPECT_EQ(testObject["TheNull"], Null);
+    EXPECT_EQ(testObject["TheNull"], Null);
+    EXPECT_EQ(testObject["TheNull"], Null);
+    EXPECT_EQ(testObject["TheNull"], Null);
+    bpf::String str1 = testObject["MyString"];
+    EXPECT_STREQ(*str1, "This is a true test of false and /*comments*/ with null containing 0.1 42.42 numbers and even \"strings\"");
+    EXPECT_STREQ(*testObject["MyString"].AsString(), "This is a true test of false and /*comments*/ with null containing 0.1 42.42 numbers and even \"strings\"");
+    EXPECT_STREQ(*bpf::String::ValueOf(testObject["Array"].AsArray()), "[TRUE, FALSE, null, 0.1, 1, 42, 4242, 0.4242]");
+    EXPECT_STREQ(*bpf::String::ValueOf(testObject["StrArray"].AsArray()), "[test, test1]");
+    EXPECT_STREQ(*bpf::String::ValueOf(testObject["AdvTestStr"]), "String with special \b\t characters\b\t.");
+    EXPECT_FALSE(testObject.Properties().HasKey("Unicode"));
+    EXPECT_STREQ(*bpf::String::ValueOf(testObject["Special"]), "\t\b");
+}
+
+TEST(Json, LexerParser_MultiLoadString)
+{
+    bpf::json::Lexer lexer;
+
+    lexer.EnableComments(true);
+    lexer.LoadString("//Start our object declaration");
+    lexer.LoadString("{");
+    lexer.LoadString("  //A number");
+    lexer.LoadString("  \"test\": 1,");
+    lexer.LoadString("  //A commented number");
+    lexer.LoadString("  /*\"test\": 42,*/");
+    lexer.LoadString("  //A string");
+    lexer.LoadString("  \"testStr\": \"this is the end\"");
+    lexer.LoadString("}");
+
+    J testObj = bpf::json::Parser(std::move(lexer)).Parse();
+    EXPECT_EQ(testObj.Type(), bpf::json::Json::EType::OBJECT);
+    J::Object testObject = std::move(testObj);
+    EXPECT_EQ(testObject["test"], 1.0);
+    EXPECT_EQ(testObject["testStr"], "this is the end");
 }
 
 TEST(Json, Lexer_Err)

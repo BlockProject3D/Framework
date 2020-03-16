@@ -52,16 +52,19 @@ namespace bpf
             };
 
         private:
+            int _line;
+            bool _enableComments;
+            bool _comment;
+            bool _lineComment;
             bool _string;
             int _cursor;
-            int _line;
             String _curNbr;
             String _curExponent;
             collection::Queue<Token> _tokens;
 
             bool CheckString(const String &token);
             bool CheckNumber(const String &token, const fchar next);
-            bool CheckBasic(const String &token);
+            bool CheckBasic(const String &token, const fchar next);
             String ReProcessString(const String &str);
             fchar ProcessUnicode(const String &str, int &pos);
             fchar ProcessStandard(const String &str, int &pos);
@@ -69,6 +72,12 @@ namespace bpf
         public:
             Lexer();
             void LoadString(const String &input);
+
+            inline void EnableComments(const bool flag) noexcept
+            {
+                _enableComments = flag;
+            }
+
             collection::Queue<Token> ReadTokens();
         };
     }

@@ -36,6 +36,8 @@ using namespace bpf::json;
 using namespace bpf;
 
 Lexer::Lexer()
+    : _line(1)
+    , _enableComments(false)
 {
 }
 
@@ -43,14 +45,15 @@ void Lexer::LoadString(const String &input)
 {
     String token;
 
+    _comment = false;
+    _lineComment = false;
     _string = false;
     _cursor = 0;
-    _line = 1;
     while (_cursor < input.Len())
     {
         token += input[_cursor];
         if (CheckString(token)
-            || CheckBasic(token)
+            || CheckBasic(token, _cursor < input.Len() ? input[_cursor + 1] : '\0')
             || CheckNumber(token, _cursor < input.Len() ? input[_cursor + 1] : '\0'))
             token = String::Empty;
         ++_cursor;
@@ -120,6 +123,8 @@ String Lexer::ReProcessString(const String &str)
 
 bool Lexer::CheckString(const String &token)
 {
+    if (_enableComments && (_comment || _lineComment))
+        return (false);
     if (token == '"')
         _string = true;
     if (token.Len() > 1 && token[0] == '"' && token[token.Len() - 1] == '"'
@@ -138,6 +143,8 @@ bool Lexer::CheckString(const String &token)
 
 bool Lexer::CheckNumber(const String &token, const fchar next)
 {
+    if (_enableComments && (_comment || _lineComment))
+        return (false);
     if (_string || token.Len() <= 0)
         return (false);
     if (token[0] == '-' && ((_curNbr.Len() > 0 && _curExponent.Len() > 1) || (_curNbr.Len() > 0 && _curExponent.Len() == 0)))
@@ -190,10 +197,39 @@ bool Lexer::CheckNumber(const String &token, const fchar next)
     return (false);
 }
 
-bool Lexer::CheckBasic(const String &token)
+bool Lexer::CheckBasic(const String &token, const fchar next)
 {
     if (_string)
         return (false);
+    if (_enableComments)
+    {
+        if (token == "/*")
+        {
+            _comment = true;
+            return (true);
+        }
+        else if (token == '*' && next == '/' && _comment)
+        {
+            _comment = false;
+            ++_cursor;
+            return (true);
+        }
+        else if (token == "//")
+        {
+            _lineComment = true;
+            return (true);
+        }
+        else if (((token == '\r' && next == '\n') || token == '\n') && _lineComment)
+        {
+            if (token == '\r' && next == '\n')
+                ++_cursor;
+            _lineComment = false;
+            ++_line;
+            return (true);
+        }
+        else if (_comment || _lineComment)
+            return (true);
+    }
     if (token == "false"
         || token == "true"
         || token == "null"
