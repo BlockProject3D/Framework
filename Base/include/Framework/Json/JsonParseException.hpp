@@ -35,10 +35,19 @@ namespace bpf
     {
         class BPF_API JsonParseException : public ParseException
         {
+        private:
+            int _line;
+
         public:
             explicit inline JsonParseException(const int line, const String &msg)
-                : ParseException("Json", String("Line ") + String::ValueOf(line) + ": " + msg)
+                : ParseException("Json", msg)
+                , _line(line)
             {
+            }
+
+            inline int Line() const noexcept
+            {
+                return (_line);
             }
         };
     }
