@@ -37,7 +37,7 @@ namespace bpf
         class BPF_API Parser
         {
         private:
-            collection::List<Lexer::Token> _tokens;
+            collection::Queue<Lexer::Token> _tokens;
 
             bool CheckObject(Json &j);
             bool CheckArray(Json &j);

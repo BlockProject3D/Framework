@@ -44,36 +44,36 @@ Json Parser::CheckJson()
         && !CheckObject(j)
         && !CheckArray(j))
         throw JsonException(String("Line ")
-            + String::ValueOf(_tokens.First().Line)
-            + ": Unexpected token '" + _tokens.First().Data + "'");
+            + String::ValueOf(_tokens.Top().Line)
+            + ": Unexpected token '" + _tokens.Top().Data + "'");
     return (j);
 }
 
 bool Parser::CheckObject(Json &j)
 {
-    if (_tokens.First().Type == Lexer::ETokenType::BASIC
-        && _tokens.First().Data == "{")
+    if (_tokens.Top().Type == Lexer::ETokenType::BASIC
+        && _tokens.Top().Data == "{")
     {
-        _tokens.RemoveAt(0);
+        _tokens.Pop();
         Json::Object obj;
 
-        while (_tokens.Size() > 0 && _tokens.First().Data != "}")
+        while (_tokens.Size() > 0 && _tokens.Top().Data != "}")
         {
             Json key;
             if (!CheckString(key))
                 throw JsonException(String("Line ")
-                    + String::ValueOf(_tokens.First().Line)
+                    + String::ValueOf(_tokens.Top().Line)
                     + ": Expected object key");
             CheckColon();
             Json value = CheckJson();
             obj[key] = value;
-            if (_tokens.Size() > 0 && _tokens.First().Data != "}")
+            if (_tokens.Size() > 0 && _tokens.Top().Data != "}")
                 CheckComa();
         }
         if (_tokens.Size() == 0)
             throw JsonException("Unexpected EOF");
         else
-            _tokens.RemoveAt(0);
+            _tokens.Pop();
         j = obj;
         return (true);
     }
@@ -84,42 +84,42 @@ void Parser::CheckColon()
 {
     if (_tokens.Size() == 0)
         throw JsonException("Unexpected EOF");
-    if (_tokens.First().Type != Lexer::ETokenType::BASIC
-        || _tokens.First().Data != ":")
+    if (_tokens.Top().Type != Lexer::ETokenType::BASIC
+        || _tokens.Top().Data != ":")
         throw JsonException(String("Line ")
-            + String::ValueOf(_tokens.First().Line)
+            + String::ValueOf(_tokens.Top().Line)
             + ": Expected colon");
-    _tokens.RemoveAt(0);
+    _tokens.Pop();
 }
 
 void Parser::CheckComa()
 {
-    if (_tokens.First().Type != Lexer::ETokenType::BASIC
-        || _tokens.First().Data != ",")
+    if (_tokens.Top().Type != Lexer::ETokenType::BASIC
+        || _tokens.Top().Data != ",")
         throw JsonException(String("Line ")
-            + String::ValueOf(_tokens.First().Line)
+            + String::ValueOf(_tokens.Top().Line)
             + ": Expected coma");
-    _tokens.RemoveAt(0);
+    _tokens.Pop();
 }
 
 bool Parser::CheckArray(Json &j)
 {
-    if (_tokens.First().Type == Lexer::ETokenType::BASIC
-        && _tokens.First().Data == "[")
+    if (_tokens.Top().Type == Lexer::ETokenType::BASIC
+        && _tokens.Top().Data == "[")
     {
-        _tokens.RemoveAt(0);
+        _tokens.Pop();
         Json::Array arr;
 
-        while (_tokens.Size() > 0 && _tokens.First().Data != "]")
+        while (_tokens.Size() > 0 && _tokens.Top().Data != "]")
         {
             arr.Add(CheckJson());
-            if (_tokens.Size() > 0 && _tokens.First().Data != "]")
+            if (_tokens.Size() > 0 && _tokens.Top().Data != "]")
                 CheckComa();
         }
         if (_tokens.Size() == 0)
             throw JsonException("Unexpected EOF");
         else
-            _tokens.RemoveAt(0);
+            _tokens.Pop();
         j = arr;
         return (true);
     }
@@ -128,43 +128,43 @@ bool Parser::CheckArray(Json &j)
 
 bool Parser::CheckNumber(Json &j)
 {
-    if (_tokens.First().Type != Lexer::ETokenType::NUMBER)
+    if (_tokens.Top().Type != Lexer::ETokenType::NUMBER)
         return (false);
-    j = Double::Parse(_tokens.First().Data);
-    _tokens.RemoveAt(0);
+    j = Double::Parse(_tokens.Top().Data);
+    _tokens.Pop();
     return (true);
 }
 
 bool Parser::CheckString(Json &j)
 {
-    if (_tokens.First().Type != Lexer::ETokenType::STRING)
+    if (_tokens.Top().Type != Lexer::ETokenType::STRING)
         return (false);
-    j = _tokens.First().Data;
-    _tokens.RemoveAt(0);
+    j = _tokens.Top().Data;
+    _tokens.Pop();
     return (true);
 }
 
 bool Parser::CheckBasic(Json &j)
 {
-    if (_tokens.First().Type != Lexer::ETokenType::BASIC)
+    if (_tokens.Top().Type != Lexer::ETokenType::BASIC)
         return (false);
-    Lexer::Token tok = _tokens[0];
+    auto tok = _tokens.Top();
     if (tok.Data == "false")
     {
         j = false;
-        _tokens.RemoveAt(0);
+        _tokens.Pop();
         return (true);
     }
     else if (tok.Data == "true")
     {
         j = true;
-        _tokens.RemoveAt(0);
+        _tokens.Pop();
         return (true);
     }
     else if (tok.Data == "null")
     {
         j = Json();
-        _tokens.RemoveAt(0);
+        _tokens.Pop();
         return (true);
     }
     return (false);
@@ -175,7 +175,7 @@ Json Parser::Parse()
     Json val = CheckJson();
     if (_tokens.Size() > 0)
         throw JsonException(String("Line ")
-            + String::ValueOf(_tokens.First().Line)
-            + ": Unexpected token '" + _tokens.First().Data + "'");
+            + String::ValueOf(_tokens.Top().Line)
+            + ": Unexpected token '" + _tokens.Top().Data + "'");
     return (val);
 }

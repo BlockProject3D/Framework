@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Collection/List.hpp"
+#include "Framework/Collection/Queue.hpp"
 #include "Framework/String.hpp"
 
 namespace bpf
@@ -57,7 +57,7 @@ namespace bpf
             int _line;
             String _curNbr;
             String _curExponent;
-            collection::List<Token> _tokens;
+            collection::Queue<Token> _tokens;
 
             bool CheckString(const String &token);
             bool CheckNumber(const String &token, const fchar next);
@@ -69,8 +69,7 @@ namespace bpf
         public:
             Lexer();
             void LoadString(const String &input);
-            collection::List<Token> ReadTokens();
-            void Dump();
+            collection::Queue<Token> ReadTokens();
         };
     }
 }

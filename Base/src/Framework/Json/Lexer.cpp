@@ -60,7 +60,7 @@ void Lexer::LoadString(const String &input)
             + ": Unexpected token '" + token + "'");
 }
 
-List<Lexer::Token> Lexer::ReadTokens()
+Queue<Lexer::Token> Lexer::ReadTokens()
 {
     return (std::move(_tokens));
 }
@@ -129,7 +129,7 @@ bool Lexer::CheckString(const String &token)
         tok.Data = ReProcessString(token);
         tok.Line = _line;
         tok.Type = ETokenType::STRING;
-        _tokens.Add(tok);
+        _tokens.Push(std::move(tok));
         _string = false;
         return (true);
     }
@@ -159,7 +159,7 @@ bool Lexer::CheckNumber(const String &token, const fchar next)
             tok.Data = _curNbr + _curExponent;
             tok.Line = _line;
             tok.Type = ETokenType::NUMBER;
-            _tokens.Add(tok);
+            _tokens.Push(std::move(tok));
             _curNbr = String::Empty;
             _curExponent = String::Empty;
         }
@@ -181,7 +181,7 @@ bool Lexer::CheckNumber(const String &token, const fchar next)
             tok.Data = _curNbr + _curExponent;
             tok.Line = _line;
             tok.Type = ETokenType::NUMBER;
-            _tokens.Add(tok);
+            _tokens.Push(std::move(tok));
             _curNbr = String::Empty;
             _curExponent = String::Empty;
         }
@@ -208,7 +208,7 @@ bool Lexer::CheckBasic(const String &token)
         tok.Data = token;
         tok.Line = _line;
         tok.Type = ETokenType::BASIC;
-        _tokens.Add(tok);
+        _tokens.Push(std::move(tok));
         return (true);
     }
     if (token == ' ' || token == '\t' || token == "\r\n" || token == '\n')
@@ -218,11 +218,4 @@ bool Lexer::CheckBasic(const String &token)
         return (true);
     }
     return (false);
-}
-
-void Lexer::Dump()
-{
-    for (auto tok : _tokens)
-        std::cout << *tok.Data << " ";
-    std::cout << std::endl;
 }
