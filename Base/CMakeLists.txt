@@ -120,6 +120,7 @@ set(SOURCES
     ./include/Framework/Json/Lexer.hpp
     ./include/Framework/Json/Parser.hpp
     ./include/Framework/Json/JsonException.hpp
+    ./include/Framework/Json/JsonParseException.hpp
     ./include/Framework/API.hpp
     ./include/Framework/BinUtils.hpp
     ./include/Framework/Types.hpp

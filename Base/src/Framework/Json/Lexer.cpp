@@ -28,7 +28,7 @@
 
 #include <iostream>
 #include "Framework/Json/Lexer.hpp"
-#include "Framework/Json/JsonException.hpp"
+#include "Framework/Json/JsonParseException.hpp"
 #include "Framework/Scalar.hpp"
 
 using namespace bpf::collection;
@@ -59,8 +59,7 @@ void Lexer::LoadString(const String &input)
         ++_cursor;
     }
     if (token != String::Empty)
-        throw JsonException(String("Line ") + String::ValueOf(_line)
-            + ": Unexpected token '" + token + "'");
+        throw JsonParseException(_line, String("Unexpected token '") + token + "'");
 }
 
 Queue<Lexer::Token> Lexer::ReadTokens()
@@ -148,7 +147,7 @@ bool Lexer::CheckNumber(const String &token, const fchar next)
     if (_string || token.Len() <= 0)
         return (false);
     if (token[0] == '-' && ((_curNbr.Len() > 0 && _curExponent.Len() > 1) || (_curNbr.Len() > 0 && _curExponent.Len() == 0)))
-        throw JsonException(String("Line ") + String::ValueOf(_line) + ": Invalid number format");
+        throw JsonParseException(_line, "Invalid number format");
     else if (token[0] == '-')
     {
         if (_curNbr.Len() > 0)
@@ -175,7 +174,7 @@ bool Lexer::CheckNumber(const String &token, const fchar next)
     else if (token[0] == 'e' || token[0] == 'E')
     {
         if (_curExponent.Len() > 0)
-            throw JsonException(String("Line ") + String::ValueOf(_line) + ": Invalid number format");
+            throw JsonParseException(_line, "Invalid number format");
         _curExponent = 'e';
         return (true);
     }

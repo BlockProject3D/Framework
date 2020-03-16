@@ -31,11 +31,16 @@
 
 namespace bpf
 {
-    class ParseException : public RuntimeException
+    class BPF_API ParseException : public RuntimeException
     {
     public:
         inline explicit ParseException(const String &msg) noexcept
             : RuntimeException("Parse", msg)
+        {
+        }
+
+        inline explicit ParseException(const String &type, const String &msg) noexcept
+            : RuntimeException(type + "Parse", msg)
         {
         }
     };

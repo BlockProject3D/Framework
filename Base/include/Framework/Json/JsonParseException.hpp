@@ -27,35 +27,19 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Json/Json.hpp"
-#include "Framework/Json/Lexer.hpp"
+#include "Framework/ParseException.hpp"
 
 namespace bpf
 {
     namespace json
     {
-        class BPF_API Parser
+        class BPF_API JsonParseException : public ParseException
         {
-        private:
-            collection::Queue<Lexer::Token> _tokens;
-            int _line; //Keep track of last line
-
-            bool CheckObject(Json &j);
-            bool CheckArray(Json &j);
-            bool CheckNumber(Json &j);
-            bool CheckString(Json &j);
-            bool CheckBasic(Json &j);
-            void CheckColon();
-            void CheckComa();
-            Json CheckJson();
         public:
-            explicit inline Parser(Lexer &&lexer)
-                : _tokens(std::move(lexer.ReadTokens()))
-                , _line(1)
+            explicit inline JsonParseException(const int line, const String &msg)
+                : ParseException("Json", String("Line ") + String::ValueOf(line) + ": " + msg)
             {
             }
-
-            Json Parse();
         };
     }
 }

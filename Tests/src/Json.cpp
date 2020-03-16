@@ -30,6 +30,7 @@
 #include <iostream>
 #include <gtest/gtest.h>
 #include <Framework/Json/Json.hpp>
+#include <Framework/Json/JsonParseException.hpp>
 #include <Framework/Json/Parser.hpp>
 #include <Framework/Json/Stringifier.Json.hpp>
 
@@ -281,7 +282,7 @@ TEST(Json, LexerParser_Comments_Err)
 {
     bpf::json::Lexer lexer;
 
-    EXPECT_THROW(lexer.LoadString("//This should fail"), bpf::json::JsonException);
+    EXPECT_THROW(lexer.LoadString("//This should fail"), bpf::json::JsonParseException);
 }
 
 TEST(Json, LexerParser_Comments)
@@ -349,11 +350,11 @@ TEST(Json, Lexer_Err)
 {
     bpf::json::Lexer lexer;
 
-    EXPECT_THROW(lexer.LoadString("{\"test"), bpf::json::JsonException);
-    EXPECT_THROW(lexer.LoadString("{\"test\": --2}"), bpf::json::JsonException);
-    EXPECT_THROW(lexer.LoadString("{\"test\": -2e--2}"), bpf::json::JsonException);
-    EXPECT_THROW(lexer.LoadString("{\"test\": 2e3e2}"), bpf::json::JsonException);
-    EXPECT_THROW(lexer.LoadString("{\"test\": 2ee2}"), bpf::json::JsonException);
+    EXPECT_THROW(lexer.LoadString("{\"test"), bpf::json::JsonParseException);
+    EXPECT_THROW(lexer.LoadString("{\"test\": --2}"), bpf::json::JsonParseException);
+    EXPECT_THROW(lexer.LoadString("{\"test\": -2e--2}"), bpf::json::JsonParseException);
+    EXPECT_THROW(lexer.LoadString("{\"test\": 2e3e2}"), bpf::json::JsonParseException);
+    EXPECT_THROW(lexer.LoadString("{\"test\": 2ee2}"), bpf::json::JsonParseException);
 }
 
 TEST(Json, Parser_Err_1)
@@ -361,7 +362,7 @@ TEST(Json, Parser_Err_1)
     bpf::json::Lexer lexer;
 
     lexer.LoadString("{\"test\": ");
-    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonException);
+    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonParseException);
 }
 
 TEST(Json, Parser_Err_2)
@@ -369,7 +370,7 @@ TEST(Json, Parser_Err_2)
     bpf::json::Lexer lexer;
 
     lexer.LoadString("{\"test\": 2");
-    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonException);
+    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonParseException);
 }
 
 TEST(Json, Parser_Err_3)
@@ -377,7 +378,7 @@ TEST(Json, Parser_Err_3)
     bpf::json::Lexer lexer;
 
     lexer.LoadString("{\"test\" 2}");
-    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonException);
+    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonParseException);
 }
 
 TEST(Json, Parser_Err_4)
@@ -385,7 +386,7 @@ TEST(Json, Parser_Err_4)
     bpf::json::Lexer lexer;
 
     lexer.LoadString("{\"test\"}");
-    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonException);
+    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonParseException);
 }
 
 TEST(Json, Parser_Err_5)
@@ -393,7 +394,7 @@ TEST(Json, Parser_Err_5)
     bpf::json::Lexer lexer;
 
     lexer.LoadString("[2, 3,");
-    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonException);
+    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonParseException);
 }
 
 TEST(Json, Parser_Err_6)
@@ -401,7 +402,7 @@ TEST(Json, Parser_Err_6)
     bpf::json::Lexer lexer;
 
     lexer.LoadString("[2, 3");
-    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonException);
+    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonParseException);
 }
 
 TEST(Json, Parser_Err_7)
@@ -409,7 +410,7 @@ TEST(Json, Parser_Err_7)
     bpf::json::Lexer lexer;
 
     lexer.LoadString("{\"test\":");
-    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonException);
+    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonParseException);
 }
 
 TEST(Json, Parser_Err_8)
@@ -417,7 +418,7 @@ TEST(Json, Parser_Err_8)
     bpf::json::Lexer lexer;
 
     lexer.LoadString("{:\"test\"");
-    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonException);
+    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonParseException);
 }
 
 TEST(Json, Parser_Err_9)
@@ -425,7 +426,7 @@ TEST(Json, Parser_Err_9)
     bpf::json::Lexer lexer;
 
     lexer.LoadString("[2\"2\":]");
-    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonException);
+    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonParseException);
 }
 
 TEST(Json, Parser_Err_10)
@@ -433,7 +434,7 @@ TEST(Json, Parser_Err_10)
     bpf::json::Lexer lexer;
 
     lexer.LoadString("{}\"test\"");
-    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonException);
+    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonParseException);
 }
 
 TEST(Json, Parser_Err_11)
@@ -441,7 +442,7 @@ TEST(Json, Parser_Err_11)
     bpf::json::Lexer lexer;
 
     lexer.LoadString(",{}");
-    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonException);
+    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonParseException);
 }
 
 TEST(Json, Parser_Err_12)
@@ -449,7 +450,7 @@ TEST(Json, Parser_Err_12)
     bpf::json::Lexer lexer;
 
     lexer.LoadString("{\"test\"");
-    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonException);
+    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonParseException);
 }
 
 TEST(Json, Parser_Err_13)
@@ -457,7 +458,7 @@ TEST(Json, Parser_Err_13)
     bpf::json::Lexer lexer;
 
     lexer.LoadString("{\"test\"");
-    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonException);
+    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonParseException);
 }
 
 TEST(Json, Stringifier)
