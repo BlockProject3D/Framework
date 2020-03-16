@@ -277,6 +277,13 @@ TEST(Json, LexerParser)
     EXPECT_STREQ(*bpf::String::ValueOf(testObject["Special"]), "\t\b");
 }
 
+TEST(Json, LexerParser_Comments_Err)
+{
+    bpf::json::Lexer lexer;
+
+    EXPECT_THROW(lexer.LoadString("//This should fail"), bpf::json::JsonException);
+}
+
 TEST(Json, LexerParser_Comments)
 {
     bpf::String str =
