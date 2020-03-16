@@ -318,6 +318,78 @@ TEST(Json, Parser_Err_4)
     EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonException);
 }
 
+TEST(Json, Parser_Err_5)
+{
+    bpf::json::Lexer lexer;
+
+    lexer.LoadString("[2, 3,");
+    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonException);
+}
+
+TEST(Json, Parser_Err_6)
+{
+    bpf::json::Lexer lexer;
+
+    lexer.LoadString("[2, 3");
+    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonException);
+}
+
+TEST(Json, Parser_Err_7)
+{
+    bpf::json::Lexer lexer;
+
+    lexer.LoadString("{\"test\":");
+    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonException);
+}
+
+TEST(Json, Parser_Err_8)
+{
+    bpf::json::Lexer lexer;
+
+    lexer.LoadString("{:\"test\"");
+    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonException);
+}
+
+TEST(Json, Parser_Err_9)
+{
+    bpf::json::Lexer lexer;
+
+    lexer.LoadString("[2\"2\":]");
+    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonException);
+}
+
+TEST(Json, Parser_Err_10)
+{
+    bpf::json::Lexer lexer;
+
+    lexer.LoadString("{}\"test\"");
+    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonException);
+}
+
+TEST(Json, Parser_Err_11)
+{
+    bpf::json::Lexer lexer;
+
+    lexer.LoadString(",{}");
+    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonException);
+}
+
+TEST(Json, Parser_Err_12)
+{
+    bpf::json::Lexer lexer;
+
+    lexer.LoadString("{\"test\"");
+    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonException);
+}
+
+TEST(Json, Parser_Err_13)
+{
+    bpf::json::Lexer lexer;
+
+    lexer.LoadString("{\"test\"");
+    EXPECT_THROW(bpf::json::Parser(std::move(lexer)).Parse(), bpf::json::JsonException);
+}
+
 TEST(Json, Stringifier)
 {
     J::Object obj{

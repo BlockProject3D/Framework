@@ -94,8 +94,6 @@ void Parser::CheckColon()
 
 void Parser::CheckComa()
 {
-    if (_tokens.Size() == 0)
-        throw JsonException("Unexpected EOF");
     if (_tokens.First().Type != Lexer::ETokenType::BASIC
         || _tokens.First().Data != ",")
         throw JsonException(String("Line ")
@@ -174,5 +172,10 @@ bool Parser::CheckBasic(Json &j)
 
 Json Parser::Parse()
 {
-    return (CheckJson());
+    Json val = CheckJson();
+    if (_tokens.Size() > 0)
+        throw JsonException(String("Line ")
+            + String::ValueOf(_tokens.First().Line)
+            + ": Unexpected token '" + _tokens.First().Data + "'");
+    return (val);
 }
