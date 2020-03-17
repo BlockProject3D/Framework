@@ -119,6 +119,7 @@ set(SOURCES
     ./include/Framework/Json/Json.hpp
     ./include/Framework/Json/Lexer.hpp
     ./include/Framework/Json/Parser.hpp
+    ./include/Framework/Json/Writer.hpp
     ./include/Framework/Json/JsonException.hpp
     ./include/Framework/Json/JsonParseException.hpp
     ./include/Framework/API.hpp
@@ -174,6 +175,7 @@ set(SOURCES
     ./src/Framework/Json/Json.cpp
     ./src/Framework/Json/Lexer.cpp
     ./src/Framework/Json/Parser.cpp
+    ./src/Framework/Json/Writer.cpp
     ./src/Framework/Color.cpp
     ./src/Framework/Profiler.cpp
     ./src/Framework/Exception.cpp

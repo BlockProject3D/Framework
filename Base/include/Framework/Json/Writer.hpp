@@ -28,36 +28,33 @@
 
 #pragma once
 #include "Framework/Json/Json.hpp"
-#include "Framework/Json/Lexer.hpp"
 
 namespace bpf
 {
     namespace json
     {
-        class BPF_API Parser
+        class BPF_API Writer
         {
         private:
-            collection::Queue<Lexer::Token> _tokens;
-            int _line; //Keep track of last line
             bool _ignoreNulls;
+            bool _pretty;
+            int _stack;
 
-            bool CheckObject(Json &j);
-            bool CheckArray(Json &j);
-            bool CheckNumber(Json &j);
-            bool CheckString(Json &j);
-            bool CheckBasic(Json &j);
-            void CheckColon();
-            void CheckComa();
-            Json CheckJson();
+            String SerializeObject(const Json::Object &json);
+            String SerializeObjectPretty(const Json::Object &json);
+            String SerializeArray(const Json::Array &json);
+            String SerializeArrayPretty(const Json::Array &json);
+            String Indent();
+
         public:
-            explicit inline Parser(Lexer &&lexer)
-                : _tokens(std::move(lexer.ReadTokens()))
-                , _line(1)
-                , _ignoreNulls(lexer.IgnoreNulls())
+            inline Writer(const bool pretty = true, const bool ignoreNulls = false)
+                : _ignoreNulls(ignoreNulls)
+                , _pretty(pretty)
+                , _stack(0)
             {
             }
 
-            Json Parse();
+            String Serialize(const Json &json);
         };
     }
 }

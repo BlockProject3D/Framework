@@ -54,6 +54,7 @@ namespace bpf
         private:
             int _line;
             bool _enableComments;
+            bool _ignoreNulls;
             bool _comment;
             bool _lineComment;
             bool _string;
@@ -70,15 +71,14 @@ namespace bpf
             fchar ProcessStandard(const String &str, int &pos);
 
         public:
-            Lexer();
+            Lexer(const bool enableComments = false, const bool ignoreNulls = false);
             void LoadString(const String &input);
 
-            inline void EnableComments(const bool flag) noexcept
-            {
-                _enableComments = flag;
-            }
-
             collection::Queue<Token> ReadTokens();
+            inline bool IgnoreNulls() const noexcept
+            {
+                return (_ignoreNulls);
+            }
         };
     }
 }

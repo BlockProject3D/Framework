@@ -75,7 +75,7 @@ namespace bpf
             case json::Json::EType::OBJECT:
                 return (String::ValueOf(val.AsObject(), prec));
             }
-            return ("Unknown");
+            throw json::JsonException("Unknown value type");
         }
     };
 }

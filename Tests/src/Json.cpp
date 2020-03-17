@@ -117,25 +117,25 @@ TEST(Json, API_2)
     EXPECT_STREQ(*arr[0].AsObject()["Test1"].AsString(), "b");
     for (auto &json : arr)
     {
-        EXPECT_EQ(json.Type(), J::EType::OBJECT);
+        EXPECT_EQ(json.Type(), J::OBJECT);
         EXPECT_EQ(json.AsObject()["Test"], "a");
         EXPECT_EQ(json.AsObject()["Test1"], "b");
         const J::Object &jobj = json;
         for (auto &sjson : jobj)
         {
-            EXPECT_EQ(sjson.Value.Type(), J::EType::STRING);
+            EXPECT_EQ(sjson.Value.Type(), J::STRING);
             EXPECT_TRUE(sjson.Key == "Test" || sjson.Key == "Test1");
         }
     }
     for (auto &json : bpf::collection::Reverse(arr))
     {
-        EXPECT_EQ(json.Type(), J::EType::OBJECT);
+        EXPECT_EQ(json.Type(), J::OBJECT);
         EXPECT_EQ(json.AsObject()["Test"], "a");
         EXPECT_EQ(json.AsObject()["Test1"], "b");
         const J::Object &jobj = json;
         for (auto &sjson : bpf::collection::Reverse(jobj))
         {
-            EXPECT_EQ(sjson.Value.Type(), J::EType::STRING);
+            EXPECT_EQ(sjson.Value.Type(), J::STRING);
             EXPECT_TRUE(sjson.Key == "Test" || sjson.Key == "Test1");
         }
     }
@@ -258,7 +258,7 @@ TEST(Json, LexerParser)
     bpf::json::Lexer lexer;
     lexer.LoadString(str);
     J testObj = bpf::json::Parser(std::move(lexer)).Parse();
-    EXPECT_EQ(testObj.Type(), bpf::json::Json::EType::OBJECT);
+    EXPECT_EQ(testObj.Type(), bpf::json::Json::OBJECT);
     J::Object testObject = testObj;
     EXPECT_EQ(testObject["test"], true);
     EXPECT_EQ(testObject["test"], true);
@@ -300,11 +300,10 @@ TEST(Json, LexerParser_Comments)
         "   \"MyString\": \"This is a true test of false and /*comments*/ with null containing 0.1 42.42 numbers and even \\\"strings\\\"\""
         "}";
 
-    bpf::json::Lexer lexer;
-    lexer.EnableComments(true);
+    bpf::json::Lexer lexer(true);
     lexer.LoadString(str);
     J testObj = bpf::json::Parser(std::move(lexer)).Parse();
-    EXPECT_EQ(testObj.Type(), bpf::json::Json::EType::OBJECT);
+    EXPECT_EQ(testObj.Type(), bpf::json::Json::OBJECT);
     J::Object testObject = testObj;
     EXPECT_EQ(testObject["test"], true);
     EXPECT_EQ(testObject["test"], true);
@@ -326,9 +325,8 @@ TEST(Json, LexerParser_Comments)
 
 TEST(Json, LexerParser_MultiLoadString)
 {
-    bpf::json::Lexer lexer;
+    bpf::json::Lexer lexer(true);
 
-    lexer.EnableComments(true);
     lexer.LoadString("//Start our object declaration");
     lexer.LoadString("{");
     lexer.LoadString("  //A number");
@@ -340,10 +338,26 @@ TEST(Json, LexerParser_MultiLoadString)
     lexer.LoadString("}");
 
     J testObj = bpf::json::Parser(std::move(lexer)).Parse();
-    EXPECT_EQ(testObj.Type(), bpf::json::Json::EType::OBJECT);
+    EXPECT_EQ(testObj.Type(), bpf::json::Json::OBJECT);
     J::Object testObject = std::move(testObj);
     EXPECT_EQ(testObject["test"], 1.0);
     EXPECT_EQ(testObject["testStr"], "this is the end");
+}
+
+TEST(Json, LexerParser_IgnoreNulls)
+{
+    bpf::json::Lexer lexer(false, true);
+
+    lexer.LoadString("{");
+    lexer.LoadString("  \"test\": 1,");
+    lexer.LoadString("  \"testStr\": null");
+    lexer.LoadString("}");
+
+    J testObj = bpf::json::Parser(std::move(lexer)).Parse();
+    EXPECT_EQ(testObj.Type(), bpf::json::Json::OBJECT);
+    J::Object testObject = std::move(testObj);
+    EXPECT_EQ(testObject["test"], 1.0);
+    EXPECT_FALSE(testObject.Properties().HasKey("testStr"));
 }
 
 TEST(Json, Lexer_Err)

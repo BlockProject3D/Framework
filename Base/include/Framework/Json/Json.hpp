@@ -40,7 +40,7 @@ namespace bpf
         class BPF_API Json
         {
         public:
-            enum class EType
+            enum EType
             {
                 NUMBER,
                 BOOLEAN,
@@ -275,7 +275,7 @@ namespace bpf
             }
 
             inline Json(const char *val)
-                : _type(EType::STRING)
+                : _type(val != Null ? EType::STRING : EType::NONE)
                 , _number(0.0)
                 , _bool(false)
                 , _string(val)

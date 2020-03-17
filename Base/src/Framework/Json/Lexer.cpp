@@ -35,9 +35,10 @@ using namespace bpf::collection;
 using namespace bpf::json;
 using namespace bpf;
 
-Lexer::Lexer()
+Lexer::Lexer(const bool enableComments, const bool ignoreNulls)
     : _line(1)
-    , _enableComments(false)
+    , _enableComments(enableComments)
+    , _ignoreNulls(ignoreNulls)
 {
 }
 
