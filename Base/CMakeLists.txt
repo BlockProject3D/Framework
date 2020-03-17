@@ -34,10 +34,10 @@ set(SOURCES
     ./include/Framework/Math/Quaternion.impl.hpp
     ./include/Framework/Math/Matrix.hpp
     ./include/Framework/Math/Matrix.impl.hpp
-    ./include/Framework/Math/Transform2D.hpp
-    ./include/Framework/Math/Transform2D.impl.hpp
-    ./include/Framework/Math/Transform3D.hpp
-    ./include/Framework/Math/Transform3D.impl.hpp
+    ./include/Framework/Math/Transform2.hpp
+    ./include/Framework/Math/Transform2.impl.hpp
+    ./include/Framework/Math/Transform3.hpp
+    ./include/Framework/Math/Transform3.impl.hpp
     ./include/Framework/Math/Polygon2D.hpp
     ./include/Framework/Math/Polygon2D.impl.hpp
     ./include/Framework/Math/Polygon3D.hpp

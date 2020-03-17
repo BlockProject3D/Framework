@@ -33,7 +33,7 @@ namespace bpf
     namespace math
     {
         template <typename T>
-        typename Transform2D<T>::MatrixBuilder &Transform2D<T>::MatrixBuilder::Translate(const Vector2<T> &translation) noexcept
+        typename Transform2<T>::MatrixBuilder &Transform2<T>::MatrixBuilder::Translate(const Vector2<T> &translation) noexcept
         {
             _matrix = _matrix * Matrix3<T>({
                 1, 0, translation.X,
@@ -44,7 +44,7 @@ namespace bpf
         }
 
         template <typename T>
-        typename Transform2D<T>::MatrixBuilder &Transform2D<T>::MatrixBuilder::Scale(const Vector2<T> &scale) noexcept
+        typename Transform2<T>::MatrixBuilder &Transform2<T>::MatrixBuilder::Scale(const Vector2<T> &scale) noexcept
         {
             _matrix = _matrix * Matrix3<T>({
                 scale.X, 0, 0,
@@ -55,7 +55,7 @@ namespace bpf
         }
 
         template <typename T>
-        typename Transform2D<T>::MatrixBuilder &Transform2D<T>::MatrixBuilder::ShearX(const T &shear) noexcept
+        typename Transform2<T>::MatrixBuilder &Transform2<T>::MatrixBuilder::ShearX(const T &shear) noexcept
         {
             _matrix = _matrix * Matrix3<T>({
                 1, 0, 0,
@@ -66,7 +66,7 @@ namespace bpf
         }
 
         template <typename T>
-        typename Transform2D<T>::MatrixBuilder &Transform2D<T>::MatrixBuilder::ShearY(const T &shear) noexcept
+        typename Transform2<T>::MatrixBuilder &Transform2<T>::MatrixBuilder::ShearY(const T &shear) noexcept
         {
             _matrix = _matrix * Matrix3<T>({
                 1, shear, 0,
@@ -77,7 +77,7 @@ namespace bpf
         }
 
         template <typename T>
-        typename Transform2D<T>::MatrixBuilder &Transform2D<T>::MatrixBuilder::Rotate(const T &rotation) noexcept
+        typename Transform2<T>::MatrixBuilder &Transform2<T>::MatrixBuilder::Rotate(const T &rotation) noexcept
         {
             _matrix = _matrix * Matrix3<T>({
                 Math<T>::Cos(rotation), -Math<T>::Sin(rotation), 0,
@@ -88,7 +88,7 @@ namespace bpf
         }
 
         template <typename T>
-        Vector2<T> Transform2D<T>::LocalToWorld(const Vector2<T> &local)
+        Vector2<T> Transform2<T>::LocalToWorld(const Vector2<T> &local)
         {
             auto res = ToMatrix() * Vector3<T>(local, (T)1);
 
@@ -96,7 +96,7 @@ namespace bpf
         }
 
         template <typename T>
-        Vector2<T> Transform2D<T>::WorldToLocal(const Vector2<T> &world)
+        Vector2<T> Transform2<T>::WorldToLocal(const Vector2<T> &world)
         {
             auto res = ToMatrix().Inverse() * Vector3<T>(world, (T)1);
 
@@ -104,15 +104,15 @@ namespace bpf
         }
 
         template <typename T>
-        Transform2D<T> Transform2D<T>::operator+(const Transform2D &other) const noexcept
+        Transform2<T> Transform2<T>::operator+(const Transform2 &other) const noexcept
         {
-            Transform2D<T> res(Position + other.Position, Scale * other.Scale, Rotation + other.Rotation);
+            Transform2<T> res(Position + other.Position, Scale * other.Scale, Rotation + other.Rotation);
 
             return (res);
         }
 
         template <typename T>
-        void Transform2D<T>::operator+=(const Transform2D &other)
+        void Transform2<T>::operator+=(const Transform2 &other)
         {
             Position += other.Position;
             Scale *= other.Scale;
@@ -120,7 +120,7 @@ namespace bpf
         }
 
         template <typename T>
-        void Transform2D<T>::RotateArround(const Vector2<T> &pivot, const T &rotation)
+        void Transform2<T>::RotateArround(const Vector2<T> &pivot, const T &rotation)
         {
             auto dir = Position - pivot;
             Matrix2<T> mat = {

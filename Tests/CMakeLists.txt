@@ -60,8 +60,8 @@ set(SOURCES
     src/Timer.cpp
     src/Thread.cpp
     src/BoundingBox.cpp
-    src/Transform3D.cpp
-    src/Transform2D.cpp
+    src/Transform3.cpp
+    src/Transform2.cpp
     src/Math.cpp
     src/Name.cpp
     src/Json.cpp

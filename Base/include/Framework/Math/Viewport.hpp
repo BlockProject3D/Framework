@@ -35,7 +35,7 @@ namespace bpf
 {
     namespace math
     {
-        template <typename T = float>
+        template <typename T>
         class BP_TPL_API Viewport
         {
         public:
@@ -81,6 +81,8 @@ namespace bpf
             {
             }
         };
+
+        using Viewportf = Viewport<float>;
     }
 };
 
