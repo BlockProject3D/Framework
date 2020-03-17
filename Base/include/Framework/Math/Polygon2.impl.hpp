@@ -54,7 +54,7 @@ namespace bpf
         }
 
         template <typename T>
-        ArrayList<Polygon2<T>> Polygon2<T>::Triangulate() const noexcept
+        collection::ArrayList<Polygon2<T>> Polygon2<T>::Triangulate() const noexcept
         {
             if (Vertices.Size <= 3)
                 return ({ *this });

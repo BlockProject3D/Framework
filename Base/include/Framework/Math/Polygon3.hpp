@@ -27,6 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/Math/Vector.hpp"
 #include "Framework/Collection/ArrayList.hpp"
 #include "Framework/Math/Transform3.hpp"
 
@@ -38,26 +39,26 @@ namespace bpf
         class BP_TPL_API Polygon3
         {
         public:
-            ArrayList<Vector3> Vertices;
+            collection::ArrayList<Vector3<T>> Vertices;
 
-            explicit inline Polygon3(const ArrayList<Vector3> &verts)
+            explicit inline Polygon3(const collection::ArrayList<Vector3<T>> &verts)
                 : Vertices(verts)
             {
             }
 
-            explicit inline Polygon3(ArrayList<Vector3> &&verts)
+            explicit inline Polygon3(collection::ArrayList<Vector3<T>> &&verts)
                 : Vertices(std::move(verts))
             {
             }
 
-            inline void Transform(const Transform3 &transform)
+            inline void Transform(const Transform3<T> &transform)
             {
                 Transform(transform.ToMatrix());
             }
 
-            Vector3 GetNormal() const noexcept;
-            Vector3 GetBarycenter() const noexcept;
-            void Transform(const Matrix4 &matrix);
+            Vector3<T> GetNormal() const noexcept;
+            Vector3<T> GetBarycenter() const noexcept;
+            void Transform(const Matrix4<T> &matrix);
         };
 
         using Polygon3f = Polygon3<float>;
