@@ -27,39 +27,42 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Collection/ArrayList.hpp"
-#include "Framework/Math/Transform2D.hpp"
 
 namespace bpf
 {
     namespace math
     {
         template <typename T>
-        class BP_TPL_API Polygon2D
+        Vector2<T> Polygon2<T>::GetBarycenter() const noexcept
         {
-        public:
-            ArrayList<Vector2> Vertices;
+            Vector2<T> res;
 
-            explicit inline Polygon2D(const ArrayList<Vector2> &verts)
-                : Vertices(verts)
+            for (const auto &v : Vertices)
+                res += v;
+            return (res / Vertices.Size());
+        }
+
+        template <typename T>
+        void Polygon2<T>::Transform(const Matrix3<T> &matrix)
+        {
+            for (auto &v : Vertices)
             {
+                Vector3<T> vec(v, 1.0f);
+                auto res = matrix * vec;
+                v = Vector2<T>(res.X, res.Y);
             }
+        }
 
-            explicit inline Polygon2D(ArrayList<Vector2> &&verts)
-                : Vertices(std::move(verts))
-            {
-            }
-
-            inline void Transform(const Transform2D &transform)
-            {
-                Transform(transform.ToMatrix());
-            }
-
-            Vector2 GetBarycenter() const noexcept;
-            void Transform(const Matrix3 &matrix);
-            ArrayList<Polygon2D> Triangulate() const noexcept;
-        };
+        template <typename T>
+        ArrayList<Polygon2<T>> Polygon2<T>::Triangulate() const noexcept
+        {
+            if (Vertices.Size <= 3)
+                return ({ *this });
+            auto lst = ArrayList<Polygon2>();
+            auto v1 = Vertices[0];
+            for (fsize i = 1; i + 1 < Vertices.Size(); i += 2)
+                lst.Add(Polygon2({ v1, Vertices[i], Vertices[i + 1] }));
+            return (lst);
+        }
     }
 }
-
-#include "Framework/Math/Polygon2D.impl.hpp"

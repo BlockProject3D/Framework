@@ -27,42 +27,41 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/Collection/ArrayList.hpp"
+#include "Framework/Math/Transform3.hpp"
 
 namespace bpf
 {
     namespace math
     {
         template <typename T>
-        Vector3<T> Polygon3D<T>::GetNormal() const noexcept
+        class BP_TPL_API Polygon3
         {
-            if (Vertices.Size() >= 3)
+        public:
+            ArrayList<Vector3> Vertices;
+
+            explicit inline Polygon3(const ArrayList<Vector3> &verts)
+                : Vertices(verts)
             {
-                Vector3<T> v = Vertices[1] - Vertices[0];
-                Vector3<T> w = Vertices[2] - Vertices[0];
-                return (v.Cross(w));
             }
-            return (Vector3<T>::Zero);
-        }
 
-        template <typename T>
-        Vector3<T> Polygon3D<T>::GetBarycenter() const noexcept
-        {
-            Vector3<T> res;
-
-            for (const auto &v : Vertices)
-                res += v;
-            return (res / Vertices.Size());
-        }
-
-        template <typename T>
-        void Polygon3D<T>::Transform(const Matrix4<T> &matrix)
-        {
-            for (auto &v : Vertices)
+            explicit inline Polygon3(ArrayList<Vector3> &&verts)
+                : Vertices(std::move(verts))
             {
-                Vector4<T> vec(v, 1.0f);
-                auto res = matrix * vec;
-                v = Vector3<T>(res.X, res.Y, res.Z);
             }
-        }
+
+            inline void Transform(const Transform3 &transform)
+            {
+                Transform(transform.ToMatrix());
+            }
+
+            Vector3 GetNormal() const noexcept;
+            Vector3 GetBarycenter() const noexcept;
+            void Transform(const Matrix4 &matrix);
+        };
+
+        using Polygon3f = Polygon3<float>;
     }
 }
+
+#include "Framework/Math/Polygon3.impl.hpp"

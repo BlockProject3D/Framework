@@ -38,10 +38,10 @@ set(SOURCES
     ./include/Framework/Math/Transform2.impl.hpp
     ./include/Framework/Math/Transform3.hpp
     ./include/Framework/Math/Transform3.impl.hpp
-    ./include/Framework/Math/Polygon2D.hpp
-    ./include/Framework/Math/Polygon2D.impl.hpp
-    ./include/Framework/Math/Polygon3D.hpp
-    ./include/Framework/Math/Polygon3D.impl.hpp
+    ./include/Framework/Math/Polygon2.hpp
+    ./include/Framework/Math/Polygon2.impl.hpp
+    ./include/Framework/Math/Polygon3.hpp
+    ./include/Framework/Math/Polygon3.impl.hpp
     ./include/Framework/Math/Stringifier.Matrix.hpp
     ./include/Framework/Math/Stringifier.Vector.hpp
     ./include/Framework/Math/Stringifier.Quaternion.hpp
