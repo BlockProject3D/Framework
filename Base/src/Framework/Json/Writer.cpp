@@ -76,10 +76,8 @@ String Writer::SerializeObjectPretty(const Json::Object &json)
     String prefix = Indent();
     for (auto &prop : json)
     {
-        if (!_ignoreNulls || (_ignoreNulls && prop.Value.Type() != Json::NONE))
-        {
+        if (!_ignoreNulls || prop.Value.Type() != Json::NONE)
             res += prefix + '"' + prop.Key + "\": " + Serialize(prop.Value) + ",\n";
-        }
     }
     --_stack;
     res = res.Sub(0, res.Len() - 2);

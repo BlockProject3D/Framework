@@ -63,7 +63,7 @@ bool Parser::CheckObject(Json &j)
                 throw JsonParseException(_tokens.Top().Line, "Expected object key");
             CheckColon();
             Json value = CheckJson();
-            if (!_ignoreNulls || (_ignoreNulls && value.Type() != Json::NONE))
+            if (!_ignoreNulls || value.Type() != Json::NONE)
                 obj[key] = value;
             if (_tokens.Size() > 0 && _tokens.Top().Data != "}")
                 CheckComa();
