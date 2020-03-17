@@ -38,10 +38,8 @@ String Writer::SerializeObject(const Json::Object &json)
 
     for (auto &prop : json)
     {
-        if (!_ignoreNulls || (_ignoreNulls && prop.Value.Type() != Json::NONE))
-        {
+        if (!_ignoreNulls || prop.Value.Type() != Json::NONE)
             res += String('"') + prop.Key + "\":" + Serialize(prop.Value) + ',';
-        }
     }
     res = res.Sub(0, res.Len() - 1);
     res += '}';
