@@ -26,80 +26,17 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Framework/IO/TextWriter.hpp"
+#pragma once
 
-using namespace bpf::io;
-using namespace bpf;
-
-void TextWriter::WriteByte(uint8 byte)
+namespace bpf
 {
-    if (!_buffered)
+    namespace io
     {
-        _stream.Write(&byte, 1);
-        return;
+        enum class EStringEncoder
+        {
+            UTF8,
+            UTF16,
+            UTF32
+        };
     }
-    if (_buf.GetWrittenBytes() >= _buf.Size())
-    {
-        _stream.Write(_buf.GetRawData(), WRITE_BUF_SIZE);
-        _buf.Clear();
-    }
-    _buf.Write(&byte, 1);
-}
-
-void TextWriter::WriteSubBuf(const void *out, const fsize size)
-{
-    const uint8 *res = reinterpret_cast<const uint8 *>(out);
-
-    for (fsize i = 0; i != size; ++i)
-        WriteByte(res[i]);
-}
-
-void TextWriter::Write(const String &str)
-{
-    switch (_encoder)
-    {
-    case EStringEncoder::UTF8:
-        WriteSubBuf(*str, str.Size());
-        break;
-    case EStringEncoder::UTF16:
-    {
-        auto buf = str.ToUTF16();
-        WriteSubBuf(*buf, sizeof(bpf::fchar16) * buf.Size());
-        break;
-    }
-    case EStringEncoder::UTF32:
-    {
-        auto buf = str.ToUTF32();
-        WriteSubBuf(*buf, sizeof(bpf::fchar) * buf.Size());
-        break;
-    }
-    }
-}
-
-void TextWriter::WriteLine(const String &str)
-{
-    Write(str);
-    NewLine();
-}
-
-void TextWriter::NewLine()
-{
-#ifdef WINDOWS
-    WriteSubBuf("\r\n", 2);
-#else
-    WriteSubBuf("\n", 1);
-#endif
-}
-
-fsize TextWriter::Write(const void *buf, fsize bufsize)
-{
-    if (_buffered)
-    {
-        const uint8 *data = reinterpret_cast<const uint8 *>(buf);
-        for (fsize i = 0; i != bufsize; ++i)
-            WriteByte(data[i]);
-        return (bufsize);
-    }
-    else
-        return (_stream.Write(buf, bufsize));
 }

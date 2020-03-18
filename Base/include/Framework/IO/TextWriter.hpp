@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -29,6 +29,7 @@
 #pragma once
 #include "Framework/IO/IDataOutputStream.hpp"
 #include "Framework/IO/ByteBuf.hpp"
+#include "Framework/IO/EStringEncoder.hpp"
 
 namespace bpf
 {
@@ -41,15 +42,17 @@ namespace bpf
             ByteBuf _buf;
             bool _buffered;
             fchar _sep;
+            EStringEncoder _encoder;
 
             void WriteByte(uint8 byte);
             void WriteSubBuf(const void *in, const fsize size);
         public:
-            explicit inline TextWriter(IOutputStream &stream, bool buffered = true)
+            explicit inline TextWriter(IOutputStream &stream, const EStringEncoder encoder = EStringEncoder::UTF8, bool buffered = true)
                 : _stream(stream)
                 , _buf(WRITE_BUF_SIZE)
                 , _buffered(buffered)
                 , _sep(' ')
+                , _encoder(encoder)
             {
             }
 
@@ -74,96 +77,85 @@ namespace bpf
 
             void WriteLine(const String &str);
 
+            void Write(const String &str);
+
             void NewLine();
 
             inline IDataOutputStream &operator<<(uint8 u)
             {
-                String str = String::ValueOf(u) + _sep;
-                WriteSubBuf(*str, str.Size());
+                Write(String::ValueOf(u) + _sep);
                 return (*this);
             }
 
             inline IDataOutputStream &operator<<(uint16 u)
             {
-                String str = String::ValueOf(u) + _sep;
-                WriteSubBuf(*str, str.Size());
+                Write(String::ValueOf(u) + _sep);
                 return (*this);
             }
 
             inline IDataOutputStream &operator<<(uint32 u)
             {
-                String str = String::ValueOf(u) + _sep;
-                WriteSubBuf(*str, str.Size());
+                Write(String::ValueOf(u) + _sep);
                 return (*this);
             }
 
             inline IDataOutputStream &operator<<(uint64 u)
             {
-                String str = String::ValueOf(u) + _sep;
-                WriteSubBuf(*str, str.Size());
+                Write(String::ValueOf(u) + _sep);
                 return (*this);
             }
 
             inline IDataOutputStream &operator<<(int8 i)
             {
-                String str = String::ValueOf(i) + _sep;
-                WriteSubBuf(*str, str.Size());
+                Write(String::ValueOf(i) + _sep);
                 return (*this);
             }
 
             inline IDataOutputStream &operator<<(int16 i)
             {
-                String str = String::ValueOf(i) + _sep;
-                WriteSubBuf(*str, str.Size());
+                Write(String::ValueOf(i) + _sep);
                 return (*this);
             }
 
             inline IDataOutputStream &operator<<(fint i)
             {
-                String str = String::ValueOf(i) + _sep;
-                WriteSubBuf(*str, str.Size());
+                Write(String::ValueOf(i) + _sep);
                 return (*this);
             }
 
             inline IDataOutputStream &operator<<(int64 i)
             {
-                String str = String::ValueOf(i) + _sep;
-                WriteSubBuf(*str, str.Size());
+                Write(String::ValueOf(i) + _sep);
                 return (*this);
             }
 
             inline IDataOutputStream &operator<<(float f)
             {
-                String str = String::ValueOf(f) + _sep;
-                WriteSubBuf(*str, str.Size());
+                Write(String::ValueOf(f) + _sep);
                 return (*this);
             }
 
             inline IDataOutputStream &operator<<(double d)
             {
-                String str = String::ValueOf(d) + _sep;
-                WriteSubBuf(*str, str.Size());
+                Write(String::ValueOf(d) + _sep);
                 return (*this);
             }
 
             inline IDataOutputStream &operator<<(bool b)
             {
-                String str = String::ValueOf(b) + _sep;
-                WriteSubBuf(*str, str.Size());
+                Write(String::ValueOf(b) + _sep);
                 return (*this);
             }
 
             inline IDataOutputStream &operator<<(const bpf::String &str)
             {
-                String str1 = str + _sep;
-                WriteSubBuf(*str1, str1.Size());
+                Write(str + _sep);
                 return (*this);
             }
 
             IDataOutputStream &operator<<(const char *str)
             {
-                String str1 = String(str) + _sep;
-                WriteSubBuf(*str1, str1.Size());
+                Write(String(str) + _sep);
                 return (*this);
             }
         };
