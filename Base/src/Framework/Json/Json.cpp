@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -26,26 +26,42 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-#include "Framework/IO/FileStream.hpp"
-#include "Framework/IO/File.hpp"
-#include "Framework/IO/TextWriter.hpp"
-#include "Framework/Log/ILogHandler.hpp"
+#include "Framework/Json/Json.hpp"
 
-namespace bpf
+using namespace bpf::memory;
+using namespace bpf::json;
+using namespace bpf;
+
+Json::Array::Array(const std::initializer_list<Json> &vals)
 {
-    namespace log
-    {
-        class BPF_API FileLogger final : public ILogHandler
-        {
-        private:
-            io::FileStream _stream;
-            io::TextWriter _writer;
+    for (auto &it : vals)
+        _data.Add(it);
+}
 
-        public:
-            explicit FileLogger(const io::File &file);
+Json::Object::Object(const std::initializer_list<std::pair<String, Json>> &lst)
+{
+    for (auto &it : lst)
+        _data[it.first] = it.second;
+}
 
-            void LogMessage(ELogLevel level, const String &category, const String &msg);
-        };
-    }
+Json &Json::operator=(const Json &other)
+{
+    _type = other._type;
+    _number = other._number;
+    _bool = other._bool;
+    _string = other._string;
+    _array = other._array != Null ? MakeUnique<Array>(*other._array) : Null;
+    _object = other._object != Null ? MakeUnique<Object>(*other._object) : Null;
+    return (*this);
+}
+
+Json &Json::operator=(Json &&other)
+{
+    _type = other._type;
+    _number = other._number;
+    _bool = other._bool;
+    _string = std::move(other._string);
+    _array = std::move(other._array);
+    _object = std::move(other._object);
+    return (*this);
 }

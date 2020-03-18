@@ -28,13 +28,15 @@
 
 #pragma once
 
+#define BP_DECLARE_HIGH_MAIN int Main(bpf::system::IApplication &app, const bpf::collection::Array<bpf::String> &args, const bpf::system::Paths &paths)
+
 #ifdef WINDOWS
     #include "Framework/System/WindowsApp.hpp"
     #include <Windows.h>
 
     #ifdef CONSOLE
         #define BP_SETUP_ENTRY_POINT() \
-        int Main(bpf::system::IApplication &app, const bpf::collection::Array<bpf::String> &args, const bpf::system::Paths &paths); \
+        BP_DECLARE_HIGH_MAIN; \
         int main() \
         { \
             bpf::system::WindowsApp app(reinterpret_cast<void *>(GetModuleHandle(Null)), true); \
@@ -42,7 +44,7 @@
         }
     #else
         #define BP_SETUP_ENTRY_POINT() \
-        int Main(bpf::system::IApplication &app, const bpf::collection::Array<bpf::String> &args, const bpf::system::Paths &paths); \
+        BP_DECLARE_HIGH_MAIN; \
         int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) \
         { \
             bpf::system::WindowsApp app(reinterpret_cast<void *>(hInstance), false); \
@@ -53,7 +55,7 @@
     #include "Framework/System/UnixApp.hpp"
 
     #define BP_SETUP_ENTRY_POINT() \
-    int Main(bpf::system::IApplication &app, const bpf::collection::Array<bpf::String> &args, const bpf::system::Paths &paths); \
+    BP_DECLARE_HIGH_MAIN; \
     int main(int argc, char **argv, char **env) \
     { \
         bpf::system::UnixApp app(argv, argc, env); \

@@ -3,3 +3,4 @@ BPF.cmake
 build_unix
 /build_linux
 /build-linux
+.vscode

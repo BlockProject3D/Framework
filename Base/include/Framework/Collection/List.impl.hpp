@@ -527,6 +527,16 @@ namespace bpf
         }
 
         template <typename T>
+        inline T &List<T>::operator[](fsize const id)
+        {
+            Node *elem = GetNode(id);
+
+            if (elem == Null)
+                throw IndexException((fint)id);
+            return (elem->Data);
+        }
+
+        template <typename T>
         typename List<T>::Iterator List<T>::FindByKey(const fsize pos)
         {
             Node *elem = GetNode(pos);

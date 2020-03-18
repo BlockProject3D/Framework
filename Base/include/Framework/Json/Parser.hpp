@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -27,25 +27,37 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/IO/FileStream.hpp"
-#include "Framework/IO/File.hpp"
-#include "Framework/IO/TextWriter.hpp"
-#include "Framework/Log/ILogHandler.hpp"
+#include "Framework/Json/Json.hpp"
+#include "Framework/Json/Lexer.hpp"
 
 namespace bpf
 {
-    namespace log
+    namespace json
     {
-        class BPF_API FileLogger final : public ILogHandler
+        class BPF_API Parser
         {
         private:
-            io::FileStream _stream;
-            io::TextWriter _writer;
+            collection::Queue<Lexer::Token> _tokens;
+            int _line; //Keep track of last line
+            bool _ignoreNulls;
 
+            bool CheckObject(Json &j);
+            bool CheckArray(Json &j);
+            bool CheckNumber(Json &j);
+            bool CheckString(Json &j);
+            bool CheckBasic(Json &j);
+            void CheckColon();
+            void CheckComa();
+            Json CheckJson();
         public:
-            explicit FileLogger(const io::File &file);
+            explicit inline Parser(Lexer &&lexer)
+                : _tokens(std::move(lexer.ReadTokens()))
+                , _line(1)
+                , _ignoreNulls(lexer.IgnoreNulls())
+            {
+            }
 
-            void LogMessage(ELogLevel level, const String &category, const String &msg);
+            Json Parse();
         };
     }
 }

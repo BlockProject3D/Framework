@@ -42,17 +42,20 @@ namespace bpf
             collection::List<memory::UniquePtr<ILogHandler>> _handlers;
             String _name;
 
-            template <typename Arg, typename ...Args>
+            template <typename ...Args>
             inline String LogMessage(const ELogLevel level, const String &format, Args &&...args)
             {
                 for (auto &ptr : _handlers)
-                    ptr->LogMessage(level, _name, String::Format(format, std::forward<Args>(args)...));
+                    ptr->LogMessage(level, _name, String::Format(format, std::forward<Args &&>(args)...));
             }
         public:
             explicit inline Logger(const String &name)
                 : _name(name)
             {
             }
+
+            Logger(const Logger &other) = delete; //For some reasons MSVC is unable to identify this class cannot be coppied
+            Logger &operator=(const Logger &other) = delete; //For some reasons MSVC is unable to identify this class cannot be coppied
 
             inline void AddHandler(memory::UniquePtr<ILogHandler> &&ptr)
             {
@@ -62,25 +65,25 @@ namespace bpf
             template <typename ...Args>
             inline void Info(const String &format, Args &&...args)
             {
-                LogMessage(ELogLevel::INFO, _name, Format(format, std::forward<Args>(args)...));
+                LogMessage(ELogLevel::INFO, format, std::forward<Args &>(args)...);
             }
 
             template <typename ...Args>
             inline void Debug(const String &format, Args &&...args)
             {
-                LogMessage(ELogLevel::DEBUG, _name, Format(format, std::forward<Args>(args)...));
+                LogMessage(ELogLevel::DEBUG, format, std::forward<Args &&>(args)...);
             }
 
             template <typename ...Args>
             inline void Warning(const String &format, Args &&...args)
             {
-                LogMessage(ELogLevel::WARNING, _name, Format(format, std::forward<Args>(args)...));
+                LogMessage(ELogLevel::WARNING, format, std::forward<Args &&>(args)...);
             }
 
             template <typename ...Args>
             inline void Error(const String &format, Args &&...args)
             {
-                LogMessage(ELogLevel::ERROR, _name, Format(format, std::forward<Args>(args)...));
+                LogMessage(ELogLevel::ERROR, format, std::forward<Args &&>(args)...);
             }
         };
     }

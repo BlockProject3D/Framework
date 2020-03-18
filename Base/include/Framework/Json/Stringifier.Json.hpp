@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -27,25 +27,55 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/IO/FileStream.hpp"
-#include "Framework/IO/File.hpp"
-#include "Framework/IO/TextWriter.hpp"
-#include "Framework/Log/ILogHandler.hpp"
+#include "Framework/Json/Json.hpp"
+#include "Framework/String.hpp"
+#include "Framework/Collection/Stringifier.List.hpp"
+#include "Framework/Collection/Stringifier.Map.hpp"
 
 namespace bpf
 {
-    namespace log
+    template <>
+    class String::Stringifier<json::Json::Array>
     {
-        class BPF_API FileLogger final : public ILogHandler
+    public:
+        inline static String Stringify(const json::Json::Array &val, const fsize prec)
         {
-        private:
-            io::FileStream _stream;
-            io::TextWriter _writer;
+            return (String::ValueOf(val.Items(), prec));
+        }
+    };
 
-        public:
-            explicit FileLogger(const io::File &file);
+    template <>
+    class String::Stringifier<json::Json::Object>
+    {
+    public:
+        inline static String Stringify(const json::Json::Object &val, const fsize prec)
+        {
+            return (String::ValueOf(val.Properties(), prec));
+        }
+    };
 
-            void LogMessage(ELogLevel level, const String &category, const String &msg);
-        };
-    }
+    template <>
+    class String::Stringifier<json::Json>
+    {
+    public:
+        inline static String Stringify(const json::Json &val, const fsize prec)
+        {
+            switch (val.Type())
+            {
+            case json::Json::EType::STRING:
+                return (val.AsString());
+            case json::Json::EType::NUMBER:
+                return (String::ValueOf(val.AsNumber(), prec));
+            case json::Json::EType::BOOLEAN:
+                return (String::ValueOf(val.AsBool(), prec));
+            case json::Json::EType::NONE:
+                return ("null");
+            case json::Json::EType::ARRAY:
+                return (String::ValueOf(val.AsArray(), prec));
+            case json::Json::EType::OBJECT:
+                return (String::ValueOf(val.AsObject(), prec));
+            }
+            throw json::JsonException("Unknown value type");
+        }
+    };
 }

@@ -198,6 +198,10 @@ TEST(String, OperatorGreaterLess)
     EXPECT_TRUE(!(s < s1));
     EXPECT_TRUE(bpf::String("TT") < bpf::String("qq"));
     EXPECT_TRUE(bpf::String("qq") > bpf::String("TT"));
+    bpf::String test = "Test";
+    bpf::String test1 = "Test1";
+    EXPECT_GT(test1, test);
+    EXPECT_LT(test, test1);
 }
 
 TEST(String, Replace)

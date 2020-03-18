@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -27,25 +27,19 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/IO/FileStream.hpp"
-#include "Framework/IO/File.hpp"
-#include "Framework/IO/TextWriter.hpp"
-#include "Framework/Log/ILogHandler.hpp"
+#include "Framework/RuntimeException.hpp"
 
 namespace bpf
 {
-    namespace log
+    namespace json
     {
-        class BPF_API FileLogger final : public ILogHandler
+        class BPF_API JsonException : public RuntimeException
         {
-        private:
-            io::FileStream _stream;
-            io::TextWriter _writer;
-
         public:
-            explicit FileLogger(const io::File &file);
-
-            void LogMessage(ELogLevel level, const String &category, const String &msg);
+            explicit inline JsonException(const String &msg)
+                : RuntimeException("Json", msg)
+            {
+            }
         };
     }
 }

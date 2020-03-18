@@ -64,6 +64,8 @@ set(SOURCES
     src/Transform2D.cpp
     src/Math.cpp
     src/Name.cpp
+    src/Json.cpp
+    src/JsonWriter.cpp
 )
 
 bp_setup_program(${PROJECT_NAME} include)

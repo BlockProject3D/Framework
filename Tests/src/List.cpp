@@ -79,6 +79,8 @@ TEST(List, Indexer)
     EXPECT_EQ(lst[0], 0);
     EXPECT_EQ(lst[1], 3);
     EXPECT_EQ(lst[2], 7);
+    lst[1] = 42;
+    EXPECT_EQ(lst[1], 42);
     EXPECT_THROW(lst[3], IndexException);
     EXPECT_THROW(lst[678], IndexException);
     EXPECT_THROW(lst[(fsize) - 1], IndexException);

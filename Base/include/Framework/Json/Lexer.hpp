@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -27,25 +27,58 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/IO/FileStream.hpp"
-#include "Framework/IO/File.hpp"
-#include "Framework/IO/TextWriter.hpp"
-#include "Framework/Log/ILogHandler.hpp"
+#include "Framework/Collection/Queue.hpp"
+#include "Framework/String.hpp"
 
 namespace bpf
 {
-    namespace log
+    namespace json
     {
-        class BPF_API FileLogger final : public ILogHandler
+        class BPF_API Lexer
         {
+        public:
+            enum class ETokenType
+            {
+                STRING,
+                NUMBER,
+                BASIC
+            };
+
+            struct BPF_API Token
+            {
+                String Data;
+                int Line;
+                ETokenType Type;
+            };
+
         private:
-            io::FileStream _stream;
-            io::TextWriter _writer;
+            int _line;
+            bool _enableComments;
+            bool _ignoreNulls;
+            bool _comment;
+            bool _lineComment;
+            bool _string;
+            int _cursor;
+            String _curNbr;
+            String _curExponent;
+            collection::Queue<Token> _tokens;
+
+            bool CheckString(const String &token);
+            bool CheckNumber(const String &token, const fchar next);
+            bool CheckBasic(const String &token, const fchar next);
+            String ReProcessString(const String &str);
+            fchar ProcessUnicode(const String &str, int &pos);
+            fchar ProcessStandard(const String &str, int &pos);
 
         public:
-            explicit FileLogger(const io::File &file);
+            Lexer(const bool enableComments = false, const bool ignoreNulls = false);
+            void LoadString(const String &input);
 
-            void LogMessage(ELogLevel level, const String &category, const String &msg);
+            collection::Queue<Token> ReadTokens();
+            inline bool IgnoreNulls() const noexcept
+            {
+                return (_ignoreNulls);
+            }
         };
     }
 }

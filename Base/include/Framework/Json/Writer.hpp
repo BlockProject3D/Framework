@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -27,25 +27,34 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/IO/FileStream.hpp"
-#include "Framework/IO/File.hpp"
-#include "Framework/IO/TextWriter.hpp"
-#include "Framework/Log/ILogHandler.hpp"
+#include "Framework/Json/Json.hpp"
 
 namespace bpf
 {
-    namespace log
+    namespace json
     {
-        class BPF_API FileLogger final : public ILogHandler
+        class BPF_API Writer
         {
         private:
-            io::FileStream _stream;
-            io::TextWriter _writer;
+            bool _ignoreNulls;
+            bool _pretty;
+            int _stack;
+
+            String SerializeObject(const Json::Object &json);
+            String SerializeObjectPretty(const Json::Object &json);
+            String SerializeArray(const Json::Array &json);
+            String SerializeArrayPretty(const Json::Array &json);
+            String Indent();
 
         public:
-            explicit FileLogger(const io::File &file);
+            inline Writer(const bool pretty = true, const bool ignoreNulls = false)
+                : _ignoreNulls(ignoreNulls)
+                , _pretty(pretty)
+                , _stack(0)
+            {
+            }
 
-            void LogMessage(ELogLevel level, const String &category, const String &msg);
+            String Serialize(const Json &json);
         };
     }
 }

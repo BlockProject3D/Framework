@@ -33,7 +33,7 @@ namespace bpf
 {
     namespace log
     {
-        class DefaultLogger final : public ILogHandler
+        class BPF_API DefaultLogger final : public ILogHandler
         {
         public:
             void LogMessage(ELogLevel level, const String &category, const String &msg);
