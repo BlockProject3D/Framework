@@ -57,7 +57,7 @@ namespace bpf
         collection::ArrayList<Polygon2<T>> Polygon2<T>::Triangulate() const noexcept
         {
             if (Vertices.Size() <= 3)
-                return ({ *this });
+                return (collection::ArrayList<Polygon2<T>>({ *this }));
             auto lst = collection::ArrayList<Polygon2<T>>();
             auto v1 = Vertices[0];
             for (fsize i = 1; i + 1 < Vertices.Size(); i += 2)
