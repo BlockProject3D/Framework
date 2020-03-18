@@ -56,12 +56,12 @@ namespace bpf
         template <typename T>
         collection::ArrayList<Polygon2<T>> Polygon2<T>::Triangulate() const noexcept
         {
-            if (Vertices.Size <= 3)
+            if (Vertices.Size() <= 3)
                 return ({ *this });
-            auto lst = ArrayList<Polygon2>();
+            auto lst = collection::ArrayList<Polygon2<T>>();
             auto v1 = Vertices[0];
             for (fsize i = 1; i + 1 < Vertices.Size(); i += 2)
-                lst.Add(Polygon2({ v1, Vertices[i], Vertices[i + 1] }));
+                lst.Add(Polygon2<T>({ v1, Vertices[i], Vertices[i + 1] }));
             return (lst);
         }
     }
