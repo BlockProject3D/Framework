@@ -51,7 +51,7 @@ namespace bpf
 
             for (const auto &v : Vertices)
                 res += v;
-            return (res / Vertices.Size());
+            return (res / (T)Vertices.Size());
         }
 
         template <typename T>

@@ -31,3 +31,9 @@
 #include <gtest/gtest.h>
 #include <Framework/Math/Polygon3.hpp>
 
+TEST(Polygon3, Barycenter)
+{
+    bpf::math::Polygon3f poly({bpf::math::Vector3f::Zero, bpf::math::Vector3f::Identity});
+
+    EXPECT_EQ(poly.GetBarycenter(), bpf::math::Vector3f(0.5f));
+}
