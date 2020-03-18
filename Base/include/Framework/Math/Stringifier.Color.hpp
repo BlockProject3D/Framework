@@ -28,15 +28,15 @@
 
 #pragma once
 #include "Framework/String.hpp"
-#include "Framework/Color.hpp"
+#include "Framework/Math/Color.hpp"
 
 namespace bpf
 {
     template <>
-    class String::Stringifier<Color>
+    class String::Stringifier<math::Color>
     {
     public:
-        inline static String Stringify(const Color &col, const fsize prec = 0)
+        inline static String Stringify(const math::Color &col, const fsize prec = 0)
         {
             return (String("Color(") + String::ValueOf(col.R, prec)
                 + ", " + String::ValueOf(col.G, prec)

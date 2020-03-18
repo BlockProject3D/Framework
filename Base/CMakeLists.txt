@@ -45,12 +45,14 @@ set(SOURCES
     ./include/Framework/Math/Stringifier.Matrix.hpp
     ./include/Framework/Math/Stringifier.Vector.hpp
     ./include/Framework/Math/Stringifier.Quaternion.hpp
+    ./include/Framework/Math/Stringifier.Color.hpp
     ./include/Framework/Math/Math.hpp
     ./include/Framework/Math/MathUtils.hpp
     ./include/Framework/Math/BoundingBox.hpp
     ./include/Framework/Math/IncompatibleMatrixSizeException.hpp
     ./include/Framework/Math/NonSquareMatrixException.hpp
     ./include/Framework/Math/NonInvertibleMatrixException.hpp
+    ./include/Framework/Math/Color.hpp
     ./include/Framework/Log/Logger.hpp
     ./include/Framework/Log/ILogHandler.hpp
     ./include/Framework/Log/ELogLevel.hpp
@@ -127,7 +129,6 @@ set(SOURCES
     ./include/Framework/Types.hpp
     ./include/Framework/Tuple.hpp
     ./include/Framework/TypeInfo.hpp
-    ./include/Framework/Color.hpp
     ./include/Framework/Delegate.hpp
     ./include/Framework/Hash.hpp
     ./include/Framework/Hash.Base.hpp
@@ -144,7 +145,6 @@ set(SOURCES
     ./include/Framework/BaseConvert.hpp
     ./include/Framework/BaseConvert.impl.hpp
     ./include/Framework/Scalar.hpp
-    ./include/Framework/Stringifier.Color.hpp
     ./include/Framework/ParseException.hpp
     ./src/Framework/IO/File.cpp
     ./src/Framework/IO/OSPrivate.hpp
@@ -161,6 +161,7 @@ set(SOURCES
     ./src/Framework/Log/FileLogger.cpp
     ./src/Framework/Math/MathUtils.cpp
     ./src/Framework/Math/Random.cpp
+    ./src/Framework/Math/Color.cpp
     ./src/Framework/Memory/Memory.cpp
     ./src/Framework/Memory/Object.cpp
     ./src/Framework/System/Platform.cpp
@@ -176,7 +177,6 @@ set(SOURCES
     ./src/Framework/Json/Lexer.cpp
     ./src/Framework/Json/Parser.cpp
     ./src/Framework/Json/Writer.cpp
-    ./src/Framework/Color.cpp
     ./src/Framework/Profiler.cpp
     ./src/Framework/Exception.cpp
     ./src/Framework/RuntimeException.cpp
