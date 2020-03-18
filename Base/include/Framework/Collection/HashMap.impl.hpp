@@ -268,7 +268,7 @@ namespace bpf
         template <typename K, typename V, typename HashOp>
         void HashMap<K, V, HashOp>::Add(const K &key, const V &value)
         {
-            fsize hkey = HashOp::HashCode(key);
+            fsize hkey = HashOp::ValueOf(key);
 
             TryExtend();
             fsize idx = QuadraticSearch(hkey);
@@ -288,7 +288,7 @@ namespace bpf
         template <typename K, typename V, typename HashOp>
         void HashMap<K, V, HashOp>::Add(const K &key, V &&value)
         {
-            fsize hkey = HashOp::HashCode(key);
+            fsize hkey = HashOp::ValueOf(key);
 
             TryExtend();
             fsize idx = QuadraticSearch(hkey);
@@ -308,7 +308,7 @@ namespace bpf
         template <typename K, typename V, typename HashOp>
         void HashMap<K, V, HashOp>::RemoveAt(const K &key)
         {
-            fsize idx = QuadraticSearch(HashOp::HashCode(key));
+            fsize idx = QuadraticSearch(HashOp::ValueOf(key));
 
             if (idx != (fsize)-1)
             {
@@ -378,7 +378,7 @@ namespace bpf
         template <typename K, typename V, typename HashOp>
         typename HashMap<K, V, HashOp>::Iterator HashMap<K, V, HashOp>::FindByKey(const K &key)
         {
-            fsize idx = QuadraticSearch(HashOp::HashCode(key));
+            fsize idx = QuadraticSearch(HashOp::ValueOf(key));
 
             if (idx == (fsize)-1)
                 return (Iterator(_data, CurSize, CurSize));
@@ -427,7 +427,7 @@ namespace bpf
         template <typename K, typename V, typename HashOp>
         const V &HashMap<K, V, HashOp>::operator[](const K &key) const
         {
-            fsize idx = QuadraticSearch(HashOp::HashCode(key));
+            fsize idx = QuadraticSearch(HashOp::ValueOf(key));
 
             if (idx == (fsize)-1)
                 throw bpf::IndexException((fint)idx);
@@ -437,12 +437,12 @@ namespace bpf
         template <typename K, typename V, typename HashOp>
         V &HashMap<K, V, HashOp>::operator[](const K &key)
         {
-            fsize idx = QuadraticSearch(HashOp::HashCode(key));
+            fsize idx = QuadraticSearch(HashOp::ValueOf(key));
 
             if (idx == (fsize)-1)
             {
                 TryExtend();
-                idx = QuadraticInsert(HashOp::HashCode(key));
+                idx = QuadraticInsert(HashOp::ValueOf(key));
                 if (idx == (fsize)-1)
                     throw bpf::IndexException((fint)idx);
                 _data[idx].KeyVal.Key = key;
@@ -454,7 +454,7 @@ namespace bpf
         template <typename K, typename V, typename HashOp>
         inline bool HashMap<K, V, HashOp>::HasKey(const K &key) const
         {
-            return (QuadraticSearch(HashOp::HashCode(key)) != (fsize)-1);
+            return (QuadraticSearch(HashOp::ValueOf(key)) != (fsize)-1);
         }
     }
 }

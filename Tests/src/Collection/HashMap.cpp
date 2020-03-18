@@ -60,10 +60,10 @@ TEST(HashMap, Creation_2)
 
 TEST(HashMap, PreHash)
 {
-    EXPECT_NE(Hash<String>::HashCode("B"), Hash<String>::HashCode("C"));
-    EXPECT_NE(Hash<String>::HashCode("a"), Hash<String>::HashCode("b"));
-    EXPECT_NE(Hash<String>::HashCode("a"), Hash<String>::HashCode("aa"));
-    EXPECT_NE(Hash<String>::HashCode("a"), Hash<String>::HashCode("a\a"));
+    EXPECT_NE(Hash<String>::ValueOf("B"), Hash<String>::ValueOf("C"));
+    EXPECT_NE(Hash<String>::ValueOf("a"), Hash<String>::ValueOf("b"));
+    EXPECT_NE(Hash<String>::ValueOf("a"), Hash<String>::ValueOf("aa"));
+    EXPECT_NE(Hash<String>::ValueOf("a"), Hash<String>::ValueOf("a\a"));
 }
 
 TEST(HashMap, Creation_List)

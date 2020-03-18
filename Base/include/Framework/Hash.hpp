@@ -35,7 +35,7 @@ namespace bpf
     class Hash
     {
     public:
-        inline static fsize HashCode(const T &val)
+        inline static fsize ValueOf(const T &val)
         {
             return ((fsize)val);
         }

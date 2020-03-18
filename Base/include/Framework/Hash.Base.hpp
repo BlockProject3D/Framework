@@ -37,7 +37,7 @@ namespace bpf
     class Hash<Name>
     {
     public:
-        inline static fsize HashCode(const Name &val)
+        inline static fsize ValueOf(const Name &val)
         {
             return (val.Hash());
         }
@@ -47,9 +47,9 @@ namespace bpf
     class Hash<String>
     {
     public:
-        inline static fsize HashCode(const String &val)
+        inline static fsize ValueOf(const String &val)
         {
-            return (Hash<Name>::HashCode(Name(val)));
+            return (Hash<Name>::ValueOf(Name(val)));
         }
     };
 }

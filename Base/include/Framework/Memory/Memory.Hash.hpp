@@ -37,7 +37,7 @@ namespace bpf
     class Hash<memory::UniquePtr<T>>
     {
     public:
-        inline static fsize HashCode(const memory::UniquePtr<T> &val)
+        inline static fsize ValueOf(const memory::UniquePtr<T> &val)
         {
             return ((fsize)val.Raw());
         }
@@ -47,7 +47,7 @@ namespace bpf
     class Hash<memory::SharedPtr<T>>
     {
     public:
-        inline static fsize HashCode(const memory::SharedPtr<T> &val)
+        inline static fsize ValueOf(const memory::SharedPtr<T> &val)
         {
             return ((fsize)val.Raw());
         }
