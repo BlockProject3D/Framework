@@ -45,6 +45,8 @@ struct Metadata
 
 void *Memory::Malloc(fsize size)
 {
+    if (size == 0)
+        return (Null);
 #ifdef BUILD_DEBUG
     void *data = malloc(size + sizeof(Metadata));
 #else

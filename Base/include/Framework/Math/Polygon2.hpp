@@ -26,19 +26,43 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <cassert>
-#include <iostream>
-#include <gtest/gtest.h>
-#include <Framework/Math/Transform2D.hpp>
+#pragma once
+#include "Framework/Math/Vector.hpp"
+#include "Framework/Collection/ArrayList.hpp"
+#include "Framework/Math/Transform2.hpp"
 
-TEST(Transform2D, HomogeneousCoords)
+namespace bpf
 {
-    auto mat = bpf::math::Transform2D<float>::MatrixBuilder().Translate(bpf::math::Vector2f(2)).Build();
-    bpf::math::Matrix3f expected = {
-        1, 0, 2,
-        0, 1, 2,
-        0, 0, 1
-    };
+    namespace math
+    {
+        template <typename T>
+        class BP_TPL_API Polygon2
+        {
+        public:
+            collection::ArrayList<Vector2<T>> Vertices;
 
-    EXPECT_EQ(mat, expected);
+            explicit inline Polygon2(const collection::ArrayList<Vector2<T>> &verts)
+                : Vertices(verts)
+            {
+            }
+
+            explicit inline Polygon2(collection::ArrayList<Vector2<T>> &&verts)
+                : Vertices(std::move(verts))
+            {
+            }
+
+            inline void Transform(const Transform2<T> &transform)
+            {
+                Transform(transform.ToMatrix());
+            }
+
+            Vector2<T> GetBarycenter() const noexcept;
+            void Transform(const Matrix3<T> &matrix);
+            collection::ArrayList<Polygon2> Triangulate() const noexcept;
+        };
+
+        using Polygon2f = Polygon2<float>;
+    }
 }
+
+#include "Framework/Math/Polygon2.impl.hpp"

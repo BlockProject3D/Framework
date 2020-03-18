@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -27,29 +27,42 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Hash.hpp"
-#include "Framework/Memory/UniquePtr.hpp"
-#include "Framework/Memory/SharedPtr.hpp"
+#include "Framework/Math/Vector.hpp"
+#include "Framework/Collection/ArrayList.hpp"
+#include "Framework/Math/Transform3.hpp"
 
 namespace bpf
 {
-    template <typename T>
-    class Hash<memory::UniquePtr<T>>
+    namespace math
     {
-    public:
-        inline static fsize ValueOf(const memory::UniquePtr<T> &val)
+        template <typename T>
+        class BP_TPL_API Polygon3
         {
-            return ((fsize)val.Raw());
-        }
-    };
+        public:
+            collection::ArrayList<Vector3<T>> Vertices;
 
-    template <typename T>
-    class Hash<memory::SharedPtr<T>>
-    {
-    public:
-        inline static fsize ValueOf(const memory::SharedPtr<T> &val)
-        {
-            return ((fsize)val.Raw());
-        }
-    };
+            explicit inline Polygon3(const collection::ArrayList<Vector3<T>> &verts)
+                : Vertices(verts)
+            {
+            }
+
+            explicit inline Polygon3(collection::ArrayList<Vector3<T>> &&verts)
+                : Vertices(std::move(verts))
+            {
+            }
+
+            inline void Transform(const Transform3<T> &transform)
+            {
+                Transform(transform.ToMatrix());
+            }
+
+            Vector3<T> GetNormal() const noexcept;
+            Vector3<T> GetBarycenter() const noexcept;
+            void Transform(const Matrix4<T> &matrix);
+        };
+
+        using Polygon3f = Polygon3<float>;
+    }
 }
+
+#include "Framework/Math/Polygon3.impl.hpp"

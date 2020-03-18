@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -26,53 +26,43 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Framework/Color.hpp"
-#include "Framework/Math/Math.hpp"
+#pragma once
 
-using namespace bpf::math;
-using namespace bpf;
-
-const Color Color::Red = Color(255, 0, 0);
-const Color Color::Green = Color(0, 255, 0);
-const Color Color::Blue = Color(0, 0, 255);
-const Color Color::White = Color(255, 255, 255);
-const Color Color::Black = Color(0, 0, 0);
-const Color Color::Yellow = Color(255, 255, 0);
-const Color Color::Cyan = Color(0, 255, 255);
-
-Color Color::operator+(const Color &other) const
+namespace bpf
 {
-    uint8 newr = Math<uint8>::Clamp((uint8)(R + other.R), (uint8)0, (uint8)255);
-    uint8 newg = Math<uint8>::Clamp((uint8)(G + other.G), (uint8)0, (uint8)255);
-    uint8 newb = Math<uint8>::Clamp((uint8)(B + other.B), (uint8)0, (uint8)255);
-    
-    return (Color(newr, newg, newb));
-}
+    namespace math
+    {
+        template <typename T>
+        Vector3<T> Polygon3<T>::GetNormal() const noexcept
+        {
+            if (Vertices.Size() >= 3)
+            {
+                Vector3<T> v = Vertices[1] - Vertices[0];
+                Vector3<T> w = Vertices[2] - Vertices[0];
+                return (v.Cross(w));
+            }
+            return (Vector3<T>::Zero);
+        }
 
-Color Color::operator*(const Color &other) const
-{
-    float r = (float)R / 255.0f;
-    float g = (float)G / 255.0f;
-    float b = (float)B / 255.0f;
-    float r1 = (float)other.R / 255.0f;
-    float g1 = (float)other.G / 255.0f;
-    float b1 = (float)other.B / 255.0f;
-    float newr = r * r1;
-    float newg = g * g1;
-    float newb = b * b1;
+        template <typename T>
+        Vector3<T> Polygon3<T>::GetBarycenter() const noexcept
+        {
+            Vector3<T> res;
 
-    return (Color(static_cast<uint8>(newr * 255),
-                  static_cast<uint8>(newg * 255),
-                  static_cast<uint8>(newb * 255)));
-}
+            for (const auto &v : Vertices)
+                res += v;
+            return (res / (T)Vertices.Size());
+        }
 
-fint Color::GetCode() const noexcept
-{
-    fint res = 0;
-
-    res += R << 24;
-    res += G << 16;
-    res += B << 8;
-    res += A;
-    return (res);
+        template <typename T>
+        void Polygon3<T>::Transform(const Matrix4<T> &matrix)
+        {
+            for (auto &v : Vertices)
+            {
+                Vector4<T> vec(v, 1.0f);
+                auto res = matrix * vec;
+                v = Vector3<T>(res.X, res.Y, res.Z);
+            }
+        }
+    }
 }

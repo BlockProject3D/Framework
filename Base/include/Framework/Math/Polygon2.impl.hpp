@@ -27,39 +27,42 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Collection/ArrayList.hpp"
-#include "Framework/Math/Transform3D.hpp"
 
 namespace bpf
 {
     namespace math
     {
         template <typename T>
-        class BP_TPL_API Polygon3D
+        Vector2<T> Polygon2<T>::GetBarycenter() const noexcept
         {
-        public:
-            ArrayList<Vector3> Vertices;
+            Vector2<T> res;
 
-            explicit inline Polygon3D(const ArrayList<Vector3> &verts)
-                : Vertices(verts)
+            for (const auto &v : Vertices)
+                res += v;
+            return (res / (T)Vertices.Size());
+        }
+
+        template <typename T>
+        void Polygon2<T>::Transform(const Matrix3<T> &matrix)
+        {
+            for (auto &v : Vertices)
             {
+                Vector3<T> vec(v, 1.0f);
+                auto res = matrix * vec;
+                v = Vector2<T>(res.X, res.Y);
             }
+        }
 
-            explicit inline Polygon3D(ArrayList<Vector3> &&verts)
-                : Vertices(std::move(verts))
-            {
-            }
-
-            inline void Transform(const Transform3D &transform)
-            {
-                Transform(transform.ToMatrix());
-            }
-
-            Vector3 GetNormal() const noexcept;
-            Vector3 GetBarycenter() const noexcept;
-            void Transform(const Matrix4 &matrix);
-        };
+        template <typename T>
+        collection::ArrayList<Polygon2<T>> Polygon2<T>::Triangulate() const noexcept
+        {
+            if (Vertices.Size() <= 3)
+                return (collection::ArrayList<Polygon2<T>>({ *this }));
+            auto lst = collection::ArrayList<Polygon2<T>>();
+            auto v1 = Vertices[0];
+            for (fsize i = 1; i + 1 < Vertices.Size(); i += 2)
+                lst.Add(Polygon2<T>({ v1, Vertices[i], Vertices[i + 1] }));
+            return (lst);
+        }
     }
 }
-
-#include "Framework/Math/Polygon3D.impl.hpp"

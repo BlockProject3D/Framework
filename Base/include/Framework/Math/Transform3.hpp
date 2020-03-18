@@ -36,7 +36,7 @@ namespace bpf
     namespace math
     {
         template <typename T>
-        class BP_TPL_API Transform3D
+        class BP_TPL_API Transform3
         {
         public:
             class BP_TPL_API MatrixBuilder
@@ -71,7 +71,7 @@ namespace bpf
             Vector3<T> Scale;
             Quaternion<T> Rotation;
 
-            explicit inline Transform3D(const Vector3<T> &pos = Vector3<T>::Zero, const Vector3<T> &scale = Vector3<T>::Identity, const Quaternion<T> &rotation = Quaternion<T>::Identity)
+            explicit inline Transform3(const Vector3<T> &pos = Vector3<T>::Zero, const Vector3<T> &scale = Vector3<T>::Identity, const Quaternion<T> &rotation = Quaternion<T>::Identity)
                 : Position(pos)
                 , Scale(scale)
                 , Rotation(rotation)
@@ -86,12 +86,14 @@ namespace bpf
                 return (MatrixBuilder().Translate(Position).Rotate(Rotation).Scale(Scale).Build());
             }
 
-            Transform3D operator+(const Transform3D &other) const noexcept;
-            void operator+=(const Transform3D &other);
+            Transform3 operator+(const Transform3 &other) const noexcept;
+            void operator+=(const Transform3 &other);
 
             void RotateArround(const Vector3<T> &pivot, const Quaternion<T> &rotation) noexcept;
         };
+
+        using Transform3f = Transform3<float>;
     }
 }
 
-#include "Framework/Math/Transform3D.impl.hpp"
+#include "Framework/Math/Transform3.impl.hpp"

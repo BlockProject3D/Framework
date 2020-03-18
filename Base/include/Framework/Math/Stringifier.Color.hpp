@@ -1,4 +1,4 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2018, BlockProject
 //
 // All rights reserved.
 //
@@ -27,39 +27,21 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Collection/ArrayList.hpp"
-#include "Framework/Math/Transform2D.hpp"
+#include "Framework/String.hpp"
+#include "Framework/Math/Color.hpp"
 
 namespace bpf
 {
-    namespace math
+    template <>
+    class String::Stringifier<math::Color>
     {
-        template <typename T>
-        class BP_TPL_API Polygon2D
+    public:
+        inline static String Stringify(const math::Color &col, const fsize prec = 0)
         {
-        public:
-            ArrayList<Vector2> Vertices;
-
-            explicit inline Polygon2D(const ArrayList<Vector2> &verts)
-                : Vertices(verts)
-            {
-            }
-
-            explicit inline Polygon2D(ArrayList<Vector2> &&verts)
-                : Vertices(std::move(verts))
-            {
-            }
-
-            inline void Transform(const Transform2D &transform)
-            {
-                Transform(transform.ToMatrix());
-            }
-
-            Vector2 GetBarycenter() const noexcept;
-            void Transform(const Matrix3 &matrix);
-            ArrayList<Polygon2D> Triangulate() const noexcept;
-        };
-    }
+            return (String("Color(") + String::ValueOf(col.R, prec)
+                + ", " + String::ValueOf(col.G, prec)
+                + ", " + String::ValueOf(col.B, prec)
+                + ", " + String::ValueOf(col.A, prec) + ")");
+        }
+    };
 }
-
-#include "Framework/Math/Polygon2D.impl.hpp"

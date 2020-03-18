@@ -26,43 +26,14 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
+#include <cassert>
+#include <iostream>
+#include <gtest/gtest.h>
+#include <Framework/Math/Polygon3.hpp>
 
-namespace bpf
+TEST(Polygon3, Barycenter)
 {
-    namespace math
-    {
-        template <typename T>
-        Vector3<T> Polygon3D<T>::GetNormal() const noexcept
-        {
-            if (Vertices.Size() >= 3)
-            {
-                Vector3<T> v = Vertices[1] - Vertices[0];
-                Vector3<T> w = Vertices[2] - Vertices[0];
-                return (v.Cross(w));
-            }
-            return (Vector3<T>::Zero);
-        }
+    bpf::math::Polygon3f poly({bpf::math::Vector3f::Zero, bpf::math::Vector3f::Identity});
 
-        template <typename T>
-        Vector3<T> Polygon3D<T>::GetBarycenter() const noexcept
-        {
-            Vector3<T> res;
-
-            for (const auto &v : Vertices)
-                res += v;
-            return (res / Vertices.Size());
-        }
-
-        template <typename T>
-        void Polygon3D<T>::Transform(const Matrix4<T> &matrix)
-        {
-            for (auto &v : Vertices)
-            {
-                Vector4<T> vec(v, 1.0f);
-                auto res = matrix * vec;
-                v = Vector3<T>(res.X, res.Y, res.Z);
-            }
-        }
-    }
+    EXPECT_EQ(poly.GetBarycenter(), bpf::math::Vector3f(0.5f));
 }

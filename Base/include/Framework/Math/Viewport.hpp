@@ -57,12 +57,12 @@ namespace bpf
             /**
              * Viewport width
              */
-            uint32 Width;
+            fsize Width;
 
             /**
              * Viewport height
              */
-            uint32 Height;
+            fsize Height;
 
             /**
              * Projection matrix
@@ -81,6 +81,8 @@ namespace bpf
             {
             }
         };
+
+        using Viewportf = Viewport<float>;
     }
 };
 

@@ -26,30 +26,53 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-#include "Framework/Hash.hpp"
-#include "Framework/Memory/UniquePtr.hpp"
-#include "Framework/Memory/SharedPtr.hpp"
+#include "Framework/Math/Color.hpp"
+#include "Framework/Math/Math.hpp"
 
-namespace bpf
+using namespace bpf::math;
+using namespace bpf;
+
+const Color Color::Red = Color(255, 0, 0);
+const Color Color::Green = Color(0, 255, 0);
+const Color Color::Blue = Color(0, 0, 255);
+const Color Color::White = Color(255, 255, 255);
+const Color Color::Black = Color(0, 0, 0);
+const Color Color::Yellow = Color(255, 255, 0);
+const Color Color::Cyan = Color(0, 255, 255);
+
+Color Color::operator+(const Color &other) const
 {
-    template <typename T>
-    class Hash<memory::UniquePtr<T>>
-    {
-    public:
-        inline static fsize ValueOf(const memory::UniquePtr<T> &val)
-        {
-            return ((fsize)val.Raw());
-        }
-    };
+    uint8 newr = Math<uint8>::Clamp((uint8)(R + other.R), (uint8)0, (uint8)255);
+    uint8 newg = Math<uint8>::Clamp((uint8)(G + other.G), (uint8)0, (uint8)255);
+    uint8 newb = Math<uint8>::Clamp((uint8)(B + other.B), (uint8)0, (uint8)255);
+    
+    return (Color(newr, newg, newb));
+}
 
-    template <typename T>
-    class Hash<memory::SharedPtr<T>>
-    {
-    public:
-        inline static fsize ValueOf(const memory::SharedPtr<T> &val)
-        {
-            return ((fsize)val.Raw());
-        }
-    };
+Color Color::operator*(const Color &other) const
+{
+    float r = (float)R / 255.0f;
+    float g = (float)G / 255.0f;
+    float b = (float)B / 255.0f;
+    float r1 = (float)other.R / 255.0f;
+    float g1 = (float)other.G / 255.0f;
+    float b1 = (float)other.B / 255.0f;
+    float newr = r * r1;
+    float newg = g * g1;
+    float newb = b * b1;
+
+    return (Color(static_cast<uint8>(newr * 255),
+                  static_cast<uint8>(newg * 255),
+                  static_cast<uint8>(newb * 255)));
+}
+
+fint Color::GetCode() const noexcept
+{
+    fint res = 0;
+
+    res += R << 24;
+    res += G << 16;
+    res += B << 8;
+    res += A;
+    return (res);
 }

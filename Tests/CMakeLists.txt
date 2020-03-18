@@ -28,44 +28,46 @@ add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
 include_directories("${gtest_SOURCE_DIR}/include")
 
 set(SOURCES
-    src/main.cpp
-    src/LowLevelMain.cpp
+    src/IO/File.cpp
+    src/IO/MemoryMapper.cpp
+    src/IO/FileStream.cpp
+    src/IO/ByteBuf.cpp
+    src/IO/BinaryReadWrite.cpp
+    src/Math/MatrixDynamic.cpp
+    src/Math/MatrixStatic.cpp
+    src/Math/Quaternion.cpp
+    src/Math/BoundingBox.cpp
+    src/Math/Transform3.cpp
+    src/Math/Transform2.cpp
+    src/Math/Polygon3.cpp
+    src/Math/Polygon2.cpp
+    src/Math/VectorStatic.cpp
+    src/Math/VectorDynamic.cpp
+    src/Math/Math.cpp
+    src/Collection/List.cpp
+    src/Collection/ArrayList.cpp
+    src/Collection/HashMap.cpp
+    src/Collection/Map.cpp
+    src/Collection/ArrayDynamic.cpp
+    src/Collection/ArrayStatic.cpp
+    src/Collection/Stack.cpp
+    src/Collection/Queue.cpp
+    src/Collection/PriorityQueue.cpp
+    src/System/DateTime.cpp
+    src/System/TimeSpan.cpp
+    src/System/Platform.cpp
+    src/System/Timer.cpp
+    src/System/Thread.cpp
+    src/Json/Json.cpp
+    src/Json/JsonWriter.cpp
+    src/BaseConvert.cpp
+    src/Tuple.cpp
+    src/Name.cpp
     src/String.cpp
     src/MathEval.cpp
     src/Scalar.cpp
-    src/File.cpp
-    src/MemoryMapper.cpp
-    src/FileStream.cpp
-    src/ByteBuf.cpp
-    src/BinaryReadWrite.cpp
-    src/MatrixDynamic.cpp
-    src/MatrixStatic.cpp
-    src/Quaternion.cpp
-    src/List.cpp
-    src/ArrayList.cpp
-    src/HashMap.cpp
-    src/Map.cpp
-    src/ArrayDynamic.cpp
-    src/ArrayStatic.cpp
-    src/BaseConvert.cpp
-    src/Tuple.cpp
-    src/Stack.cpp
-    src/Queue.cpp
-    src/PriorityQueue.cpp
-    src/VectorStatic.cpp
-    src/VectorDynamic.cpp
-    src/DateTime.cpp
-    src/TimeSpan.cpp
-    src/Platform.cpp
-    src/Timer.cpp
-    src/Thread.cpp
-    src/BoundingBox.cpp
-    src/Transform3D.cpp
-    src/Transform2D.cpp
-    src/Math.cpp
-    src/Name.cpp
-    src/Json.cpp
-    src/JsonWriter.cpp
+    src/main.cpp
+    src/LowLevelMain.cpp
 )
 
 bp_setup_program(${PROJECT_NAME} include)

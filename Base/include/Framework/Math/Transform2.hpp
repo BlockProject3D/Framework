@@ -35,7 +35,7 @@ namespace bpf
     namespace math
     {
         template <typename T>
-        class BP_TPL_API Transform2D
+        class BP_TPL_API Transform2
         {
         public:
             class BP_TPL_API MatrixBuilder
@@ -64,7 +64,7 @@ namespace bpf
             Vector2<T> Scale;
             T Rotation;
 
-            explicit inline Transform2D(const Vector2<T> &pos = Vector2<T>::Zero, const Vector2<T> &scale = Vector2<T>::Identity, const T &rotation = 0)
+            explicit inline Transform2(const Vector2<T> &pos = Vector2<T>::Zero, const Vector2<T> &scale = Vector2<T>::Identity, const T &rotation = 0)
                 : Position(pos)
                 , Scale(scale)
                 , Rotation(rotation)
@@ -81,10 +81,12 @@ namespace bpf
 
             void RotateArround(const Vector2<T> &pivot, const T &rotation);
 
-            Transform2D operator+(const Transform2D &other) const noexcept;
-            void operator+=(const Transform2D &other);
+            Transform2 operator+(const Transform2 &other) const noexcept;
+            void operator+=(const Transform2 &other);
         };
+
+        using Transform2f = Transform2<float>;
     }
 }
 
-#include "Framework/Math/Transform2D.impl.hpp"
+#include "Framework/Math/Transform2.impl.hpp"

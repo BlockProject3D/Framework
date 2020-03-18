@@ -29,7 +29,6 @@
 #pragma once
 #include "Framework/Hash.hpp"
 #include "Framework/String.hpp"
-#include "Framework/Color.hpp"
 #include "Framework/Name.hpp"
 
 namespace bpf
@@ -38,7 +37,7 @@ namespace bpf
     class Hash<Name>
     {
     public:
-        inline static fsize HashCode(const Name &val)
+        inline static fsize ValueOf(const Name &val)
         {
             return (val.Hash());
         }
@@ -48,19 +47,9 @@ namespace bpf
     class Hash<String>
     {
     public:
-        inline static fsize HashCode(const String &val)
+        inline static fsize ValueOf(const String &val)
         {
-            return (Hash<Name>::HashCode(Name(val)));
-        }
-    };
-
-    template <>
-    class Hash<Color>
-    {
-    public:
-        inline static fsize HashCode(const Color &val)
-        {
-            return (val.GetCode());
+            return (Hash<Name>::ValueOf(Name(val)));
         }
     };
 }

@@ -33,7 +33,7 @@ namespace bpf
     namespace math
     {
         template <typename T>
-        typename Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::Translate(const Vector3<T> &translation) noexcept
+        typename Transform3<T>::MatrixBuilder &Transform3<T>::MatrixBuilder::Translate(const Vector3<T> &translation) noexcept
         {
             _matrix = _matrix * Matrix4<T>({
                 1, 0, 0, translation.X,
@@ -45,7 +45,7 @@ namespace bpf
         }
 
         template <typename T>
-        typename Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::Scale(const Vector3<T> &scale) noexcept
+        typename Transform3<T>::MatrixBuilder &Transform3<T>::MatrixBuilder::Scale(const Vector3<T> &scale) noexcept
         {
             _matrix = _matrix * Matrix4<T>({
                 scale.X, 0, 0, 0,
@@ -57,7 +57,7 @@ namespace bpf
         }
 
         template <typename T>
-        typename Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::ShearX(const Vector3<T> &shear) noexcept
+        typename Transform3<T>::MatrixBuilder &Transform3<T>::MatrixBuilder::ShearX(const Vector3<T> &shear) noexcept
         {
             _matrix = _matrix * Matrix4<T>({
                 1, 0, 0, 0,
@@ -69,7 +69,7 @@ namespace bpf
         }
 
         template <typename T>
-        typename Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::ShearY(const Vector3<T> &shear) noexcept
+        typename Transform3<T>::MatrixBuilder &Transform3<T>::MatrixBuilder::ShearY(const Vector3<T> &shear) noexcept
         {
             _matrix = _matrix * Matrix4<T>({
                 1, shear.X, 0, 0,
@@ -81,7 +81,7 @@ namespace bpf
         }
 
         template <typename T>
-        typename Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::ShearZ(const Vector3<T> &shear) noexcept
+        typename Transform3<T>::MatrixBuilder &Transform3<T>::MatrixBuilder::ShearZ(const Vector3<T> &shear) noexcept
         {
             _matrix = _matrix * Matrix4<T>({
                 1, 0, shear.X, 0,
@@ -93,7 +93,7 @@ namespace bpf
         }
 
         template <typename T>
-        typename Transform3D<T>::MatrixBuilder &Transform3D<T>::MatrixBuilder::Rotate(const Vector3<T> &axis, const T angle) noexcept
+        typename Transform3<T>::MatrixBuilder &Transform3<T>::MatrixBuilder::Rotate(const Vector3<T> &axis, const T angle) noexcept
         {
             T c = Math<T>::Cos(angle);
             T s = Math<T>::Sin(angle);
@@ -110,7 +110,7 @@ namespace bpf
         }
 
         template <typename T>
-        Vector3<T> Transform3D<T>::LocalToWorld(const Vector3<T> &local)
+        Vector3<T> Transform3<T>::LocalToWorld(const Vector3<T> &local)
         {
             auto res = ToMatrix() * Vector4<T>(local, (T)1);
 
@@ -118,7 +118,7 @@ namespace bpf
         }
 
         template <typename T>
-        Vector3<T> Transform3D<T>::WorldToLocal(const Vector3<T> &world)
+        Vector3<T> Transform3<T>::WorldToLocal(const Vector3<T> &world)
         {
             auto res = ToMatrix().Invert() * Vector4<T>(world, (T)1);
 
@@ -126,15 +126,15 @@ namespace bpf
         }
 
         template <typename T>
-        Transform3D<T> Transform3D<T>::operator+(const Transform3D &other) const noexcept
+        Transform3<T> Transform3<T>::operator+(const Transform3 &other) const noexcept
         {
-            Transform3D<T> res(Position + other.Position, Scale * other.Scale, Rotation * other.Rotation);
+            Transform3<T> res(Position + other.Position, Scale * other.Scale, Rotation * other.Rotation);
 
             return (res);
         }
 
         template <typename T>
-        void Transform3D<T>::operator+=(const Transform3D &other)
+        void Transform3<T>::operator+=(const Transform3 &other)
         {
             Position += other.Position;
             Scale *= other.Scale;
@@ -142,7 +142,7 @@ namespace bpf
         }
 
         template <typename T>
-        void Transform3D<T>::RotateArround(const Vector3<T> &pivot, const Quaternion<T> &rotation) noexcept
+        void Transform3<T>::RotateArround(const Vector3<T> &pivot, const Quaternion<T> &rotation) noexcept
         {
             auto dir = Position - pivot;
 

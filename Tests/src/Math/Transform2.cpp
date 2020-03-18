@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -26,22 +26,19 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-#include "Framework/String.hpp"
-#include "Framework/Color.hpp"
+#include <cassert>
+#include <iostream>
+#include <gtest/gtest.h>
+#include <Framework/Math/Transform2.hpp>
 
-namespace bpf
+TEST(Transform2, HomogeneousCoords)
 {
-    template <>
-    class String::Stringifier<Color>
-    {
-    public:
-        inline static String Stringify(const Color &col, const fsize prec = 0)
-        {
-            return (String("Color(") + String::ValueOf(col.R, prec)
-                + ", " + String::ValueOf(col.G, prec)
-                + ", " + String::ValueOf(col.B, prec)
-                + ", " + String::ValueOf(col.A, prec) + ")");
-        }
+    auto mat = bpf::math::Transform2f::MatrixBuilder().Translate(bpf::math::Vector2f(2)).Build();
+    bpf::math::Matrix3f expected = {
+        1, 0, 2,
+        0, 1, 2,
+        0, 0, 1
     };
+
+    EXPECT_EQ(mat, expected);
 }

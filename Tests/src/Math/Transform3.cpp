@@ -29,11 +29,11 @@
 #include <cassert>
 #include <iostream>
 #include <gtest/gtest.h>
-#include <Framework/Math/Transform3D.hpp>
+#include <Framework/Math/Transform3.hpp>
 
-TEST(Transform3D, HomogeneousCoords)
+TEST(Transform3, HomogeneousCoords)
 {
-    auto mat = bpf::math::Transform3D<float>::MatrixBuilder().Translate(bpf::math::Vector3f(2)).Build();
+    auto mat = bpf::math::Transform3f::MatrixBuilder().Translate(bpf::math::Vector3f(2)).Build();
     bpf::math::Matrix4f expected = {
         1, 0, 0, 2,
         0, 1, 0, 2,
