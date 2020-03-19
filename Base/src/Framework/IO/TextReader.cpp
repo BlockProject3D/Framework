@@ -156,7 +156,7 @@ bool TextReader::Read(String &out)
 bool TextReader::ReadLine(String &out)
 {
     auto copy = _seps;
-    _seps = "\n";
+    _seps = "\r\n";
     bool flag = Read(out);
     _seps = std::move(copy);
     return (flag);

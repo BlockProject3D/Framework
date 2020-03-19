@@ -46,7 +46,7 @@ TEST(TextReadWrite, Construct_Reader)
     bpf::io::TextReader r(f);
 }
 
-TEST(TextReadWrite, ReadWrite_Test_1)
+TEST(TextReadWrite, ReadWrite_UTF8_1)
 {
     {
         bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
@@ -75,7 +75,7 @@ TEST(TextReadWrite, ReadWrite_Test_1)
     }
 }
 
-TEST(TextReadWrite, ReadWrite_Test_2)
+TEST(TextReadWrite, ReadWrite_UTF8_2)
 {
     {
         bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
@@ -116,7 +116,7 @@ TEST(TextReadWrite, ReadWrite_Test_2)
     }
 }
 
-TEST(TextReadWrite, ReadWrite_Test_3)
+TEST(TextReadWrite, ReadWrite_UTF8_3)
 {
     int i;
     float ff;
@@ -125,6 +125,198 @@ TEST(TextReadWrite, ReadWrite_Test_3)
     bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_READ | bpf::io::FILE_MODE_TRUNCATE);
     bpf::io::TextWriter w(f);
     bpf::io::TextReader r(f);
+
+    w << 42 << 42.42f << 42.4242 << true;
+    w.Flush();
+
+    f.Seek(0);
+    r >> i >> ff >> d >> b;
+    EXPECT_EQ(i, 42);
+    EXPECT_EQ(ff, 42.42f);
+    EXPECT_EQ(d, 42.4242);
+    EXPECT_EQ(b, true);
+    r >> i >> ff >> d >> b;
+    EXPECT_EQ(i, 0);
+    EXPECT_EQ(ff, 0);
+    EXPECT_EQ(d, 0);
+    EXPECT_EQ(b, false);
+}
+
+TEST(TextReadWrite, ReadWrite_UTF16_1)
+{
+    {
+        bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
+        bpf::io::TextWriter w(f, bpf::io::EStringEncoder::UTF16);
+
+        w << 42 << 42.42f << 42.4242 << true;
+    }
+    {
+        bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_READ);
+        bpf::io::TextReader r(f, bpf::io::EStringEncoder::UTF16);
+        int i;
+        float ff;
+        double d;
+        bool b;
+
+        r >> i >> ff >> d >> b;
+        EXPECT_EQ(i, 42);
+        EXPECT_EQ(ff, 42.42f);
+        EXPECT_EQ(d, 42.4242);
+        EXPECT_EQ(b, true);
+        r >> i >> ff >> d >> b;
+        EXPECT_EQ(i, 0);
+        EXPECT_EQ(ff, 0);
+        EXPECT_EQ(d, 0);
+        EXPECT_EQ(b, false);
+    }
+}
+
+TEST(TextReadWrite, ReadWrite_UTF16_2)
+{
+    {
+        bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
+        bpf::io::TextWriter w(f, bpf::io::EStringEncoder::UTF16);
+
+        w << bpf::Int64::MaxValue << bpf::Int16::MaxValue << bpf::Int8::MaxValue << bpf::UInt64::MaxValue << bpf::UInt::MaxValue << bpf::UInt16::MaxValue << bpf::UInt8::MaxValue << false;
+        w.Flush();
+    }
+    {
+        bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_READ);
+        bpf::io::TextReader r(f, bpf::io::EStringEncoder::UTF16);
+        bpf::int64 a;
+        bpf::int16 b;
+        bpf::int8 c;
+        bpf::uint64 d;
+        bpf::uint32 e;
+        bpf::uint16 g;
+        bpf::uint8 h;
+        bool i;
+
+        r >> a >> b >> c >> d >> e >> g >> h >> i;
+        EXPECT_EQ(a, bpf::Int64::MaxValue);
+        EXPECT_EQ(b, bpf::Int16::MaxValue);
+        EXPECT_EQ(c, bpf::Int8::MaxValue);
+        EXPECT_EQ(d, bpf::UInt64::MaxValue);
+        EXPECT_EQ(e, bpf::UInt::MaxValue);
+        EXPECT_EQ(g, bpf::UInt16::MaxValue);
+        EXPECT_EQ(h, bpf::UInt8::MaxValue);
+        EXPECT_FALSE(i);
+        r >> a >> b >> c >> d >> e >> g >> h >> i;
+        EXPECT_EQ(a, 0);
+        EXPECT_EQ(b, 0);
+        EXPECT_EQ(c, 0);
+        EXPECT_EQ(d, 0);
+        EXPECT_EQ(e, 0);
+        EXPECT_EQ(g, 0);
+        EXPECT_EQ(h, 0);
+    }
+}
+
+TEST(TextReadWrite, ReadWrite_UTF16_3)
+{
+    int i;
+    float ff;
+    double d;
+    bool b;
+    bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_READ | bpf::io::FILE_MODE_TRUNCATE);
+    bpf::io::TextWriter w(f, bpf::io::EStringEncoder::UTF16);
+    bpf::io::TextReader r(f, bpf::io::EStringEncoder::UTF16);
+
+    w << 42 << 42.42f << 42.4242 << true;
+    w.Flush();
+
+    f.Seek(0);
+    r >> i >> ff >> d >> b;
+    EXPECT_EQ(i, 42);
+    EXPECT_EQ(ff, 42.42f);
+    EXPECT_EQ(d, 42.4242);
+    EXPECT_EQ(b, true);
+    r >> i >> ff >> d >> b;
+    EXPECT_EQ(i, 0);
+    EXPECT_EQ(ff, 0);
+    EXPECT_EQ(d, 0);
+    EXPECT_EQ(b, false);
+}
+
+TEST(TextReadWrite, ReadWrite_UTF32_1)
+{
+    {
+        bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
+        bpf::io::TextWriter w(f, bpf::io::EStringEncoder::UTF32);
+
+        w << 42 << 42.42f << 42.4242 << true;
+    }
+    {
+        bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_READ);
+        bpf::io::TextReader r(f, bpf::io::EStringEncoder::UTF32);
+        int i;
+        float ff;
+        double d;
+        bool b;
+
+        r >> i >> ff >> d >> b;
+        EXPECT_EQ(i, 42);
+        EXPECT_EQ(ff, 42.42f);
+        EXPECT_EQ(d, 42.4242);
+        EXPECT_EQ(b, true);
+        r >> i >> ff >> d >> b;
+        EXPECT_EQ(i, 0);
+        EXPECT_EQ(ff, 0);
+        EXPECT_EQ(d, 0);
+        EXPECT_EQ(b, false);
+    }
+}
+
+TEST(TextReadWrite, ReadWrite_UTF32_2)
+{
+    {
+        bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
+        bpf::io::TextWriter w(f, bpf::io::EStringEncoder::UTF32);
+
+        w << bpf::Int64::MaxValue << bpf::Int16::MaxValue << bpf::Int8::MaxValue << bpf::UInt64::MaxValue << bpf::UInt::MaxValue << bpf::UInt16::MaxValue << bpf::UInt8::MaxValue << false;
+        w.Flush();
+    }
+    {
+        bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_READ);
+        bpf::io::TextReader r(f, bpf::io::EStringEncoder::UTF32);
+        bpf::int64 a;
+        bpf::int16 b;
+        bpf::int8 c;
+        bpf::uint64 d;
+        bpf::uint32 e;
+        bpf::uint16 g;
+        bpf::uint8 h;
+        bool i;
+
+        r >> a >> b >> c >> d >> e >> g >> h >> i;
+        EXPECT_EQ(a, bpf::Int64::MaxValue);
+        EXPECT_EQ(b, bpf::Int16::MaxValue);
+        EXPECT_EQ(c, bpf::Int8::MaxValue);
+        EXPECT_EQ(d, bpf::UInt64::MaxValue);
+        EXPECT_EQ(e, bpf::UInt::MaxValue);
+        EXPECT_EQ(g, bpf::UInt16::MaxValue);
+        EXPECT_EQ(h, bpf::UInt8::MaxValue);
+        EXPECT_FALSE(i);
+        r >> a >> b >> c >> d >> e >> g >> h >> i;
+        EXPECT_EQ(a, 0);
+        EXPECT_EQ(b, 0);
+        EXPECT_EQ(c, 0);
+        EXPECT_EQ(d, 0);
+        EXPECT_EQ(e, 0);
+        EXPECT_EQ(g, 0);
+        EXPECT_EQ(h, 0);
+    }
+}
+
+TEST(TextReadWrite, ReadWrite_UTF32_3)
+{
+    int i;
+    float ff;
+    double d;
+    bool b;
+    bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_READ | bpf::io::FILE_MODE_TRUNCATE);
+    bpf::io::TextWriter w(f, bpf::io::EStringEncoder::UTF32);
+    bpf::io::TextReader r(f, bpf::io::EStringEncoder::UTF32);
 
     w << 42 << 42.42f << 42.4242 << true;
     w.Flush();
@@ -179,5 +371,51 @@ TEST(TextReadWrite, ReadWrite_String_Test_1_2)
         EXPECT_STREQ(*str, "Thisisatest");
         r >> str;
         EXPECT_EQ(str.Size(), 0);
+    }
+}
+
+TEST(TextReadWrite, ReadWrite_LinePerLine)
+{
+    {
+        bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
+        bpf::io::TextWriter w(f);
+
+        w.WriteLine("This is a test1");
+        w.Write("Let's put some unix new lines in there\n");
+        w.WriteLine("This is a test2");
+        w.WriteLine("This is a test3");
+        w.Write("Let's put some unix new lines in there\n");
+        w.Flush();
+    }
+    {
+        bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_READ);
+        bpf::io::TextReader r(f);
+        bpf::String str;
+        bpf::String acc;
+
+        while (r.ReadLine(str))
+            acc += str;
+        EXPECT_STREQ(*acc, "This is a test1Let's put some unix new lines in thereThis is a test2This is a test3Let's put some unix new lines in there");
+    }
+}
+
+TEST(TextReadWrite, ReadWrite_All)
+{
+    {
+        bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
+        bpf::io::TextWriter w(f);
+
+        w.WriteLine("This is a test1");
+        w.Write("Let's put some unix new lines in there\n");
+        w.WriteLine("This is a test2");
+        w.WriteLine("This is a test3");
+        w.Write("Let's put some unix new lines in there\n");
+        w.Flush();
+    }
+    {
+        bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_READ);
+        bpf::io::TextReader r(f);
+        bpf::String str = r.ReadAll().Replace("\r\n", "\n");
+        EXPECT_STREQ(*str, "This is a test1\nLet's put some unix new lines in there\nThis is a test2\nThis is a test3\nLet's put some unix new lines in there\n");
     }
 }
