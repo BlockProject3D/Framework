@@ -300,3 +300,21 @@ TEST(BinaryReadWrite, ReadWrite_String_Test_4_2)
         EXPECT_STREQ(*str, "This is a test");
     }
 }
+
+TEST(BinaryReadWrite, ReadWrite_Raw)
+{
+    {
+        bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
+        bpf::io::BinaryWriter w(f);
+
+        w.Write("this is a test", 14);
+    }
+    {
+        bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_READ);
+        bpf::io::BinaryReader r(f);
+        char out[15];
+        out[14] = 0;
+        r.Read(out, 14);
+        EXPECT_STREQ(out, "this is a test");
+    }
+}

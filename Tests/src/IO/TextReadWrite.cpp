@@ -419,3 +419,21 @@ TEST(TextReadWrite, ReadWrite_All)
         EXPECT_STREQ(*str, "This is a test1\nLet's put some unix new lines in there\nThis is a test2\nThis is a test3\nLet's put some unix new lines in there\n");
     }
 }
+
+TEST(TextReadWrite, ReadWrite_Raw)
+{
+    {
+        bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
+        bpf::io::TextWriter w(f);
+
+        w.Write("this is a test", 14);
+    }
+    {
+        bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_READ);
+        bpf::io::TextReader r(f);
+        char out[15];
+        out[14] = 0;
+        r.Read(out, 14);
+        EXPECT_STREQ(out, "this is a test");
+    }
+}
