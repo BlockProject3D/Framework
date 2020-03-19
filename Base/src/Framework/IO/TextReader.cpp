@@ -32,27 +32,6 @@
 using namespace bpf::io;
 using namespace bpf;
 
-uint8 TextReader::ReadByte()
-{
-    uint8 out = 0;
-
-    if (!_buffered)
-    {
-        _stream.Read(&out, 1);
-        return (out);
-    }
-    if ((_buf.GetCursor() + 1) > _buf.GetWrittenBytes())
-    {
-        _buf.Clear();
-        uint8 buf[READ_BUF_SIZE];
-        fsize s = _stream.Read(buf, READ_BUF_SIZE);
-        _buf.Write(buf, s);
-        _buf.Seek(0);
-    }
-    _buf.Read(&out, 1);
-    return (out);
-}
-
 bool TextReader::ReadByte2(uint8 &out)
 {
     out = 0;

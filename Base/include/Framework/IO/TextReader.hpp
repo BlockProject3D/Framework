@@ -44,7 +44,6 @@ namespace bpf
             String _seps;
             EStringEncoder _encoder;
 
-            uint8 ReadByte();
             bool ReadByte2(uint8 &out);
             bool ReadSubBuf(void *out, const fsize size);
             bool CheckIsSeparator(uint8 byte);
