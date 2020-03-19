@@ -68,11 +68,7 @@ namespace bpf
                     _stream.Write(_buf.GetRawData(), _buf.GetWrittenBytes());
             }
 
-            inline void Flush()
-            {
-                if (_buffered)
-                    _stream.Write(_buf.GetRawData(), _buf.GetWrittenBytes());
-            }
+            void Flush();
 
             fsize Write(const void *buf, fsize bufsize);
 

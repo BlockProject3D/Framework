@@ -41,7 +41,7 @@ void TextWriter::WriteByte(uint8 byte)
     if (_buf.GetWrittenBytes() >= _buf.Size())
     {
         _stream.Write(_buf.GetRawData(), WRITE_BUF_SIZE);
-        _buf.Clear();
+        _buf.Reset();
     }
     _buf.Write(&byte, 1);
 }
@@ -102,4 +102,13 @@ fsize TextWriter::Write(const void *buf, fsize bufsize)
     }
     else
         return (_stream.Write(buf, bufsize));
+}
+
+void TextWriter::Flush()
+{
+    if (_buffered)
+    {
+        _stream.Write(_buf.GetRawData(), _buf.GetWrittenBytes());
+        _buf.Reset();
+    }
 }

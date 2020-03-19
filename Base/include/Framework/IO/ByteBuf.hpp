@@ -50,6 +50,8 @@ namespace bpf
 
             void Clear();
 
+            void Reset();
+
             void Shift(fsize count);
 
             fsize Write(const void *buf, fsize bufsize);

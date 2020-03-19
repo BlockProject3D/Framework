@@ -49,7 +49,8 @@ FileStream::FileStream(const File &file, fint mode)
     if (mode & FILE_MODE_READ)
     {
         md |= GENERIC_READ;
-        md1 |= OPEN_EXISTING;
+        if (!(mode & FILE_MODE_TRUNCATE))
+            md1 |= OPEN_EXISTING;
     }
     if ((mode & FILE_MODE_WRITE) || (mode & FILE_MODE_APPEND))
     {

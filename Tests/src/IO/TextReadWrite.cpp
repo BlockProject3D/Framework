@@ -67,6 +67,11 @@ TEST(TextReadWrite, ReadWrite_Test_1)
         EXPECT_EQ(ff, 42.42f);
         EXPECT_EQ(d, 42.4242);
         EXPECT_EQ(b, true);
+        r >> i >> ff >> d >> b;
+        EXPECT_EQ(i, 0);
+        EXPECT_EQ(ff, 0);
+        EXPECT_EQ(d, 0);
+        EXPECT_EQ(b, false);
     }
 }
 
@@ -100,6 +105,14 @@ TEST(TextReadWrite, ReadWrite_Test_2)
         EXPECT_EQ(g, bpf::UInt16::MaxValue);
         EXPECT_EQ(h, bpf::UInt8::MaxValue);
         EXPECT_FALSE(i);
+        r >> a >> b >> c >> d >> e >> g >> h >> i;
+        EXPECT_EQ(a, 0);
+        EXPECT_EQ(b, 0);
+        EXPECT_EQ(c, 0);
+        EXPECT_EQ(d, 0);
+        EXPECT_EQ(e, 0);
+        EXPECT_EQ(g, 0);
+        EXPECT_EQ(h, 0);
     }
 }
 
@@ -122,6 +135,11 @@ TEST(TextReadWrite, ReadWrite_Test_3)
     EXPECT_EQ(ff, 42.42f);
     EXPECT_EQ(d, 42.4242);
     EXPECT_EQ(b, true);
+    r >> i >> ff >> d >> b;
+    EXPECT_EQ(i, 0);
+    EXPECT_EQ(ff, 0);
+    EXPECT_EQ(d, 0);
+    EXPECT_EQ(b, false);
 }
 
 TEST(TextReadWrite, ReadWrite_String_Test_1_1)
@@ -139,6 +157,8 @@ TEST(TextReadWrite, ReadWrite_String_Test_1_1)
 
         r >> str;
         EXPECT_STREQ(*str, "Thisisatest");
+        r >> str;
+        EXPECT_EQ(str.Size(), 0);
     }
 }
 
@@ -157,5 +177,7 @@ TEST(TextReadWrite, ReadWrite_String_Test_1_2)
 
         r >> str;
         EXPECT_STREQ(*str, "Thisisatest");
+        r >> str;
+        EXPECT_EQ(str.Size(), 0);
     }
 }

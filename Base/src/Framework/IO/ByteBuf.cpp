@@ -59,6 +59,12 @@ ByteBuf::~ByteBuf()
     Memory::Free(_buf);
 }
 
+void ByteBuf::Reset()
+{
+    _written = 0;
+    _cursor = 0;
+}
+
 void ByteBuf::Clear()
 {
     _written = 0;
