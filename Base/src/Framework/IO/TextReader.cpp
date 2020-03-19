@@ -91,7 +91,7 @@ bool TextReader::ReadSubBuf(void *out, const fsize size)
 
 bool TextReader::CheckIsSeparator(uint8 byte)
 {
-    for (fisize i = 0 ; i != _seps.Size(); ++i)
+    for (fisize i = 0; i != _seps.Size(); ++i)
     {
         if (_seps.ByteAt(i) == (char)byte)
             return (true);

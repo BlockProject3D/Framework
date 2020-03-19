@@ -39,7 +39,7 @@ namespace bpf
         class BPF_API BinaryReader final : public IDataInputStream
         {
         private:
-            IInputStream & _stream;
+            IInputStream &_stream;
             ByteBuf _buf;
             system::EPlatformEndianess _targetorder;
             bool _buffered;

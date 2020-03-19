@@ -26,9 +26,9 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <cstring>
 #include "Framework/IO/ByteBuf.hpp"
 #include "Framework/Memory/Memory.hpp"
+#include <cstring>
 
 using namespace bpf::memory;
 using namespace bpf::io;

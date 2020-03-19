@@ -27,9 +27,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/IO/IDataOutputStream.hpp"
 #include "Framework/IO/ByteBuf.hpp"
 #include "Framework/IO/EStringEncoder.hpp"
+#include "Framework/IO/IDataOutputStream.hpp"
 
 namespace bpf
 {
@@ -38,7 +38,7 @@ namespace bpf
         class BPF_API TextWriter final : public IDataOutputStream
         {
         private:
-            IOutputStream & _stream;
+            IOutputStream &_stream;
             ByteBuf _buf;
             bool _buffered;
             fchar _sep;
@@ -46,6 +46,7 @@ namespace bpf
 
             void WriteByte(uint8 byte);
             void WriteSubBuf(const void *in, const fsize size);
+
         public:
             explicit inline TextWriter(IOutputStream &stream, const EStringEncoder encoder = EStringEncoder::UTF8, bool buffered = true)
                 : _stream(stream)

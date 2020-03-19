@@ -88,9 +88,10 @@ IDataOutputStream &BinaryWriter::operator<<(const bpf::String &str)
 
 IDataOutputStream &BinaryWriter::operator<<(const char *str)
 {
-	fisize size = 0;
+    fisize size = 0;
 
-    for (; str[size]; ++size);
+    for (; str[size]; ++size)
+        ;
     switch (_serializer)
     {
     case EStringSerializer::VARCHAR_32:

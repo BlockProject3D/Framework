@@ -92,7 +92,7 @@ IDataInputStream &BinaryReader::operator>>(bpf::String &str)
 
     switch (_serializer)
     {
-    case EStringSerializer::VARCHAR_32:        
+    case EStringSerializer::VARCHAR_32:
         str = String::Empty;
         ReadSubBuf(&size, 4);
         for (uint32 i = 0; i < size; ++i)

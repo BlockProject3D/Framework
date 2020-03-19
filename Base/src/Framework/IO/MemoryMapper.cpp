@@ -31,12 +31,12 @@
     #include <iostream>
 #else
     #include <fcntl.h>
-    #include <unistd.h>
     #include <sys/mman.h>
+    #include <unistd.h>
 #endif
-#include "Framework/IO/MemoryMapper.hpp"
-#include "Framework/IO/IOException.hpp"
 #include "Framework/IO/FileStream.hpp"
+#include "Framework/IO/IOException.hpp"
+#include "Framework/IO/MemoryMapper.hpp"
 #include "OSPrivate.hpp"
 
 using namespace bpf::io;
@@ -72,16 +72,12 @@ MemoryMapper::MemoryMapper(const File &file, fint mode)
         md2 = PAGE_READONLY;
     _handle = CreateFileW(reinterpret_cast<LPCWSTR>(*file.PlatformPath().ToUTF16()), md, FILE_SHARE_READ, Null, md1, FILE_ATTRIBUTE_NORMAL, Null);
     if (_handle == INVALID_HANDLE_VALUE)
-        throw IOException(String("Could not open file '")
-                          + file.PlatformPath() + "' : "
-                          + OSPrivate::ObtainLastErrorString());
+        throw IOException(String("Could not open file '") + file.PlatformPath() + "' : " + OSPrivate::ObtainLastErrorString());
     _mapper = CreateFileMappingW(_handle, Null, md2, 0, 0, Null);
     if (_mapper == Null)
     {
         CloseHandle(_handle);
-        throw IOException(String("Could not create mapper for file '")
-                          + file.PlatformPath() + "' : "
-                          + OSPrivate::ObtainLastErrorString());
+        throw IOException(String("Could not create mapper for file '") + file.PlatformPath() + "' : " + OSPrivate::ObtainLastErrorString());
     }
 #else
     int md = 0;
@@ -95,9 +91,7 @@ MemoryMapper::MemoryMapper(const File &file, fint mode)
         md |= O_TRUNC;
     _handle = open(*file.GetAbsolutePath().Path(), md, 0644);
     if (_handle == -1)
-        throw IOException(String("Could not open file '")
-            + file.GetAbsolutePath().Path() + "' : "
-            + OSPrivate::ObtainLastErrorString());
+        throw IOException(String("Could not open file '") + file.GetAbsolutePath().Path() + "' : " + OSPrivate::ObtainLastErrorString());
 #endif
 }
 
@@ -116,8 +110,7 @@ MemoryMapper::~MemoryMapper()
 }
 
 #ifdef WINDOWS
-union Unpack64
-{
+union Unpack64 {
     uint64 _data;
     DWORD _parts[2];
 };
@@ -126,9 +119,7 @@ union Unpack64
 void MemoryMapper::Map(uint64 pos, fsize size)
 {
     if ((pos + size) > _file.GetSizeBytes())
-        throw IOException(String("Could not map file '")
-            + _file.GetAbsolutePath().Path()
-            + "' : Mapped region is outside file boundarries");
+        throw IOException(String("Could not map file '") + _file.GetAbsolutePath().Path() + "' : Mapped region is outside file boundarries");
 #ifdef WINDOWS
     SYSTEM_INFO inf;
     GetSystemInfo(&inf);
@@ -150,9 +141,7 @@ void MemoryMapper::Map(uint64 pos, fsize size)
     offsetHeigh = up._parts[1];
     _mem = MapViewOfFile(_mapper, md, offsetHeigh, offsetLow, size);
     if (_mem == Null)
-        throw IOException(String("Could not map file '")
-            + _file.GetAbsolutePath().Path() + "' : "
-            + OSPrivate::ObtainLastErrorString());
+        throw IOException(String("Could not map file '") + _file.GetAbsolutePath().Path() + "' : " + OSPrivate::ObtainLastErrorString());
     uint8 *addr = reinterpret_cast<uint8 *>(_mem);
     addr += pos - nearestpsize;
     _memoff = addr;
@@ -170,9 +159,7 @@ void MemoryMapper::Map(uint64 pos, fsize size)
     _mem = mmap(Null, size, md, MAP_SHARED, _handle, nearestpsize);
     _size = size;
     if (_mem == MAP_FAILED)
-        throw IOException(String("Could not map file '")
-            + _file.GetAbsolutePath().Path() + "' : "
-            + OSPrivate::ObtainLastErrorString());
+        throw IOException(String("Could not map file '") + _file.GetAbsolutePath().Path() + "' : " + OSPrivate::ObtainLastErrorString());
     uint8 *addr = reinterpret_cast<uint8 *>(_mem);
     addr += pos - nearestpsize;
     _memoff = addr;

@@ -27,9 +27,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/IO/IDataInputStream.hpp"
 #include "Framework/IO/ByteBuf.hpp"
 #include "Framework/IO/EStringEncoder.hpp"
+#include "Framework/IO/IDataInputStream.hpp"
 
 namespace bpf
 {
@@ -38,7 +38,7 @@ namespace bpf
         class BPF_API TextReader final : public IDataInputStream
         {
         private:
-            IInputStream & _stream;
+            IInputStream &_stream;
             ByteBuf _buf;
             bool _buffered;
             String _seps;
@@ -48,6 +48,7 @@ namespace bpf
             bool ReadByte2(uint8 &out);
             bool ReadSubBuf(void *out, const fsize size);
             bool CheckIsSeparator(uint8 byte);
+
         public:
             explicit inline TextReader(IInputStream &stream, const EStringEncoder encoder = EStringEncoder::UTF8, bool buffered = true)
                 : _stream(stream)
