@@ -51,12 +51,13 @@ TEST(FileStream, OpenExcept_MemLeak)
     EXPECT_EQ(cur, bpf::memory::Memory::GetAllocCount());
 }
 
-TEST(FileStream, Open)
+TEST(FileStream, Open_ReadWrite)
 {
     bpf::io::File f("./doesnotexist.txt");
     bpf::io::FileStream stream(f, bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
     EXPECT_THROW(stream.Read(Null, 0), bpf::io::IOException);
     EXPECT_EQ(stream.Write("This is a test", 14), (bpf::fsize)14);
+    stream.Close();
     stream.Close();
     bpf::io::FileStream stream1(f, bpf::io::FILE_MODE_READ);
     EXPECT_THROW(stream1.Write(Null, 0), bpf::io::IOException);
@@ -65,5 +66,33 @@ TEST(FileStream, Open)
     buf[14] = '\0';
     EXPECT_STREQ(buf, "This is a test");
     stream1.Close();
+    stream1.Close();
     f.Delete();
+}
+
+TEST(FileStream, Open_Append)
+{
+    {
+        bpf::io::FileStream stream(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
+        stream.SeekOffset(0);
+        EXPECT_EQ(stream.Write("This is a test\n", 15), (bpf::fsize)15);
+    }
+    {
+        bpf::io::FileStream stream(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_APPEND);
+        EXPECT_EQ(stream.Write("3.141592654", 11), (bpf::fsize)11);
+        EXPECT_THROW(stream.Seek(0), bpf::io::IOException);
+        EXPECT_THROW(stream.SeekOffset(0), bpf::io::IOException);
+    }
+    {
+        bpf::io::FileStream stream(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_READ);
+        char text[27];
+        EXPECT_EQ(stream.Read(text, 26), 26);
+        text[26] = 0;
+        EXPECT_STREQ(text, "This is a test\n3.141592654");
+        stream.SeekOffset(-11);
+        EXPECT_EQ(stream.Read(text, 11), 11);
+        text[11] = 0;
+        EXPECT_STREQ(text, "3.141592654");
+    }
+    bpf::io::File("./edit_me.txt").Delete();
 }
