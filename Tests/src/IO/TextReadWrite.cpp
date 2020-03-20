@@ -166,6 +166,12 @@ TEST(TextReadWrite, ReadWrite_Unbuffered)
     EXPECT_EQ(ff, 0);
     EXPECT_EQ(d, 0);
     EXPECT_EQ(b, false);
+    buf.Seek(0);
+    EXPECT_EQ(w.Write("test", 5), 5);
+    buf.Seek(0);
+    char test[5];
+    EXPECT_EQ(r.Read(test, 5), 5);
+    EXPECT_STREQ(test, "test");
 }
 
 TEST(TextReadWrite, ReadWrite_UTF16_1)
