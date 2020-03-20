@@ -142,6 +142,32 @@ TEST(TextReadWrite, ReadWrite_UTF8_3)
     EXPECT_EQ(b, false);
 }
 
+TEST(TextReadWrite, ReadWrite_Unbuffered)
+{
+    int i;
+    float ff;
+    double d;
+    bool b;
+    bpf::io::ByteBuf buf(4096);
+    bpf::io::TextWriter w(buf, bpf::io::EStringEncoder::UTF8, false);
+    bpf::io::TextReader r(buf, bpf::io::EStringEncoder::UTF8, false);
+
+    w << 42 << 42.42f << 42.4242 << true;
+    w.Flush();
+
+    buf.Seek(0);
+    r >> i >> ff >> d >> b;
+    EXPECT_EQ(i, 42);
+    EXPECT_EQ(ff, 42.42f);
+    EXPECT_EQ(d, 42.4242);
+    EXPECT_EQ(b, true);
+    r >> i >> ff >> d >> b;
+    EXPECT_EQ(i, 0);
+    EXPECT_EQ(ff, 0);
+    EXPECT_EQ(d, 0);
+    EXPECT_EQ(b, false);
+}
+
 TEST(TextReadWrite, ReadWrite_UTF16_1)
 {
     {
