@@ -20,6 +20,7 @@ set(SOURCES
     ./include/Framework/IO/BinaryWriter.hpp
     ./include/Framework/IO/TextReader.hpp
     ./include/Framework/IO/TextWriter.hpp
+    ./include/Framework/IO/Console.hpp
     ./include/Framework/IO/Stringifier.File.hpp
     ./include/Framework/Math/Vector.hpp
     ./include/Framework/Math/Vector.impl.hpp
@@ -158,6 +159,7 @@ set(SOURCES
     ./src/Framework/IO/BinaryWriter.cpp
     ./src/Framework/IO/TextReader.cpp
     ./src/Framework/IO/TextWriter.cpp
+    ./src/Framework/IO/Console.cpp
     ./src/Framework/Log/DefaultLogger.cpp
     ./src/Framework/Log/FileLogger.cpp
     ./src/Framework/Math/MathUtils.cpp

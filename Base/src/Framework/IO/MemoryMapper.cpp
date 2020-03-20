@@ -89,9 +89,9 @@ MemoryMapper::MemoryMapper(const File &file, fint mode)
         md = O_WRONLY;
     if (mode & FILE_MODE_TRUNCATE)
         md |= O_TRUNC;
-    _handle = open(*file.GetAbsolutePath().Path(), md, 0644);
+    _handle = open(*file.PlatformPath(), md, 0644);
     if (_handle == -1)
-        throw IOException(String("Could not open file '") + file.GetAbsolutePath().Path() + "' : " + OSPrivate::ObtainLastErrorString());
+        throw IOException(String("Could not open file '") + file.PlatformPath() + "' : " + OSPrivate::ObtainLastErrorString());
 #endif
 }
 
@@ -119,7 +119,7 @@ union Unpack64 {
 void MemoryMapper::Map(uint64 pos, fsize size)
 {
     if ((pos + size) > _file.GetSizeBytes())
-        throw IOException(String("Could not map file '") + _file.GetAbsolutePath().Path() + "' : Mapped region is outside file boundarries");
+        throw IOException(String("Could not map file '") + _file.PlatformPath() + "' : Mapped region is outside file boundarries");
 #ifdef WINDOWS
     SYSTEM_INFO inf;
     GetSystemInfo(&inf);
@@ -141,7 +141,7 @@ void MemoryMapper::Map(uint64 pos, fsize size)
     offsetHeigh = up._parts[1];
     _mem = MapViewOfFile(_mapper, md, offsetHeigh, offsetLow, size);
     if (_mem == Null)
-        throw IOException(String("Could not map file '") + _file.GetAbsolutePath().Path() + "' : " + OSPrivate::ObtainLastErrorString());
+        throw IOException(String("Could not map file '") + _file.PlatformPath() + "' : " + OSPrivate::ObtainLastErrorString());
     uint8 *addr = reinterpret_cast<uint8 *>(_mem);
     addr += pos - nearestpsize;
     _memoff = addr;
@@ -159,7 +159,7 @@ void MemoryMapper::Map(uint64 pos, fsize size)
     _mem = mmap(Null, size, md, MAP_SHARED, _handle, nearestpsize);
     _size = size;
     if (_mem == MAP_FAILED)
-        throw IOException(String("Could not map file '") + _file.GetAbsolutePath().Path() + "' : " + OSPrivate::ObtainLastErrorString());
+        throw IOException(String("Could not map file '") + _file.PlatformPath() + "' : " + OSPrivate::ObtainLastErrorString());
     uint8 *addr = reinterpret_cast<uint8 *>(_mem);
     addr += pos - nearestpsize;
     _memoff = addr;
