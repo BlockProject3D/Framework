@@ -86,15 +86,15 @@ fsize ByteBuf::Write(const void *buf, fsize bufsize)
     if (_cursor + bufsize > _size)
         bufsize = _size - _cursor;
     std::memcpy(_buf + _cursor, buf, bufsize);
-    _written += bufsize;
+    _written = _cursor + bufsize;
     _cursor += bufsize;
     return (bufsize);
 }
 
 fsize ByteBuf::Read(void *buf, fsize bufsize)
 {
-    if (_cursor + bufsize > _size)
-        bufsize = _size - _cursor;
+    if (_cursor + bufsize > _written)
+        bufsize = _written - _cursor;
     std::memcpy(buf, _buf + _cursor, bufsize);
     _cursor += bufsize;
     return (bufsize);

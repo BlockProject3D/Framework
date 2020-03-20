@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -52,11 +52,11 @@ TEST(ByteBuf, ReadWrite_Test1)
 {
     bpf::io::ByteBuf buf(128);
     char res[15];
-    
+
     buf.Clear();
     for (bpf::fsize i = 0 ; i < buf.Size() ; ++i)
         EXPECT_EQ(buf[i], 0);
-    EXPECT_EQ(buf.Write("This is a test", 14), (bpf::fsize)14);
+    EXPECT_EQ(buf.Write("This is a test", 15), (bpf::fsize)15);
     buf.Seek(0);
     EXPECT_EQ(buf.Read(res, 15), (bpf::fsize)15);
     EXPECT_STREQ("This is a test", res);
@@ -71,7 +71,7 @@ TEST(ByteBuf, ReadWrite_Test2)
     buf.Clear();
     for (bpf::fsize i = 0 ; i < buf.Size() ; ++i)
         EXPECT_EQ(buf[i], 0);
-    EXPECT_EQ(buf.Write("This is a test", 14), (bpf::fsize)4);
+    EXPECT_EQ(buf.Write("This is a test", 15), (bpf::fsize)4);
     buf.Seek(0);
     EXPECT_EQ(buf.Read(res, 15), (bpf::fsize)4);
     res[4] = '\0';
@@ -89,8 +89,8 @@ TEST(ByteBuf, ReadWrite_Test3)
         EXPECT_EQ(buf[i], 0);
     EXPECT_EQ(buf.Write("This", 4), (bpf::fsize)4);
     EXPECT_EQ(buf.GetCursor(), (bpf::fsize)4);
-    EXPECT_EQ(buf.Write("This", 4), (bpf::fsize)4);
-    EXPECT_EQ(buf.GetCursor(), (bpf::fsize)8);
+    EXPECT_EQ(buf.Write("This", 5), (bpf::fsize)5);
+    EXPECT_EQ(buf.GetCursor(), (bpf::fsize)9);
     buf.Seek(0);
     EXPECT_EQ(buf.Read(res, 9), (bpf::fsize)9);
     EXPECT_STREQ("ThisThis", res);
@@ -107,8 +107,8 @@ TEST(ByteBuf, ReadWrite_Test4)
         EXPECT_EQ(buf[i], 0);
     EXPECT_EQ(buf.Write("This", 4), (bpf::fsize)4);
     EXPECT_EQ(buf.GetCursor(), (bpf::fsize)4);
-    EXPECT_EQ(buf.Write("This", 4), (bpf::fsize)4);
-    EXPECT_EQ(buf.GetCursor(), (bpf::fsize)8);
+    EXPECT_EQ(buf.Write("This", 5), (bpf::fsize)5);
+    EXPECT_EQ(buf.GetCursor(), (bpf::fsize)9);
     buf.Seek(0);
     EXPECT_EQ(buf.Read(res, 9), (bpf::fsize)9);
     EXPECT_STREQ("ThisThis", res);
