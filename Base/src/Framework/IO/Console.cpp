@@ -38,7 +38,7 @@ using namespace bpf::io;
 using namespace bpf;
 
 #ifdef WINDOWS
-//Apparently Microsoft loves globals; yeah !!
+//Apparently Microsoft loves globals; yeah!!
 WORD g_Console_OldAttributes_Out = (WORD)-1;
 WORD g_Console_OldAttributes_Err = (WORD)-1;
 #endif
@@ -52,7 +52,7 @@ void Console::WriteLine(const String &str, const EType type)
     auto utf16 = (str + "\r\n").ToUTF16();
     WriteConsoleW(hdl, reinterpret_cast<const void *>(*utf16), (DWORD)utf16.Size(), NULL, NULL);
 #else
-    write(2, str + "\n", str.Size() + 1);
+    write(2, *(str + "\n"), str.Size() + 1);
 #endif
     }
     else
@@ -62,7 +62,7 @@ void Console::WriteLine(const String &str, const EType type)
     auto utf16 = (str + "\r\n").ToUTF16();
     WriteConsoleW(hdl, reinterpret_cast<const void *>(*utf16), (DWORD)utf16.Size(), NULL, NULL);
 #else
-    write(1, str + "\n", str.Size() + 1);
+    write(1, *(str + "\n"), str.Size() + 1);
 #endif
     }
 }
@@ -120,18 +120,14 @@ void Console::SetTextStyle(const TextStyle &style, const EType type)
         break;
     }
     SetConsoleTextAttribute(hdl, color);
-    CONSOLE_FONT_INFOEX data;
-    data.cbSize = sizeof(CONSOLE_FONT_INFOEX);
-    GetCurrentConsoleFontEx(hdl, FALSE, &data);
-    data.FontWeight = style.Bold ? 700 : 400; //MSDN recommends 700 for bold and 400 for standard
-    SetCurrentConsoleFontEx(hdl, FALSE, &data);
+    //Bold is not supported > ask why Microsoft does not know how to code a terminal!
 #else
     int fd = -1;
     if (type == ERROR)
         fd = 2;
     else
         fd = 1;
-    String str = String("\e[") + (style.Bold ? "1;" : "0;");
+    String str = String("\033[") + (style.Bold ? "1;" : "0;");
     switch (style.TextColor)
     {
     case EConsoleColor::BLACK:
@@ -172,13 +168,8 @@ void Console::ResetTextStyle(const EType type)
             return;
         HANDLE hdl = GetStdHandle(STD_ERROR_HANDLE);
         SetConsoleTextAttribute(hdl, g_Console_OldAttributes_Err);
-        CONSOLE_FONT_INFOEX data;
-        data.cbSize = sizeof(CONSOLE_FONT_INFOEX);
-        GetCurrentConsoleFontEx(hdl, FALSE, &data);
-        data.FontWeight = 400;
-        SetCurrentConsoleFontEx(hdl, FALSE, &data);
 #else
-        write(2, "\e[0m", 4);
+        write(2, "\033[0m", 4);
 #endif
     }
     else
@@ -188,11 +179,6 @@ void Console::ResetTextStyle(const EType type)
             return;
         HANDLE hdl = GetStdHandle(STD_OUTPUT_HANDLE);
         SetConsoleTextAttribute(hdl, g_Console_OldAttributes_Out);
-        CONSOLE_FONT_INFOEX data;
-        data.cbSize = sizeof(CONSOLE_FONT_INFOEX);
-        GetCurrentConsoleFontEx(hdl, FALSE, &data);
-        data.FontWeight = 400;
-        SetCurrentConsoleFontEx(hdl, FALSE, &data);
 #else
         write(1, "\e[0m", 4);
 #endif
@@ -204,6 +190,7 @@ void Console::SetTitle(const String &title)
 #ifdef WINDOWS
     SetConsoleTitleW(reinterpret_cast<LPCWSTR>(*title.ToUTF16()));
 #else
-    write(1, "\e]0;" << *title << "\007", 5 + title.Size());
+    auto str = String("\e]0;") + title + "\007";
+    write(1, *str, str.Size());
 #endif
 }
