@@ -25,3 +25,185 @@
 // LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+#include "Framework/IO/Console.hpp"
+#include "Framework/IO/IOException.hpp"
+#ifdef WINDOWS
+    #include <Windows.h>
+#else
+    #include <unistd.h>
+#endif
+
+using namespace bpf::io;
+using namespace bpf;
+
+#ifdef WINDOWS
+//Apparently Microsoft loves globals; yeah !!
+WORD g_Console_OldAttributes_Out = (WORD)-1;
+WORD g_Console_OldAttributes_Err = (WORD)-1;
+#endif
+
+void Console::WriteLine(const String &str, const EType type)
+{
+    if (type == ERROR)
+    {
+#ifdef WINDOWS
+    HANDLE hdl = GetStdHandle(STD_ERROR_HANDLE);
+    auto utf16 = (str + "\r\n").ToUTF16();
+    WriteConsoleW(hdl, reinterpret_cast<const void *>(*utf16), (DWORD)utf16.Size(), NULL, NULL);
+#else
+    write(2, str + "\n", str.Size() + 1);
+#endif
+    }
+    else
+    {
+#ifdef WINDOWS
+    HANDLE hdl = GetStdHandle(STD_OUTPUT_HANDLE);
+    auto utf16 = (str + "\r\n").ToUTF16();
+    WriteConsoleW(hdl, reinterpret_cast<const void *>(*utf16), (DWORD)utf16.Size(), NULL, NULL);
+#else
+    write(1, str + "\n", str.Size() + 1);
+#endif
+    }
+}
+
+void Console::SetTextStyle(const TextStyle &style, const EType type)
+{
+#ifdef WINDOWS
+    HANDLE hdl;
+    if (type == ERROR)
+    {
+        hdl = GetStdHandle(STD_ERROR_HANDLE);
+        if (g_Console_OldAttributes_Err == (WORD)-1)
+        {
+            CONSOLE_SCREEN_BUFFER_INFO Info;
+            GetConsoleScreenBufferInfo(hdl, &Info);
+            g_Console_OldAttributes_Err = Info.wAttributes;
+        }
+    }
+    else
+    {
+        hdl = GetStdHandle(STD_OUTPUT_HANDLE);
+        if (g_Console_OldAttributes_Out == (WORD)-1)
+        {
+            CONSOLE_SCREEN_BUFFER_INFO Info;
+            GetConsoleScreenBufferInfo(hdl, &Info);
+            g_Console_OldAttributes_Out = Info.wAttributes;
+        }
+    }
+    WORD color;
+    switch (style.TextColor)
+    {
+    case EConsoleColor::BLACK:
+        color = 0;
+        break;
+    case EConsoleColor::RED:
+        color = FOREGROUND_INTENSITY | FOREGROUND_RED;
+        break;
+    case EConsoleColor::GREEN:
+        color = FOREGROUND_INTENSITY | FOREGROUND_GREEN;
+        break;
+    case EConsoleColor::YELLOW:
+        color = FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN;
+        break;
+    case EConsoleColor::BLUE:
+        color = FOREGROUND_INTENSITY | FOREGROUND_BLUE;
+        break;
+    case EConsoleColor::MAGENTA:
+        color = FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_BLUE;
+        break;
+    case EConsoleColor::CYAN:
+        color = FOREGROUND_INTENSITY | FOREGROUND_GREEN | FOREGROUND_BLUE;
+        break;
+    case EConsoleColor::WHITE:
+        color = FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
+        break;
+    }
+    SetConsoleTextAttribute(hdl, color);
+    CONSOLE_FONT_INFOEX data;
+    data.cbSize = sizeof(CONSOLE_FONT_INFOEX);
+    GetCurrentConsoleFontEx(hdl, FALSE, &data);
+    data.FontWeight = style.Bold ? 700 : 400; //MSDN recommends 700 for bold and 400 for standard
+    SetCurrentConsoleFontEx(hdl, FALSE, &data);
+#else
+    int fd = -1;
+    if (type == ERROR)
+        fd = 2;
+    else
+        fd = 1;
+    String str = String("\e[") + (style.Bold ? "1;" : "0;");
+    switch (style.TextColor)
+    {
+    case EConsoleColor::BLACK:
+        str += "30";
+        break;
+    case EConsoleColor::RED:
+        str += "31";
+        break;
+    case EConsoleColor::GREEN:
+        str += "32";
+        break;
+    case EConsoleColor::YELLOW:
+        str += "33";
+        break;
+    case EConsoleColor::BLUE:
+        str += "34";
+        break;
+    case EConsoleColor::MAGENTA:
+        str += "35";
+        break;
+    case EConsoleColor::CYAN:
+        str += "36";
+        break;
+    case EConsoleColor::WHITE:
+        str += "37";
+        break;
+    }
+    write(fd, *str, str.Size());
+#endif
+}
+
+void Console::ResetTextStyle(const EType type)
+{
+    if (type == ERROR)
+    {
+#ifdef WINDOWS
+        if (g_Console_OldAttributes_Err == (WORD)-1)
+            return;
+        HANDLE hdl = GetStdHandle(STD_ERROR_HANDLE);
+        SetConsoleTextAttribute(hdl, g_Console_OldAttributes_Err);
+        CONSOLE_FONT_INFOEX data;
+        data.cbSize = sizeof(CONSOLE_FONT_INFOEX);
+        GetCurrentConsoleFontEx(hdl, FALSE, &data);
+        data.FontWeight = 400;
+        SetCurrentConsoleFontEx(hdl, FALSE, &data);
+#else
+        write(2, "\e[0m", 4);
+#endif
+    }
+    else
+    {
+#ifdef WINDOWS
+        if (g_Console_OldAttributes_Out == (WORD)-1)
+            return;
+        HANDLE hdl = GetStdHandle(STD_OUTPUT_HANDLE);
+        SetConsoleTextAttribute(hdl, g_Console_OldAttributes_Out);
+        CONSOLE_FONT_INFOEX data;
+        data.cbSize = sizeof(CONSOLE_FONT_INFOEX);
+        GetCurrentConsoleFontEx(hdl, FALSE, &data);
+        data.FontWeight = 400;
+        SetCurrentConsoleFontEx(hdl, FALSE, &data);
+#else
+        write(1, "\e[0m", 4);
+#endif
+    }
+}
+
+void Console::SetTitle(const String &title)
+{
+#ifdef WINDOWS
+    SetConsoleTitleW(reinterpret_cast<LPCWSTR>(*title.ToUTF16()));
+#else
+    write(1, "\e]0;" << *title << "\007", 5 + title.Size());
+#endif
+}

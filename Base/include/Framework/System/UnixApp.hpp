@@ -44,8 +44,6 @@ namespace bpf
         public:
             UnixApp(char **argv, int argc, char **env);
 
-            void SetConsoleTitle(const String &name);
-
             inline void CreateConsole(const fint rows, const fint columns) {}
 
             const String &GetExeFileName() const noexcept

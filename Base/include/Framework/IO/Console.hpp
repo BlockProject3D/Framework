@@ -27,6 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/IO/EConsoleColor.hpp"
 #include "Framework/String.hpp"
 
 namespace bpf
@@ -35,11 +36,30 @@ namespace bpf
     {
         class BPF_API Console
         {
-        private:
         public:
-            static void Write(const String &str);
-            static void WriteLine(const String &str);
-            static void NewLine();
+            enum EType
+            {
+                OUTPUT,
+                ERROR
+            };
+
+            class TextStyle
+            {
+            public:
+                bool Bold;
+                EConsoleColor TextColor;
+
+                inline TextStyle(EConsoleColor color, bool bold = false)
+                    : Bold(bold)
+                    , TextColor(color)
+                {
+                }
+            };
+
+            static void WriteLine(const String &str, const EType type = OUTPUT);
+            static void SetTextStyle(const TextStyle &style, const EType type = OUTPUT);
+            static void ResetTextStyle(const EType type = OUTPUT);
+            static void SetTitle(const String &title);
         };
     }
 }

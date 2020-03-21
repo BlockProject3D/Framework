@@ -21,6 +21,7 @@ set(SOURCES
     ./include/Framework/IO/TextReader.hpp
     ./include/Framework/IO/TextWriter.hpp
     ./include/Framework/IO/Console.hpp
+    ./include/Framework/IO/EConsoleColor.hpp
     ./include/Framework/IO/Stringifier.File.hpp
     ./include/Framework/Math/Vector.hpp
     ./include/Framework/Math/Vector.impl.hpp

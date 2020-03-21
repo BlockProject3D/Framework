@@ -34,7 +34,6 @@
 
 int Main(bpf::system::IApplication &app, const bpf::collection::Array<bpf::String> &args, const bpf::system::Paths &paths)
 {
-    app.SetConsoleTitle("BPF Unit Test Console");
     assert(app.GetEnvironment().Size() > 0);
     assert(app.GetArguments().Size() > 0); //At least we need the file name passed to our arguments
     assert(app.GetExeFileName().Len() > 0);

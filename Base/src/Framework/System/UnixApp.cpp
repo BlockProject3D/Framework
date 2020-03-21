@@ -55,8 +55,3 @@ UnixApp::UnixApp(char **argv, int argc, char **env)
     File tmp = _env.HasKey("TMPDIR") ? File(_env["TMPDIR"]) : File("/tmp");
     _paths = Paths(root, home, tmp, cache);
 }
-
-void UnixApp::SetConsoleTitle(const String &name)
-{
-    std::cout << "\033]0;" << *name << "\007";
-}

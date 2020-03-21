@@ -52,13 +52,6 @@ WindowsApp::WindowsApp(void *hinstance, bool hasConsole)
     SetupPaths();
 }
 
-void WindowsApp::SetConsoleTitle(const String &title)
-{
-    if (!_hasConsole)
-        return;
-    SetConsoleTitleW(reinterpret_cast<LPCWSTR>(*title.ToUTF16()));
-}
-
 void WindowsApp::SetupEnvironment()
 {
     LPWCH ptr = GetEnvironmentStringsW();
