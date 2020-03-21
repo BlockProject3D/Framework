@@ -131,28 +131,28 @@ void Console::SetTextStyle(const TextStyle &style, const EType type)
     switch (style.TextColor)
     {
     case EConsoleColor::BLACK:
-        str += "30";
+        str += "30m";
         break;
     case EConsoleColor::RED:
-        str += "31";
+        str += "31m";
         break;
     case EConsoleColor::GREEN:
-        str += "32";
+        str += "32m";
         break;
     case EConsoleColor::YELLOW:
-        str += "33";
+        str += "33m";
         break;
     case EConsoleColor::BLUE:
-        str += "34";
+        str += "34m";
         break;
     case EConsoleColor::MAGENTA:
-        str += "35";
+        str += "35m";
         break;
     case EConsoleColor::CYAN:
-        str += "36";
+        str += "36m";
         break;
     case EConsoleColor::WHITE:
-        str += "37";
+        str += "37m";
         break;
     }
     write(fd, *str, str.Size());
