@@ -28,7 +28,6 @@
 
 #include "Framework/IO/Console.hpp"
 #include "Framework/IO/IOException.hpp"
-#include <iostream>
 #ifdef WINDOWS
     #include <Windows.h>
 #else
@@ -50,19 +49,27 @@ void Console::WriteLine(const String &str, const EConsoleStream type)
     if (type == EConsoleStream::ERROR)
     {
 #ifdef WINDOWS
-        auto utf16 = (str).ToUTF16();
-        std::wcerr << reinterpret_cast<const wchar_t *>(*utf16) << std::endl;
+        HANDLE hdl = GetStdHandle(STD_ERROR_HANDLE);
+        auto utf16 = (str + "\r\n").ToUTF16();
+        if (GetFileType(hdl) != FILE_TYPE_CHAR)
+            WriteFile(hdl, reinterpret_cast<const void *>(*utf16), (DWORD)utf16.Size() - 1, NULL, NULL);
+        else
+            WriteConsoleW(hdl, reinterpret_cast<const void *>(*utf16), (DWORD)utf16.Size() - 1, NULL, NULL);
 #else
-        std::cout << *str << std::endl;
+        write(2, *(str + "\n"), str.Size() + 1);
 #endif
     }
     else
     {
 #ifdef WINDOWS
-        auto utf16 = (str).ToUTF16();
-        std::wcout << reinterpret_cast<const wchar_t *>(*utf16) << std::endl;
+        HANDLE hdl = GetStdHandle(STD_OUTPUT_HANDLE);
+        auto utf16 = (str + "\r\n").ToUTF16();
+        if (GetFileType(hdl) != FILE_TYPE_CHAR)
+            WriteFile(hdl, reinterpret_cast<const void *>(*utf16), (DWORD)utf16.Size() - 1, NULL, NULL);
+        else
+            WriteConsoleW(hdl, reinterpret_cast<const void *>(*utf16), (DWORD)utf16.Size() - 1, NULL, NULL);
 #else
-        std::cout << *str << std::endl;
+        write(1, *(str + "\n"), str.Size() + 1);
 #endif
     }
 }
