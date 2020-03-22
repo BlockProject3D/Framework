@@ -40,25 +40,33 @@ using namespace bpf;
 
 ConsoleReader::ConsoleReader()
 #ifdef WINDOWS
-    : _reader(*this, EStringEncoder::UTF16)
+    : _handle(GetStdHandle(STD_INPUT_HANDLE))
+    , _file(GetFileType(reinterpret_cast<HANDLE>(_handle)) != FILE_TYPE_CHAR ? true : false)
+    , _reader(*this, _file ? EStringEncoder::UTF8 : EStringEncoder::UTF16)
 #else
-    : _reader(*this, EStringEncoder::UTF8)
+    : _handle(0)
+    , _reader(*this, EStringEncoder::UTF8)
 #endif
 {
-#ifdef WINDOWS
-    _handle = GetStdHandle(STD_INPUT_HANDLE);
-#else
-    _handle = 0;
-#endif
 }
 
 fsize ConsoleReader::Read(void *buf, fsize bufsize)
 {
 #ifdef WINDOWS
-    DWORD out;
-    if (!ReadConsoleW(reinterpret_cast<HANDLE>(_handle), reinterpret_cast<LPVOID>(buf), (DWORD)(bufsize / 2), &out, NULL))
-        throw IOException(String("Console read error: ") + OSPrivate::ObtainLastErrorString());
-    return (out * 2);
+    if (_file)
+    {
+        DWORD out;
+        if (!ReadFile(reinterpret_cast<HANDLE>(_handle), reinterpret_cast<LPVOID>(buf), (DWORD)bufsize, &out, NULL))
+            throw IOException(String("Console write error: ") + OSPrivate::ObtainLastErrorString());
+        return ((fsize)out);
+    }
+    else
+    {
+        DWORD out;
+        if (!ReadConsoleW(reinterpret_cast<HANDLE>(_handle), reinterpret_cast<LPVOID>(buf), (DWORD)(bufsize / 2), &out, NULL))
+            throw IOException(String("Console read error: ") + OSPrivate::ObtainLastErrorString());
+        return ((fsize)(out * 2));
+    }
 #else
     int len = read(_handle, buf, bufsize);
     if (len < 0)

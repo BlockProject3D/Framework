@@ -36,12 +36,13 @@ namespace bpf
         class BPF_API ConsoleReader : public IDataInputStream
         {
         private:
-            TextReader _reader;
 #ifdef WINDOWS
             void *_handle;
+            bool _file;
 #else
             int _handle;
 #endif
+            TextReader _reader;
 
         public:
             ConsoleReader();

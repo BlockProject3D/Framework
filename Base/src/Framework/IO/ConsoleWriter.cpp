@@ -40,43 +40,55 @@
 using namespace bpf::io;
 using namespace bpf;
 
-ConsoleWriter::ConsoleWriter(const EConsoleStream type)
 #ifdef WINDOWS
-    : _writer(*this, EStringEncoder::UTF16)
+void *ConsoleWriter::GetHandle(const EConsoleStream type)
 #else
-    : _writer(*this, EStringEncoder::UTF8)
+int ConsoleWriter::GetHandle(const EConsoleStream type)
 #endif
 {
     switch (type)
     {
     case EConsoleStream::ERROR:
 #ifdef WINDOWS
-        _handle = GetStdHandle(STD_ERROR_HANDLE);
+        return (GetStdHandle(STD_ERROR_HANDLE));
 #else
-        _handle = 2;
+        return (2);
 #endif
-        break;
     case EConsoleStream::INPUT:
 #ifdef WINDOWS
-        _handle = GetStdHandle(STD_INPUT_HANDLE);
+        return (GetStdHandle(STD_INPUT_HANDLE));
 #else
-        _handle = 0;
+        return (0);
 #endif
-        break;
     case EConsoleStream::OUTPUT:
 #ifdef WINDOWS
-        _handle = GetStdHandle(STD_OUTPUT_HANDLE);
+        return (GetStdHandle(STD_OUTPUT_HANDLE));
 #else
-        _handle = 1;
+        return (1);
 #endif
-        break;
     }
+#ifdef WINDOWS
+    return (GetStdHandle(STD_OUTPUT_HANDLE));
+#else
+    return (1);
+#endif
+}
+
+ConsoleWriter::ConsoleWriter(const EConsoleStream type)
+    : _handle(GetHandle(type))
+#ifdef WINDOWS
+    , _file(GetFileType(reinterpret_cast<HANDLE>(_handle)) != FILE_TYPE_CHAR ? true : false)
+    , _writer(*this, _file ? EStringEncoder::UTF8 : EStringEncoder::UTF16)
+#else
+    , _writer(*this, EStringEncoder::UTF8)
+#endif
+{
 }
 
 fsize ConsoleWriter::Write(const void *buf, fsize bufsize)
 {
 #ifdef WINDOWS
-    if (GetFileType(reinterpret_cast<HANDLE>(_handle)) != FILE_TYPE_CHAR)
+    if (_file)
     {
         DWORD out;
         if (!WriteFile(reinterpret_cast<HANDLE>(_handle), buf, (DWORD)bufsize, &out, NULL))
@@ -88,7 +100,7 @@ fsize ConsoleWriter::Write(const void *buf, fsize bufsize)
         DWORD out;
         if (!WriteConsoleW(reinterpret_cast<HANDLE>(_handle), reinterpret_cast<LPCVOID>(buf), (DWORD)(bufsize / 2), &out, NULL))
             throw IOException(String("Console write error: ") + OSPrivate::ObtainLastErrorString());
-        return (out * 2);
+        return ((fsize)(out * 2));
     }
 #else
     int len = write(_handle, buf, bufsize);

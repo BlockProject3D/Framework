@@ -28,8 +28,8 @@
 
 #pragma once
 #include "Framework/IO/Console.hpp"
-#include "Framework/IO/TextWriter.hpp"
 #include "Framework/IO/EConsoleStream.hpp"
+#include "Framework/IO/TextWriter.hpp"
 
 namespace bpf
 {
@@ -38,11 +38,17 @@ namespace bpf
         class BPF_API ConsoleWriter : public IDataOutputStream
         {
         private:
-            TextWriter _writer;
 #ifdef WINDOWS
             void *_handle;
+            bool _file;
 #else
             int _handle;
+#endif
+            TextWriter _writer;
+#ifdef WINDOWS
+            void *GetHandle(const EConsoleStream type);
+#else
+            int GetHandle(const EConsoleStream type);
 #endif
 
         public:
