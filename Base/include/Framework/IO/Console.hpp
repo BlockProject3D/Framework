@@ -38,6 +38,9 @@ namespace bpf
         class BPF_API Console
         {
         public:
+            struct ClearTextStyle
+            {
+            };
             class TextStyle
             {
             public:

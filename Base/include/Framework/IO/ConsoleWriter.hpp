@@ -141,7 +141,19 @@ namespace bpf
                 return (*this);
             }
 
-            ConsoleWriter &operator<<(const Console::TextStyle &style);
+            inline ConsoleWriter &operator<<(const Console::TextStyle &style)
+            {
+                Flush();
+                Console::SetTextStyle(style);
+                return (*this);
+            }
+
+            inline ConsoleWriter &operator<<(const Console::ClearTextStyle &style)
+            {
+                Flush();
+                Console::ResetTextStyle();
+                return (*this);
+            }
         };
     }
 }
