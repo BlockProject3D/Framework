@@ -64,13 +64,13 @@ void TextWriter::Write(const String &str)
     case EStringEncoder::UTF16:
     {
         auto buf = str.ToUTF16();
-        WriteSubBuf(*buf, sizeof(bpf::fchar16) * buf.Size());
+        WriteSubBuf(*buf, sizeof(bpf::fchar16) * (buf.Size() - 1));
         break;
     }
     case EStringEncoder::UTF32:
     {
         auto buf = str.ToUTF32();
-        WriteSubBuf(*buf, sizeof(bpf::fchar) * buf.Size());
+        WriteSubBuf(*buf, sizeof(bpf::fchar) * (buf.Size() - 1));
         break;
     }
     }
@@ -85,9 +85,9 @@ void TextWriter::WriteLine(const String &str)
 void TextWriter::NewLine()
 {
 #ifdef WINDOWS
-    WriteSubBuf("\r\n", 2);
+    Write("\r\n");
 #else
-    WriteSubBuf("\n", 1);
+    Write("\n");
 #endif
 }
 

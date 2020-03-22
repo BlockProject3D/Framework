@@ -28,7 +28,7 @@
 
 #pragma once
 #include "Framework/IO/Console.hpp"
-#include "Framework/IO/IDataOutputStream.hpp"
+#include "Framework/IO/TextWriter.hpp"
 #include "Framework/IO/EConsoleStream.hpp"
 
 namespace bpf
@@ -38,7 +38,7 @@ namespace bpf
         class BPF_API ConsoleWriter : public IDataOutputStream
         {
         private:
-            EConsoleStream _type;
+            TextWriter _writer;
 #ifdef WINDOWS
             void *_handle;
 #else
@@ -48,7 +48,10 @@ namespace bpf
         public:
             explicit ConsoleWriter(const EConsoleStream type = EConsoleStream::OUTPUT);
 
-            void Flush();
+            inline void Flush()
+            {
+                _writer.Flush();
+            }
 
             /**
              * This function performs a low level write to console
@@ -57,87 +60,96 @@ namespace bpf
              */
             fsize Write(const void *buf, fsize bufsize);
 
-            void WriteLine(const String &str);
-
-            void Write(const String &str);
-
-            void NewLine();
-
-            ConsoleWriter &operator<<(uint8 u)
+            inline void WriteLine(const String &str)
             {
-                Write(String::ValueOf(u));
+                _writer.WriteLine(str);
+            }
+
+            void Write(const String &str)
+            {
+                _writer.Write(str);
+            }
+
+            inline void NewLine()
+            {
+                _writer.NewLine();
+            }
+
+            inline ConsoleWriter &operator<<(uint8 u)
+            {
+                _writer << u;
                 return (*this);
             }
 
             inline ConsoleWriter &operator<<(uint16 u)
             {
-                Write(String::ValueOf(u));
+                _writer << u;
                 return (*this);
             }
 
             inline ConsoleWriter &operator<<(uint32 u)
             {
-                Write(String::ValueOf(u));
+                _writer << u;
                 return (*this);
             }
 
             inline ConsoleWriter &operator<<(uint64 u)
             {
-                Write(String::ValueOf(u));
+                _writer << u;
                 return (*this);
             }
 
             inline ConsoleWriter &operator<<(int8 i)
             {
-                Write(String::ValueOf(i));
+                _writer << i;
                 return (*this);
             }
 
             inline ConsoleWriter &operator<<(int16 i)
             {
-                Write(String::ValueOf(i));
+                _writer << i;
                 return (*this);
             }
 
             inline ConsoleWriter &operator<<(fint i)
             {
-                Write(String::ValueOf(i));
+                _writer << i;
                 return (*this);
             }
 
             inline ConsoleWriter &operator<<(int64 i)
             {
-                Write(String::ValueOf(i));
+                _writer << i;
                 return (*this);
             }
 
             inline ConsoleWriter &operator<<(float f)
             {
-                Write(String::ValueOf(f));
+                _writer << f;
                 return (*this);
             }
 
             inline ConsoleWriter &operator<<(double d)
             {
-                Write(String::ValueOf(d));
+                _writer << d;
                 return (*this);
             }
 
             inline ConsoleWriter &operator<<(bool b)
             {
-                Write(String::ValueOf(b));
+                _writer << b;
                 return (*this);
             }
 
             inline ConsoleWriter &operator<<(const bpf::String &str)
             {
-                Write(str);
+                _writer << str;
                 return (*this);
             }
 
             inline ConsoleWriter &operator<<(const char *str)
             {
-                Write(String(str));
+                _writer << str;
                 return (*this);
             }
 

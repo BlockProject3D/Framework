@@ -45,6 +45,7 @@ int Main(bpf::system::IApplication &app, const bpf::collection::Array<bpf::Strin
     assert(paths.TempDir().Path().Len() > 0);
     assert(paths.UserHome().Path().Len() > 0);
     console << bpf::io::Console::TextStyle(bpf::io::EConsoleColor::CYAN) << "<==== Initializing high-level main ====>" << bpf::io::Console::ClearTextStyle() << newLine;
+    console.WriteLine("您好!");
     console << "WorkDir: " << bpf::io::File(".").GetAbsolutePath().PlatformPath() << newLine;
     console << "AppRoot: " << paths.AppRoot().Path() << newLine;
     console << "ThirdParty: " << paths.ThirdParty().Path() << newLine;
@@ -55,7 +56,7 @@ int Main(bpf::system::IApplication &app, const bpf::collection::Array<bpf::Strin
     console << "Program file name: " << app.GetExeFileName() << newLine;
     console << "Number of environment variables: " << app.GetEnvironment().Size() << newLine;
     console << bpf::io::Console::TextStyle(bpf::io::EConsoleColor::CYAN) << "<======================================>" << bpf::io::Console::ClearTextStyle() << newLine;
-    console << newLine;
+    console.NewLine();
     console << "<==== Initializing GoogleTest ====>" << newLine;
     return (0);
 }

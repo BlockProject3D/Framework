@@ -29,7 +29,6 @@
 #include "Framework/IO/ConsoleWriter.hpp"
 #include "Framework/IO/IOException.hpp"
 #include "OSPrivate.hpp"
-#include <iostream>
 #ifdef WINDOWS
     #include <Windows.h>
 #else
@@ -42,7 +41,11 @@ using namespace bpf::io;
 using namespace bpf;
 
 ConsoleWriter::ConsoleWriter(const EConsoleStream type)
-    : _type(type)
+#ifdef WINDOWS
+    : _writer(*this, EStringEncoder::UTF16)
+#else
+    : _writer(*this, EStringEncoder::UTF8)
+#endif
 {
     switch (type)
     {
@@ -70,99 +73,27 @@ ConsoleWriter::ConsoleWriter(const EConsoleStream type)
     }
 }
 
-void ConsoleWriter::Flush()
-{
-#ifdef WINDOWS
-    switch (_type)
-    {
-    case EConsoleStream::ERROR:
-        std::wcerr.flush();
-        break;
-    case EConsoleStream::OUTPUT:
-        std::wcout.flush();
-        break;
-    }
-#else
-    switch (_type)
-    {
-    case EConsoleStream::ERROR:
-        std::cerr.flush();
-        break;
-    case EConsoleStream::OUTPUT:
-        std::cout.flush();
-        break;
-    }
-#endif
-}
-
 fsize ConsoleWriter::Write(const void *buf, fsize bufsize)
 {
 #ifdef WINDOWS
-    DWORD out;
-    if (!WriteConsoleW(reinterpret_cast<HANDLE>(_handle), reinterpret_cast<LPCVOID>(buf), (DWORD)(bufsize / 2), &out, NULL))
-        throw IOException(String("Console write error: ") + OSPrivate::ObtainLastErrorString());
-    return (out * 2);
+    if (GetFileType(reinterpret_cast<HANDLE>(_handle)) != FILE_TYPE_CHAR)
+    {
+        DWORD out;
+        if (!WriteFile(reinterpret_cast<HANDLE>(_handle), buf, (DWORD)bufsize, &out, NULL))
+            throw IOException(String("Console write error: ") + OSPrivate::ObtainLastErrorString());
+        return ((fsize)out);
+    }
+    else
+    {
+        DWORD out;
+        if (!WriteConsoleW(reinterpret_cast<HANDLE>(_handle), reinterpret_cast<LPCVOID>(buf), (DWORD)(bufsize / 2), &out, NULL))
+            throw IOException(String("Console write error: ") + OSPrivate::ObtainLastErrorString());
+        return (out * 2);
+    }
 #else
     int len = write(_handle, buf, bufsize);
     if (len < 0)
         throw IOException(String("Console write error: ") + OSPrivate::ObtainLastErrorString());
     return ((fsize)len);
-#endif
-}
-
-void ConsoleWriter::WriteLine(const String &str)
-{
-    Write(str);
-    NewLine();
-}
-
-void ConsoleWriter::Write(const String &str)
-{
-#ifdef WINDOWS
-    auto utf16 = str.ToUTF16();
-    switch (_type)
-    {
-    case EConsoleStream::ERROR:
-        std::wcerr << reinterpret_cast<const wchar_t *>(*utf16);
-        break;
-    case EConsoleStream::OUTPUT:
-        std::wcout << reinterpret_cast<const wchar_t *>(*utf16);
-        break;
-    }
-#else
-    switch (_type)
-    {
-    case EConsoleStream::ERROR:
-        std::cerr << *str;
-        break;
-    case EConsoleStream::OUTPUT:
-        std::cout << *str;
-        break;
-    }
-#endif
-}
-
-void ConsoleWriter::NewLine()
-{
-#ifdef WINDOWS
-    switch (_type)
-    {
-    case EConsoleStream::ERROR:
-        std::wcerr << std::endl;
-        break;
-    case EConsoleStream::OUTPUT:
-        std::wcout << std::endl;
-        break;
-    }
-#else
-    switch (_type)
-    {
-    case EConsoleStream::ERROR:
-        std::cerr << std::endl;
-        break;
-    case EConsoleStream::OUTPUT:
-        std::cout << std::endl;
-        break;
-    }
 #endif
 }
