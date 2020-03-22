@@ -21,6 +21,8 @@ set(SOURCES
     ./include/Framework/IO/TextReader.hpp
     ./include/Framework/IO/TextWriter.hpp
     ./include/Framework/IO/Console.hpp
+    ./include/Framework/IO/ConsoleReader.hpp
+    ./include/Framework/IO/ConsoleWriter.hpp
     ./include/Framework/IO/EConsoleColor.hpp
     ./include/Framework/IO/Stringifier.File.hpp
     ./include/Framework/Math/Vector.hpp
@@ -161,6 +163,8 @@ set(SOURCES
     ./src/Framework/IO/TextReader.cpp
     ./src/Framework/IO/TextWriter.cpp
     ./src/Framework/IO/Console.cpp
+    ./src/Framework/IO/ConsoleReader.cpp
+    ./src/Framework/IO/ConsoleWriter.cpp    
     ./src/Framework/Log/DefaultLogger.cpp
     ./src/Framework/Log/FileLogger.cpp
     ./src/Framework/Math/MathUtils.cpp

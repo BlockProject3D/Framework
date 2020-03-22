@@ -129,7 +129,7 @@ bool TextReader::Read(String &out)
         }
         }
     }
-    return (false);
+    return (out.Size() > 0 ? true : false);
 }
 
 bool TextReader::ReadLine(String &out)

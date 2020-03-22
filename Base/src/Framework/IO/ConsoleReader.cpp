@@ -26,35 +26,43 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-#include "Framework/IO/EConsoleColor.hpp"
-#include "Framework/IO/EConsoleStream.hpp"
-#include "Framework/String.hpp"
+#include "Framework/IO/ConsoleReader.hpp"
+#include "Framework/IO/IOException.hpp"
+#include "OSPrivate.hpp"
+#ifdef WINDOWS
+    #include <Windows.h>
+#else
+    #include <unistd.h>
+#endif
 
-namespace bpf
+using namespace bpf::io;
+using namespace bpf;
+
+ConsoleReader::ConsoleReader()
+#ifdef WINDOWS
+    : _reader(*this, EStringEncoder::UTF16)
+#else
+    : _reader(*this, EStringEncoder::UTF8)
+#endif
 {
-    namespace io
-    {
-        class BPF_API Console
-        {
-        public:
-            class TextStyle
-            {
-            public:
-                bool Bold;
-                EConsoleColor TextColor;
+#ifdef WINDOWS
+    _handle = GetStdHandle(STD_INPUT_HANDLE);
+#else
+    _handle = 0;
+#endif
+}
 
-                inline TextStyle(EConsoleColor color, bool bold = false)
-                    : Bold(bold)
-                    , TextColor(color)
-                {
-                }
-            };
-
-            static void WriteLine(const String &str, const EConsoleStream type = EConsoleStream::OUTPUT);
-            static void SetTextStyle(const TextStyle &style, const EConsoleStream type = EConsoleStream::OUTPUT);
-            static void ResetTextStyle(const EConsoleStream type = EConsoleStream::OUTPUT);
-            static void SetTitle(const String &title);
-        };
-    }
+fsize ConsoleReader::Read(void *buf, fsize bufsize)
+{
+#ifdef WINDOWS
+    DWORD out;
+    if (!ReadConsoleW(reinterpret_cast<HANDLE>(_handle), reinterpret_cast<LPVOID>(buf), (DWORD)(bufsize / 2), &out, NULL))
+        throw IOException(String("Console read error: ") + OSPrivate::ObtainLastErrorString());
+    return (out * 2);
+#else
+    int len = read(_handle, buf, bufsize);
+    if (len < 0)
+        throw IOException(String("Console read error: ") + OSPrivate::ObtainLastErrorString());
+    return ((fsize)len);
+#endif
 }

@@ -52,7 +52,7 @@ TEST(TextReadWrite, ReadWrite_UTF8_1)
         bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
         bpf::io::TextWriter w(f);
 
-        w << 42 << 42.42f << 42.4242 << true;
+        w << 42 << " " << 42.42f << " " << 42.4242 << " " << true;
     }
     {
         bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_READ);
@@ -81,7 +81,7 @@ TEST(TextReadWrite, ReadWrite_UTF8_2)
         bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
         bpf::io::TextWriter w(f);
 
-        w << bpf::Int64::MaxValue << bpf::Int16::MaxValue << bpf::Int8::MaxValue << bpf::UInt64::MaxValue << bpf::UInt::MaxValue << bpf::UInt16::MaxValue << bpf::UInt8::MaxValue << false;
+        w << bpf::Int64::MaxValue << " " << bpf::Int16::MaxValue << " " << bpf::Int8::MaxValue << " " << bpf::UInt64::MaxValue << " " << bpf::UInt::MaxValue << " " << bpf::UInt16::MaxValue << " " << bpf::UInt8::MaxValue << " " << false;
         w.Flush();
     }
     {
@@ -126,7 +126,7 @@ TEST(TextReadWrite, ReadWrite_UTF8_3)
     bpf::io::TextWriter w(f);
     bpf::io::TextReader r(f);
 
-    w << 42 << 42.42f << 42.4242 << true;
+    w << 42 << " " << 42.42f << " " << 42.4242 << " " << true;
     w.Flush();
 
     f.Seek(0);
@@ -152,7 +152,7 @@ TEST(TextReadWrite, ReadWrite_Unbuffered)
     bpf::io::TextWriter w(buf, bpf::io::EStringEncoder::UTF8, false);
     bpf::io::TextReader r(buf, bpf::io::EStringEncoder::UTF8, false);
 
-    w << 42 << 42.42f << 42.4242 << true;
+    w << 42 << " " << 42.42f << " " << 42.4242 << " " << true;
     w.Flush();
 
     buf.Seek(0);
@@ -180,7 +180,7 @@ TEST(TextReadWrite, ReadWrite_UTF16_1)
         bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
         bpf::io::TextWriter w(f, bpf::io::EStringEncoder::UTF16);
 
-        w << 42 << 42.42f << 42.4242 << true;
+        w << 42 << " " << 42.42f << " " << 42.4242 << " " << true;
     }
     {
         bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_READ);
@@ -209,7 +209,7 @@ TEST(TextReadWrite, ReadWrite_UTF16_2)
         bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
         bpf::io::TextWriter w(f, bpf::io::EStringEncoder::UTF16);
 
-        w << bpf::Int64::MaxValue << bpf::Int16::MaxValue << bpf::Int8::MaxValue << bpf::UInt64::MaxValue << bpf::UInt::MaxValue << bpf::UInt16::MaxValue << bpf::UInt8::MaxValue << false;
+        w << bpf::Int64::MaxValue << " " << bpf::Int16::MaxValue << " " << bpf::Int8::MaxValue << " " << bpf::UInt64::MaxValue << " " << bpf::UInt::MaxValue << " " << bpf::UInt16::MaxValue << " " << bpf::UInt8::MaxValue << " " << false;
         w.Flush();
     }
     {
@@ -254,7 +254,7 @@ TEST(TextReadWrite, ReadWrite_UTF16_3)
     bpf::io::TextWriter w(f, bpf::io::EStringEncoder::UTF16);
     bpf::io::TextReader r(f, bpf::io::EStringEncoder::UTF16);
 
-    w << 42 << 42.42f << 42.4242 << true;
+    w << 42 << " " << 42.42f << " " << 42.4242 << " " << true;
     w.Flush();
 
     f.Seek(0);
@@ -276,7 +276,7 @@ TEST(TextReadWrite, ReadWrite_UTF32_1)
         bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
         bpf::io::TextWriter w(f, bpf::io::EStringEncoder::UTF32);
 
-        w << 42 << 42.42f << 42.4242 << true;
+        w << 42 << " " << 42.42f << " " << 42.4242 << " " << true;
     }
     {
         bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_READ);
@@ -305,7 +305,7 @@ TEST(TextReadWrite, ReadWrite_UTF32_2)
         bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
         bpf::io::TextWriter w(f, bpf::io::EStringEncoder::UTF32);
 
-        w << bpf::Int64::MaxValue << bpf::Int16::MaxValue << bpf::Int8::MaxValue << bpf::UInt64::MaxValue << bpf::UInt::MaxValue << bpf::UInt16::MaxValue << bpf::UInt8::MaxValue << false;
+        w << bpf::Int64::MaxValue << " " << bpf::Int16::MaxValue << " " << bpf::Int8::MaxValue << " " << bpf::UInt64::MaxValue << " " << bpf::UInt::MaxValue << " " << bpf::UInt16::MaxValue << " " << bpf::UInt8::MaxValue << " " << false;
         w.Flush();
     }
     {
@@ -350,7 +350,7 @@ TEST(TextReadWrite, ReadWrite_UTF32_3)
     bpf::io::TextWriter w(f, bpf::io::EStringEncoder::UTF32);
     bpf::io::TextReader r(f, bpf::io::EStringEncoder::UTF32);
 
-    w << 42 << 42.42f << 42.4242 << true;
+    w << 42 << " " << 42.42f << " " << 42.4242 << " " << true;
     w.Flush();
 
     f.Seek(0);

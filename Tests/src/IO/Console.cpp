@@ -59,24 +59,24 @@ TEST(Console, Standard)
 TEST(Console, Error)
 {
     bpf::io::Console::SetTitle("BPF Unit Tests");
-    bpf::io::Console::SetTextStyle(bpf::io::Console::TextStyle(bpf::io::EConsoleColor::BLACK, true), bpf::io::Console::ERROR);
-    bpf::io::Console::WriteLine("This is a test", bpf::io::Console::ERROR);
-    bpf::io::Console::SetTextStyle(bpf::io::Console::TextStyle(bpf::io::EConsoleColor::BLUE, false), bpf::io::Console::ERROR);
-    bpf::io::Console::WriteLine("This is a test", bpf::io::Console::ERROR);
-    bpf::io::Console::SetTextStyle(bpf::io::Console::TextStyle(bpf::io::EConsoleColor::CYAN, true), bpf::io::Console::ERROR);
-    bpf::io::Console::WriteLine("This is a test", bpf::io::Console::ERROR);
-    bpf::io::Console::SetTextStyle(bpf::io::Console::TextStyle(bpf::io::EConsoleColor::GREEN, false), bpf::io::Console::ERROR);
-    bpf::io::Console::WriteLine("This is a test", bpf::io::Console::ERROR);
-    bpf::io::Console::SetTextStyle(bpf::io::Console::TextStyle(bpf::io::EConsoleColor::MAGENTA, true), bpf::io::Console::ERROR);
-    bpf::io::Console::WriteLine("This is a test", bpf::io::Console::ERROR);
-    bpf::io::Console::SetTextStyle(bpf::io::Console::TextStyle(bpf::io::EConsoleColor::RED, false), bpf::io::Console::ERROR);
-    bpf::io::Console::WriteLine("This is a test", bpf::io::Console::ERROR);
-    bpf::io::Console::SetTextStyle(bpf::io::Console::TextStyle(bpf::io::EConsoleColor::WHITE, true), bpf::io::Console::ERROR);
-    bpf::io::Console::WriteLine("This is a test", bpf::io::Console::ERROR);
-    bpf::io::Console::SetTextStyle(bpf::io::Console::TextStyle(bpf::io::EConsoleColor::YELLOW, false), bpf::io::Console::ERROR);
-    bpf::io::Console::WriteLine("This is a test", bpf::io::Console::ERROR);
-    bpf::io::Console::SetTextStyle(bpf::io::Console::TextStyle(bpf::io::EConsoleColor::YELLOW, true), bpf::io::Console::ERROR);
-    bpf::io::Console::WriteLine("This is a test", bpf::io::Console::ERROR);
+    bpf::io::Console::SetTextStyle(bpf::io::Console::TextStyle(bpf::io::EConsoleColor::BLACK, true), bpf::io::EConsoleStream::ERROR);
+    bpf::io::Console::WriteLine("This is a test", bpf::io::EConsoleStream::ERROR);
+    bpf::io::Console::SetTextStyle(bpf::io::Console::TextStyle(bpf::io::EConsoleColor::BLUE, false), bpf::io::EConsoleStream::ERROR);
+    bpf::io::Console::WriteLine("This is a test", bpf::io::EConsoleStream::ERROR);
+    bpf::io::Console::SetTextStyle(bpf::io::Console::TextStyle(bpf::io::EConsoleColor::CYAN, true), bpf::io::EConsoleStream::ERROR);
+    bpf::io::Console::WriteLine("This is a test", bpf::io::EConsoleStream::ERROR);
+    bpf::io::Console::SetTextStyle(bpf::io::Console::TextStyle(bpf::io::EConsoleColor::GREEN, false), bpf::io::EConsoleStream::ERROR);
+    bpf::io::Console::WriteLine("This is a test", bpf::io::EConsoleStream::ERROR);
+    bpf::io::Console::SetTextStyle(bpf::io::Console::TextStyle(bpf::io::EConsoleColor::MAGENTA, true), bpf::io::EConsoleStream::ERROR);
+    bpf::io::Console::WriteLine("This is a test", bpf::io::EConsoleStream::ERROR);
+    bpf::io::Console::SetTextStyle(bpf::io::Console::TextStyle(bpf::io::EConsoleColor::RED, false), bpf::io::EConsoleStream::ERROR);
+    bpf::io::Console::WriteLine("This is a test", bpf::io::EConsoleStream::ERROR);
+    bpf::io::Console::SetTextStyle(bpf::io::Console::TextStyle(bpf::io::EConsoleColor::WHITE, true), bpf::io::EConsoleStream::ERROR);
+    bpf::io::Console::WriteLine("This is a test", bpf::io::EConsoleStream::ERROR);
+    bpf::io::Console::SetTextStyle(bpf::io::Console::TextStyle(bpf::io::EConsoleColor::YELLOW, false), bpf::io::EConsoleStream::ERROR);
+    bpf::io::Console::WriteLine("This is a test", bpf::io::EConsoleStream::ERROR);
+    bpf::io::Console::SetTextStyle(bpf::io::Console::TextStyle(bpf::io::EConsoleColor::YELLOW, true), bpf::io::EConsoleStream::ERROR);
+    bpf::io::Console::WriteLine("This is a test", bpf::io::EConsoleStream::ERROR);
     bpf::io::Console::ResetTextStyle();
-    bpf::io::Console::WriteLine("Back to normal", bpf::io::Console::ERROR);
+    bpf::io::Console::WriteLine("Back to normal", bpf::io::EConsoleStream::ERROR);
 }

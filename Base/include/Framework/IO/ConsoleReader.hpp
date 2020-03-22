@@ -27,125 +27,116 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/IO/ByteBuf.hpp"
-#include "Framework/IO/EStringEncoder.hpp"
-#include "Framework/IO/IDataOutputStream.hpp"
+#include "Framework/IO/TextReader.hpp"
 
 namespace bpf
 {
     namespace io
     {
-        class BPF_API TextWriter final : public IDataOutputStream
+        class BPF_API ConsoleReader : public IDataInputStream
         {
         private:
-            IOutputStream &_stream;
-            ByteBuf _buf;
-            bool _buffered;
-            EStringEncoder _encoder;
-
-            void WriteByte(uint8 byte);
-            void WriteSubBuf(const void *in, const fsize size);
+            TextReader _reader;
+#ifdef WINDOWS
+            void *_handle;
+#else
+            int _handle;
+#endif
 
         public:
-            explicit inline TextWriter(IOutputStream &stream, const EStringEncoder encoder = EStringEncoder::UTF8, bool buffered = true)
-                : _stream(stream)
-                , _buf(WRITE_BUF_SIZE)
-                , _buffered(buffered)
-                , _encoder(encoder)
+            ConsoleReader();
+
+            inline void SetTokenSeparators(const char *str)
             {
+                _reader.SetTokenSeparators(str);
             }
 
-            inline ~TextWriter()
+            /**
+             * This function performs a low level read from standard input
+             * On Windows it fills buf with UTF-16 code points
+             * On Linux it fills buf with UTF-8 bytes (last UTF-8 code might be cut)
+             */
+            fsize Read(void *buf, fsize bufsize);
+
+            inline bool ReadLine(String &out)
             {
-                if (_buffered)
-                    _stream.Write(_buf.GetRawData(), _buf.GetWrittenBytes());
+                return (_reader.ReadLine(out));
             }
 
-            void Flush();
-
-            fsize Write(const void *buf, fsize bufsize);
-
-            void WriteLine(const String &str);
-
-            void Write(const String &str);
-
-            void NewLine();
-
-            inline IDataOutputStream &operator<<(uint8 u)
+            inline bool Read(String &out)
             {
-                Write(String::ValueOf(u));
+                return (_reader.Read(out));
+            }
+
+            inline IDataInputStream &operator>>(uint8 &u)
+            {
+                _reader >> u;
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(uint16 u)
+            inline IDataInputStream &operator>>(uint16 &u)
             {
-                Write(String::ValueOf(u));
+                _reader >> u;
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(uint32 u)
+            inline IDataInputStream &operator>>(uint32 &u)
             {
-                Write(String::ValueOf(u));
+                _reader >> u;
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(uint64 u)
+            inline IDataInputStream &operator>>(uint64 &u)
             {
-                Write(String::ValueOf(u));
+                _reader >> u;
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(int8 i)
+            inline IDataInputStream &operator>>(int8 &i)
             {
-                Write(String::ValueOf(i));
+                _reader >> i;
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(int16 i)
+            inline IDataInputStream &operator>>(int16 &i)
             {
-                Write(String::ValueOf(i));
+                _reader >> i;
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(fint i)
+            inline IDataInputStream &operator>>(fint &i)
             {
-                Write(String::ValueOf(i));
+                _reader >> i;
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(int64 i)
+            inline IDataInputStream &operator>>(int64 &i)
             {
-                Write(String::ValueOf(i));
+                _reader >> i;
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(float f)
+            inline IDataInputStream &operator>>(float &f)
             {
-                Write(String::ValueOf(f));
+                _reader >> f;
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(double d)
+            inline IDataInputStream &operator>>(double &d)
             {
-                Write(String::ValueOf(d));
+                _reader >> d;
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(bool b)
+            inline IDataInputStream &operator>>(bool &b)
             {
-                Write(String::ValueOf(b));
+                _reader >> b;
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(const bpf::String &str)
+            inline IDataInputStream &operator>>(bpf::String &str)
             {
-                Write(str);
-                return (*this);
-            }
-
-            inline IDataOutputStream &operator<<(const char *str)
-            {
-                Write(String(str));
+                _reader >> str;
                 return (*this);
             }
         };

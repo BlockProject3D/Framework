@@ -27,34 +27,16 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/IO/EConsoleColor.hpp"
-#include "Framework/IO/EConsoleStream.hpp"
-#include "Framework/String.hpp"
 
 namespace bpf
 {
     namespace io
     {
-        class BPF_API Console
+        enum class EConsoleStream
         {
-        public:
-            class TextStyle
-            {
-            public:
-                bool Bold;
-                EConsoleColor TextColor;
-
-                inline TextStyle(EConsoleColor color, bool bold = false)
-                    : Bold(bold)
-                    , TextColor(color)
-                {
-                }
-            };
-
-            static void WriteLine(const String &str, const EConsoleStream type = EConsoleStream::OUTPUT);
-            static void SetTextStyle(const TextStyle &style, const EConsoleStream type = EConsoleStream::OUTPUT);
-            static void ResetTextStyle(const EConsoleStream type = EConsoleStream::OUTPUT);
-            static void SetTitle(const String &title);
+            OUTPUT,
+            INPUT,
+            ERROR
         };
     }
 }

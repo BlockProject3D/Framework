@@ -28,11 +28,13 @@
 
 #include "Framework/IO/Console.hpp"
 #include "Framework/IO/IOException.hpp"
+#include <iostream>
 #ifdef WINDOWS
     #include <Windows.h>
 #else
     #include <unistd.h>
 #endif
+#undef ERROR
 
 using namespace bpf::io;
 using namespace bpf;
@@ -43,35 +45,33 @@ WORD g_Console_OldAttributes_Out = (WORD)-1;
 WORD g_Console_OldAttributes_Err = (WORD)-1;
 #endif
 
-void Console::WriteLine(const String &str, const EType type)
+void Console::WriteLine(const String &str, const EConsoleStream type)
 {
-    if (type == ERROR)
+    if (type == EConsoleStream::ERROR)
     {
 #ifdef WINDOWS
-    HANDLE hdl = GetStdHandle(STD_ERROR_HANDLE);
-    auto utf16 = (str + "\r\n").ToUTF16();
-    WriteConsoleW(hdl, reinterpret_cast<const void *>(*utf16), (DWORD)utf16.Size(), NULL, NULL);
+        auto utf16 = (str).ToUTF16();
+        std::wcerr << reinterpret_cast<const wchar_t *>(*utf16) << std::endl;
 #else
-    write(2, *(str + "\n"), str.Size() + 1);
+        std::cout << *str << std::endl;
 #endif
     }
     else
     {
 #ifdef WINDOWS
-    HANDLE hdl = GetStdHandle(STD_OUTPUT_HANDLE);
-    auto utf16 = (str + "\r\n").ToUTF16();
-    WriteConsoleW(hdl, reinterpret_cast<const void *>(*utf16), (DWORD)utf16.Size(), NULL, NULL);
+        auto utf16 = (str).ToUTF16();
+        std::wcout << reinterpret_cast<const wchar_t *>(*utf16) << std::endl;
 #else
-    write(1, *(str + "\n"), str.Size() + 1);
+        std::cout << *str << std::endl;
 #endif
     }
 }
 
-void Console::SetTextStyle(const TextStyle &style, const EType type)
+void Console::SetTextStyle(const TextStyle &style, const EConsoleStream type)
 {
 #ifdef WINDOWS
     HANDLE hdl;
-    if (type == ERROR)
+    if (type == EConsoleStream::ERROR)
     {
         hdl = GetStdHandle(STD_ERROR_HANDLE);
         if (g_Console_OldAttributes_Err == (WORD)-1)
@@ -123,7 +123,7 @@ void Console::SetTextStyle(const TextStyle &style, const EType type)
     //Bold is not supported > ask why Microsoft does not know how to code a terminal!
 #else
     int fd = -1;
-    if (type == ERROR)
+    if (type == EConsoleStream::ERROR)
         fd = 2;
     else
         fd = 1;
@@ -159,9 +159,9 @@ void Console::SetTextStyle(const TextStyle &style, const EType type)
 #endif
 }
 
-void Console::ResetTextStyle(const EType type)
+void Console::ResetTextStyle(const EConsoleStream type)
 {
-    if (type == ERROR)
+    if (type == EConsoleStream::ERROR)
     {
 #ifdef WINDOWS
         if (g_Console_OldAttributes_Err == (WORD)-1)

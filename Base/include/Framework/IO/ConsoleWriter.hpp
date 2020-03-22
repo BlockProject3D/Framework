@@ -27,42 +27,34 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/IO/ByteBuf.hpp"
-#include "Framework/IO/EStringEncoder.hpp"
+#include "Framework/IO/Console.hpp"
 #include "Framework/IO/IDataOutputStream.hpp"
+#include "Framework/IO/EConsoleStream.hpp"
 
 namespace bpf
 {
     namespace io
     {
-        class BPF_API TextWriter final : public IDataOutputStream
+        class BPF_API ConsoleWriter : public IDataOutputStream
         {
         private:
-            IOutputStream &_stream;
-            ByteBuf _buf;
-            bool _buffered;
-            EStringEncoder _encoder;
-
-            void WriteByte(uint8 byte);
-            void WriteSubBuf(const void *in, const fsize size);
+            EConsoleStream _type;
+#ifdef WINDOWS
+            void *_handle;
+#else
+            int _handle;
+#endif
 
         public:
-            explicit inline TextWriter(IOutputStream &stream, const EStringEncoder encoder = EStringEncoder::UTF8, bool buffered = true)
-                : _stream(stream)
-                , _buf(WRITE_BUF_SIZE)
-                , _buffered(buffered)
-                , _encoder(encoder)
-            {
-            }
-
-            inline ~TextWriter()
-            {
-                if (_buffered)
-                    _stream.Write(_buf.GetRawData(), _buf.GetWrittenBytes());
-            }
+            explicit ConsoleWriter(const EConsoleStream type = EConsoleStream::OUTPUT);
 
             void Flush();
 
+            /**
+             * This function performs a low level write to console
+             * On Windows it expects bufsize to be a multiple of 2 and expects buf to contain UTF-16 code points
+             * On Linux it expects buf to contain UTF-8 bytes (last UTF-8 code can be cut)
+             */
             fsize Write(const void *buf, fsize bufsize);
 
             void WriteLine(const String &str);
@@ -71,83 +63,85 @@ namespace bpf
 
             void NewLine();
 
-            inline IDataOutputStream &operator<<(uint8 u)
+            ConsoleWriter &operator<<(uint8 u)
             {
                 Write(String::ValueOf(u));
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(uint16 u)
+            inline ConsoleWriter &operator<<(uint16 u)
             {
                 Write(String::ValueOf(u));
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(uint32 u)
+            inline ConsoleWriter &operator<<(uint32 u)
             {
                 Write(String::ValueOf(u));
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(uint64 u)
+            inline ConsoleWriter &operator<<(uint64 u)
             {
                 Write(String::ValueOf(u));
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(int8 i)
+            inline ConsoleWriter &operator<<(int8 i)
             {
                 Write(String::ValueOf(i));
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(int16 i)
+            inline ConsoleWriter &operator<<(int16 i)
             {
                 Write(String::ValueOf(i));
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(fint i)
+            inline ConsoleWriter &operator<<(fint i)
             {
                 Write(String::ValueOf(i));
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(int64 i)
+            inline ConsoleWriter &operator<<(int64 i)
             {
                 Write(String::ValueOf(i));
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(float f)
+            inline ConsoleWriter &operator<<(float f)
             {
                 Write(String::ValueOf(f));
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(double d)
+            inline ConsoleWriter &operator<<(double d)
             {
                 Write(String::ValueOf(d));
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(bool b)
+            inline ConsoleWriter &operator<<(bool b)
             {
                 Write(String::ValueOf(b));
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(const bpf::String &str)
+            inline ConsoleWriter &operator<<(const bpf::String &str)
             {
                 Write(str);
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(const char *str)
+            inline ConsoleWriter &operator<<(const char *str)
             {
                 Write(String(str));
                 return (*this);
             }
+
+            ConsoleWriter &operator<<(const Console::TextStyle &style);
         };
     }
 }
