@@ -90,7 +90,10 @@ bool TextReader::Read(String &out)
         case EStringEncoder::UTF8:
         {
             if (CheckIsSeparator(byte))
-                return (true);
+            {
+                if (out.Size() > 0)
+                    return (true);
+            }
             else
                 out += byte;
             break;
@@ -105,7 +108,10 @@ bool TextReader::Read(String &out)
             bytes[0] = byte;
             String str = String::FromUTF16(reinterpret_cast<const fchar16 *>(&bytes));
             if (str.Size() == 1 && CheckIsSeparator(str.ByteAt(0)))
-                return (true);
+            {
+                if (out.Size() > 0)
+                    return (true);
+            }
             else
                 out += str;
             break;
@@ -122,7 +128,10 @@ bool TextReader::Read(String &out)
             bytes[0] = byte;
             String str = String::FromUTF32(reinterpret_cast<const fchar *>(&bytes));
             if (str.Size() == 1 && CheckIsSeparator(str.ByteAt(0)))
-                return (true);
+            {
+                if (out.Size() > 0)
+                    return (true);
+            }
             else
                 out += str;
             break;
