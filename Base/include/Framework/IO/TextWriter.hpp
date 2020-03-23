@@ -55,11 +55,7 @@ namespace bpf
             {
             }
 
-            inline ~TextWriter()
-            {
-                if (_buffered)
-                    _stream.Write(_buf.GetRawData(), _buf.GetWrittenBytes());
-            }
+            ~TextWriter();
 
             void Flush();
 

@@ -35,7 +35,6 @@ namespace bpf
         enum class EConsoleStream
         {
             OUTPUT,
-            INPUT,
             ERROR
         };
     }

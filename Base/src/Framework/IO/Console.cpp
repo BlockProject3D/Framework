@@ -44,7 +44,7 @@ WORD g_Console_OldAttributes_Out = (WORD)-1;
 WORD g_Console_OldAttributes_Err = (WORD)-1;
 #endif
 
-void Console::WriteLine(const String &str, const EConsoleStream type)
+void Console::WriteLine(const String &str, const EConsoleStream type) noexcept
 {
     if (type == EConsoleStream::ERROR)
     {
@@ -84,7 +84,7 @@ void Console::WriteLine(const String &str, const EConsoleStream type)
     }
 }
 
-void Console::SetTextStyle(const TextStyle &style, const EConsoleStream type)
+void Console::SetTextStyle(const TextStyle &style, const EConsoleStream type) noexcept
 {
 #ifdef WINDOWS
     HANDLE hdl;
@@ -176,7 +176,7 @@ void Console::SetTextStyle(const TextStyle &style, const EConsoleStream type)
 #endif
 }
 
-void Console::ResetTextStyle(const EConsoleStream type)
+void Console::ResetTextStyle(const EConsoleStream type) noexcept
 {
     if (type == EConsoleStream::ERROR)
     {

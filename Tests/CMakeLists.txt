@@ -35,6 +35,7 @@ set(SOURCES
     src/IO/BinaryReadWrite.cpp
     src/IO/TextReadWrite.cpp
     src/IO/Console.cpp
+    src/IO/ConsoleWriter.cpp
     src/Math/MatrixDynamic.cpp
     src/Math/MatrixStatic.cpp
     src/Math/Quaternion.cpp

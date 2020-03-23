@@ -54,12 +54,6 @@ int ConsoleWriter::GetHandle(const EConsoleStream type)
 #else
         return (2);
 #endif
-    case EConsoleStream::INPUT:
-#ifdef WINDOWS
-        return (GetStdHandle(STD_INPUT_HANDLE));
-#else
-        return (0);
-#endif
     case EConsoleStream::OUTPUT:
 #ifdef WINDOWS
         return (GetStdHandle(STD_OUTPUT_HANDLE));

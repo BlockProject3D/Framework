@@ -62,11 +62,7 @@ namespace bpf
                 _serializer = ser;
             }
 
-            inline ~BinaryWriter()
-            {
-                if (_buffered)
-                    _stream.Write(_buf.GetRawData(), _buf.GetWrittenBytes());
-            }
+            ~BinaryWriter();
 
             void Flush();
 
