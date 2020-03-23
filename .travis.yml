@@ -8,6 +8,8 @@ builddbgscript: &builddbgscript
     - echo $BP_TEST_RUN_CMD && eval $BP_TEST_RUN_CMD
     - cat ../Tests.Console/InputFile | ./Debug/BPF.Tests.Console > testlog
     - diff testlog ../Tests.Console/OutputFile
+    - cat ../Tests.Console/InputFileCrash | ./Debug/BPF.Tests.Console > testlog
+    - diff testlog ../Tests.Console/OutputFileCrash
 
 jobs:
   include:
@@ -48,6 +50,8 @@ jobs:
         - eval $BP_TEST_RUN_CMD > /dev/null
         - cat ../Tests.Console/InputFile | ./Debug/BPF.Tests.Console > testlog
         - diff testlog ../Tests.Console/OutputFile
+        - cat ../Tests.Console/InputFileCrash | ./Debug/BPF.Tests.Console > testlog
+        - diff testlog ../Tests.Console/OutputFileCrash
         - lcov --capture --directory . --output-file coverage.info
         - lcov --remove coverage.info '/usr/*' --output-file coverage.info
         - lcov --remove coverage.info '*/gtest/*' --output-file coverage.info

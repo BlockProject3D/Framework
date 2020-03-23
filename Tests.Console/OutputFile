@@ -1,1 +1,5 @@
-Please enter a uint8: Please enter a uint16: Please enter a uint32: Please enter a uint64: Please enter a int8: Please enter a int16: Please enter a int32: Please enter a int64: Please enter a float: Please enter a double: Please enter a bool: You have entered: 128, 3, 4, 5, 7, 3, -5, -65, -0.43, 42.42, TRUE
+Please enter a uint8: Please enter a uint16: Please enter a uint32: Please enter a uint64: Please enter a int8: Please enter a int16: Please enter a int32: Please enter a int64: Please enter a float: Please enter a double: Please enter a bool: Please enter a single word: You have entered: 128, 3, 4, 5, 7, 3, -5, -65, -0.43, 42.42, TRUE, Test
+Please enter a line of text:
+Text line is: This is a test line
+Checking single token read: 
+Single token is: This is a single token

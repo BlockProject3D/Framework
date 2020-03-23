@@ -49,6 +49,7 @@ int Main(bpf::system::IApplication &app, const bpf::collection::Array<bpf::Strin
     float f;
     double d;
     bool b;
+    bpf::String word;
 
     try
     {
@@ -85,17 +86,29 @@ int Main(bpf::system::IApplication &app, const bpf::collection::Array<bpf::Strin
         writer << "Please enter a bool: ";
         writer.Flush();
         reader >> b;
+        writer << "Please enter a single word: ";
+        writer.Flush();
+        reader >> word;
         writer << "You have entered: " << u8 << ", " << u16 << ", " << u32 << ", " << u64 << ", "
-               << i8 << ", " << i16 << ", " << i32 << ", " << i64 << ", " << f << ", " << d << ", " << b << newLine;
+               << i8 << ", " << i16 << ", " << i32 << ", " << i64 << ", " << f << ", " << d << ", "
+               << b << ", " << word << newLine;
+        writer.WriteLine("Please enter a line of text:");
+        writer.Flush();
+        bpf::String line;
+        if (!reader.ReadLine(line))
+            throw 1; // Intended to cause the application to abort
+        writer.WriteLine(bpf::String("Text line is: ") + line);
+        writer.WriteLine("Checking single token read: ");
+        reader.SetTokenSeparators("\r\n");
+        bpf::String token;
+        if (!reader.Read(token))
+            throw 1; // Intended to cause the application to abort
+        writer.WriteLine(bpf::String("Single token is: ") + token);
     }
     catch (const bpf::RuntimeException &e)
     {
         bpf::io::Console::WriteLine(bpf::String("An unhandled exception of type ") + e.Type() + " has occured:");
         bpf::io::Console::WriteLine(e.Message());
-    }
-    catch (const bpf::Exception &e)
-    {
-        bpf::io::Console::WriteLine(bpf::String("An unhandled exception of type ") + e.Type() + " has occured");
     }
     return (0);
 }
