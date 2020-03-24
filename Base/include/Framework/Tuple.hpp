@@ -119,7 +119,7 @@ namespace bpf
             Arg arg;
 
         public:
-            template <typename = typename std::enable_if<std::is_default_constructible<Arg>::value, int>::type>
+            template <fsize N1 = N, typename Arg1 = Arg, typename = typename std::enable_if<std::is_default_constructible<Arg1>::value>::type>
             inline Elem()
             {
             }
@@ -150,7 +150,7 @@ namespace bpf
             template <fsize I>
             using ElemType = typename Chooser<I, Args...>::type;
 
-            template <typename = typename std::enable_if<__internal_tp::IsAllDefaultConstructible<Args...>::Value, int>::type>
+            template <bool Flag = __internal_tp::IsAllDefaultConstructible<Args...>::Value, typename = typename std::enable_if<Flag>::type>
             inline Impl()
                 : Elem<N, Args>()...
             {
@@ -192,7 +192,7 @@ namespace bpf
                                  typename __internal_tp::Range<0, sizeof...(Args), __internal_tp::Sizes<>>::type, Args...>
     {
     public:
-        template <typename = typename std::enable_if<__internal_tp::IsAllDefaultConstructible<Args...>::Value, int>::type>
+        template <bool Flag = __internal_tp::IsAllDefaultConstructible<Args...>::Value, typename = typename std::enable_if<Flag>::type>
         inline Tuple()
             : __internal_tp::Impl<typename __internal_tp::Range<0, sizeof...(Args), __internal_tp::Sizes<>>::type, Args...>()
         {
