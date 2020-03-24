@@ -26,9 +26,9 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <cstring>
 #include "Framework/IO/ByteBuf.hpp"
 #include "Framework/Memory/Memory.hpp"
+#include <cstring>
 
 using namespace bpf::memory;
 using namespace bpf::io;
@@ -59,6 +59,12 @@ ByteBuf::~ByteBuf()
     Memory::Free(_buf);
 }
 
+void ByteBuf::Reset()
+{
+    _written = 0;
+    _cursor = 0;
+}
+
 void ByteBuf::Clear()
 {
     _written = 0;
@@ -80,15 +86,15 @@ fsize ByteBuf::Write(const void *buf, fsize bufsize)
     if (_cursor + bufsize > _size)
         bufsize = _size - _cursor;
     std::memcpy(_buf + _cursor, buf, bufsize);
-    _written += bufsize;
+    _written = _cursor + bufsize;
     _cursor += bufsize;
     return (bufsize);
 }
 
 fsize ByteBuf::Read(void *buf, fsize bufsize)
 {
-    if (_cursor + bufsize > _size)
-        bufsize = _size - _cursor;
+    if (_cursor + bufsize > _written)
+        bufsize = _written - _cursor;
     std::memcpy(buf, _buf + _cursor, bufsize);
     _cursor += bufsize;
     return (bufsize);

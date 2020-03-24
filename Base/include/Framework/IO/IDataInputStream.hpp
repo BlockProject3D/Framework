@@ -27,9 +27,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Types.hpp"
 #include "Framework/IO/IInputStream.hpp"
 #include "Framework/String.hpp"
+#include "Framework/Types.hpp"
 
 namespace bpf
 {

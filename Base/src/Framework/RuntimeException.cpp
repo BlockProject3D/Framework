@@ -27,15 +27,18 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Framework/RuntimeException.hpp"
+#include <iostream>
 
 using namespace bpf;
 
 RuntimeException::RuntimeException(const String &type, const String &message) noexcept
-    : _type(type + "Exception"), _message(message)
+    : _type(type + "Exception")
+    , _message(message)
 {
 }
 
-/*void RuntimeException::Log(Framework::FLogger &logger) const
+void RuntimeException::Print() const
 {
-    logger.Log(Framework::LOG_FATAL, "Exception thrown (%s) : %s", *Type, *Message);
-}*/
+    std::cerr << Type() << " thrown: " << std::endl;
+    std::cerr << *Message() << std::endl;
+}

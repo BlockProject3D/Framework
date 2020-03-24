@@ -26,9 +26,9 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Framework/IO/IDataOutputStream.hpp"
 #include "Framework/IO/ByteBuf.hpp"
 #include "Framework/IO/EStringSerializer.hpp"
+#include "Framework/IO/IDataOutputStream.hpp"
 #include "Framework/System/Platform.hpp"
 
 namespace bpf
@@ -38,7 +38,7 @@ namespace bpf
         class BPF_API BinaryWriter final : public IDataOutputStream
         {
         private:
-            IOutputStream & _stream;
+            IOutputStream &_stream;
             ByteBuf _buf;
             system::EPlatformEndianess _targetorder;
             bool _buffered;
@@ -46,6 +46,7 @@ namespace bpf
 
             void WriteByte(uint8 byte);
             void WriteSubBuf(void *in, const fsize size);
+
         public:
             explicit inline BinaryWriter(IOutputStream &stream, system::EPlatformEndianess order = system::PLATFORM_LITTLEENDIAN, bool buffered = true)
                 : _stream(stream)
@@ -61,17 +62,9 @@ namespace bpf
                 _serializer = ser;
             }
 
-            inline ~BinaryWriter()
-            {
-                if (_buffered)
-                    _stream.Write(_buf.GetRawData(), _buf.GetWrittenBytes());
-            }
+            ~BinaryWriter();
 
-            inline void Flush()
-            {
-                if (_buffered)
-                    _stream.Write(_buf.GetRawData(), _buf.GetWrittenBytes());
-            }
+            void Flush();
 
             fsize Write(const void *buf, fsize bufsize);
 

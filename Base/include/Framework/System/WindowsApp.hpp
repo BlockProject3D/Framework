@@ -51,8 +51,6 @@ namespace bpf
         public:
             WindowsApp(void *hinstance, bool hasConsole);
 
-            void SetConsoleTitle(const String &title);
-
             void CreateConsole(const fint rows, const fint columns);
 
             const String &GetExeFileName() const noexcept

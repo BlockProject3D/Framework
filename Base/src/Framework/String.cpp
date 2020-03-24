@@ -711,7 +711,10 @@ String String::Replace(const String &search, const String &repby) const
     for (fsize i = 0 ; i < StrLen ; i++)
     {
         if (Data[i] == search.ByteAt(0) && my_strstr(Data + i, search.Data))
+        {
             str += repby;
+            i += search.Size() - 1;
+        }
         else
             str += Data[i];
     }

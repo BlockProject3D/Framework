@@ -27,8 +27,8 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/String.hpp"
 #include "Framework/Collection/List.hpp"
+#include "Framework/String.hpp"
 
 namespace bpf
 {

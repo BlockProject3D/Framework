@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -27,14 +27,78 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/IO/ByteBuf.hpp"
+#include "Framework/IO/EStringEncoder.hpp"
+#include "Framework/IO/IDataInputStream.hpp"
 
 namespace bpf
 {
     namespace io
     {
-        class BPF_API TextReader
+        class BPF_API TextReader final : public IDataInputStream
         {
+        private:
+            IInputStream &_stream;
+            ByteBuf _buf;
+            bool _buffered;
+            String _seps;
+            EStringEncoder _encoder;
 
+            bool ReadByte2(uint8 &out);
+            bool ReadSubBuf(void *out, const fsize size);
+            bool CheckIsSeparator(uint8 byte);
+
+        public:
+            explicit inline TextReader(IInputStream &stream, const EStringEncoder encoder = EStringEncoder::UTF8, bool buffered = true)
+                : _stream(stream)
+                , _buf(READ_BUF_SIZE)
+                , _buffered(buffered)
+                , _seps("\r\n\t ")
+                , _encoder(encoder)
+            {
+            }
+
+            /**
+             * Sets the possible characters to find that marks the end of a token.
+             * We assume the separators can only be ASCII characters
+             * @param str a string where each characters represents a character to seach for the end of a token
+             */
+            inline void SetTokenSeparators(const char *str)
+            {
+                _seps = str;
+            }
+
+            fsize Read(void *buf, fsize bufsize);
+
+            bool ReadLine(String &out);
+
+            bool Read(String &out);
+
+            String ReadAll();
+
+            IDataInputStream &operator>>(uint8 &u);
+
+            IDataInputStream &operator>>(uint16 &u);
+
+            IDataInputStream &operator>>(uint32 &u);
+
+            IDataInputStream &operator>>(uint64 &u);
+
+            IDataInputStream &operator>>(int8 &i);
+
+            IDataInputStream &operator>>(int16 &i);
+
+            IDataInputStream &operator>>(fint &i);
+
+            IDataInputStream &operator>>(int64 &i);
+
+            IDataInputStream &operator>>(float &f);
+
+            IDataInputStream &operator>>(double &d);
+
+            IDataInputStream &operator>>(bool &b);
+
+            IDataInputStream &operator>>(bpf::String &str);
         };
     }
 }

@@ -6,6 +6,10 @@ builddbgscript: &builddbgscript
     - cmake ..
     - cmake --build .
     - echo $BP_TEST_RUN_CMD && eval $BP_TEST_RUN_CMD
+    - cat ../Tests.Console/InputFile | ./Debug/BPF.Tests.Console > testlog
+    - diff testlog ../Tests.Console/OutputFile
+    - cat ../Tests.Console/InputFileCrash | ./Debug/BPF.Tests.Console > testlog
+    - diff testlog ../Tests.Console/OutputFileCrash
 
 jobs:
   include:
@@ -43,7 +47,11 @@ jobs:
         - mkdir build && cd build
         - cmake .. -DCOVERAGE=1 > /dev/null
         - cmake --build . > /dev/null
-        - eval $BP_TEST_RUN_CMD > /dev/null && cd ../
+        - eval $BP_TEST_RUN_CMD > /dev/null
+        - cat ../Tests.Console/InputFile | ./Debug/BPF.Tests.Console > testlog
+        - diff testlog ../Tests.Console/OutputFile
+        - cat ../Tests.Console/InputFileCrash | ./Debug/BPF.Tests.Console > testlog
+        - diff testlog ../Tests.Console/OutputFileCrash
         - lcov --capture --directory . --output-file coverage.info
         - lcov --remove coverage.info '/usr/*' --output-file coverage.info
         - lcov --remove coverage.info '*/gtest/*' --output-file coverage.info

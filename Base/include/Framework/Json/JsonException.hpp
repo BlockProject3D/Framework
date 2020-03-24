@@ -33,7 +33,7 @@ namespace bpf
 {
     namespace json
     {
-        class BPF_API JsonException : public RuntimeException
+        class BPF_API JsonException final : public RuntimeException
         {
         public:
             explicit inline JsonException(const String &msg)

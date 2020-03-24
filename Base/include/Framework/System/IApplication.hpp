@@ -39,7 +39,6 @@ namespace bpf
         {
         public:
             virtual ~IApplication() {}
-            virtual void SetConsoleTitle(const String &title) = 0;
             virtual void CreateConsole(const fint rows = 32, const fint columns = 80) = 0; //Only usefull when the system do not create a console
             virtual const String &GetExeFileName() const noexcept = 0;
             virtual const collection::HashMap<String, String> &GetEnvironment() const noexcept = 0;

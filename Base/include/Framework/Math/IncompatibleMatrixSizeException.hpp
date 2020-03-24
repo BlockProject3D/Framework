@@ -27,14 +27,14 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Types.hpp"
 #include "Framework/Exception.hpp"
+#include "Framework/Types.hpp"
 
 namespace bpf
 {
     namespace math
     {
-        class IncompatibleMatrixSizeException : public Exception
+        class BPF_API IncompatibleMatrixSizeException final : public Exception
         {
         private:
             fisize _sizea;
@@ -61,6 +61,8 @@ namespace bpf
             {
                 return ("IncompatibleMatrixSize");
             }
+
+            void Print() const;
         };
     }
 }

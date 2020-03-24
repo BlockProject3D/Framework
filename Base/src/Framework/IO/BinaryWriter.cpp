@@ -27,6 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Framework/IO/BinaryWriter.hpp"
+#include "Framework/IO/IOException.hpp"
 
 using namespace bpf::io;
 using namespace bpf;
@@ -40,8 +41,8 @@ void BinaryWriter::WriteByte(uint8 byte)
     }
     if (_buf.GetWrittenBytes() >= _buf.Size())
     {
-        _stream.Write(_buf.GetRawData(), WRITE_BUF_SIZE);
-        _buf.Clear();
+        _stream.Write(*_buf, WRITE_BUF_SIZE);
+        _buf.Reset();
     }
     _buf.Write(&byte, 1);
 }
@@ -88,9 +89,10 @@ IDataOutputStream &BinaryWriter::operator<<(const bpf::String &str)
 
 IDataOutputStream &BinaryWriter::operator<<(const char *str)
 {
-	fisize size = 0;
+    fisize size = 0;
 
-    for (; str[size]; ++size);
+    for (; str[size]; ++size)
+        ;
     switch (_serializer)
     {
     case EStringSerializer::VARCHAR_32:
@@ -128,4 +130,26 @@ fsize BinaryWriter::Write(const void *buf, fsize bufsize)
     }
     else
         return (_stream.Write(buf, bufsize));
+}
+
+void BinaryWriter::Flush()
+{
+    if (_buffered)
+    {
+        _stream.Write(*_buf, _buf.GetWrittenBytes());
+        _buf.Reset();
+    }
+}
+
+BinaryWriter::~BinaryWriter()
+{
+    try
+    {
+        if (_buffered)
+            _stream.Write(*_buf, _buf.GetWrittenBytes());
+    }
+    catch (const IOException &e)
+    {
+        e.Print();
+    }
 }

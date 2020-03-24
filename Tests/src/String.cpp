@@ -204,7 +204,7 @@ TEST(String, OperatorGreaterLess)
     EXPECT_LT(test, test1);
 }
 
-TEST(String, Replace)
+TEST(String, Replace_1)
 {
     bpf::String s = bpf::String("      test      ,     \t    \t  \t\t\t              yay").Replace(" ", "").Replace("\t", "");
     EXPECT_STREQ(*s, "test,yay");
@@ -212,7 +212,15 @@ TEST(String, Replace)
     bpf::String s1 = bpf::String("a/b/c/d/e/f/").Replace("/", "\\");
     EXPECT_STREQ(*s1, "a\\b\\c\\d\\e\\f\\");
     s1 = bpf::String("a/ b/ c/ d/ e/ f/").Replace("/", "\\");
+    EXPECT_STREQ(*s1, "a\\ b\\ c\\ d\\ e\\ f\\");
     EXPECT_STRNE(*s1, "a\\b\\c\\d\\e\\f\\");
+}
+
+TEST(String, Replace_2)
+{
+    bpf::String s1 = bpf::String("test\r\nt\ntest2").Replace("\r\n", "\n");
+
+    EXPECT_STREQ(*s1, "test\nt\ntest2");
 }
 
 TEST(String, GetUTF32CodePoint)

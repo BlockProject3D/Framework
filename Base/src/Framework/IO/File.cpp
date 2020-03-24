@@ -26,22 +26,22 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <iostream>
 #include <climits>
 #include <cstring>
+#include <iostream>
 #ifdef WINDOWS
     #include <Windows.h>
     #define PATH_MAX MAX_PATH
 #else
-    #include <sys/types.h>
-    #include <sys/stat.h>
-    #include <unistd.h>
-    #include <stdlib.h>
     #include <dirent.h>
+    #include <stdlib.h>
+    #include <sys/stat.h>
+    #include <sys/types.h>
+    #include <unistd.h>
 #endif
+#include "./OSPrivate.hpp"
 #include "Framework/IO/File.hpp"
 #include "Framework/IO/IOException.hpp"
-#include "./OSPrivate.hpp"
 
 using namespace bpf::io;
 using namespace bpf::collection;
@@ -167,7 +167,7 @@ bool File::Exists() const
         return (false);
     return (true);
 #else
-    if(access(*FullPath, F_OK) != -1)
+    if (access(*FullPath, F_OK) != -1)
         return (true);
     return (false);
 #endif

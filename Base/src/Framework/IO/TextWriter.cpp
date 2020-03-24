@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -27,6 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Framework/IO/TextWriter.hpp"
+#include "Framework/IO/IOException.hpp"
 
 using namespace bpf::io;
 using namespace bpf;
@@ -40,8 +41,8 @@ void TextWriter::WriteByte(uint8 byte)
     }
     if (_buf.GetWrittenBytes() >= _buf.Size())
     {
-        _stream.Write(_buf.GetRawData(), WRITE_BUF_SIZE);
-        _buf.Clear();
+        _stream.Write(*_buf, WRITE_BUF_SIZE);
+        _buf.Reset();
     }
     _buf.Write(&byte, 1);
 }
@@ -54,22 +55,40 @@ void TextWriter::WriteSubBuf(const void *out, const fsize size)
         WriteByte(res[i]);
 }
 
+void TextWriter::Write(const String &str)
+{
+    switch (_encoder)
+    {
+    case EStringEncoder::UTF8:
+        WriteSubBuf(*str, str.Size());
+        break;
+    case EStringEncoder::UTF16:
+    {
+        auto buf = str.ToUTF16();
+        WriteSubBuf(*buf, sizeof(bpf::fchar16) * (buf.Size() - 1));
+        break;
+    }
+    case EStringEncoder::UTF32:
+    {
+        auto buf = str.ToUTF32();
+        WriteSubBuf(*buf, sizeof(bpf::fchar) * (buf.Size() - 1));
+        break;
+    }
+    }
+}
+
 void TextWriter::WriteLine(const String &str)
 {
-    WriteSubBuf(*str, str.Size());
-#ifdef WINDOWS
-    WriteSubBuf("\r\n", 2);
-#else
-    WriteSubBuf("\n", 1);
-#endif
+    Write(str);
+    NewLine();
 }
 
 void TextWriter::NewLine()
 {
 #ifdef WINDOWS
-    WriteSubBuf("\r\n", 2);
+    Write("\r\n");
 #else
-    WriteSubBuf("\n", 1);
+    Write("\n");
 #endif
 }
 
@@ -84,4 +103,26 @@ fsize TextWriter::Write(const void *buf, fsize bufsize)
     }
     else
         return (_stream.Write(buf, bufsize));
+}
+
+void TextWriter::Flush()
+{
+    if (_buffered)
+    {
+        _stream.Write(*_buf, _buf.GetWrittenBytes());
+        _buf.Reset();
+    }
+}
+
+TextWriter::~TextWriter()
+{
+    try
+    {
+        if (_buffered)
+            _stream.Write(*_buf, _buf.GetWrittenBytes());
+    }
+    catch (const IOException &e)
+    {
+        e.Print();
+    }
 }

@@ -6,6 +6,7 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/../CMakes/Framework.cmake")
 set(SOURCES
     ./include/Framework/IO/File.hpp
     ./include/Framework/IO/EStringSerializer.hpp
+    ./include/Framework/IO/EStringEncoder.hpp
     ./include/Framework/IO/FileStream.hpp
     ./include/Framework/IO/MemoryMapper.hpp
     ./include/Framework/IO/IOException.hpp
@@ -19,6 +20,10 @@ set(SOURCES
     ./include/Framework/IO/BinaryWriter.hpp
     ./include/Framework/IO/TextReader.hpp
     ./include/Framework/IO/TextWriter.hpp
+    ./include/Framework/IO/Console.hpp
+    ./include/Framework/IO/ConsoleReader.hpp
+    ./include/Framework/IO/ConsoleWriter.hpp
+    ./include/Framework/IO/EConsoleColor.hpp
     ./include/Framework/IO/Stringifier.File.hpp
     ./include/Framework/Math/Vector.hpp
     ./include/Framework/Math/Vector.impl.hpp
@@ -157,12 +162,18 @@ set(SOURCES
     ./src/Framework/IO/BinaryWriter.cpp
     ./src/Framework/IO/TextReader.cpp
     ./src/Framework/IO/TextWriter.cpp
+    ./src/Framework/IO/Console.cpp
+    ./src/Framework/IO/ConsoleReader.cpp
+    ./src/Framework/IO/ConsoleWriter.cpp    
     ./src/Framework/Log/DefaultLogger.cpp
     ./src/Framework/Log/FileLogger.cpp
     ./src/Framework/Log/Logger.cpp
     ./src/Framework/Math/MathUtils.cpp
     ./src/Framework/Math/Random.cpp
     ./src/Framework/Math/Color.cpp
+    ./src/Framework/Math/IncompatibleMatrixSizeException.cpp
+    ./src/Framework/Math/NonInvertibleMatrixException.cpp
+    ./src/Framework/Math/NonSquareMatrixException.cpp
     ./src/Framework/Memory/Memory.cpp
     ./src/Framework/Memory/Object.cpp
     ./src/Framework/System/Platform.cpp
@@ -178,6 +189,7 @@ set(SOURCES
     ./src/Framework/Json/Lexer.cpp
     ./src/Framework/Json/Parser.cpp
     ./src/Framework/Json/Writer.cpp
+    ./src/Framework/Json/JsonParseException.cpp
     ./src/Framework/Profiler.cpp
     ./src/Framework/Exception.cpp
     ./src/Framework/RuntimeException.cpp

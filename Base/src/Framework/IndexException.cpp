@@ -27,11 +27,13 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Framework/IndexException.hpp"
+#include <iostream>
 
 using namespace bpf;
 
-/*void IndexException::Log(Framework::FLogger &logger) const
+void IndexException::Print() const
 {
-    String msg = String::Format("Invalid index ([])", ID);
-    logger.Log(Framework::LOG_FATAL, "Exception thrown (%s) : %s", *GetType(), *msg);
-}*/
+    // Here we use std::cerr as it would be unsafe to allocate any new object
+    // ==> We do not want to cause a MemoryException for simple exception types
+    std::cerr << "IndexException: Attempt to index at invalid location " << ID << std::endl;
+}

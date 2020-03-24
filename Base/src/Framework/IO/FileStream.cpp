@@ -49,7 +49,8 @@ FileStream::FileStream(const File &file, fint mode)
     if (mode & FILE_MODE_READ)
     {
         md |= GENERIC_READ;
-        md1 |= OPEN_EXISTING;
+        if (!(mode & FILE_MODE_TRUNCATE))
+            md1 |= OPEN_EXISTING;
     }
     if ((mode & FILE_MODE_WRITE) || (mode & FILE_MODE_APPEND))
     {
@@ -61,9 +62,7 @@ FileStream::FileStream(const File &file, fint mode)
     }
     _handle = CreateFileW(reinterpret_cast<LPCWSTR>(*file.PlatformPath().ToUTF16()), md, FILE_SHARE_READ, Null, md1, FILE_ATTRIBUTE_NORMAL, Null);
     if (_handle == INVALID_HANDLE_VALUE)
-        throw IOException(String("Could not open file '")
-            + file.PlatformPath() + "' : "
-            + OSPrivate::ObtainLastErrorString());
+        throw IOException(String("Could not open file '") + file.PlatformPath() + "' : " + OSPrivate::ObtainLastErrorString());
     if (mode & FILE_MODE_APPEND)
     {
         LARGE_INTEGER pos;
@@ -72,22 +71,20 @@ FileStream::FileStream(const File &file, fint mode)
     }
 #else
     int md = 0;
-    
+
     if ((mode & FILE_MODE_READ) && (mode & FILE_MODE_WRITE))
         md |= O_RDWR | O_CREAT;
     else if (mode & FILE_MODE_APPEND)
-        md |= O_APPEND | O_CREAT;
+        md |= O_APPEND | O_CREAT | O_WRONLY;
     else if (mode & FILE_MODE_READ)
         md |= O_RDONLY;
     else if (mode & FILE_MODE_WRITE)
         md |= O_WRONLY | O_CREAT;
     if (mode & FILE_MODE_TRUNCATE)
         md |= O_TRUNC;
-    _handle = open(*file.GetAbsolutePath().Path(), md, 0644);
+    _handle = open(*file.PlatformPath(), md, 0644);
     if (_handle == -1)
-        throw IOException(String("Could not open file '")
-            + file.GetAbsolutePath().Path() + "' : "
-            + OSPrivate::ObtainLastErrorString());
+        throw IOException(String("Could not open file '") + file.PlatformPath() + "' : " + OSPrivate::ObtainLastErrorString());
 #endif
 }
 

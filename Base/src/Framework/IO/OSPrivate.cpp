@@ -29,8 +29,8 @@
 #ifdef WINDOWS
     #include <Windows.h>
 #else
-    #include <errno.h>
     #include <cstring>
+    #include <errno.h>
 #endif
 #include "OSPrivate.hpp"
 
@@ -42,11 +42,9 @@ String OSPrivate::ObtainLastErrorString()
     String res = "Unknown";
     LPTSTR errtxt = Null;
 
-    FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER
-        | FORMAT_MESSAGE_FROM_SYSTEM
-        | FORMAT_MESSAGE_IGNORE_INSERTS,
-        Null, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-        reinterpret_cast<LPTSTR>(&errtxt), 0, Null);
+    FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                  Null, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                  reinterpret_cast<LPTSTR>(&errtxt), 0, Null);
     if (errtxt != Null)
     {
         res = errtxt;

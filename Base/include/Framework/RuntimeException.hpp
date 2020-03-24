@@ -54,6 +54,7 @@ namespace bpf
         {
             return (*_type);
         }
-        //virtual void Log(Framework::FLogger &logger) const override;
+
+        virtual void Print() const override;
     };
 }

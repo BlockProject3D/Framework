@@ -27,14 +27,15 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <cassert>
-#include <iostream>
-#include <gtest/gtest.h>
 #include <Framework/System/IApplication.hpp>
 #include <Framework/Collection/Stringifier.Array.hpp>
+#include <Framework/IO/ConsoleWriter.hpp>
+#include <Framework/System/Platform.hpp>
 
 int Main(bpf::system::IApplication &app, const bpf::collection::Array<bpf::String> &args, const bpf::system::Paths &paths)
 {
-    app.SetConsoleTitle("BPF Unit Test Console");
+    bpf::io::ConsoleWriter console;
+    const auto &newLine = bpf::system::Platform::GetOSInfo().NewLine;
     assert(app.GetEnvironment().Size() > 0);
     assert(app.GetArguments().Size() > 0); //At least we need the file name passed to our arguments
     assert(app.GetExeFileName().Len() > 0);
@@ -43,18 +44,19 @@ int Main(bpf::system::IApplication &app, const bpf::collection::Array<bpf::Strin
     assert(paths.CacheDir().Path().Len() > 0);
     assert(paths.TempDir().Path().Len() > 0);
     assert(paths.UserHome().Path().Len() > 0);
-    std::cout << "<==== Initializing high-level main ====>" << std::endl;
-    std::cout << "WorkDir: " << *bpf::io::File(".").GetAbsolutePath().PlatformPath() << std::endl;
-    std::cout << "AppRoot: " << *paths.AppRoot().Path() << std::endl;
-    std::cout << "ThirdParty: " << *paths.ThirdParty().Path() << std::endl;
-    std::cout << "CacheDir: " << *paths.CacheDir().Path() << std::endl;
-    std::cout << "TempDir: " << *paths.TempDir().Path() << std::endl;
-    std::cout << "UserHome: " << *paths.UserHome().Path() << std::endl;
-    std::cout << "Program args: " << *bpf::String::ValueOf(args) << std::endl;
-    std::cout << "Program file name: " << *app.GetExeFileName() << std::endl;
-    std::cout << "Number of environment variables: " << app.GetEnvironment().Size() << std::endl;
-    std::cout << "<======================================>" << std::endl;
-    std::cout << std::endl;
-    std::cout << "<==== Initializing GoogleTest ====>" << std::endl;
+    console << bpf::io::Console::TextStyle(bpf::io::EConsoleColor::CYAN) << "<==== Initializing high-level main ====>" << bpf::io::Console::ClearTextStyle() << newLine;
+    console.WriteLine("您好!");
+    console << "WorkDir: " << bpf::io::File(".").GetAbsolutePath().PlatformPath() << newLine;
+    console << "AppRoot: " << paths.AppRoot().Path() << newLine;
+    console << "ThirdParty: " << paths.ThirdParty().Path() << newLine;
+    console << "CacheDir: " << paths.CacheDir().Path() << newLine;
+    console << "TempDir: " << paths.TempDir().Path() << newLine;
+    console << "UserHome: " << paths.UserHome().Path() << newLine;
+    console << "Program args: " << bpf::String::ValueOf(args) << newLine;
+    console << "Program file name: " << app.GetExeFileName() << newLine;
+    console << "Number of environment variables: " << app.GetEnvironment().Size() << newLine;
+    console << bpf::io::Console::TextStyle(bpf::io::EConsoleColor::CYAN) << "<======================================>" << bpf::io::Console::ClearTextStyle() << newLine;
+    console.NewLine();
+    console << "<==== Initializing GoogleTest ====>" << newLine;
     return (0);
 }

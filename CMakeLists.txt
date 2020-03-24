@@ -5,3 +5,4 @@ set(CMAKE_CXX_STANDARD 11)
 
 add_subdirectory("${CMAKE_SOURCE_DIR}/Base/")
 add_subdirectory("${CMAKE_SOURCE_DIR}/Tests/")
+add_subdirectory("${CMAKE_SOURCE_DIR}/Tests.Console/")
