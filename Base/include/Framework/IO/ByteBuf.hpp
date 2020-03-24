@@ -57,7 +57,12 @@ namespace bpf
             fsize Write(const void *buf, fsize bufsize);
             fsize Read(void *buf, fsize bufsize);
 
-            inline uint8 *GetRawData() noexcept
+            inline uint8 *operator*() noexcept
+            {
+                return (_buf);
+            }
+
+            inline const uint8 *operator*() const noexcept
             {
                 return (_buf);
             }

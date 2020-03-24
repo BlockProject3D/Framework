@@ -42,7 +42,7 @@ void TextWriter::WriteByte(uint8 byte)
     }
     if (_buf.GetWrittenBytes() >= _buf.Size())
     {
-        _stream.Write(_buf.GetRawData(), WRITE_BUF_SIZE);
+        _stream.Write(*_buf, WRITE_BUF_SIZE);
         _buf.Reset();
     }
     _buf.Write(&byte, 1);
@@ -110,7 +110,7 @@ void TextWriter::Flush()
 {
     if (_buffered)
     {
-        _stream.Write(_buf.GetRawData(), _buf.GetWrittenBytes());
+        _stream.Write(*_buf, _buf.GetWrittenBytes());
         _buf.Reset();
     }
 }
@@ -120,7 +120,7 @@ TextWriter::~TextWriter()
     try
     {
         if (_buffered)
-            _stream.Write(_buf.GetRawData(), _buf.GetWrittenBytes());
+            _stream.Write(*_buf, _buf.GetWrittenBytes());
     }
     catch (const IOException &e)
     {
