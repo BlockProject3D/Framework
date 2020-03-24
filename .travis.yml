@@ -33,6 +33,7 @@ jobs:
     - stage: debug-test
       os: osx
       compiler: clang
+      if: branch != release
       env:
         - BP_TEST_RUN_CMD="./Debug/BPF.Tests"
       <<: *builddbgscript
