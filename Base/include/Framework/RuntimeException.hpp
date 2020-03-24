@@ -55,6 +55,6 @@ namespace bpf
             return (*_type);
         }
 
-        virtual void Print() const;
+        virtual void Print() const override;
     };
 }
