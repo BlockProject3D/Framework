@@ -27,7 +27,6 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Framework/IO/BinaryWriter.hpp"
-#include "Framework/IO/Console.hpp"
 #include "Framework/IO/IOException.hpp"
 
 using namespace bpf::io;
@@ -151,9 +150,6 @@ BinaryWriter::~BinaryWriter()
     }
     catch (const IOException &e)
     {
-        bpf::io::Console::SetTextStyle(bpf::io::Console::TextStyle(bpf::io::EConsoleColor::RED));
-        bpf::io::Console::WriteLine("IOException thrown when attempting to flush the buffer:", bpf::io::EConsoleStream::ERROR);
-        bpf::io::Console::WriteLine(e.Message(), bpf::io::EConsoleStream::ERROR);
-        bpf::io::Console::ResetTextStyle();
+        e.Print();
     }
 }
