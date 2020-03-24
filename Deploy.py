@@ -28,7 +28,7 @@ def runZipTool():
     writeZipFolder("./CMakes", handle)
     writeZipFolder("./build/Debug", handle)
     writeZipFolder("./build/Release", handle)
-    handle.write("./LICENSE.MD")
+    handle.write("./LICENSE.md")
     for v in ModuleList:
         handle.write("./" + v[0] + ".cmake")
     handle.close()
