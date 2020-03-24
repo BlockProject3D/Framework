@@ -56,12 +56,6 @@ bool BinaryReader::ReadByte2(uint8 &out)
 {
     out = 0;
 
-    if (!_buffered)
-    {
-        if (_stream.Read(&out, 1) == 1)
-            return (true);
-        return (false);
-    }
     if (_buf.GetCursor() + 1 > _buf.GetWrittenBytes())
     {
         _buf.Clear();
