@@ -26,22 +26,12 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-#include "Framework/Exception.hpp"
+#include "Framework/Math/NonInvertibleMatrixException.hpp"
+#include <iostream>
 
-namespace bpf
+using namespace bpf::math;
+
+void NonInvertibleMatrixException::Print() const
 {
-    namespace math
-    {
-        class BPF_API NonSquareMatrixException final : public Exception
-        {
-        public:
-            inline virtual const char *GetType() const noexcept
-            {
-                return ("NonSquareMatrix");
-            }
-
-            void Print() const;
-        };
-    }
+    std::cerr << "NonInvertibleMatrixException: Matrix is not invertible (Determinent is null)" << std::endl;
 }

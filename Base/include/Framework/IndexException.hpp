@@ -54,6 +54,6 @@ namespace bpf
             return ("Index");
         }
 
-        //void Log(Framework::FLogger &logger) const;
+        void Print() const;
     };
 }

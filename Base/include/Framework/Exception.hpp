@@ -46,8 +46,8 @@ namespace bpf
         }
 
         /**
-         * Logs the exception to the given logger
+         * Print the exception to the console
          */
-        //virtual void Log(Framework::FLogger &logger) const;
+        virtual void Print() const;
     };
 };

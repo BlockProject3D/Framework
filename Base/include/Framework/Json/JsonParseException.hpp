@@ -33,7 +33,7 @@ namespace bpf
 {
     namespace json
     {
-        class BPF_API JsonParseException : public ParseException
+        class BPF_API JsonParseException final : public ParseException
         {
         private:
             int _line;
@@ -49,6 +49,8 @@ namespace bpf
             {
                 return (_line);
             }
+
+            void Print() const;
         };
     }
 }

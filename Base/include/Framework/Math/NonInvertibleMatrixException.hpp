@@ -33,13 +33,15 @@ namespace bpf
 {
     namespace math
     {
-        class NonInvertibleMatrixException : public Exception
+        class BPF_API NonInvertibleMatrixException final : public Exception
         {
         public:
             inline virtual const char *GetType() const noexcept
             {
                 return ("NonInvertibleMatrix");
             }
+
+            void Print() const;
         };
     }
 }

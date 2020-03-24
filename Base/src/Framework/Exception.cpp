@@ -26,12 +26,14 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <iostream>
 #include "Framework/Exception.hpp"
+#include <iostream>
 
 using namespace bpf;
 
-/*void Exception::Log(Framework::FLogger &) const
+void Exception::Print() const
 {
-    std::cerr << "Low-level Exception thrown : " << GetType() << std::endl;
-}*/
+    // Here we use std::cerr as it would be unsafe to allocate any new object
+    // ==> The exception could be of type MemoryException
+    std::cerr << "A low-level unhandled exception of type " << Type() << " has been thrown" << std::endl;
+}

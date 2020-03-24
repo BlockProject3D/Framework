@@ -170,6 +170,9 @@ set(SOURCES
     ./src/Framework/Math/MathUtils.cpp
     ./src/Framework/Math/Random.cpp
     ./src/Framework/Math/Color.cpp
+    ./src/Framework/Math/IncompatibleMatrixSizeException.cpp
+    ./src/Framework/Math/NonInvertibleMatrixException.cpp
+    ./src/Framework/Math/NonSquareMatrixException.cpp
     ./src/Framework/Memory/Memory.cpp
     ./src/Framework/Memory/Object.cpp
     ./src/Framework/System/Platform.cpp
@@ -185,6 +188,7 @@ set(SOURCES
     ./src/Framework/Json/Lexer.cpp
     ./src/Framework/Json/Parser.cpp
     ./src/Framework/Json/Writer.cpp
+    ./src/Framework/Json/JsonParseException.cpp
     ./src/Framework/Profiler.cpp
     ./src/Framework/Exception.cpp
     ./src/Framework/RuntimeException.cpp
