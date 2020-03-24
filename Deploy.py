@@ -1,5 +1,6 @@
 import os
 import zipfile
+import platform
 
 ModuleList = [ # [TargetName, FolderName]
     ["BPF", "Base"]
@@ -8,10 +9,14 @@ ModuleList = [ # [TargetName, FolderName]
 def runCMakeBuild():
     os.system("mkdir build")
     os.chdir("build")
-    os.system("cmake -DCMAKE_GENERATOR_PLATFORM=x64 ..")
+    flag = ""
+    # Unfortunalty cmake is badly designed for crashing if the only available platform is x64 instead of just ignoring the command line
+    if (platform.system() == "Windows"):
+        flag = "-DCMAKE_GENERATOR_PLATFORM=x64"
+    os.system("cmake " + flag + " ..")
     for v in ModuleList:
         os.system("cmake --build . --target " + v[0] + " --config Debug")
-    os.system("cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DRELEASE=ON ..")
+    os.system("cmake " + flag + " -DRELEASE=ON ..")
     for v in ModuleList:
         os.system("cmake --build . --target " + v[0] + " --config Release")
     os.chdir("..")
