@@ -16,6 +16,7 @@ jobs:
     - stage: debug-test
       os: windows
       compiler: MSVC
+      if: branch != release
       env:
         - BP_TEST_RUN_CMD="./Debug/BPF.Tests"
       <<: *builddbgscript
@@ -25,6 +26,7 @@ jobs:
       compiler:
         - gcc
         - clang
+      if: branch != release
       env:
         - BP_TEST_RUN_CMD="./Debug/BPF.Tests"
       <<: *builddbgscript
@@ -39,6 +41,7 @@ jobs:
       os: linux
       dist: xenial
       compiler: gcc
+      if: branch != release
       env:
         - BP_TEST_RUN_CMD="./Debug/BPF.Tests"
       before_install:
@@ -69,7 +72,6 @@ jobs:
         - git config --local user.email "blockproject3d@blockproject3d"
         - export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}
         - git tag $TRAVIS_TAG
-
     - stage: build-deploy
       os: linux
       dist: xenial
@@ -81,7 +83,6 @@ jobs:
         - git config --local user.email "blockproject3d@blockproject3d"
         - export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}
         - git tag $TRAVIS_TAG
-
     - stage: build-deploy
       os: osx
       compiler: clang
