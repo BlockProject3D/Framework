@@ -8,10 +8,10 @@ ModuleList = [ # [TargetName, FolderName]
 def runCMakeBuild():
     os.system("mkdir build")
     os.chdir("build")
-    os.system("cmake ..")
+    os.system("cmake -DCMAKE_GENERATOR_PLATFORM=x64 ..")
     for v in ModuleList:
         os.system("cmake --build . --target " + v[0] + " --config Debug")
-    os.system("cmake -DRELEASE=ON ..")
+    os.system("cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DRELEASE=ON ..")
     for v in ModuleList:
         os.system("cmake --build . --target " + v[0] + " --config Release")
     os.chdir("..")
