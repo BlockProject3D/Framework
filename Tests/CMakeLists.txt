@@ -74,4 +74,4 @@ set(SOURCES
 )
 
 bp_setup_program(${PROJECT_NAME} include)
-target_link_libraries(${PROJECT_NAME} PRIVATE debug gtest_main)
+target_link_libraries(${PROJECT_NAME} PRIVATE gtest_main)

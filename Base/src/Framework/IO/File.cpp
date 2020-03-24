@@ -114,7 +114,8 @@ File File::GetAbsolutePath() const
 #else
     char buf[PATH_MAX];
     std::memset(buf, 0, PATH_MAX);
-    realpath(*FullPath, buf);
+    if (realpath(*FullPath, buf) == Null)
+        throw IOException(String("Could not read absolute path: ") + OSPrivate::ObtainLastErrorString());
     str = String(buf);
 #endif
     return (File(str));

@@ -69,11 +69,11 @@ TEST(Json, API_1)
     EXPECT_EQ(carr[4], 42.42);
     arr.RemoveAt(4);
     arr.RemoveAt(0);
-    EXPECT_EQ(carr.Size(), 3);
-    EXPECT_EQ(arr.Size(), 3);
+    EXPECT_EQ(carr.Size(), 3U);
+    EXPECT_EQ(arr.Size(), 3U);
     arr.Items().Clear();
-    EXPECT_EQ(carr.Size(), 0);
-    EXPECT_EQ(arr.Size(), 0);
+    EXPECT_EQ(carr.Size(), 0U);
+    EXPECT_EQ(arr.Size(), 0U);
     const J::Object &cobj = objConst["TestObject"];
     EXPECT_EQ(cobj["a"], 0.0);
     EXPECT_EQ(cobj["b"], 0.1);
@@ -87,11 +87,11 @@ TEST(Json, API_1)
     EXPECT_EQ(mobj["test1"], 42.42);
     mobj.RemoveAt("test1");
     mobj.RemoveAt("a");
-    EXPECT_EQ(mobj.Size(), 3);
-    EXPECT_EQ(cobj.Size(), 3);
+    EXPECT_EQ(mobj.Size(), 3U);
+    EXPECT_EQ(cobj.Size(), 3U);
     mobj.Properties().Clear();
-    EXPECT_EQ(mobj.Size(), 0);
-    EXPECT_EQ(cobj.Size(), 0);
+    EXPECT_EQ(mobj.Size(), 0U);
+    EXPECT_EQ(cobj.Size(), 0U);
 }
 
 TEST(Json, API_2)

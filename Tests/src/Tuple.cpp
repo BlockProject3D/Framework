@@ -41,13 +41,13 @@ TEST(Tuple, Basic)
     tp.Get<1>() = 42.42f;
     tp.Get<2>() = 423.423;
 
-    EXPECT_EQ(tp.Size(), 3);
+    EXPECT_EQ(tp.Size(), 3U);
     EXPECT_EQ(tp.Get<int>(), 42);
     EXPECT_EQ(tp.Get<float>(), 42.42f);
     EXPECT_EQ(tp.Get<double>(), 423.423);
 
     tp.Get<int>() = -42;
-    EXPECT_EQ(tp.Size(), 3);
+    EXPECT_EQ(tp.Size(), 3U);
     EXPECT_EQ(tp.Get<int>(), -42);
     EXPECT_EQ(tp.Get<float>(), 42.42f);
     EXPECT_EQ(tp.Get<double>(), 423.423);
@@ -61,25 +61,25 @@ TEST(Tuple, Copy)
     tp.Get<1>() = 42.42f;
     tp.Get<2>() = 423.423;
 
-    EXPECT_EQ(tp.Size(), 3);
+    EXPECT_EQ(tp.Size(), 3U);
     EXPECT_EQ(tp.Get<int>(), 42);
     EXPECT_EQ(tp.Get<float>(), 42.42f);
     EXPECT_EQ(tp.Get<double>(), 423.423);
 
     auto copy = tp;
 
-    EXPECT_EQ(copy.Size(), 3);
+    EXPECT_EQ(copy.Size(), 3U);
     EXPECT_EQ(copy.Get<int>(), 42);
     EXPECT_EQ(copy.Get<float>(), 42.42f);
     EXPECT_EQ(copy.Get<double>(), 423.423);
 
     copy.Get<0>() = -1;
-    EXPECT_EQ(copy.Size(), 3);
+    EXPECT_EQ(copy.Size(), 3U);
     EXPECT_EQ(copy.Get<int>(), -1);
     EXPECT_EQ(copy.Get<float>(), 42.42f);
     EXPECT_EQ(copy.Get<double>(), 423.423);
 
-    EXPECT_EQ(tp.Size(), 3);
+    EXPECT_EQ(tp.Size(), 3U);
     EXPECT_EQ(tp.Get<int>(), 42);
     EXPECT_EQ(tp.Get<float>(), 42.42f);
     EXPECT_EQ(tp.Get<double>(), 423.423);
@@ -93,20 +93,20 @@ TEST(Tuple, Move)
     tp.Get<1>() = 42.42f;
     tp.Get<2>() = 423.423;
 
-    EXPECT_EQ(tp.Size(), 3);
+    EXPECT_EQ(tp.Size(), 3U);
     EXPECT_EQ(tp.Get<int>(), 42);
     EXPECT_EQ(tp.Get<float>(), 42.42f);
     EXPECT_EQ(tp.Get<double>(), 423.423);
 
     auto mv = std::move(tp);
 
-    EXPECT_EQ(mv.Size(), 3);
+    EXPECT_EQ(mv.Size(), 3U);
     EXPECT_EQ(mv.Get<int>(), 42);
     EXPECT_EQ(mv.Get<float>(), 42.42f);
     EXPECT_EQ(mv.Get<double>(), 423.423);
 
     mv.Get<0>() = -1;
-    EXPECT_EQ(mv.Size(), 3);
+    EXPECT_EQ(mv.Size(), 3U);
     EXPECT_EQ(mv.Get<int>(), -1);
     EXPECT_EQ(mv.Get<float>(), 42.42f);
     EXPECT_EQ(mv.Get<double>(), 423.423);
@@ -121,21 +121,21 @@ TEST(Tuple, Move_1)
     tp.Get<2>() = 423.423;
     tp.Get<3>() = "test";
 
-    EXPECT_EQ(tp.Size(), 4);
+    EXPECT_EQ(tp.Size(), 4U);
     EXPECT_EQ(tp.Get<int>(), 42);
     EXPECT_EQ(tp.Get<float>(), 42.42f);
     EXPECT_EQ(tp.Get<double>(), 423.423);
 
     auto mv = std::move(tp);
 
-    EXPECT_EQ(mv.Size(), 4);
+    EXPECT_EQ(mv.Size(), 4U);
     EXPECT_EQ(mv.Get<int>(), 42);
     EXPECT_EQ(mv.Get<float>(), 42.42f);
     EXPECT_EQ(mv.Get<double>(), 423.423);
     EXPECT_STREQ(*mv.Get<3>(), "test");
 
     mv.Get<0>() = -1;
-    EXPECT_EQ(mv.Size(), 4);
+    EXPECT_EQ(mv.Size(), 4U);
     EXPECT_EQ(mv.Get<int>(), -1);
     EXPECT_EQ(mv.Get<float>(), 42.42f);
     EXPECT_EQ(mv.Get<double>(), 423.423);
@@ -148,7 +148,7 @@ TEST(Tuple, String)
 {
     bpf::Tuple<int, float, double, bpf::String> tp(42, 42.42f, 423.423, "test");
 
-    EXPECT_EQ(tp.Size(), 4);
+    EXPECT_EQ(tp.Size(), 4U);
     EXPECT_EQ(tp.Get<int>(), 42);
     EXPECT_EQ(tp.Get<float>(), 42.42f);
     EXPECT_EQ(tp.Get<double>(), 423.423);
@@ -159,7 +159,7 @@ TEST(Tuple, IdenticalTypes)
 {
     bpf::Tuple<int, int> tp(42, 43);
 
-    EXPECT_EQ(tp.Size(), 2);
+    EXPECT_EQ(tp.Size(), 2U);
     EXPECT_EQ(tp.Get<int>(), 42);
     EXPECT_EQ(tp.Get<0>(), 42);
     EXPECT_EQ(tp.Get<1>(), 43);
@@ -169,7 +169,7 @@ TEST(Tuple, IdenticalTypes_Strings)
 {
     bpf::Tuple<bpf::String, bpf::String> tp("t", "t2");
 
-    EXPECT_EQ(tp.Size(), 2);
+    EXPECT_EQ(tp.Size(), 2U);
     EXPECT_STREQ(*tp.Get<bpf::String>(), "t");
     EXPECT_STREQ(*tp.Get<0>(), "t");
     EXPECT_STREQ(*tp.Get<1>(), "t2");
@@ -179,7 +179,7 @@ TEST(Tuple, NonCopy_Types)
 {
     bpf::Tuple<bpf::memory::UniquePtr<int>, bpf::memory::UniquePtr<int>> tp(bpf::memory::MakeUnique<int>(1), bpf::memory::MakeUnique<int>(-1));
 
-    EXPECT_EQ(tp.Size(), 2);
+    EXPECT_EQ(tp.Size(), 2U);
     EXPECT_EQ(*tp.Get<bpf::memory::UniquePtr<int>>(), 1);
     EXPECT_EQ(*tp.Get<0>(), 1);
     EXPECT_EQ(*tp.Get<1>(), -1);
@@ -189,14 +189,14 @@ TEST(Tuple, Move_NonCopy_Types)
 {
     bpf::Tuple<bpf::memory::UniquePtr<int>, bpf::memory::UniquePtr<int>> tp(bpf::memory::MakeUnique<int>(1), bpf::memory::MakeUnique<int>(-1));
 
-    EXPECT_EQ(tp.Size(), 2);
+    EXPECT_EQ(tp.Size(), 2U);
     EXPECT_EQ(*tp.Get<bpf::memory::UniquePtr<int>>(), 1);
     EXPECT_EQ(*tp.Get<0>(), 1);
     EXPECT_EQ(*tp.Get<1>(), -1);
 
     auto mv = std::move(tp);
     EXPECT_EQ(tp.Get<0>(), Null);
-    EXPECT_EQ(mv.Size(), 2);
+    EXPECT_EQ(mv.Size(), 2U);
     EXPECT_EQ(*mv.Get<bpf::memory::UniquePtr<int>>(), 1);
     EXPECT_EQ(*mv.Get<0>(), 1);
     EXPECT_EQ(*mv.Get<1>(), -1);

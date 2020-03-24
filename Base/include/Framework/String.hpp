@@ -89,7 +89,7 @@ namespace bpf
         class Stringifier
         {
         public:
-            inline static String Stringify(const T &obj, const fsize prec = 0)
+            inline static String Stringify(const T &obj, const fsize = 0)
             {
                 return (obj);
             }
@@ -515,7 +515,7 @@ namespace bpf
          * @param i value to convert to a string
          * @param prec precision for numeric types (0 means max precision)
          */
-        inline static String ValueOf(int8 i, const fsize prec = 0)
+        inline static String ValueOf(int8 i, const fsize = 0)
         {
             return (ValueOf(static_cast<int>(i)));
         }
@@ -525,7 +525,7 @@ namespace bpf
          * @param i value to convert to a string
          * @param prec precision for numeric types (0 means max precision)
          */
-        inline static String ValueOf(uint8 i, const fsize prec = 0)
+        inline static String ValueOf(uint8 i, const fsize = 0)
         {
             return (ValueOf(static_cast<int>(i)));
         }
@@ -535,7 +535,7 @@ namespace bpf
          * @param i value to convert to a string
          * @param prec precision for numeric types (0 means max precision)
          */
-        inline static String ValueOf(int16 i, const fsize prec = 0)
+        inline static String ValueOf(int16 i, const fsize = 0)
         {
             return (ValueOf(static_cast<int>(i)));
         }
@@ -545,7 +545,7 @@ namespace bpf
          * @param i value to convert to a string
          * @param prec precision for numeric types (0 means max precision)
          */
-        inline static String ValueOf(uint16 i, const fsize prec = 0)
+        inline static String ValueOf(uint16 i, const fsize = 0)
         {
             return (ValueOf(static_cast<int>(i)));
         }
@@ -555,7 +555,7 @@ namespace bpf
          * @param s value to convert to a string
          * @param prec precision for numeric types (0 means max precision)
          */
-        inline static String ValueOf(const char *s, const fsize prec = 0)
+        inline static String ValueOf(const char *s, const fsize = 0)
         {
             return (String(s));
         }
@@ -565,7 +565,7 @@ namespace bpf
          * @param b value to convert to a string
          * @param prec precision for numeric types (0 means max precision)
          */
-        inline static String ValueOf(bool b, const fsize prec = 0)
+        inline static String ValueOf(bool b, const fsize = 0)
         {
             return (b ? "TRUE" : "FALSE");
         }

@@ -57,7 +57,7 @@ TEST(VectorStatic, Create_1)
     EXPECT_EQ(v.X, 1);
     EXPECT_EQ(v.Y, 1);
 
-    EXPECT_EQ(v.Dim(), 2);
+    EXPECT_EQ(v.Dim(), 2U);
 }
 
 TEST(VectorStatic, Indexer_1)
@@ -221,7 +221,7 @@ TEST(VectorStatic, Create_2)
     EXPECT_EQ(v.Y, 1);
     EXPECT_EQ(v.Z, 1);
 
-    EXPECT_EQ(v.Dim(), 3);
+    EXPECT_EQ(v.Dim(), 3U);
 }
 
 TEST(VectorStatic, Indexer_2)
@@ -404,7 +404,7 @@ TEST(VectorStatic, Create_3)
     EXPECT_EQ(v.Z, 1);
     EXPECT_EQ(v.W, 1);
 
-    EXPECT_EQ(v.Dim(), 4);
+    EXPECT_EQ(v.Dim(), 4U);
 }
 
 TEST(VectorStatic, Indexer_3)
@@ -580,7 +580,7 @@ TEST(VectorStatic, Create_4)
     EXPECT_EQ(v(3), 1);
     EXPECT_EQ(v(4), 1);
 
-    EXPECT_EQ(v.Dim(), 5);
+    EXPECT_EQ(v.Dim(), 5U);
 }
 
 TEST(VectorStatic, Indexer_4)

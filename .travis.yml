@@ -16,6 +16,7 @@ jobs:
     - stage: debug-test
       os: windows
       compiler: MSVC
+      if: branch != release
       env:
         - BP_TEST_RUN_CMD="./Debug/BPF.Tests"
       <<: *builddbgscript
@@ -25,12 +26,14 @@ jobs:
       compiler:
         - gcc
         - clang
+      if: branch != release
       env:
         - BP_TEST_RUN_CMD="./Debug/BPF.Tests"
       <<: *builddbgscript
     - stage: debug-test
       os: osx
       compiler: clang
+      if: branch != release
       env:
         - BP_TEST_RUN_CMD="./Debug/BPF.Tests"
       <<: *builddbgscript
@@ -39,6 +42,7 @@ jobs:
       os: linux
       dist: xenial
       compiler: gcc
+      if: branch != release
       env:
         - BP_TEST_RUN_CMD="./Debug/BPF.Tests"
       before_install:
@@ -57,3 +61,54 @@ jobs:
         - lcov --remove coverage.info '*/gtest/*' --output-file coverage.info
         - lcov --remove coverage.info '*Tests/*' --output-file coverage.info
         - bash <(curl -s https://codecov.io/bash) -f coverage.info || echo "Codecov did not collect coverage reports"
+
+    - stage: build-deploy
+      os: windows
+      arch: x64
+      compiler: MSVC
+      if: branch = release
+      script:
+        - python ./Deploy.py
+        - file Framework.zip
+      before_deploy:
+        - git config --local user.name "BlockProject3D"
+        - git config --local user.email "blockproject3d@blockproject3d"
+        - export TRAVIS_TAG=Windows-x64-$(git log --format=%h -1)
+        - git tag $TRAVIS_TAG
+    - stage: build-deploy
+      os: linux
+      arch: x64
+      dist: xenial
+      if: branch = release
+      script:
+        - python ./Deploy.py
+        - file Framework.zip
+      before_deploy:
+        - git config --local user.name "BlockProject3D"
+        - git config --local user.email "blockproject3d@blockproject3d"
+        - export TRAVIS_TAG=Linux-x64-$(git log --format=%h -1)
+        - git tag $TRAVIS_TAG
+    - stage: build-deploy
+      os: osx
+      arch: x64
+      compiler: clang
+      if: branch = release
+      script:
+        - python ./Deploy.py
+        - file Framework.zip
+      before_deploy:
+        - git config --local user.name "BlockProject3D"
+        - git config --local user.email "blockproject3d@blockproject3d"
+        - export TRAVIS_TAG=MacOSX-x64-$(git log --format=%h -1)
+        - git tag $TRAVIS_TAG
+
+deploy:
+  provider: releases
+  skip_cleanup: true
+  overwrite: true
+  api_key:
+    secure: "BjVvLPOO2gBvsoQdgkfe41fbFcHX/6205HtkrsSoscAwjlZ4jUjZTb5z+fmzhrQ2sqhzHpofITLGnDiAt76ir7bEYEcYhVbgWCD/zK10X4uMu9nvb3gB9T8C4RO5BFdnp6/p5a8GVWTH2vlXFdUWcKOfwT+BzMwluQ6GdWc98+9Cq/KOihMPlbWgW/YfqSxxoPPCtwc/l2ksghyyjTenZkZXGqthvPErw8N2aU0RAM+S8dbWV9sg7vnIICVnmKczHUmvtG8kLm91kC1TyPz5x4CjGtNWMaHPZbcHJOM3DMfEZ6SOP08pDIaejPMFVp4unPoQeL/Tpt6YKHjT1saF7zt3LHmAKe6HBIKLx2uSHeoig90/eWNRYyIkPlRbKy6sT9nl5O6qmLrpDM6xTUAMYwIS5//MIOir/mQPmxaFSYEE9CI1zvLG00bPnP1w8MwEj5YRIPKJvNH0zcwW7sD/wuj2aBhla8sS236zvg4jNJZhFKPxw82ymbTI/1+ZvcVpmSjAZOjXV/PQNwXBBSmG4QjmvVbWsD+7l8WoqnnL2FSJD5PByhPIQkGczwZs6lYuq3fO07RcOD21aWvirfXFd71F3852pIjGMfkAhgoKOv6t620l6EHW7eVqItHvKLPZPYe/s1rPsrKjjPmBsMdBjuypFIDQlB0Lnd/uU6AJ0PA="
+  file: "${TRAVIS_BUILD_DIR}/Framework.zip"
+  name: ${TRAVIS_TAG}
+  on:
+    branch: release

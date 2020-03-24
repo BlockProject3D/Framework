@@ -26,11 +26,11 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <cassert>
-#include <iostream>
-#include <gtest/gtest.h>
 #include <Framework/System/DateTime.hpp>
 #include <Framework/System/Stringifier.DateTime.hpp>
+#include <cassert>
+#include <gtest/gtest.h>
+#include <iostream>
 
 TEST(DateTime, Creation)
 {
@@ -69,7 +69,6 @@ TEST(DateTime, Compare)
     EXPECT_TRUE(dt1 != dt);
     EXPECT_FALSE(dt == dt1);
     EXPECT_FALSE(dt1 == dt);
-
 }
 
 TEST(DateTime, Diff)
@@ -111,7 +110,7 @@ TEST(DateTime, Subtract_2)
     EXPECT_EQ(diff.Hours, 0);
     EXPECT_EQ(diff.Minutes, 0);
     EXPECT_EQ(diff.Seconds, 0);
-    EXPECT_EQ(diff.TotalSeconds, 0);
+    EXPECT_EQ(diff.TotalSeconds, 0U);
     EXPECT_EQ(dt, dt1);
 }
 

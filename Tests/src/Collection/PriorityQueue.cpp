@@ -45,7 +45,7 @@ TEST(PriorityQueue, Creation)
     queue.Push(-1, -1);
 
     EXPECT_EQ(queue.Top(), -1);
-    EXPECT_EQ(queue.Size(), 3);
+    EXPECT_EQ(queue.Size(), 3U);
 }
 
 TEST(PriorityQueue, Move)
@@ -59,8 +59,8 @@ TEST(PriorityQueue, Move)
     auto mv = std::move(queue);
 
     EXPECT_EQ(mv.Top(), -1);
-    EXPECT_EQ(mv.Size(), 3);
-    EXPECT_EQ(queue.Size(), 0);
+    EXPECT_EQ(mv.Size(), 3U);
+    EXPECT_EQ(queue.Size(), 0U);
 }
 
 TEST(PriorityQueue, Creation_List)
@@ -68,7 +68,7 @@ TEST(PriorityQueue, Creation_List)
     PriorityQueue<int, int, MinHeap> queue = { { 0, 0 }, { 42, 42 }, { -1, -1 } };
 
     EXPECT_EQ(queue.Top(), -1);
-    EXPECT_EQ(queue.Size(), 3);
+    EXPECT_EQ(queue.Size(), 3U);
 }
 
 TEST(PriorityQueue, Push_Pop_Limited)
@@ -80,7 +80,7 @@ TEST(PriorityQueue, Push_Pop_Limited)
     queue.Push(-1, -1);
 
     EXPECT_EQ(queue.Top(), -1);
-    EXPECT_EQ(queue.Size(), 3);
+    EXPECT_EQ(queue.Size(), 3U);
     EXPECT_THROW(queue.Push(1, 1), IndexException);
     const int i = 2;
     EXPECT_THROW(queue.Push(i, i), IndexException);
@@ -100,7 +100,7 @@ TEST(PriorityQueue, Push_Pop_Unlimited_1)
     queue.Push(-1, -1);
 
     EXPECT_EQ(queue.Top(), -1);
-    EXPECT_EQ(queue.Size(), 3);
+    EXPECT_EQ(queue.Size(), 3U);
     queue.Push(1, 1);
     EXPECT_EQ(queue.Pop(), -1);
     EXPECT_EQ(queue.Pop(), 0);
@@ -123,7 +123,7 @@ TEST(PriorityQueue, Push_Pop_Unlimited_2)
     queue.Push(8, 8);
     queue.Push(9, 9);
     queue.Push(10, 10);
-    EXPECT_EQ(queue.Size(), 10);
+    EXPECT_EQ(queue.Size(), 10U);
 }
 
 TEST(PriorityQueue, Push_Pop_Unlimited_3)
@@ -135,7 +135,7 @@ TEST(PriorityQueue, Push_Pop_Unlimited_3)
         const int j = i;
         queue.Push(j, j);
     }
-    EXPECT_EQ(queue.Size(), 10);
+    EXPECT_EQ(queue.Size(), 10U);
 }
 
 TEST(PriorityQueue, Push_Pop_NonCopy)
@@ -147,7 +147,7 @@ TEST(PriorityQueue, Push_Pop_NonCopy)
     queue.Push(-1, MakeUnique<int>(-1));
 
     EXPECT_EQ(*queue.Top(), -1);
-    EXPECT_EQ(queue.Size(), 3);
+    EXPECT_EQ(queue.Size(), 3U);
     queue.Push(1, MakeUnique<int>(1));
     EXPECT_EQ(*queue.Pop(), -1);
     EXPECT_EQ(*queue.Pop(), 0);

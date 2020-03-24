@@ -38,6 +38,7 @@ TEST(FileStream, OpenExcept)
     EXPECT_THROW(bpf::io::FileStream(bpf::io::File("./doesnotexist.txt"), bpf::io::FILE_MODE_READ), bpf::io::IOException);
 }
 
+#ifdef BUILD_DEBUG
 static void Test_OpenExcept_MemLeak()
 {
     EXPECT_THROW(bpf::io::FileStream(bpf::io::File("./doesnotexist.txt"), bpf::io::FILE_MODE_READ), bpf::io::IOException);
@@ -50,6 +51,7 @@ TEST(FileStream, OpenExcept_MemLeak)
     Test_OpenExcept_MemLeak();
     EXPECT_EQ(cur, bpf::memory::Memory::GetAllocCount());
 }
+#endif
 
 TEST(FileStream, Open_ReadWrite)
 {
@@ -86,11 +88,11 @@ TEST(FileStream, Open_Append)
     {
         bpf::io::FileStream stream(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_READ);
         char text[27];
-        EXPECT_EQ(stream.Read(text, 26), 26);
+        EXPECT_EQ(stream.Read(text, 26), 26U);
         text[26] = 0;
         EXPECT_STREQ(text, "This is a test\n3.141592654");
         stream.SeekOffset(-11);
-        EXPECT_EQ(stream.Read(text, 11), 11);
+        EXPECT_EQ(stream.Read(text, 11), 11U);
         text[11] = 0;
         EXPECT_STREQ(text, "3.141592654");
     }

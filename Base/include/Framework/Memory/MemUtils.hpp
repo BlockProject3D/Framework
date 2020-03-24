@@ -80,7 +80,7 @@ namespace bpf
                 {
                     for (fsize i = newCount; i != oldCount; ++i)
                         mem[i].~T();
-                    return (reinterpret_cast<T *>(Memory::Realloc(reinterpret_cast<void *>(mem), newCount * sizeof(T))));
+                    return (reinterpret_cast<T *>(Memory::Realloc(reinterpret_cast<void *>(mem), (newCount + 1) * sizeof(T))));
                 }
                 else
                 {

@@ -115,6 +115,7 @@ String Platform::IdentifyCPUBranding()
         //For getting a name here go ask ARM architecture team to provide the missing cpuid instruction or an instruction that can obtain brand name
         return ("Generic ARM Processor");
     #else
+#ifdef BUILD_DEBUG
         String res = "";
         fint reg_eax = 0;
         fint reg_ebx = 0;
@@ -149,6 +150,9 @@ String Platform::IdentifyCPUBranding()
         res += CPUIDIntToStr(reg_ecx);
         res += CPUIDIntToStr(reg_edx);
         return (res);
+#else
+        return ("Generic x86_64 CPU"); //In optimized build attempting to call cpuid crashes the application under unix
+#endif
     #endif
 #endif
 }

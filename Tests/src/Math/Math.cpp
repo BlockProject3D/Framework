@@ -65,10 +65,10 @@ TEST(MathUtils, IsPowerOfTwo)
 
 TEST(MathUtils, NextPowerOfTwo)
 {
-    EXPECT_EQ(bpf::math::MathUtils::FindNextPowerOfTwo(2), 4);
-    EXPECT_EQ(bpf::math::MathUtils::FindNextPowerOfTwo(1), 2);
-    EXPECT_EQ(bpf::math::MathUtils::FindNextPowerOfTwo(7), 8);
-    EXPECT_EQ(bpf::math::MathUtils::FindNextPowerOfTwo(9), 16);
+    EXPECT_EQ(bpf::math::MathUtils::FindNextPowerOfTwo(2), 4U);
+    EXPECT_EQ(bpf::math::MathUtils::FindNextPowerOfTwo(1), 2U);
+    EXPECT_EQ(bpf::math::MathUtils::FindNextPowerOfTwo(7), 8U);
+    EXPECT_EQ(bpf::math::MathUtils::FindNextPowerOfTwo(9), 16U);
 }
 
 TEST(MathUtils, IsPrime)
@@ -83,10 +83,10 @@ TEST(MathUtils, IsPrime)
 
 TEST(MathUtils, NextPrime)
 {
-    EXPECT_EQ(bpf::math::MathUtils::FindNextPrime(2), 3);
-    EXPECT_EQ(bpf::math::MathUtils::FindNextPrime(1), 2);
-    EXPECT_EQ(bpf::math::MathUtils::FindNextPrime(0), 2);
-    EXPECT_EQ(bpf::math::MathUtils::FindNextPrime(3), 5);
-    EXPECT_EQ(bpf::math::MathUtils::FindNextPrime(4), 5);
-    EXPECT_EQ(bpf::math::MathUtils::FindNextPrime(5), 7);
+    EXPECT_EQ(bpf::math::MathUtils::FindNextPrime(2), 3U);
+    EXPECT_EQ(bpf::math::MathUtils::FindNextPrime(1), 2U);
+    EXPECT_EQ(bpf::math::MathUtils::FindNextPrime(0), 2U);
+    EXPECT_EQ(bpf::math::MathUtils::FindNextPrime(3), 5U);
+    EXPECT_EQ(bpf::math::MathUtils::FindNextPrime(4), 5U);
+    EXPECT_EQ(bpf::math::MathUtils::FindNextPrime(5), 7U);
 }

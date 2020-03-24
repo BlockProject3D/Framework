@@ -26,13 +26,13 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <cassert>
-#include <iostream>
-#include <gtest/gtest.h>
 #include <Framework/Collection/List.hpp>
-#include <Framework/String.hpp>
 #include <Framework/Collection/Stringifier.List.hpp>
 #include <Framework/Memory/Utility.hpp>
+#include <Framework/String.hpp>
+#include <cassert>
+#include <gtest/gtest.h>
+#include <iostream>
 
 using namespace bpf::memory;
 using namespace bpf::collection;
@@ -52,7 +52,7 @@ TEST(List, Creation)
 
 TEST(List, Creation_List)
 {
-    List<int> lst = { 0, 3, 7 };
+    List<int> lst = {0, 3, 7};
 
     EXPECT_EQ(lst[0], 0);
     EXPECT_EQ(lst[1], 3);
@@ -62,19 +62,19 @@ TEST(List, Creation_List)
 TEST(List, Add)
 {
     const int i = 12;
-    List<int> lst = { i, 2 };
+    List<int> lst = {i, 2};
 
-    EXPECT_EQ(lst.Size(), 2);
+    EXPECT_EQ(lst.Size(), 2U);
     lst.Add(3);
-    EXPECT_EQ(lst.Size(), 3);
+    EXPECT_EQ(lst.Size(), 3U);
     lst.Add(i);
-    EXPECT_EQ(lst.Size(), 4);
+    EXPECT_EQ(lst.Size(), 4U);
     EXPECT_STREQ(*String::ValueOf(lst), "[12, 2, 3, 12]");
 }
 
 TEST(List, Indexer)
 {
-    List<int> lst = { 0, 3, 7 };
+    List<int> lst = {0, 3, 7};
 
     EXPECT_EQ(lst[0], 0);
     EXPECT_EQ(lst[1], 3);
@@ -83,15 +83,15 @@ TEST(List, Indexer)
     EXPECT_EQ(lst[1], 42);
     EXPECT_THROW(lst[3], IndexException);
     EXPECT_THROW(lst[678], IndexException);
-    EXPECT_THROW(lst[(fsize) - 1], IndexException);
-    EXPECT_THROW(lst[(fsize) - 465], IndexException);
+    EXPECT_THROW(lst[(fsize)-1], IndexException);
+    EXPECT_THROW(lst[(fsize)-465], IndexException);
     const auto &ref = lst;
-    EXPECT_THROW(ref[(fsize) - 465], IndexException);
+    EXPECT_THROW(ref[(fsize)-465], IndexException);
 }
 
 TEST(List, FindByKey)
 {
-    List<int> lst = { 0, 3, 7 };
+    List<int> lst = {0, 3, 7};
 
     EXPECT_EQ(lst.begin(), lst.FindByKey(0));
     EXPECT_EQ(--lst.end(), lst.FindByKey(2));
@@ -100,7 +100,7 @@ TEST(List, FindByKey)
 
 TEST(List, FindByValue)
 {
-    List<int> lst = { 0, 3, 7 };
+    List<int> lst = {0, 3, 7};
 
     EXPECT_EQ(lst.begin(), lst.FindByValue(0));
     EXPECT_EQ(--lst.end(), lst.FindByValue(7));
@@ -110,18 +110,18 @@ TEST(List, FindByValue)
 
 TEST(List, Find)
 {
-    List<int> lst = { 0, 3, 7 };
+    List<int> lst = {0, 3, 7};
 
-    EXPECT_EQ(++lst.begin(), lst.Find([](fsize pos, const int &val) { return (val == 3); }));
-    EXPECT_EQ(lst.end(), lst.Find([](fsize pos, const int &val) { return (val == 42); }));
+    EXPECT_EQ(++lst.begin(), lst.Find([](fsize, const int &val) { return (val == 3); }));
+    EXPECT_EQ(lst.end(), lst.Find([](fsize, const int &val) { return (val == 42); }));
 }
 
 TEST(List, Equal)
 {
-    List<int> lst = { 0, 3, 7 };
-    List<int> lst1 = { 0, 3, 7 };
-    List<int> lst2 = { 0, 3 };
-    List<int> lst3 = { 0, 3, 4 };
+    List<int> lst = {0, 3, 7};
+    List<int> lst1 = {0, 3, 7};
+    List<int> lst2 = {0, 3};
+    List<int> lst3 = {0, 3, 4};
 
     EXPECT_TRUE(lst == lst1);
     EXPECT_FALSE(lst != lst1);
@@ -133,8 +133,8 @@ TEST(List, Equal)
 
 TEST(List, Concatenate)
 {
-    List<int> lst = { 0, 3, 7 };
-    List<int> lst1 = { 0, 3, 7 };
+    List<int> lst = {0, 3, 7};
+    List<int> lst1 = {0, 3, 7};
 
     auto concatenated = lst + lst1;
     EXPECT_STREQ(*String::ValueOf(concatenated), "[0, 3, 7, 0, 3, 7]");
@@ -159,7 +159,7 @@ TEST(List, FirstLast_1)
 
 TEST(List, FirstLast_2)
 {
-    List<int> lst = { 0, 1 };
+    List<int> lst = {0, 1};
     const auto &cref = lst;
     List<int> lst1;
     const auto &cref1 = lst1;
@@ -201,13 +201,13 @@ TEST(List, Move)
     EXPECT_EQ(mv[0], 0);
     EXPECT_EQ(mv[1], 3);
     EXPECT_EQ(mv[2], 7);
-    EXPECT_EQ(lst.Size(), 0);
+    EXPECT_EQ(lst.Size(), 0U);
     EXPECT_EQ(lst.begin(), lst.end());
 }
 
 TEST(List, Remove)
 {
-    List<int> lst = { 0, 3, 7, 0 };
+    List<int> lst = {0, 3, 7, 0};
 
     lst.Remove(0, false);
     EXPECT_STREQ(*String::ValueOf(lst), "[3, 7, 0]");
@@ -221,7 +221,7 @@ TEST(List, Remove)
 
 TEST(List, RemoveAt_1)
 {
-    List<int> lst = { 0, 3, 7, 0 };
+    List<int> lst = {0, 3, 7, 0};
 
     lst.RemoveAt(2);
     EXPECT_STREQ(*String::ValueOf(lst), "[0, 3, 0]");
@@ -233,7 +233,7 @@ TEST(List, RemoveAt_1)
     EXPECT_NE(it, lst.end());
     lst.RemoveAt(--lst.end());
     EXPECT_STREQ(*String::ValueOf(lst), "[]");
-    lst = { 0, 3, 7, 0 };
+    lst = {0, 3, 7, 0};
     lst.RemoveAt(--(--lst.end()));
     EXPECT_STREQ(*String::ValueOf(lst), "[0, 3, 0]");
     lst.RemoveAt(lst.end());
@@ -245,7 +245,7 @@ TEST(List, RemoveAt_1)
 
 TEST(List, RemoveAt_2)
 {
-    List<int> lst = { 0, 3, 7, 0 };
+    List<int> lst = {0, 3, 7, 0};
 
     lst.RemoveAt(2);
     EXPECT_STREQ(*String::ValueOf(lst), "[0, 3, 0]");
@@ -256,7 +256,7 @@ TEST(List, RemoveAt_2)
     EXPECT_NE(lst.begin(), lst.end());
     lst.RemoveAt(--lst.end());
     EXPECT_STREQ(*String::ValueOf(lst), "[]");
-    lst = { 0, 3, 7, 0 };
+    lst = {0, 3, 7, 0};
     lst.RemoveAt(--(--lst.end()));
     EXPECT_STREQ(*String::ValueOf(lst), "[0, 3, 0]");
     lst.RemoveAt(lst.end());
@@ -267,7 +267,7 @@ TEST(List, RemoveAt_2)
 
 TEST(List, RemoveLast)
 {
-    List<int> lst = { 0, 3, 7, 0 };
+    List<int> lst = {0, 3, 7, 0};
 
     EXPECT_STREQ(*String::ValueOf(lst), "[0, 3, 7, 0]");
     EXPECT_NE(lst.begin(), lst.end());
@@ -287,7 +287,7 @@ TEST(List, RemoveLast)
 
 TEST(List, Insert_1)
 {
-    List<int> lst = { 0, 3, 7, 0 };
+    List<int> lst = {0, 3, 7, 0};
 
     lst.Insert(1, 4);
     EXPECT_STREQ(*String::ValueOf(lst), "[0, 4, 3, 7, 0]");
@@ -310,7 +310,7 @@ TEST(List, Insert_1)
 
 TEST(List, Insert_2)
 {
-    List<int> lst = { 0, 3, 7, 0 };
+    List<int> lst = {0, 3, 7, 0};
 
     lst.Insert(1, 4);
     EXPECT_STREQ(*String::ValueOf(lst), "[0, 4, 3, 7, 0]");
@@ -333,7 +333,7 @@ TEST(List, Insert_2)
 
 TEST(List, Insert_3)
 {
-    List<int> lst = { 0, 3, 7, 0 };
+    List<int> lst = {0, 3, 7, 0};
 
     lst.Insert(1, 4);
     EXPECT_STREQ(*String::ValueOf(lst), "[0, 4, 3, 7, 0]");
@@ -356,7 +356,7 @@ TEST(List, Insert_3)
 
 TEST(List, Insert_4)
 {
-    List<int> lst = { 0, 3, 7, 0 };
+    List<int> lst = {0, 3, 7, 0};
 
     lst.Insert(1, 4);
     EXPECT_STREQ(*String::ValueOf(lst), "[0, 4, 3, 7, 0]");
@@ -379,7 +379,7 @@ TEST(List, Insert_4)
 
 TEST(List, Insert_5)
 {
-    List<int> lst = { 0, 3, 7, 0 };
+    List<int> lst = {0, 3, 7, 0};
     const int a = 4;
     const int b = 5;
     const int c = -1;
@@ -426,7 +426,7 @@ TEST(List, Insert_6)
 
 TEST(List, Iterator_1)
 {
-    List<int> lst = { 0, 3, 7, 0 };
+    List<int> lst = {0, 3, 7, 0};
 
     auto it = lst.begin();
     ++it;
@@ -446,7 +446,7 @@ TEST(List, Iterator_1)
 
 TEST(List, Iterator_2)
 {
-    List<String> lst = { "a", "b", "c" };
+    List<String> lst = {"a", "b", "c"};
 
     EXPECT_EQ(lst.begin()->Size(), 1);
     EXPECT_EQ(lst.begin()->ByteAt(0), 'a');
@@ -454,7 +454,7 @@ TEST(List, Iterator_2)
 
 TEST(List, ReverseIterator_1)
 {
-    List<int> lst = { 0, 3, 7, 0 };
+    List<int> lst = {0, 3, 7, 0};
 
     auto it = lst.rbegin();
     ++it;
@@ -474,7 +474,7 @@ TEST(List, ReverseIterator_1)
 
 TEST(List, ReverseIterator_2)
 {
-    List<String> lst = { "a", "b", "c" };
+    List<String> lst = {"a", "b", "c"};
 
     EXPECT_EQ(lst.rbegin()->Size(), 1);
     EXPECT_EQ(lst.rbegin()->ByteAt(0), 'c');
@@ -482,11 +482,11 @@ TEST(List, ReverseIterator_2)
 
 TEST(List, Clear)
 {
-    List<int> lst = { 0, 3, 7, 0 };
+    List<int> lst = {0, 3, 7, 0};
 
-    EXPECT_EQ(lst.Size(), 4);
+    EXPECT_EQ(lst.Size(), 4U);
     lst.Clear();
-    EXPECT_EQ(lst.Size(), 0);
+    EXPECT_EQ(lst.Size(), 0U);
     EXPECT_EQ(lst.begin(), lst.end());
 }
 
@@ -558,6 +558,7 @@ TEST(List, ReadWrite_NonCopy)
     EXPECT_EQ(*lst[0], 42);
 }
 
+#ifdef BUILD_DEBUG
 static void Test_ReadWrite_NonCopy_MemLeak()
 {
     List<UniquePtr<int>> lst;
@@ -575,6 +576,7 @@ TEST(List, ReadWrite_NonCopy_MemLeak)
     Test_ReadWrite_NonCopy_MemLeak();
     EXPECT_EQ(cur, Memory::GetAllocCount());
 }
+#endif
 
 TEST(List, Swap_1)
 {
@@ -708,29 +710,30 @@ TEST(List, Sort_Err)
 {
     List<int> lst;
     lst.Sort();
-    EXPECT_EQ(lst.Size(), 0);
-    lst = { 0 };
+    EXPECT_EQ(lst.Size(), 0U);
+    lst = {0};
     lst.Sort();
-    EXPECT_EQ(lst.Size(), 1);
+    EXPECT_EQ(lst.Size(), 1U);
     EXPECT_STREQ(*String::ValueOf(lst), "[0]");
 }
 
+#ifdef BUILD_DEBUG
 static void Test_CopyMoveObj_MemLeak()
 {
-    List<String> lst = { "a", "b", "c" };
+    List<String> lst = {"a", "b", "c"};
 
     lst.Add("d");
     List<String> cpy = lst;
     EXPECT_EQ(lst.Size(), cpy.Size());
-    EXPECT_EQ(lst.Size(), 4);
+    EXPECT_EQ(lst.Size(), 4U);
     List<String> mv = std::move(lst);
-    EXPECT_EQ(lst.Size(), 0);
-    EXPECT_EQ(mv.Size(), 4);
-    EXPECT_EQ(cpy.Size(), 4);
+    EXPECT_EQ(lst.Size(), 0U);
+    EXPECT_EQ(mv.Size(), 4U);
+    EXPECT_EQ(cpy.Size(), 4U);
     cpy.Add("e");
-    EXPECT_EQ(cpy.Size(), 5);
-    EXPECT_EQ(mv.Size(), 4);
-    EXPECT_EQ(lst.Size(), 0);
+    EXPECT_EQ(cpy.Size(), 5U);
+    EXPECT_EQ(mv.Size(), 4U);
+    EXPECT_EQ(lst.Size(), 0U);
     EXPECT_STREQ(*String::ValueOf(mv), "[a, b, c, d]");
     EXPECT_STREQ(*String::ValueOf(cpy), "[a, b, c, d, e]");
 }
@@ -742,3 +745,4 @@ TEST(List, Test_CopyMoveObj_MemLeak)
     Test_CopyMoveObj_MemLeak();
     EXPECT_EQ(cur, Memory::GetAllocCount());
 }
+#endif

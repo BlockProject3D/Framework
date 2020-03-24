@@ -120,8 +120,8 @@ void WindowsApp::CreateConsole(const fint rows, const fint columns)
     if (AllocConsole() == FALSE)
         throw OSException("Could not allocate console");
     GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &coninfo);
-    coninfo.dwSize.Y = rows;
-    coninfo.dwSize.X = columns;
+    coninfo.dwSize.Y = (SHORT)rows;
+    coninfo.dwSize.X = (SHORT)columns;
     SetConsoleScreenBufferSize(GetStdHandle(STD_OUTPUT_HANDLE), coninfo.dwSize);
     lStdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
     hConHandle = _open_osfhandle((intptr_t)lStdHandle, _O_TEXT);

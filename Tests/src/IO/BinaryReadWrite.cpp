@@ -165,10 +165,10 @@ TEST(BinaryReadWrite, ReadWrite_Unbuffered)
     EXPECT_EQ(d, 42.4242);
     EXPECT_EQ(b, true);
     buf.Seek(0);
-    EXPECT_EQ(w.Write("test", 5), 5);
+    EXPECT_EQ(w.Write("test", 5), 5U);
     buf.Seek(0);
     char test[5];
-    EXPECT_EQ(r.Read(test, 5), 5);
+    EXPECT_EQ(r.Read(test, 5), 5U);
     EXPECT_STREQ(test, "test");
 }
 

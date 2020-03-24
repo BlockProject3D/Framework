@@ -26,11 +26,11 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <cassert>
-#include <iostream>
-#include <gtest/gtest.h>
 #include <Framework/Collection/Stack.hpp>
 #include <Framework/Memory/Utility.hpp>
+#include <cassert>
+#include <gtest/gtest.h>
+#include <iostream>
 
 using namespace bpf::memory;
 using namespace bpf::collection;
@@ -45,7 +45,7 @@ TEST(Stack, Creation)
     stack.Push(-1);
 
     EXPECT_EQ(stack.Top(), -1);
-    EXPECT_EQ(stack.Size(), 3);
+    EXPECT_EQ(stack.Size(), 3U);
 }
 
 TEST(Stack, Move)
@@ -59,16 +59,16 @@ TEST(Stack, Move)
     auto mv = std::move(stack);
 
     EXPECT_EQ(mv.Top(), -1);
-    EXPECT_EQ(mv.Size(), 3);
-    EXPECT_EQ(stack.Size(), 0);
+    EXPECT_EQ(mv.Size(), 3U);
+    EXPECT_EQ(stack.Size(), 0U);
 }
 
 TEST(Stack, Creation_List)
 {
-    Stack<int> stack = { 0, 42, -1 };
+    Stack<int> stack = {0, 42, -1};
 
     EXPECT_EQ(stack.Top(), -1);
-    EXPECT_EQ(stack.Size(), 3);
+    EXPECT_EQ(stack.Size(), 3U);
 }
 
 TEST(Stack, Push_Pop_Limited)
@@ -80,7 +80,7 @@ TEST(Stack, Push_Pop_Limited)
     stack.Push(-1);
 
     EXPECT_EQ(stack.Top(), -1);
-    EXPECT_EQ(stack.Size(), 3);
+    EXPECT_EQ(stack.Size(), 3U);
     EXPECT_THROW(stack.Push(1), StackOverflowException);
     const int i = 2;
     EXPECT_THROW(stack.Push(i), StackOverflowException);
@@ -99,9 +99,9 @@ TEST(Stack, Push_Pop_Unlimited_1)
     stack.Push(-1);
 
     EXPECT_EQ(stack.Top(), -1);
-    EXPECT_EQ(stack.Size(), 3);
+    EXPECT_EQ(stack.Size(), 3U);
     stack.Push(1);
-    EXPECT_EQ(stack.Size(), 4);
+    EXPECT_EQ(stack.Size(), 4U);
     EXPECT_EQ(stack.Top(), 1);
     EXPECT_EQ(stack.Pop(), 1);
     EXPECT_EQ(stack.Pop(), -1);
@@ -124,7 +124,7 @@ TEST(Stack, Push_Pop_Unlimited_2)
     stack.Push(8);
     stack.Push(9);
     stack.Push(10);
-    EXPECT_EQ(stack.Size(), 10);
+    EXPECT_EQ(stack.Size(), 10U);
 }
 
 TEST(Stack, Push_Pop_NonCopy)
@@ -136,9 +136,9 @@ TEST(Stack, Push_Pop_NonCopy)
     stack.Push(MakeUnique<int>(-1));
 
     EXPECT_EQ(*stack.Top(), -1);
-    EXPECT_EQ(stack.Size(), 3);
+    EXPECT_EQ(stack.Size(), 3U);
     stack.Push(MakeUnique<int>(1));
-    EXPECT_EQ(stack.Size(), 4);
+    EXPECT_EQ(stack.Size(), 4U);
     EXPECT_EQ(*stack.Top(), 1);
     EXPECT_EQ(*stack.Pop(), 1);
     EXPECT_EQ(*stack.Pop(), -1);

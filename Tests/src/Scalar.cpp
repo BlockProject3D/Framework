@@ -194,7 +194,7 @@ TEST(UInt64, TryParse)
 {
 	bpf::uint64 res;
 	EXPECT_TRUE(bpf::UInt64::TryParse("42", res));
-	EXPECT_EQ(res, 42);
+	EXPECT_EQ(res, 42U);
 }
 
 TEST(Float, Parse)

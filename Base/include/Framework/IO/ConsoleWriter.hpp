@@ -166,7 +166,7 @@ namespace bpf
                 return (*this);
             }
 
-            inline ConsoleWriter &operator<<(const Console::ClearTextStyle &style)
+            inline ConsoleWriter &operator<<(const Console::ClearTextStyle &)
             {
                 Flush();
                 Console::ResetTextStyle();

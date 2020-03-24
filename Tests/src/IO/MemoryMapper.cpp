@@ -26,13 +26,13 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <cassert>
-#include <iostream>
-#include <gtest/gtest.h>
 #include <Framework/IO/FileStream.hpp>
 #include <Framework/IO/IOException.hpp>
 #include <Framework/IO/MemoryMapper.hpp>
 #include <Framework/Memory/Memory.hpp>
+#include <cassert>
+#include <gtest/gtest.h>
+#include <iostream>
 
 TEST(MemoryMapper, OpenExcept)
 {
@@ -47,6 +47,7 @@ TEST(MemoryMapper, OpenExcept)
     ASSERT_TRUE(false);
 }
 
+#ifdef BUILD_DEBUG
 static void Test_OpenExcept_MemLeak()
 {
     try
@@ -67,6 +68,7 @@ TEST(MemoryMapper, OpenExcept_MemLeak)
     Test_OpenExcept_MemLeak();
     EXPECT_EQ(cur, bpf::memory::Memory::GetAllocCount());
 }
+#endif
 
 static void SetupTestFile(bpf::io::File &f)
 {

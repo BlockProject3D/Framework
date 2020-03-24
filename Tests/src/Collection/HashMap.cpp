@@ -80,11 +80,11 @@ TEST(HashMap, Add)
     const int i = 12;
     HashMap<int, int> lst = { { 0, i }, { 1, 2 } };
 
-    EXPECT_EQ(lst.Size(), 2);
+    EXPECT_EQ(lst.Size(), 2U);
     lst.Add(2, 3);
-    EXPECT_EQ(lst.Size(), 3);
+    EXPECT_EQ(lst.Size(), 3U);
     lst.Add(3, i);
-    EXPECT_EQ(lst.Size(), 4);
+    EXPECT_EQ(lst.Size(), 4U);
     EXPECT_STREQ(*String::ValueOf(lst), "{'0': 12, '1': 2, '2': 3, '3': 12}");
 }
 
@@ -194,7 +194,7 @@ TEST(HashMap, Move)
     EXPECT_EQ(mv[0], 0);
     EXPECT_EQ(mv[1], 3);
     EXPECT_EQ(mv[2], 7);
-    EXPECT_EQ(lst.Size(), 0);
+    EXPECT_EQ(lst.Size(), 0U);
     EXPECT_EQ(lst.begin(), lst.end());
 }
 
@@ -337,9 +337,9 @@ TEST(HashMap, Clear)
 {
     HashMap<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
 
-    EXPECT_EQ(lst.Size(), 4);
+    EXPECT_EQ(lst.Size(), 4U);
     lst.Clear();
-    EXPECT_EQ(lst.Size(), 0);
+    EXPECT_EQ(lst.Size(), 0U);
     EXPECT_EQ(lst.begin(), lst.end());
 }
 
@@ -425,6 +425,7 @@ TEST(HashMap, ReadWrite_NonCopy)
     EXPECT_EQ(*map["test3"], 9);
 }
 
+#ifdef BUILD_DEBUG
 static void RunLeakCheckBody()
 {
     HashMap<String, UniquePtr<int>> map;
@@ -450,6 +451,7 @@ TEST(HashMap, ReadWrite_LeakCheck)
     RunLeakCheckBody();
     EXPECT_EQ(count, Memory::GetAllocCount());
 }
+#endif
 
 TEST(HashMap, Swap_1)
 {
