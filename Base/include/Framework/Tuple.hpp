@@ -27,6 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include <type_traits>
 #include "Framework/Types.hpp"
 
 namespace bpf
@@ -118,7 +119,7 @@ namespace bpf
             Arg arg;
 
         public:
-            template <typename = std::enable_if_t<std::is_default_constructible<Arg>::value>>
+            template <typename = std::enable_if<std::is_default_constructible<Arg>::value>::type>
             inline Elem()
             {
             }
@@ -149,7 +150,7 @@ namespace bpf
             template <fsize I>
             using ElemType = typename Chooser<I, Args...>::type;
 
-            template <typename = std::enable_if_t<__internal_tp::IsAllDefaultConstructible<Args...>::Value>>
+            template <typename = std::enable_if<__internal_tp::IsAllDefaultConstructible<Args...>::Value>::type>
             inline Impl()
                 : Elem<N, Args>()...
             {
@@ -191,7 +192,7 @@ namespace bpf
                                  typename __internal_tp::Range<0, sizeof...(Args), __internal_tp::Sizes<>>::type, Args...>
     {
     public:
-        template <typename = std::enable_if_t<__internal_tp::IsAllDefaultConstructible<Args...>::Value>>
+        template <typename = std::enable_if<__internal_tp::IsAllDefaultConstructible<Args...>::Value>::type>
         inline Tuple()
             : __internal_tp::Impl<typename __internal_tp::Range<0, sizeof...(Args), __internal_tp::Sizes<>>::type, Args...>()
         {
