@@ -167,6 +167,7 @@ set(SOURCES
     ./src/Framework/IO/ConsoleWriter.cpp    
     ./src/Framework/Log/DefaultLogger.cpp
     ./src/Framework/Log/FileLogger.cpp
+    ./src/Framework/Log/Logger.cpp
     ./src/Framework/Math/MathUtils.cpp
     ./src/Framework/Math/Random.cpp
     ./src/Framework/Math/Color.cpp

@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -43,24 +43,18 @@ namespace bpf
             String _name;
 
             template <typename ...Args>
-            inline String LogMessage(const ELogLevel level, const String &format, Args &&...args)
+            inline void LogMessage(const ELogLevel level, const String &format, Args &&...args)
             {
                 for (auto &ptr : _handlers)
                     ptr->LogMessage(level, _name, String::Format(format, std::forward<Args &&>(args)...));
             }
         public:
-            explicit inline Logger(const String &name)
-                : _name(name)
-            {
-            }
+            explicit Logger(const String &name);
 
             Logger(const Logger &other) = delete; //For some reasons MSVC is unable to identify this class cannot be coppied
             Logger &operator=(const Logger &other) = delete; //For some reasons MSVC is unable to identify this class cannot be coppied
 
-            inline void AddHandler(memory::UniquePtr<ILogHandler> &&ptr)
-            {
-                _handlers.Add(std::move(ptr));
-            }
+            void AddHandler(memory::UniquePtr<ILogHandler> &&ptr);
 
             template <typename ...Args>
             inline void Info(const String &format, Args &&...args)
