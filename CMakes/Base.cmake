@@ -1,3 +1,5 @@
+set(CMAKE_CXX_FLAGS_RELEASE "-O2")
+
 #Utility function used to prepend a list with a prefix
 function(bp_prepend lst prefix)
     set(listVar "")
@@ -36,7 +38,7 @@ if (CMAKE_COMPILER_IS_GNUCC)
 endif (CMAKE_COMPILER_IS_GNUCC)
 
 if (MSVC)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
 endif (MSVC)
 
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")

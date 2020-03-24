@@ -109,10 +109,10 @@ TEST(TextReadWrite, ReadWrite_UTF8_2)
         EXPECT_EQ(a, 0);
         EXPECT_EQ(b, 0);
         EXPECT_EQ(c, 0);
-        EXPECT_EQ(d, 0);
-        EXPECT_EQ(e, 0);
-        EXPECT_EQ(g, 0);
-        EXPECT_EQ(h, 0);
+        EXPECT_EQ(d, 0U);
+        EXPECT_EQ(e, 0U);
+        EXPECT_EQ(g, 0U);
+        EXPECT_EQ(h, 0U);
     }
 }
 
@@ -167,10 +167,10 @@ TEST(TextReadWrite, ReadWrite_Unbuffered)
     EXPECT_EQ(d, 0);
     EXPECT_EQ(b, false);
     buf.Seek(0);
-    EXPECT_EQ(w.Write("test", 5), 5);
+    EXPECT_EQ(w.Write("test", 5), 5U);
     buf.Seek(0);
     char test[5];
-    EXPECT_EQ(r.Read(test, 5), 5);
+    EXPECT_EQ(r.Read(test, 5), 5U);
     EXPECT_STREQ(test, "test");
 }
 
@@ -237,10 +237,10 @@ TEST(TextReadWrite, ReadWrite_UTF16_2)
         EXPECT_EQ(a, 0);
         EXPECT_EQ(b, 0);
         EXPECT_EQ(c, 0);
-        EXPECT_EQ(d, 0);
-        EXPECT_EQ(e, 0);
-        EXPECT_EQ(g, 0);
-        EXPECT_EQ(h, 0);
+        EXPECT_EQ(d, 0U);
+        EXPECT_EQ(e, 0U);
+        EXPECT_EQ(g, 0U);
+        EXPECT_EQ(h, 0U);
     }
 }
 
@@ -333,10 +333,10 @@ TEST(TextReadWrite, ReadWrite_UTF32_2)
         EXPECT_EQ(a, 0);
         EXPECT_EQ(b, 0);
         EXPECT_EQ(c, 0);
-        EXPECT_EQ(d, 0);
-        EXPECT_EQ(e, 0);
-        EXPECT_EQ(g, 0);
-        EXPECT_EQ(h, 0);
+        EXPECT_EQ(d, 0U);
+        EXPECT_EQ(e, 0U);
+        EXPECT_EQ(g, 0U);
+        EXPECT_EQ(h, 0U);
     }
 }
 

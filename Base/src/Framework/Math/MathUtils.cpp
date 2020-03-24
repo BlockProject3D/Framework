@@ -26,9 +26,12 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include "Framework/Math/MathUtils.hpp"
 #include <stdlib.h>
 #include <time.h>
-#include "Framework/Math/MathUtils.hpp"
+#ifndef BUILD_DEBUG
+    #include <cstring>
+#endif
 
 using namespace bpf::math;
 using namespace bpf;
@@ -74,11 +77,20 @@ float MathUtils::InvSqrt(const float nb)
 {
     float y = nb;
     float x2 = nb * 0.5f;
+#ifdef BUILD_DEBUG
     uint32 nbu = *(uint32 *)&y;
+#else
+    uint32 nbu;
+    std::memcpy(&nbu, &y, 4);
+#endif
     const float threehalfs = 1.5f;
 
     nbu = 0x5F3759DF - (nbu >> 1);
+#ifdef BUILD_DEBUG
     y = *(float *)&nbu;
+#else
+    std::memcpy(&y, &nbu, 4);
+#endif
     y = y * (threehalfs - (x2 * y * y));
     return (y);
 }

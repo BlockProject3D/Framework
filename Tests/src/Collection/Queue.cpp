@@ -45,7 +45,7 @@ TEST(Queue, Creation)
     queue.Push(-1);
 
     EXPECT_EQ(queue.Top(), 0);
-    EXPECT_EQ(queue.Size(), 3);
+    EXPECT_EQ(queue.Size(), 3U);
 }
 
 TEST(Queue, Move)
@@ -59,8 +59,8 @@ TEST(Queue, Move)
     auto mv = std::move(queue);
 
     EXPECT_EQ(mv.Top(), 0);
-    EXPECT_EQ(mv.Size(), 3);
-    EXPECT_EQ(queue.Size(), 0);
+    EXPECT_EQ(mv.Size(), 3U);
+    EXPECT_EQ(queue.Size(), 0U);
 }
 
 TEST(Queue, Creation_List)
@@ -68,7 +68,7 @@ TEST(Queue, Creation_List)
     Queue<int> queue = { 0, 42, -1 };
 
     EXPECT_EQ(queue.Top(), 0);
-    EXPECT_EQ(queue.Size(), 3);
+    EXPECT_EQ(queue.Size(), 3U);
 }
 
 TEST(Queue, Push_Pop_Limited_1)
@@ -80,7 +80,7 @@ TEST(Queue, Push_Pop_Limited_1)
     queue.Push(-1);
 
     EXPECT_EQ(queue.Top(), 0);
-    EXPECT_EQ(queue.Size(), 3);
+    EXPECT_EQ(queue.Size(), 3U);
     queue.Push(1);
     EXPECT_EQ(queue.Pop(), 1);
     EXPECT_THROW(queue.Pop(), IndexException);
@@ -96,7 +96,7 @@ TEST(Queue, Push_Pop_Limited_2)
     queue.Push(-1);
 
     EXPECT_EQ(queue.Top(), 0);
-    EXPECT_EQ(queue.Size(), 3);
+    EXPECT_EQ(queue.Size(), 3U);
     EXPECT_EQ(queue.Pop(), 0);
     EXPECT_EQ(queue.Pop(), 42);
     EXPECT_EQ(queue.Pop(), -1);
@@ -117,7 +117,7 @@ TEST(Queue, Push_Pop_Limited_3)
     queue.Push(c);
 
     EXPECT_EQ(queue.Top(), 0);
-    EXPECT_EQ(queue.Size(), 3);
+    EXPECT_EQ(queue.Size(), 3U);
     queue.Push(d);
     EXPECT_EQ(queue.Pop(), 1);
     EXPECT_THROW(queue.Pop(), IndexException);
@@ -136,7 +136,7 @@ TEST(Queue, Push_Pop_Limited_4)
     queue.Push(c);
 
     EXPECT_EQ(queue.Top(), 0);
-    EXPECT_EQ(queue.Size(), 3);
+    EXPECT_EQ(queue.Size(), 3U);
     EXPECT_EQ(queue.Pop(), 0);
     EXPECT_EQ(queue.Pop(), 42);
     EXPECT_EQ(queue.Pop(), -1);
@@ -153,9 +153,9 @@ TEST(Queue, Push_Pop_Unlimited_1)
     queue.Push(-1);
 
     EXPECT_EQ(queue.Top(), 0);
-    EXPECT_EQ(queue.Size(), 3);
+    EXPECT_EQ(queue.Size(), 3U);
     queue.Push(1);
-    EXPECT_EQ(queue.Size(), 4);
+    EXPECT_EQ(queue.Size(), 4U);
     EXPECT_EQ(queue.Top(), 0);
     EXPECT_EQ(queue.Pop(), 0);
     EXPECT_EQ(queue.Pop(), 42);
@@ -178,7 +178,7 @@ TEST(Queue, Push_Pop_Unlimited_2)
     queue.Push(8);
     queue.Push(9);
     queue.Push(10);
-    EXPECT_EQ(queue.Size(), 10);
+    EXPECT_EQ(queue.Size(), 10U);
 }
 
 TEST(Queue, Push_Pop_Unlimited_3)
@@ -194,9 +194,9 @@ TEST(Queue, Push_Pop_Unlimited_3)
     queue.Push(c);
 
     EXPECT_EQ(queue.Top(), 0);
-    EXPECT_EQ(queue.Size(), 3);
+    EXPECT_EQ(queue.Size(), 3U);
     queue.Push(d);
-    EXPECT_EQ(queue.Size(), 4);
+    EXPECT_EQ(queue.Size(), 4U);
     EXPECT_EQ(queue.Top(), 0);
     EXPECT_EQ(queue.Pop(), 0);
     EXPECT_EQ(queue.Pop(), 42);
@@ -214,7 +214,7 @@ TEST(Queue, Push_Pop_Unlimited_4)
         const int j = i;
         queue.Push(j);
     }
-    EXPECT_EQ(queue.Size(), 10);
+    EXPECT_EQ(queue.Size(), 10U);
 }
 
 TEST(Queue, Push_Pop_NonCopy)
@@ -226,9 +226,9 @@ TEST(Queue, Push_Pop_NonCopy)
     queue.Push(MakeUnique<int>(-1));
 
     EXPECT_EQ(*queue.Top(), 0);
-    EXPECT_EQ(queue.Size(), 3);
+    EXPECT_EQ(queue.Size(), 3U);
     queue.Push(MakeUnique<int>(1));
-    EXPECT_EQ(queue.Size(), 4);
+    EXPECT_EQ(queue.Size(), 4U);
     EXPECT_EQ(*queue.Top(), 0);
     EXPECT_EQ(*queue.Pop(), 0);
     EXPECT_EQ(*queue.Pop(), 42);

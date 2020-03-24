@@ -33,7 +33,7 @@
 #include <Framework/System/IApplication.hpp>
 #include <Framework/System/Platform.hpp>
 
-int Main(bpf::system::IApplication &app, const bpf::collection::Array<bpf::String> &args, const bpf::system::Paths &paths)
+int Main(bpf::system::IApplication &, const bpf::collection::Array<bpf::String> &, const bpf::system::Paths &)
 {
     bpf::io::ConsoleWriter writer;
     bpf::io::ConsoleReader reader;
@@ -98,7 +98,9 @@ int Main(bpf::system::IApplication &app, const bpf::collection::Array<bpf::Strin
         if (!reader.ReadLine(line))
             throw 1; // Intended to cause the application to abort
         writer.WriteLine(bpf::String("Text line is: ") + line);
+        writer.Flush();
         writer.WriteLine("Checking single token read: ");
+        writer.Flush();
         reader.SetTokenSeparators("\r\n");
         bpf::String token;
         if (!reader.Read(token))

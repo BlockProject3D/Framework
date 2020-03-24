@@ -26,10 +26,10 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <cassert>
-#include <iostream>
-#include <gtest/gtest.h>
 #include <Framework/System/TimeSpan.hpp>
+#include <cassert>
+#include <gtest/gtest.h>
+#include <iostream>
 
 TEST(TimeSpan, Creation)
 {
@@ -39,7 +39,7 @@ TEST(TimeSpan, Creation)
     EXPECT_EQ(ts.Hours, 2);
     EXPECT_EQ(ts.Minutes, 50);
     EXPECT_EQ(ts.Seconds, 40);
-    EXPECT_EQ(ts.TotalSeconds, 96840);
+    EXPECT_EQ(ts.TotalSeconds, 96840U);
 }
 
 TEST(TimeSpan, Addition)
@@ -51,10 +51,10 @@ TEST(TimeSpan, Addition)
     EXPECT_EQ(res.Hours, 0);
     EXPECT_EQ(res.Minutes, 0);
     EXPECT_EQ(res.Seconds, 0);
-    EXPECT_EQ(res.TotalSeconds, 172800);
-    EXPECT_EQ(ts.TotalSeconds, 86400);
+    EXPECT_EQ(res.TotalSeconds, 172800U);
+    EXPECT_EQ(ts.TotalSeconds, 86400U);
     ts += bpf::system::TimeSpan(1, 0, 0, 0);
-    EXPECT_EQ(ts.TotalSeconds, 172800);
+    EXPECT_EQ(ts.TotalSeconds, 172800U);
 }
 
 TEST(TimeSpan, Subtraction)
@@ -66,10 +66,10 @@ TEST(TimeSpan, Subtraction)
     EXPECT_EQ(res.Hours, 0);
     EXPECT_EQ(res.Minutes, 0);
     EXPECT_EQ(res.Seconds, 0);
-    EXPECT_EQ(res.TotalSeconds, 172800);
-    EXPECT_EQ(ts.TotalSeconds, 259200);
+    EXPECT_EQ(res.TotalSeconds, 172800U);
+    EXPECT_EQ(ts.TotalSeconds, 259200U);
     ts -= bpf::system::TimeSpan(1, 0, 0, 0);
-    EXPECT_EQ(ts.TotalSeconds, 172800);
+    EXPECT_EQ(ts.TotalSeconds, 172800U);
 }
 
 TEST(TimeSpan, Compare)

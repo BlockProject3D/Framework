@@ -71,7 +71,7 @@ TEST(VectorDynamic, Create)
     EXPECT_EQ(v(3), 1);
     EXPECT_EQ(v(4), 1);
 
-    EXPECT_EQ(v.Dim(), 5);
+    EXPECT_EQ(v.Dim(), 5U);
 }
 
 TEST(VectorDynamic, Indexer)

@@ -72,11 +72,11 @@ TEST(Map, Add_1)
     const int i = 12;
     Map<int, int> lst = { { 0, i }, { 1, 2 } };
 
-    EXPECT_EQ(lst.Size(), 2);
+    EXPECT_EQ(lst.Size(), 2U);
     lst.Add(2, 3);
-    EXPECT_EQ(lst.Size(), 3);
+    EXPECT_EQ(lst.Size(), 3U);
     lst.Add(3, i);
-    EXPECT_EQ(lst.Size(), 4);
+    EXPECT_EQ(lst.Size(), 4U);
     EXPECT_STREQ(*String::ValueOf(lst), "{'0': 12, '1': 2, '2': 3, '3': 12}");
 }
 
@@ -88,7 +88,7 @@ TEST(Map, Add_2)
     lst.Add(3, 3);
     lst.Add(-2, -2);
     lst.Add(-1, -1);
-    EXPECT_EQ(lst.Size(), 6);
+    EXPECT_EQ(lst.Size(), 6U);
     EXPECT_STREQ(*String::ValueOf(lst), "{'-2': -2, '-1': -1, '0': 0, '1': 1, '2': 2, '3': 3}");
 }
 
@@ -104,7 +104,7 @@ TEST(Map, Add_3)
     lst.Add(4, 4);
     lst.Add(7, 7);
     lst.Add(6, 6);
-    EXPECT_EQ(lst.Size(), 10);
+    EXPECT_EQ(lst.Size(), 10U);
     EXPECT_STREQ(*String::ValueOf(lst), "{'-2': -2, '-1': -1, '0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7}");
 }
 
@@ -218,7 +218,7 @@ TEST(Map, Move)
     EXPECT_EQ(mv[0], 0);
     EXPECT_EQ(mv[1], 3);
     EXPECT_EQ(mv[2], 7);
-    EXPECT_EQ(lst.Size(), 0);
+    EXPECT_EQ(lst.Size(), 0U);
     EXPECT_EQ(lst.begin(), lst.end());
 }
 
@@ -341,9 +341,9 @@ TEST(Map, Clear)
 {
     Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
 
-    EXPECT_EQ(lst.Size(), 4);
+    EXPECT_EQ(lst.Size(), 4U);
     lst.Clear();
-    EXPECT_EQ(lst.Size(), 0);
+    EXPECT_EQ(lst.Size(), 0U);
     EXPECT_EQ(lst.begin(), lst.end());
 }
 
@@ -429,6 +429,7 @@ TEST(Map, ReadWrite_NonCopy)
     EXPECT_EQ(*map["test3"], 9);
 }
 
+#ifdef BUILD_DEBUG
 static void RunLeakCheckBody()
 {
     Map<String, UniquePtr<int>> map;
@@ -454,6 +455,7 @@ TEST(Map, ReadWrite_LeakCheck)
     RunLeakCheckBody();
     EXPECT_EQ(count, Memory::GetAllocCount());
 }
+#endif
 
 TEST(Map, Swap_1)
 {

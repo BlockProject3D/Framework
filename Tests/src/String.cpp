@@ -26,14 +26,14 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <cassert>
-#include <iostream>
-#include <gtest/gtest.h>
-#include <Framework/TypeInfo.hpp>
-#include <Framework/String.hpp>
 #include <Framework/Collection/List.hpp>
 #include <Framework/Collection/Stringifier.Array.hpp>
 #include <Framework/Collection/Stringifier.List.hpp>
+#include <Framework/String.hpp>
+#include <Framework/TypeInfo.hpp>
+#include <cassert>
+#include <gtest/gtest.h>
+#include <iostream>
 
 TEST(String, Create)
 {
@@ -250,7 +250,7 @@ TEST(String, IsNumeric)
     bpf::String s4 = ".42";
     bpf::String s5 = "a42";
     bpf::String s6 = "qq";
-    bpf::String s7 = "";    
+    bpf::String s7 = "";
     bpf::String s8 = "\n";
     bpf::String s9 = "éèù";
     bpf::String s10 = "42.42.42";
@@ -737,13 +737,12 @@ TEST(String, Chinese_2)
 
     EXPECT_EQ(str.Len(), 13);
     EXPECT_EQ(str.Size(), 39);
-    EXPECT_EQ(arr.Size(), 14);
+    EXPECT_EQ(arr.Size(), 14U);
     EXPECT_EQ(recover.Len(), 13);
     EXPECT_EQ(recover.Size(), 39);
     EXPECT_STREQ(*recover, "你好，我是清华大学的留学生");
     EXPECT_STREQ(*str, "你好，我是清华大学的留学生");
 }
-
 
 TEST(String, Chinese_3)
 {
@@ -756,7 +755,7 @@ TEST(String, Chinese_3)
         EXPECT_EQ(arr[i], expected[i]);
     EXPECT_EQ(str.Len(), 13);
     EXPECT_EQ(str.Size(), 39);
-    EXPECT_EQ(arr.Size(), 14);
+    EXPECT_EQ(arr.Size(), 14U);
     EXPECT_EQ(recover.Len(), 13);
     EXPECT_EQ(recover.Size(), 39);
     EXPECT_STREQ(*recover, "你好，我是清华大学的留学生");
@@ -771,7 +770,7 @@ TEST(String, Convert_U16_1)
 
     EXPECT_EQ(str.Len(), 1);
     EXPECT_EQ(str.Size(), 4);
-    EXPECT_EQ(arr.Size(), 3); //Null terminated
+    EXPECT_EQ(arr.Size(), 3U); //Null terminated
     EXPECT_EQ(recover.Len(), 1);
     EXPECT_EQ(recover.Size(), 4);
     EXPECT_EQ(recover[0], (bpf::fchar)0x10000);
@@ -786,7 +785,7 @@ TEST(String, Convert_U16_2)
 
     EXPECT_EQ(str.Len(), 1);
     EXPECT_EQ(str.Size(), 4);
-    EXPECT_EQ(arr.Size(), 3); //Null terminated
+    EXPECT_EQ(arr.Size(), 3U); //Null terminated
     EXPECT_EQ(recover.Len(), 1);
     EXPECT_EQ(recover.Size(), 4);
     EXPECT_EQ(recover[0], (bpf::fchar)0x100BB);

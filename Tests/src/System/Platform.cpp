@@ -86,8 +86,8 @@ TEST(Platform, RAM)
 {
     auto var = bpf::system::Platform::GetRAMInfo();
 
-    EXPECT_GT(var.MaxPhysical, 0);
-    EXPECT_GT(var.MaxVirtual, 0);
+    EXPECT_GT(var.MaxPhysical, 0U);
+    EXPECT_GT(var.MaxVirtual, 0U);
 }
 
 TEST(Platform, ReverseBuffer_1)

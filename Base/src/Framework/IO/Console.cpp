@@ -61,7 +61,12 @@ void Console::WriteLine(const String &str, const EConsoleStream type) noexcept
             WriteConsoleW(hdl, reinterpret_cast<const void *>(*utf16), (DWORD)utf16.Size() - 1, NULL, NULL);
         }
 #else
+#ifdef BUILD_DEBUG
         write(2, *(str + "\n"), str.Size() + 1);
+#else
+        int gccisafuck = write(2, *(str + "\n"), str.Size() + 1);
+        (void)gccisafuck;
+#endif
 #endif
     }
     else
@@ -79,7 +84,12 @@ void Console::WriteLine(const String &str, const EConsoleStream type) noexcept
             WriteConsoleW(hdl, reinterpret_cast<const void *>(*utf16), (DWORD)utf16.Size() - 1, NULL, NULL);
         }
 #else
+#ifdef BUILD_DEBUG
         write(1, *(str + "\n"), str.Size() + 1);
+#else
+        int gccisafuck = write(1, *(str + "\n"), str.Size() + 1);
+        (void)gccisafuck;
+#endif
 #endif
     }
 }
@@ -108,7 +118,7 @@ void Console::SetTextStyle(const TextStyle &style, const EConsoleStream type) no
             g_Console_OldAttributes_Out = Info.wAttributes;
         }
     }
-    WORD color;
+    WORD color = 0;
     switch (style.TextColor)
     {
     case EConsoleColor::BLACK:
@@ -172,7 +182,12 @@ void Console::SetTextStyle(const TextStyle &style, const EConsoleStream type) no
         str += "37m";
         break;
     }
+#ifdef BUILD_DEBUG
     write(fd, *str, str.Size());
+#else
+    int gccisafuck = write(fd, *str, str.Size());
+    (void)gccisafuck;
+#endif
 #endif
 }
 
@@ -186,7 +201,12 @@ void Console::ResetTextStyle(const EConsoleStream type) noexcept
         HANDLE hdl = GetStdHandle(STD_ERROR_HANDLE);
         SetConsoleTextAttribute(hdl, g_Console_OldAttributes_Err);
 #else
+#ifdef BUILD_DEBUG
         write(2, "\033[0m", 4);
+#else
+        int gccisafuck = write(2, "\033[0m", 4);
+        (void)gccisafuck;
+#endif
 #endif
     }
     else
@@ -197,7 +217,12 @@ void Console::ResetTextStyle(const EConsoleStream type) noexcept
         HANDLE hdl = GetStdHandle(STD_OUTPUT_HANDLE);
         SetConsoleTextAttribute(hdl, g_Console_OldAttributes_Out);
 #else
-        write(1, "\e[0m", 4);
+#ifdef BUILD_DEBUG
+        write(1, "\033[0m", 4);
+#else
+        int gccisafuck = write(1, "\033[0m", 4);
+        (void)gccisafuck;
+#endif
 #endif
     }
 }
@@ -208,6 +233,11 @@ void Console::SetTitle(const String &title)
     SetConsoleTitleW(reinterpret_cast<LPCWSTR>(*title.ToUTF16()));
 #else
     auto str = String("\e]0;") + title + "\007";
+#ifdef BUILD_DEBUG
     write(1, *str, str.Size());
+#else
+    int gccisafuck = write(1, *str, str.Size());
+    (void)gccisafuck;
+#endif
 #endif
 }

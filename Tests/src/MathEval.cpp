@@ -91,13 +91,13 @@ TEST(MathEval, EvalNbr)
 	bpf::fsize ptr;
 	int res = calc.EvalNbr("1.", ptr);
 	EXPECT_EQ(res, 1);
-	EXPECT_EQ(ptr, 1);
+	EXPECT_EQ(ptr, 1U);
 	res = calc.EvalNbr("42abc42", ptr);
 	EXPECT_EQ(res, 42);
-	EXPECT_EQ(ptr, 2);
+	EXPECT_EQ(ptr, 2U);
 	res = calc.EvalNbr("-1", ptr);
 	EXPECT_EQ(res, -1);
-	EXPECT_EQ(ptr, 2);
+	EXPECT_EQ(ptr, 2U);
 }
 
 TEST(MathEval, EvaluateErr)

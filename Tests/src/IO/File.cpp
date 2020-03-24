@@ -176,7 +176,7 @@ TEST(File, GetSizeBytes)
 {
     bpf::io::File f("./test_me.txt");
     SetupTestFile(f);
-    EXPECT_EQ(f.GetSizeBytes(), 14);
+    EXPECT_EQ(f.GetSizeBytes(), 14U);
     f.Delete();
     EXPECT_THROW(f.GetSizeBytes(), bpf::io::IOException);
 }

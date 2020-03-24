@@ -26,12 +26,12 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <cassert>
-#include <iostream>
-#include <gtest/gtest.h>
-#include <Framework/Collection/Stringifier.Array.hpp>
 #include <Framework/Collection/Array.hpp>
+#include <Framework/Collection/Stringifier.Array.hpp>
 #include <Framework/Memory/Utility.hpp>
+#include <cassert>
+#include <gtest/gtest.h>
+#include <iostream>
 
 using namespace bpf::memory;
 using namespace bpf::collection;
@@ -51,7 +51,7 @@ TEST(ArrayDynamic, Creation)
 
 TEST(ArrayDynamic, Creation_List)
 {
-    Array<int> lst = { 0, 3, 7 };
+    Array<int> lst = {0, 3, 7};
 
     EXPECT_EQ(lst[0], 0);
     EXPECT_EQ(lst[1], 3);
@@ -60,25 +60,25 @@ TEST(ArrayDynamic, Creation_List)
 
 TEST(ArrayDynamic, Indexer)
 {
-    Array<int> lst1 = { 0, 3, 7 };
+    Array<int> lst1 = {0, 3, 7};
 
     EXPECT_EQ(lst1[0], 0);
     EXPECT_EQ(lst1[1], 3);
     EXPECT_EQ(lst1[2], 7);
     EXPECT_THROW(lst1[3], IndexException);
     EXPECT_THROW(lst1[678], IndexException);
-    EXPECT_THROW(lst1[(fsize) - 1], IndexException);
-    EXPECT_THROW(lst1[(fsize) - 465], IndexException);
+    EXPECT_THROW(lst1[(fsize)-1], IndexException);
+    EXPECT_THROW(lst1[(fsize)-465], IndexException);
     const auto &lst = lst1;
     EXPECT_THROW(lst[3], IndexException);
     EXPECT_THROW(lst[678], IndexException);
-    EXPECT_THROW(lst[(fsize) - 1], IndexException);
-    EXPECT_THROW(lst[(fsize) - 465], IndexException);
+    EXPECT_THROW(lst[(fsize)-1], IndexException);
+    EXPECT_THROW(lst[(fsize)-465], IndexException);
 }
 
 TEST(ArrayDynamic, FindByKey)
 {
-    Array<int> lst = { 0, 3, 7 };
+    Array<int> lst = {0, 3, 7};
 
     EXPECT_EQ(lst.begin(), lst.FindByKey(0));
     EXPECT_EQ(--lst.end(), lst.FindByKey(2));
@@ -87,7 +87,7 @@ TEST(ArrayDynamic, FindByKey)
 
 TEST(ArrayDynamic, FindByValue)
 {
-    Array<int> lst = { 0, 3, 7 };
+    Array<int> lst = {0, 3, 7};
 
     EXPECT_EQ(lst.begin(), lst.FindByValue(0));
     EXPECT_EQ(--lst.end(), lst.FindByValue(7));
@@ -97,18 +97,18 @@ TEST(ArrayDynamic, FindByValue)
 
 TEST(ArrayDynamic, Find)
 {
-    Array<int> lst = { 0, 3, 7 };
+    Array<int> lst = {0, 3, 7};
 
-    EXPECT_EQ(++lst.begin(), lst.Find([](fsize pos, const int &val) { return (val == 3); }));
-    EXPECT_EQ(lst.end(), lst.Find([](fsize pos, const int &val) { return (val == 42); }));
+    EXPECT_EQ(++lst.begin(), lst.Find([](fsize, const int &val) { return (val == 3); }));
+    EXPECT_EQ(lst.end(), lst.Find([](fsize, const int &val) { return (val == 42); }));
 }
 
 TEST(ArrayDynamic, Equal)
 {
-    Array<int> lst = { 0, 3, 7 };
-    Array<int> lst1 = { 0, 3, 7 };
-    Array<int> lst2 = { 0, 3 };
-    Array<int> lst3 = { 0, 3, 4 };
+    Array<int> lst = {0, 3, 7};
+    Array<int> lst1 = {0, 3, 7};
+    Array<int> lst2 = {0, 3};
+    Array<int> lst3 = {0, 3, 4};
 
     EXPECT_TRUE(lst == lst1);
     EXPECT_FALSE(lst != lst1);
@@ -120,7 +120,7 @@ TEST(ArrayDynamic, Equal)
 
 TEST(ArrayDynamic, FirstLast_1)
 {
-    Array<int> lst = { 0, 3, 7 };
+    Array<int> lst = {0, 3, 7};
 
     EXPECT_EQ(lst.First(), 0);
     EXPECT_EQ(lst.Last(), 7);
@@ -131,7 +131,7 @@ TEST(ArrayDynamic, FirstLast_1)
 
 TEST(ArrayDynamic, FirstLast_2)
 {
-    Array<int> lst = { 0, 1 };
+    Array<int> lst = {0, 1};
     const auto &cref = lst;
     Array<int> lst1;
     const auto &cref1 = lst1;
@@ -148,7 +148,7 @@ TEST(ArrayDynamic, FirstLast_2)
 
 TEST(ArrayDynamic, Copy_1)
 {
-    Array<int> lst = { 0, 3, 7 };
+    Array<int> lst = {0, 3, 7};
 
     auto copy = lst;
     EXPECT_EQ(lst[0], 0);
@@ -161,13 +161,13 @@ TEST(ArrayDynamic, Copy_1)
 
 TEST(ArrayDynamic, Move_1)
 {
-    Array<int> lst = { 0, 3, 7 };
+    Array<int> lst = {0, 3, 7};
 
     auto mv = std::move(lst);
     EXPECT_EQ(mv[0], 0);
     EXPECT_EQ(mv[1], 3);
     EXPECT_EQ(mv[2], 7);
-    EXPECT_EQ(lst.Size(), 0);
+    EXPECT_EQ(lst.Size(), 0U);
     EXPECT_EQ(lst.begin(), lst.end());
 }
 
@@ -201,13 +201,13 @@ TEST(ArrayDynamic, Move_2)
     EXPECT_EQ(mv[0], 1);
     EXPECT_EQ(mv[1], 3);
     EXPECT_EQ(mv[2], 6);
-    EXPECT_EQ(arr.Size(), 0);
+    EXPECT_EQ(arr.Size(), 0U);
     EXPECT_EQ(arr.Release(), Null);
 }
 
 TEST(ArrayDynamic, Iterator_1)
 {
-    Array<int> lst = { 0, 3, 7, 0 };
+    Array<int> lst = {0, 3, 7, 0};
 
     auto it = lst.begin();
     ++it;
@@ -227,7 +227,7 @@ TEST(ArrayDynamic, Iterator_1)
 
 TEST(ArrayDynamic, Iterator_2)
 {
-    Array<String> lst = { "a", "b", "c" };
+    Array<String> lst = {"a", "b", "c"};
 
     EXPECT_EQ(lst.begin()->Size(), 1);
     EXPECT_EQ(lst.begin()->ByteAt(0), 'a');
@@ -235,7 +235,7 @@ TEST(ArrayDynamic, Iterator_2)
 
 TEST(ArrayDynamic, ReverseIterator_1)
 {
-    Array<int> lst = { 0, 3, 7, 0 };
+    Array<int> lst = {0, 3, 7, 0};
 
     auto it = lst.rbegin();
     ++it;
@@ -255,7 +255,7 @@ TEST(ArrayDynamic, ReverseIterator_1)
 
 TEST(ArrayDynamic, ReverseIterator_2)
 {
-    Array<String> lst = { "a", "b", "c" };
+    Array<String> lst = {"a", "b", "c"};
 
     EXPECT_EQ(lst.rbegin()->Size(), 1);
     EXPECT_EQ(lst.rbegin()->ByteAt(0), 'c');
@@ -264,7 +264,7 @@ TEST(ArrayDynamic, ReverseIterator_2)
 TEST(ArrayDynamic, IterateForward_Test1)
 {
     int res = 0;
-    Array<int> lst = { 0, 3, 7 };
+    Array<int> lst = {0, 3, 7};
 
     for (auto &i : lst)
         res += i;
@@ -274,7 +274,7 @@ TEST(ArrayDynamic, IterateForward_Test1)
 TEST(ArrayDynamic, IterateForward_Test2)
 {
     String res = String::Empty;
-    Array<String> lst = { "a", "b", "c", "d", "e" };
+    Array<String> lst = {"a", "b", "c", "d", "e"};
 
     for (auto &i : lst)
         res += i;
@@ -284,7 +284,7 @@ TEST(ArrayDynamic, IterateForward_Test2)
 TEST(ArrayDynamic, IterateBackward_Test1)
 {
     int res = 0;
-    Array<int> lst = { 0, 3, 7 };
+    Array<int> lst = {0, 3, 7};
 
     for (auto &i : Reverse(lst))
         res += i;
@@ -294,7 +294,7 @@ TEST(ArrayDynamic, IterateBackward_Test1)
 TEST(ArrayDynamic, IterateBackward_Test2)
 {
     String res = String::Empty;
-    Array<String> lst = { "a", "b", "c", "d", "e" };
+    Array<String> lst = {"a", "b", "c", "d", "e"};
 
     for (auto &i : Reverse(lst))
         res += i;
@@ -315,7 +315,7 @@ TEST(ArrayDynamic, ReadWrite_NonCopy_1)
 
 TEST(ArrayDynamic, Swap_1)
 {
-    Array<int> lst = { 0, 3, 7 };
+    Array<int> lst = {0, 3, 7};
 
     lst.Swap(lst.begin(), --(--lst.end()));
     EXPECT_STREQ(*String::ValueOf(lst), "[3, 0, 7]");
@@ -323,7 +323,7 @@ TEST(ArrayDynamic, Swap_1)
 
 TEST(ArrayDynamic, Swap_2)
 {
-    Array<int> lst = { 0, 3, 7 };
+    Array<int> lst = {0, 3, 7};
 
     lst.Swap(++lst.begin(), --lst.end());
     EXPECT_STREQ(*String::ValueOf(lst), "[0, 7, 3]");
@@ -331,7 +331,7 @@ TEST(ArrayDynamic, Swap_2)
 
 TEST(ArrayDynamic, Swap_3)
 {
-    Array<int> lst = { 0, 7 };
+    Array<int> lst = {0, 7};
 
     lst.Swap(lst.begin(), --lst.end());
     EXPECT_STREQ(*String::ValueOf(lst), "[7, 0]");
@@ -355,7 +355,7 @@ TEST(ArrayDynamic, Swap_Err_1)
 
 TEST(ArrayDynamic, Swap_Err_2)
 {
-    Array<int> lst = { 0, 7 };
+    Array<int> lst = {0, 7};
 
     lst.Swap(lst.begin(), lst.begin());
     lst.Swap(lst.end(), lst.end());
@@ -405,6 +405,7 @@ TEST(ArrayDynamic, ReadWrite_NonCopy_2)
         EXPECT_EQ(*it, 42);
 }
 
+#ifdef BUILD_DEBUG
 static void Test_ReadWrite_NonCopy_MemLeak()
 {
     Array<UniquePtr<int>> arr(2);
@@ -427,22 +428,22 @@ TEST(ArrayDynamic, ReadWrite_NonCopy_MemLeak)
 
 static void Test_CopyMoveObj_MemLeak()
 {
-    Array<String> lst = { "a", "b", "c" };
+    Array<String> lst = {"a", "b", "c"};
 
     lst.Resize(4);
     lst[3] = "d";
     Array<String> cpy = lst;
     EXPECT_EQ(lst.Size(), cpy.Size());
-    EXPECT_EQ(lst.Size(), 4);
+    EXPECT_EQ(lst.Size(), 4U);
     Array<String> mv = std::move(lst);
-    EXPECT_EQ(lst.Size(), 0);
-    EXPECT_EQ(mv.Size(), 4);
-    EXPECT_EQ(cpy.Size(), 4);
+    EXPECT_EQ(lst.Size(), 0U);
+    EXPECT_EQ(mv.Size(), 4U);
+    EXPECT_EQ(cpy.Size(), 4U);
     cpy.Resize(5);
     cpy[4] = "e";
-    EXPECT_EQ(cpy.Size(), 5);
-    EXPECT_EQ(mv.Size(), 4);
-    EXPECT_EQ(lst.Size(), 0);
+    EXPECT_EQ(cpy.Size(), 5U);
+    EXPECT_EQ(mv.Size(), 4U);
+    EXPECT_EQ(lst.Size(), 0U);
     EXPECT_STREQ(*String::ValueOf(mv), "[a, b, c, d]");
     EXPECT_STREQ(*String::ValueOf(cpy), "[a, b, c, d, e]");
 }
@@ -454,3 +455,4 @@ TEST(ArrayDynamic, Test_CopyMoveObj_MemLeak)
     Test_CopyMoveObj_MemLeak();
     EXPECT_EQ(cur, Memory::GetAllocCount());
 }
+#endif

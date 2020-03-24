@@ -307,7 +307,7 @@ namespace bpf
         template <template <typename> class Comparator>
         void List<T>::MergeSort()
         {
-            Node *curNode;
+            Node *curNode = Null;
             Node *startl;
             Node *startr;
             Node *endl;
