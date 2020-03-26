@@ -1,4 +1,4 @@
-Copyright (c) 2018, BlockProject
+Copyright (c) 2020, BlockProject
 
 All rights reserved.
 

@@ -18,7 +18,11 @@ macro(bp_setup_module name apimacro)
     #Replace API macro by the correct one
     set(BP_API_MACRO ${apimacro})
 
-    add_library(${name} SHARED ${SOURCES})
+    if (NOT BP_ADDITIONAL_SOURCE_FILE)
+        set(BP_ADDITIONAL_SOURCE_FILE "")
+    endif(NOT BP_ADDITIONAL_SOURCE_FILE)
+
+    add_library(${name} SHARED ${SOURCES} ${BP_ADDITIONAL_SOURCE_FILE})
 
     target_compile_definitions(${name} PRIVATE "${BP_API_MACRO}=${BP_SYMBOL_EXPORT_MACRO}")
     # Attempt at fixing templates problems under MSVC 2017
