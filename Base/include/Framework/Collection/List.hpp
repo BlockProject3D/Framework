@@ -45,7 +45,7 @@ namespace bpf
         class BP_TPL_API List
         {
         private:
-            class BP_TPL_API Node
+            class Node
             {
             public:
                 Node *Next;

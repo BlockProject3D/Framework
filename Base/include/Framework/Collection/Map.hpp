@@ -43,13 +43,13 @@ namespace bpf
         class BP_TPL_API Map
         {
         public:
-            struct BP_TPL_API Entry
+            struct Entry
             {
                 K Key;
                 V Value;
             };
 
-            struct BP_TPL_API Node
+            struct Node
             {
                 Node *Left;
                 Node *Right;
