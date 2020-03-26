@@ -207,6 +207,12 @@ else (PLATFORM STREQUAL "Windows")
     list(APPEND SOURCES "./src/Framework/System/UnixApp.cpp")
 endif (PLATFORM STREQUAL "Windows")
 
+bp_product_properties(BPF
+    VERSION_MAJOR 2
+    VERSION_MINOR 1
+    DESCRIPTION "BlockProject 3D Framework"
+)
+
 bp_setup_module(BPF BPF_API)
 if (NOT WIN32)
 	target_link_libraries(BPF PRIVATE pthread)

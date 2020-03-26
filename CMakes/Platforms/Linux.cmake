@@ -1,3 +1,5 @@
+include(CMakeParseArguments)
+
 set(BP_SYMBOL_IMPORT_MACRO "__attribute__((visibility(\"default\")))")
 set(BP_SYMBOL_EXPORT_MACRO ${BP_SYMBOL_IMPORT_MACRO})
 set(BP_EXTENSION_DYNAMIC ".so")
@@ -16,3 +18,19 @@ function(bp_target_created name)
         )
     endif (target_type STREQUAL "EXECUTABLE")
 endfunction(bp_target_created)
+
+function(bp_product_properties targetname)
+    set(props
+        NAME
+        PACKAGE
+        ICON
+        VERSION_MAJOR
+        VERSION_MINOR
+        COPYRIGHT
+        COMPANY
+        DESCRIPTION
+    )
+    set(options)
+    set(multiValueArgs)
+    cmake_parse_arguments(PRODUCT "${options}" "${props}" "${multiValueArgs}" ${ARGN})
+endfunction(bp_product_properties)
