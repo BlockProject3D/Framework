@@ -83,10 +83,10 @@ TEST(MathUtils, IsPrime)
 
 TEST(MathUtils, NextPrime)
 {
-    EXPECT_EQ(bpf::math::MathUtils::FindNextPrime(2), 3U);
-    EXPECT_EQ(bpf::math::MathUtils::FindNextPrime(1), 2U);
-    EXPECT_EQ(bpf::math::MathUtils::FindNextPrime(0), 2U);
-    EXPECT_EQ(bpf::math::MathUtils::FindNextPrime(3), 5U);
-    EXPECT_EQ(bpf::math::MathUtils::FindNextPrime(4), 5U);
-    EXPECT_EQ(bpf::math::MathUtils::FindNextPrime(5), 7U);
+    EXPECT_EQ(bpf::math::MathUtils::FindNextPrime(2), 3);
+    EXPECT_EQ(bpf::math::MathUtils::FindNextPrime(1), 2);
+    EXPECT_EQ(bpf::math::MathUtils::FindNextPrime(0), 2);
+    EXPECT_EQ(bpf::math::MathUtils::FindNextPrime(3), 5);
+    EXPECT_EQ(bpf::math::MathUtils::FindNextPrime(4), 5);
+    EXPECT_EQ(bpf::math::MathUtils::FindNextPrime(5), 7);
 }

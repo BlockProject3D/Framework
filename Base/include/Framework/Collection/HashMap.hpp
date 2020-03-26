@@ -47,18 +47,18 @@ namespace bpf
         class BP_TPL_API HashMap
         {
         private:
-            struct BP_TPL_API Entry
+            struct Entry
             {
                 K Key;
                 V Value;
             };
-            enum BP_TPL_API EntryState
+            enum EntryState
             {
                 ENTRY_STATE_INSTANCE_DELETE,
                 ENTRY_STATE_NON_EXISTANT,
                 ENTRY_STATE_OCCUPIED
             };
-            struct BP_TPL_API Node
+            struct Node
             {
                 fsize Hash;
                 EntryState State;
