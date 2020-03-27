@@ -35,7 +35,7 @@ namespace bpf
      * @tparam T the type to search the name of
      */
     template <typename T>
-    inline BP_TPL_API const char *TypeName() noexcept
+    inline const char *TypeName() noexcept
     {
         return ("Unknown");
     }
@@ -44,17 +44,17 @@ namespace bpf
 /**
  * Defines the type name for a given type
  */
-#define DEFINE_TYPEINFO(T) \
+#define BP_DEFINE_TYPENAME(T) \
     namespace bpf \
     { \
         template <> \
-        inline BPF_API const char *TypeName<T>() noexcept \
+        inline const char *TypeName<T>() noexcept \
         { \
             return (#T); \
         } \
     }
 
 
-DEFINE_TYPEINFO(int);
-DEFINE_TYPEINFO(float);
-DEFINE_TYPEINFO(double);
+BP_DEFINE_TYPENAME(int);
+BP_DEFINE_TYPENAME(float);
+BP_DEFINE_TYPENAME(double);
