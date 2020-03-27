@@ -40,4 +40,7 @@ TEST(Name, Creation)
     EXPECT_GT(name.Hash(), (bpf::fsize)0);
     EXPECT_EQ(name.Hash(), name1.Hash());
     EXPECT_EQ(name.Hash(), name2.Hash());
+    EXPECT_EQ(name, name1);
+    EXPECT_EQ(name, name2);
+    EXPECT_NE(name, bpf::Name((bpf::fsize)0));
 }
