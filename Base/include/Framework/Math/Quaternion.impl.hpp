@@ -75,7 +75,7 @@ namespace bpf
             Quaternion<T> p(0, v.X, v.Y, v.Z);
             Quaternion<T> pprime = Inverse() * p * *this;
 
-            return (pprime.GetAxis());
+            return (Vector<T, 3>(pprime.X, pprime.Y, pprime.Z));
         }
 
         template <typename T>

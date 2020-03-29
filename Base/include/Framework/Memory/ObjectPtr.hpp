@@ -50,6 +50,31 @@ namespace bpf
             {
             }
 
+            inline ObjectPtr(T *raw)
+                : RawPtr(raw)
+            {
+                if (RawPtr != Null)
+                    RawPtr->AddRef((void **)&RawPtr);
+            }
+
+            inline ObjectPtr(const ObjectPtr<T> &other)
+                : RawPtr(other.RawPtr)
+            {
+                if (RawPtr != Null)
+                    RawPtr->AddRef((void **)&RawPtr);
+            }
+
+            inline ObjectPtr(ObjectPtr<T> &&other)
+                : RawPtr(other.RawPtr)
+            {
+                if (RawPtr != Null)
+                {
+                    RawPtr->AddRef((void **)&RawPtr);
+                    RawPtr->RemoveRef((void **)&other.RawPtr);
+                    other.RawPtr = Null;
+                }
+            }
+
             inline ~ObjectPtr()
             {
                 if (RawPtr != Null)
@@ -103,6 +128,20 @@ namespace bpf
                 RawPtr = other.RawPtr;
                 if (RawPtr != Null)
                     RawPtr->AddRef((void **)&RawPtr);
+                return (*this);
+            }
+
+            ObjectPtr<T> &operator=(ObjectPtr<T> &&other)
+            {
+                if (RawPtr != Null)
+                    RawPtr->RemoveRef((void **)&RawPtr);
+                RawPtr = other.RawPtr;
+                if (RawPtr != Null)
+                {
+                    RawPtr->AddRef((void **)&RawPtr);
+                    RawPtr->RemoveRef((void **)&other.RawPtr);
+                    other.RawPtr = Null;
+                }
                 return (*this);
             }
         };
