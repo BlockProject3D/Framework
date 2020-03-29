@@ -431,6 +431,26 @@ TEST(TextReadWrite, ReadWrite_LinePerLine)
     }
 }
 
+TEST(TextReadWrite, ReadWrite_LinePerLine_Unicode)
+{
+    {
+        bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
+        bpf::io::TextWriter w(f);
+
+        w.WriteLine("你好");
+    }
+    {
+        bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_READ);
+        bpf::io::TextReader r(f);
+        bpf::String str;
+        bpf::String acc;
+
+        while (r.ReadLine(str))
+            acc += str;
+        EXPECT_STREQ(*acc, "你好");
+    }
+}
+
 TEST(TextReadWrite, ReadWrite_All)
 {
     {
@@ -449,6 +469,22 @@ TEST(TextReadWrite, ReadWrite_All)
         bpf::io::TextReader r(f);
         bpf::String str = r.ReadAll().Replace("\r\n", "\n");
         EXPECT_STREQ(*str, "This is a test1\nLet's put some unix new lines in there\nThis is a test2\nThis is a test3\nLet's put some unix new lines in there\n");
+    }
+}
+
+TEST(TextReadWrite, ReadWrite_All_Unicode)
+{
+    {
+        bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
+        bpf::io::TextWriter w(f);
+
+        w.WriteLine("你好");
+    }
+    {
+        bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_READ);
+        bpf::io::TextReader r(f);
+        bpf::String str = r.ReadAll().Replace("\r\n", "\n");
+        EXPECT_STREQ(*str, "你好\n");
     }
 }
 

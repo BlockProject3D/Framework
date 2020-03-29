@@ -410,6 +410,14 @@ String &String::operator+=(const String &other)
     return (*this);
 }
 
+void String::AddSingleByte(const char byte)
+{
+    Data = static_cast<char *>(Memory::Realloc(Data, sizeof(char) * (StrLen + 2)));
+    Data[StrLen++] = byte;
+    Data[StrLen] = '\0';
+    UnicodeLen = CalcUnicodeLen(Data, StrLen);
+}
+
 String &String::operator+=(const fchar other)
 {
     if (other <= 0x7F)
@@ -593,7 +601,7 @@ Array<String> String::Explode(const char c) const
     for (fsize i = 0; i < StrLen; i++)
     {
         if (Data[i] != c)
-            cur += Data[i];
+            cur.AddSingleByte(Data[i]);
         else if (cur != String::Empty)
         {
             l.Add(cur);
@@ -616,7 +624,7 @@ Array<String> String::ExplodeIgnore(const char c, const char ignore) const
         if (Data[i] == ignore)
             ign = !ign;
         if (Data[i] != c || ign)
-            cur += Data[i];
+            cur.AddSingleByte(Data[i]);
         else if (cur != String::Empty)
         {
             l.Add(cur);
@@ -636,7 +644,7 @@ Array<String> String::Explode(const String &str) const
     for (fsize i = 0; i < StrLen; ++i)
     {
         if (Data[i] != str.Data[0])
-            cur += Data[i];
+            cur.AddSingleByte(Data[i]);
         else if (cur != String::Empty && my_strstr(str.Data, Data + i))
         {
             l.Add(cur);
@@ -659,7 +667,7 @@ Array<String> String::ExplodeIgnore(const String &str, const String &ignore) con
         if (my_strstr(ignore.Data, Data + i))
             ign = !ign;
         if (Data[i] != str.Data[0] || ign)
-            cur += Data[i];
+            cur.AddSingleByte(Data[i]);
         else if (cur != String::Empty && my_strstr(str.Data, Data + i))
         {
             l.Add(cur);
@@ -679,7 +687,7 @@ Array<String> String::ExplodeOr(const String &str) const
     for (fsize i = 0; i < StrLen; i++)
     {
         if (!str.Contains(operator[](i)))
-            cur += Data[i];
+            cur.AddSingleByte(Data[i]);
         else if (cur != String::Empty)
         {
             l.Add(cur);
@@ -726,7 +734,7 @@ String String::Replace(const String &search, const String &repby) const
             i += search.Size() - 1;
         }
         else
-            str += Data[i];
+            str.AddSingleByte(Data[i]);
     }
     return (str);
 }

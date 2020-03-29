@@ -125,6 +125,13 @@ namespace bpf
         ~String();
 
         /**
+         * Low level function to adds a single byte at the end of this string
+         * This function ignores wether or not byte is part of a UTF8 code
+         * StrLen will be incremented of 1 and UnicodeLen will be recalculated accordingly
+         */
+        void AddSingleByte(const char byte);
+
+        /**
          * Returns a UTF32 character from a single UTF8 code
          * @param utf8char the utf8 null-terminated byte sequence to convert to a single UTF32 character
          */
