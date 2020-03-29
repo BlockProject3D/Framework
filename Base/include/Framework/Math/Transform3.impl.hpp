@@ -146,7 +146,7 @@ namespace bpf
         {
             auto dir = Position - pivot;
 
-            rotation.Rotate(dir);
+            dir = rotation.Rotate(dir);
             Position = dir + pivot;
         }
     }

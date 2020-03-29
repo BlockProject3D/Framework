@@ -45,5 +45,15 @@ namespace bpf
         {
             return (_hash);
         }
+
+        inline bool operator==(const Name &other) const noexcept
+        {
+            return (_hash == other._hash);
+        }
+
+        inline bool operator!=(const Name &other) const noexcept
+        {
+            return (_hash != other._hash);
+        }
     };
 }

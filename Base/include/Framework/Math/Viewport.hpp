@@ -69,7 +69,7 @@ namespace bpf
              */
             Matrix4<T> Projection;
 
-            Vector3<T> Project(const Matrix4<T> &view, const Vector3<T> &pt);
+            Vector2<T> Project(const Matrix4<T> &view, const Vector3<T> &pt);
 
             inline Viewport()
                 : FOV(0.0f)
