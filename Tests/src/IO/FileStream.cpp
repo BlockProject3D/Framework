@@ -26,12 +26,12 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <cassert>
-#include <iostream>
-#include <gtest/gtest.h>
 #include <Framework/IO/FileStream.hpp>
 #include <Framework/IO/IOException.hpp>
 #include <Framework/Memory/Memory.hpp>
+#include <cassert>
+#include <gtest/gtest.h>
+#include <iostream>
 
 TEST(FileStream, OpenExcept)
 {
@@ -97,4 +97,23 @@ TEST(FileStream, Open_Append)
         EXPECT_STREQ(text, "3.141592654");
     }
     bpf::io::File("./edit_me.txt").Delete();
+}
+
+TEST(FileStream, Unicode)
+{
+    bpf::io::File f("./doesnotexist.txt");
+    bpf::io::FileStream stream(f, bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
+    EXPECT_THROW(stream.Read(Null, 0), bpf::io::IOException);
+    EXPECT_EQ(stream.Write("This is a test你好", 21), (bpf::fsize)21);
+    stream.Close();
+    stream.Close();
+    bpf::io::FileStream stream1(f, bpf::io::FILE_MODE_READ);
+    EXPECT_THROW(stream1.Write(Null, 0), bpf::io::IOException);
+    char buf[22];
+    EXPECT_EQ(stream1.Read(buf, 21), (bpf::fsize)21);
+    buf[21] = '\0';
+    EXPECT_STREQ(buf, "This is a test你好");
+    stream1.Close();
+    stream1.Close();
+    f.Delete();
 }

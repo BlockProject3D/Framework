@@ -95,7 +95,7 @@ bool TextReader::Read(String &out)
                     return (true);
             }
             else
-                out += byte;
+                out.AddSingleByte((char)byte);
             break;
         }
         case EStringEncoder::UTF16:
@@ -156,7 +156,7 @@ String TextReader::ReadAll()
     uint8 byte;
 
     while (ReadByte2(byte))
-        str += byte;
+        str.AddSingleByte(byte);
     return (str);
 }
 
