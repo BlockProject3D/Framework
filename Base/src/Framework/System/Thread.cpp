@@ -150,7 +150,9 @@ void Thread::Join()
     WaitForSingleObject(_handle, INFINITE);
 #else
     pthread_join(*reinterpret_cast<ThreadType *>(_handle), Null);
+    free(_handle);
 #endif
+    _handle = Null;
 }
 
 void Thread::Kill(const bool force)
