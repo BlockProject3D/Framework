@@ -37,6 +37,10 @@ namespace bpf
         fsize _hash;
 
     public:
+        inline Name() noexcept
+            : _hash(0)
+        {
+        }
         explicit Name(const char *str) noexcept;
         explicit Name(const String &str) noexcept;
         explicit Name(const fsize hash) noexcept;

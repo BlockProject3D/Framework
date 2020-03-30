@@ -56,7 +56,7 @@ namespace bpf
             X = a.X;
             Y = a.Y;
             Z = a.Z;
-            W = Math<T>::Sqrt((from.Length() * from.Length()) * (to.Length() * to.Length())) + from.Dot(to);
+            W = Math<T>::Sqrt((from.Norm() * from.Norm()) * (to.Norm() * to.Norm())) + from.Dot(to);
         }
 
         template <typename T>

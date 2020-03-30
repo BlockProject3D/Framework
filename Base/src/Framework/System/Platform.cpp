@@ -163,7 +163,7 @@ Env Platform::InitEnvInfo()
 
     ev.ShortName = "BPF";
     ev.Name = "BlockProject Framework";
-    ev.Version = "2.3";
+    ev.Version = "2.4";
     ev.VersionInt = BP_MODULE_VERSION_INT;
     return (ev);
 }
