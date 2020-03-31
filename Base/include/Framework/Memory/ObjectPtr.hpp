@@ -39,7 +39,7 @@ namespace bpf
          * @tparam T the type of the underlying instance
          */
         template <class T /* extends Object */>
-        class BPF_API ObjectPtr
+        class BP_TPL_API ObjectPtr
         {
         private:
             T *RawPtr;
