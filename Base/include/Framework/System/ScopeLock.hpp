@@ -33,7 +33,7 @@ namespace bpf
 {
     namespace system
     {
-        class BPF_API ScopeLock
+        class ScopeLock
         {
         private:
             const Mutex &_mutex;
