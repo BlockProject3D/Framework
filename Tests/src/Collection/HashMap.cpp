@@ -29,6 +29,7 @@
 #include <cassert>
 #include <iostream>
 #include <gtest/gtest.h>
+#include <Framework/Name.hpp>
 #include <Framework/Memory/Utility.hpp>
 #include <Framework/Collection/HashMap.hpp>
 #include <Framework/Collection/Stringifier.HashMap.hpp>
@@ -423,6 +424,24 @@ TEST(HashMap, ReadWrite_NonCopy)
     EXPECT_EQ(*map["test1"], 0);
     EXPECT_EQ(*map["test2"], 5);
     EXPECT_EQ(*map["test3"], 9);
+}
+
+TEST(HashMap, ReadWrite_NonCopy_1)
+{
+    HashMap<Name, UniquePtr<int>> map;
+
+    map[bpf::Name("test1")] = Null;
+    map[bpf::Name("test2")] = Null;
+    map[bpf::Name("test3")] = Null;
+    EXPECT_EQ(map[bpf::Name("test1")], Null);
+    EXPECT_EQ(map[bpf::Name("test2")], Null);
+    EXPECT_EQ(map[bpf::Name("test3")], Null);
+    map[bpf::Name("test1")] = MakeUnique<int>(0);
+    map[bpf::Name("test2")] = MakeUnique<int>(5);
+    map[bpf::Name("test3")] = MakeUnique<int>(9);
+    EXPECT_EQ(*map[bpf::Name("test1")], 0);
+    EXPECT_EQ(*map[bpf::Name("test2")], 5);
+    EXPECT_EQ(*map[bpf::Name("test3")], 9);
 }
 
 #ifdef BUILD_DEBUG

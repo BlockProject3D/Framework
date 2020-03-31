@@ -132,3 +132,27 @@ TEST(Thread, Exception)
     thread.Join();
     EXPECT_EQ(thread.GetState(), bpf::system::Thread::STOPPED); //As the thread crashed (throw) it should be marked as STOPPED instead of FINISHED
 }
+
+TEST(Thread, RunTwice)
+{
+    MyThread thread(false);
+
+    EXPECT_STREQ(*thread.GetName(), "MyThread");
+    EXPECT_EQ(thread.GetState(), bpf::system::Thread::PENDING);
+    thread.Start();
+    EXPECT_EQ(thread.GetState(), bpf::system::Thread::RUNNING);
+    bpf::system::Thread::Sleep(500);
+    thread.Kill();
+    EXPECT_EQ(thread.GetState(), bpf::system::Thread::EXITING);
+    thread.Join();
+    EXPECT_EQ(thread.GetState(), bpf::system::Thread::FINISHED);
+    EXPECT_LE(thread._value - (bpf::uint32)2, (bpf::uint32)1);
+    thread.Start();
+    EXPECT_EQ(thread.GetState(), bpf::system::Thread::RUNNING);
+    bpf::system::Thread::Sleep(500);
+    thread.Kill();
+    EXPECT_EQ(thread.GetState(), bpf::system::Thread::EXITING);
+    thread.Join();
+    EXPECT_EQ(thread.GetState(), bpf::system::Thread::FINISHED);
+    EXPECT_LE(thread._value - (bpf::uint32)4, (bpf::uint32)1);
+}
