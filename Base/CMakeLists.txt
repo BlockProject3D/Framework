@@ -209,7 +209,7 @@ endif (PLATFORM STREQUAL "Windows")
 
 bp_product_properties(BPF
     VERSION_MAJOR 2
-    VERSION_MINOR 5
+    VERSION_MINOR 6
     DESCRIPTION "BlockProject 3D Framework"
 )
 
