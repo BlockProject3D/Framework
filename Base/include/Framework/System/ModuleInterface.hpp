@@ -36,13 +36,14 @@
     #define BP_MODULE_VERSION_INT 0x1
 #endif
 
+//Cannot be a unique pointer due to MSVC restrictions
 #ifdef WINDOWS
     #define BP_IMPLEMENT_MODULE(Name, BaseClass, Class) \
     extern "C" \
     { \
-        __declspec(dllexport) bpf::memory::UniquePtr<BaseClass> Name##_Link() \
+        __declspec(dllexport) BaseClass *Name##_Link() \
         { \
-            return (bpf::memory::MakeUnique<Class>()); \
+            return (new Class()); \
         } \
         bpf::fint Name##_Version() \
         { \
@@ -53,9 +54,9 @@
     #define BP_IMPLEMENT_MODULE(Name, BaseClass, Class) \
     extern "C" \
     { \
-        bpf::memory::UniquePtr<BaseClass> Name##_Link() \
+        BaseClass *Name##_Link() \
         { \
-            return (bpf::memory::MakeUnique<Class>()); \
+            return (new Class()); \
         } \
         bpf::fint Name##_Version() \
         { \

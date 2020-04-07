@@ -51,7 +51,7 @@ namespace bpf
                 throw ModuleException("Module has been built against a new version of the Framework");
             else if (version < Platform::GetEnvInfo().VersionInt)
                 throw ModuleException("Module has been built against an older version of the Framework");
-            if ((md.Interface = sym()) == Null)
+            if ((md.Interface = memory::UniquePtr<BaseClass>(sym())) == Null)
                 throw ModuleException("Module interface allocation failure");
             _map.Add(virtualName, std::move(md));
         }

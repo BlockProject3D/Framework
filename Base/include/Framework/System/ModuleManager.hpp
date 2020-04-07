@@ -40,7 +40,7 @@ namespace bpf
         class BP_TPL_API ModuleManager
         {
         private:
-            typedef memory::UniquePtr<BaseClass> (*ModuleLinkFunc)();
+            typedef BaseClass *(*ModuleLinkFunc)();
             typedef fint(*ModuleDescribeFunc)();
 
             struct Entry
