@@ -85,7 +85,7 @@ namespace bpf
         Vector<T, 3> Quaternion<T>::Rotate(const Vector<T, 3> &v) const
         {
             Quaternion<T> p(0, v.X, v.Y, v.Z);
-            Quaternion<T> pprime = Inverse() * p * *this;
+            Quaternion<T> pprime = p * *this * Inverse(); //I had the math backward...
 
             return (Vector<T, 3>(pprime.I, pprime.J, pprime.K));
         }
