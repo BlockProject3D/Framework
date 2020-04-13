@@ -39,23 +39,23 @@ namespace bpf
         class BP_TPL_API Quaternion
         {
         public:
-            T X;
-            T Y;
-            T Z;
+            T I;
+            T J;
+            T K;
             T W;
 
             inline Quaternion()
-                : X(0)
-                , Y(0)
-                , Z(0)
+                : I(0)
+                , J(0)
+                , K(0)
                 , W(1)
             {
             }
 
-            inline Quaternion(const T w, const T x, const T y, const T z)
-                : X(x)
-                , Y(y)
-                , Z(z)
+            inline Quaternion(const T w, const T i, const T j, const T k)
+                : I(i)
+                , J(j)
+                , K(k)
                 , W(w)
             {
             }
@@ -105,18 +105,18 @@ namespace bpf
 
             inline Quaternion<T> Inverse() const
             {
-                return (Quaternion<T>(W, -X, -Y, -Z));
+                return (Quaternion<T>(W, -I, -J, -K));
             }
 
             inline T Norm() const noexcept
             {
-                return (Math<T>::Sqrt(W * W + X * X + Y * Y + Z * Z));
+                return (Math<T>::Sqrt(W * W + I * I + J * J + K * K));
             }
 
             inline Quaternion<T> Normalize() const noexcept
             {
                 T v = Norm();
-                return (Quaternion<T>(W / v, X / v, Y / v, Z / v));
+                return (Quaternion<T>(W / v, I / v, J / v, K / v));
             }
 
             bool operator==(const Quaternion<T> &other) const;
@@ -126,17 +126,22 @@ namespace bpf
              */
             Quaternion<T> operator*(const Quaternion<T> &other) const;
 
-            inline Quaternion<T> operator+(const Quaternion<T> &other) const
+            inline Quaternion<T> operator*(const T &other) const
             {
-                return (Quaternion<T>(W + other.W, X + other.X, Y + other.Y, Z + other.Z));
+                return (Quaternion<T>(W * other, I * other, J * other, K * other));
             }
 
-            /**
-             * Returns a copy of this quaternion raised to the power of n
-             */
-            Quaternion<T> Pow(const T n) const;
-            Quaternion<T> Exp() const;
-            Quaternion<T> Log() const;
+            inline Quaternion<T> operator+(const Quaternion<T> &other) const
+            {
+                return (Quaternion<T>(W + other.W, I + other.I, J + other.J, K + other.K));
+            }
+
+            inline Quaternion<T> operator-(const Quaternion<T> &other) const
+            {
+                return (Quaternion<T>(W - other.W, I - other.I, J - other.J, K - other.K));
+            }
+
+            T Dot(const Quaternion<T> &other) const;
 
             /**
              * Returns the angle between two quaternions
