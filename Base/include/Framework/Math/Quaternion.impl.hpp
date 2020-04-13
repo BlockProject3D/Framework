@@ -68,7 +68,7 @@ namespace bpf
         Quaternion<T>::Quaternion(const Vector<T, 3> &axis, const T ang)
         {
             //Not using initializer to allow performance improvement
-            T v = Math<T>::Sin(ang) / (T)2;
+            T v = Math<T>::Sin((ang / (T)2));
             I = axis.X * v;
             J = axis.Y * v;
             K = axis.Z * v;
@@ -174,7 +174,7 @@ namespace bpf
             T stheta0 = Math<T>::Sin(theta0);
             T s0 = Math<T>::Cos(theta) - dot * stheta / stheta0;
             T s1 = stheta / stheta0;
-            return ((q * s0) + (q1 * s1)));
+            return ((q * s0) + (q1 * s1));
         }
 
         template <typename T>

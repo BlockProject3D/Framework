@@ -106,6 +106,16 @@ TEST(Quat, Invert_Test2)
     EXPECT_EQ(res, expected);
 }
 
+TEST(Quat, Interpolation)
+{
+    bpf::Quatld q = bpf::Quatld(bpf::Vector3ld(bpf::math::Mathld::Pi / 2.0, bpf::math::Mathld::Pi / 2.0, bpf::math::Mathld::Pi / 4.0));
+
+    EXPECT_EQ(bpf::Quatld::Lerp(q, q, 1.0f), q);
+    EXPECT_EQ(bpf::Quatld::Lerp(q, q, 0.1f), q);
+    EXPECT_EQ(bpf::Quatld::Slerp(q, q, 1.0f), q);
+    EXPECT_EQ(bpf::Quatld::Slerp(q, q, 0.1f), q);
+}
+
 TEST(Quat, Norm)
 {
     bpf::Quatld q = bpf::Quatld(bpf::Vector3ld(bpf::math::Mathld::Pi / 2.0, bpf::math::Mathld::Pi / 2.0, bpf::math::Mathld::Pi / 4.0));

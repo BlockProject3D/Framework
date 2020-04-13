@@ -41,11 +41,11 @@ namespace bpf
             return (String("Quaternion(")
                 + String::ValueOf(q.W, prec)
                 + " + "
-                + String::ValueOf(q.X, prec)
+                + String::ValueOf(q.I, prec)
                 + "i + "
-                + String::ValueOf(q.Y, prec)
+                + String::ValueOf(q.J, prec)
                 + "j + "
-                + String::ValueOf(q.Z, prec)
+                + String::ValueOf(q.K, prec)
                 + "k)");
         }
     };
