@@ -43,9 +43,9 @@
     { \
         __declspec(dllexport) BaseClass *Name##_Link() \
         { \
-            return (new Class()); \
+            return (bpf::memory::MemUtils::New<Class>()); \
         } \
-        bpf::fint Name##_Version() \
+        __declspec(dllexport) bpf::fint Name##_Version() \
         { \
             return (BP_MODULE_VERSION_INT); \
         } \
@@ -56,7 +56,7 @@
     { \
         BaseClass *Name##_Link() \
         { \
-            return (new Class()); \
+            return (bpf::memory::MemUtils::New<Class>()); \
         } \
         bpf::fint Name##_Version() \
         { \

@@ -27,6 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/IO/File.hpp"
 #include "Framework/System/Module.hpp"
 #include "Framework/Collection/HashMap.hpp"
 #include "Framework/Memory/Utility.hpp"
@@ -49,14 +50,16 @@ namespace bpf
                 Module Handle;
             };
 
-            String _modulePath;
-            collection::HashMap<String, Entry> _map;
+            io::File _modulePath;
+            collection::HashMap<Name, Entry> _map;
 
         public:
-            explicit inline ModuleManager(const String &modulePath)
+            explicit inline ModuleManager(const io::File &modulePath)
                 : _modulePath(modulePath)
             {
             }
+
+            ~ModuleManager();
 
             ModuleManager(const ModuleManager &other) = delete;
             ModuleManager &operator=(const ModuleManager &other) = delete;
@@ -65,7 +68,7 @@ namespace bpf
              * Loads the given module name
              * @throws ModuleException
              */
-            void LoadModule(const Name &virtualName, const String &fileName);
+            void LoadModule(const String &virtualName, const String &fileName);
 
             /**
              * Unloads the given module name
