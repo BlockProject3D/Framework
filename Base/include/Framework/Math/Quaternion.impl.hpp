@@ -176,5 +176,13 @@ namespace bpf
             T s1 = stheta / stheta0;
             return ((q * s0) + (q1 * s1)));
         }
+
+        template <typename T>
+        Quaternion<T> Quaternion<T>::LookAt(const Vector3<T> &p0, const Vector3<T> &p1, const Vector3<T> &reference)
+        {
+            Vector3<T> dir = (p1 - p0).Normalize();
+            Vector3<T> axis = reference.Cross(dir);
+            return (Quaternion<T>(reference.Dot(dir), axis.X, axis.Y, axis.Z).Normalize());
+        }
     }
 }
