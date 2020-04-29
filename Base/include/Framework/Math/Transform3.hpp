@@ -91,9 +91,9 @@ namespace bpf
 
             void RotateArround(const Vector3<T> &pivot, const Quaternion<T> &rotation) noexcept;
 
-            inline void LookAt(const Vector3<T> &target, const Vector3<T> &reference = Vector3<T>::Up) noexcept
+            inline void LookAt(const Vector3<T> &target, const Vector3<T> &forward = Vector3<T>::Forward, const Vector3<T> &up = Vector3<T>::Up) noexcept
             {
-                Rotation = Quaternion<T>::LookAt(Position, target, reference);
+                Rotation = Quaternion<T>::LookAt(target - Position, forward, up);
             }
         };
 

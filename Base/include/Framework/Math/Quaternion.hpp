@@ -168,7 +168,7 @@ namespace bpf
              */
             static Quaternion<T> Slerp(const Quaternion<T> &q, const Quaternion<T> &q1, const T t);
 
-            static Quaternion<T> LookAt(const Vector3<T> &p0, const Vector3<T> &p1, const Vector3<T> &reference = Vector3<T>::Up);
+            static Quaternion<T> LookAt(const Vector3<T> &dir, const Vector3<T> &forward = Vector3<T>::Forward, const Vector3<T> &up = Vector3<T>::Up);
 
             /**
              * Zero quaternion

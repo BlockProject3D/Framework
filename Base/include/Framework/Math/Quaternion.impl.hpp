@@ -97,8 +97,7 @@ namespace bpf
                 W * W + I * I - J * J - K * K, 2 * I * J - 2 * W * K, 2 * I * K + 2 * W * J, 0,
                 2 * I * J + 2 * W * K, W * W - I * I + J * J - K * K, 2 * J * K - 2 * W * I, 0,
                 2 * I * K - 2 * W * J, 2 * J * K + 2 * W * I, W * W - I * I - J * J + K * K, 0,
-                0, 0, 0, 1
-            };
+                0, 0, 0, 1};
 
             return (mat);
         }
@@ -123,8 +122,7 @@ namespace bpf
             T diffz = Math<T>::Abs(K - other.K);
             T diffw = Math<T>::Abs(W - other.W);
 
-            return (diffx <= Math<T>::Epsilon && diffy <= Math<T>::Epsilon
-                && diffz <= Math<T>::Epsilon && diffw <= Math<T>::Epsilon);
+            return (diffx <= Math<T>::Epsilon && diffy <= Math<T>::Epsilon && diffz <= Math<T>::Epsilon && diffw <= Math<T>::Epsilon);
         }
 
         template <typename T>
@@ -150,7 +148,7 @@ namespace bpf
         Quaternion<T> Quaternion<T>::Lerp(const Quaternion<T> &q, const Quaternion<T> &q1, const T t)
         {
             Quaternion<T> res(Math<T>::Lerp(q.W, q1.W, t), Math<T>::Lerp(q.I, q1.I, t),
-                Math<T>::Lerp(q.J, q1.J, t), Math<T>::Lerp(q.K, q1.K, t));
+                              Math<T>::Lerp(q.J, q1.J, t), Math<T>::Lerp(q.K, q1.K, t));
 
             return (res);
         }
@@ -160,7 +158,8 @@ namespace bpf
         {
             auto quat = q;
             T dot = q.Dot(q1);
-            if (dot < T(0)) {
+            if (dot < T(0))
+            {
                 quat = quat.Inverse();
                 dot = -dot;
             }
@@ -178,11 +177,16 @@ namespace bpf
         }
 
         template <typename T>
-        Quaternion<T> Quaternion<T>::LookAt(const Vector3<T> &p0, const Vector3<T> &p1, const Vector3<T> &reference)
+        Quaternion<T> Quaternion<T>::LookAt(const Vector3<T> &dir, const Vector3<T> &forward, const Vector3<T> &up)
         {
-            Vector3<T> dir = (p1 - p0).Normalize();
-            Vector3<T> axis = reference.Cross(dir);
-            return (Quaternion<T>(reference.Dot(dir), axis.X, axis.Y, axis.Z).Normalize());
+            if (up != dir)
+            {
+                auto vec = dir + up * -up.Dot(dir);
+                auto q = Quaternionf(forward, vec);
+                return (Quaternionf(vec, dir) * q);
+            }
+            else
+                return (Quaternionf(forward, dir));
         }
     }
 }
