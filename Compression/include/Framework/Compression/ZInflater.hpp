@@ -41,6 +41,9 @@ namespace bpf
         public:
             ZInflater();
             ~ZInflater();
+
+            io::ByteBuf Inflate(const io::ByteBuf &deflated);
+            io::ByteBuf Inflate(const void *deflated, const fsize size);
         };
     }
 }

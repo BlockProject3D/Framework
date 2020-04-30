@@ -26,5 +26,29 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+//#include "Framework/Compression/ZInflater.hpp"
 #include <zlib.h>
 
+/*using namespace bpf::compression;
+using namespace bpf::io;
+using namespace bpf;*/
+
+/*ZInflater::ZInflater()
+{
+
+}
+
+ZInflater::~ZInflater()
+{
+    
+}*/
+
+/*ByteBuf ZInflater::Inflate(const ByteBuf &deflated)
+{
+
+}
+
+ByteBuf ZInflater::Inflate(const void *deflated, const fsize size)
+{
+
+}*/
