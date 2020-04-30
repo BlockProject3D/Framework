@@ -20,9 +20,10 @@ jobs:
       env:
         - BP_TEST_RUN_CMD="./Debug/BPF.Tests"
       before_install:
-        - choco install pip
+        - choco install python3
         - python -m pip install --upgrade pip
-        - pip install conan --user
+        - export PATH="/c/Python:/c/Python/Scripts:$PATH"
+        - pip install conan
       <<: *builddbgscript
     - stage: debug-test
       os: linux
@@ -43,7 +44,7 @@ jobs:
       env:
         - BP_TEST_RUN_CMD="./Debug/BPF.Tests"
       before_install:
-        - pip install conan --user
+        - pip install conan
       <<: *builddbgscript
     
     - stage: coverage
@@ -77,8 +78,10 @@ jobs:
       compiler: MSVC
       if: branch = release
       before_install:
+        - choco install python3
         - python -m pip install --upgrade pip
-        - pip install conan --user
+        - export PATH="/c/Python:/c/Python/Scripts:$PATH"
+        - pip install conan
       script:
         - python ./Deploy.py
         - file Framework.zip
@@ -108,9 +111,8 @@ jobs:
       compiler: clang
       if: branch = release
       before_install:
-        - pip install conan --user
+        - pip install conan
       script:
-        - pip install conan --user
         - python ./Deploy.py
         - file Framework.zip
       before_deploy:
