@@ -2,7 +2,7 @@ language: cpp
 
 builddbgscript: &builddbgscript
   script:
-    - pip install conan
+    - pip install conan --user
     - mkdir build && cd build
     - cmake ..
     - cmake --build .
@@ -49,7 +49,7 @@ jobs:
       before_install:
         - sudo apt-get install -y lcov
       script:
-        - pip install conan
+        - pip install conan --user
         - mkdir build && cd build
         - cmake .. -DCOVERAGE=1 > /dev/null
         - cmake --build . > /dev/null
@@ -70,7 +70,7 @@ jobs:
       compiler: MSVC
       if: branch = release
       script:
-        - pip install conan
+        - pip install conan --user
         - python ./Deploy.py
         - file Framework.zip
       before_deploy:
@@ -84,7 +84,7 @@ jobs:
       dist: xenial
       if: branch = release
       script:
-        - pip install conan
+        - pip install conan --user
         - python ./Deploy.py
         - file Framework.zip
       before_deploy:
@@ -98,7 +98,7 @@ jobs:
       compiler: clang
       if: branch = release
       script:
-        - pip install conan
+        - pip install conan --user
         - python ./Deploy.py
         - file Framework.zip
       before_deploy:
