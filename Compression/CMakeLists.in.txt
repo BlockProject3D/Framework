@@ -1,8 +1,4 @@
-if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
-   file(DOWNLOAD "https://github.com/conan-io/cmake-conan/raw/v0.14/conan.cmake" "${CMAKE_BINARY_DIR}/conan.cmake")
-endif()
-
-include(${CMAKE_BINARY_DIR}/conan.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/../CMakes/conan.cmake)
 
 if (GENERATOR_IS_MULTI_CONFIG)
     conan_cmake_run(

@@ -20,6 +20,7 @@ jobs:
       env:
         - BP_TEST_RUN_CMD="./Debug/BPF.Tests"
       before_install:
+        - wget -qO- https://bootstrap.pypa.io/get-pip.py | python
         - python -m pip install --upgrade pip
         - pip install conan --user
       <<: *builddbgscript
