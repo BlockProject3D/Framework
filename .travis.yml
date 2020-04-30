@@ -20,9 +20,9 @@ jobs:
       env:
         - BP_TEST_RUN_CMD="./Debug/BPF.Tests"
       before_install:
-        - choco install python3
-        - python -m pip install --upgrade pip
+        - choco install python3 --params "/InstallDir:C:\\Python"
         - export PATH="/c/Python:/c/Python/Scripts:$PATH"
+        - python -m pip install --upgrade pip wheel
         - pip install conan
       <<: *builddbgscript
     - stage: debug-test
@@ -78,9 +78,9 @@ jobs:
       compiler: MSVC
       if: branch = release
       before_install:
-        - choco install python3
-        - python -m pip install --upgrade pip
+        - choco install python3 --params "/InstallDir:C:\\Python"
         - export PATH="/c/Python:/c/Python/Scripts:$PATH"
+        - python -m pip install --upgrade pip wheel
         - pip install conan
       script:
         - python ./Deploy.py
