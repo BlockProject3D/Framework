@@ -20,7 +20,7 @@ jobs:
       env:
         - BP_TEST_RUN_CMD="./Debug/BPF.Tests"
       before_install:
-        - wget -qO- https://bootstrap.pypa.io/get-pip.py | python
+        - choco install python --version 3.5.4
         - python -m pip install --upgrade pip
         - pip install conan --user
       <<: *builddbgscript
