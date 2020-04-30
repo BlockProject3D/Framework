@@ -4,11 +4,20 @@ endif()
 
 include(${CMAKE_BINARY_DIR}/conan.cmake)
 
-#GENERATOR_IS_MULTI_CONFIG
-conan_cmake_run(
-    REQUIRES zlib/1.2.11@conan/stable
-    OPTIONS zlib:shared=False
-    BASIC_SETUP CMAKE_TARGETS NO_OUTPUT_DIRS
-    BUILD missing
-    CONFIGURATION_TYPES "Release;Debug"
-)
+if (GENERATOR_IS_MULTI_CONFIG)
+    conan_cmake_run(
+        REQUIRES zlib/1.2.11@conan/stable
+        OPTIONS zlib:shared=False
+        BASIC_SETUP CMAKE_TARGETS NO_OUTPUT_DIRS
+        BUILD missing
+        CONFIGURATION_TYPES "Release;Debug"
+    )
+else (GENERATOR_IS_MULTI_CONFIG)
+    conan_cmake_run(
+        REQUIRES zlib/1.2.11@conan/stable
+        OPTIONS zlib:shared=False
+        BASIC_SETUP CMAKE_TARGETS NO_OUTPUT_DIRS
+        BUILD missing
+        BUILD_TYPE ${CMAKE_BUILD_TYPE}
+    )
+endif (GENERATOR_IS_MULTI_CONFIG)

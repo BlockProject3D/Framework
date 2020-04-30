@@ -2,7 +2,6 @@ language: cpp
 
 builddbgscript: &builddbgscript
   script:
-    - pip install conan --user
     - mkdir build && cd build
     - cmake ..
     - cmake --build .
@@ -20,6 +19,9 @@ jobs:
       if: branch != release
       env:
         - BP_TEST_RUN_CMD="./Debug/BPF.Tests"
+      before_install:
+        - python -m pip install --upgrade pip
+        - pip install conan --user
       <<: *builddbgscript
     - stage: debug-test
       os: linux
@@ -30,6 +32,8 @@ jobs:
       if: branch != release
       env:
         - BP_TEST_RUN_CMD="./Debug/BPF.Tests"
+      before_install:
+        - pip install conan --user
       <<: *builddbgscript
     - stage: debug-test
       os: osx
@@ -37,6 +41,8 @@ jobs:
       if: branch != release
       env:
         - BP_TEST_RUN_CMD="./Debug/BPF.Tests"
+      before_install:
+        - pip install conan --user
       <<: *builddbgscript
     
     - stage: coverage
@@ -48,8 +54,8 @@ jobs:
         - BP_TEST_RUN_CMD="./Debug/BPF.Tests"
       before_install:
         - sudo apt-get install -y lcov
-      script:
         - pip install conan --user
+      script:
         - mkdir build && cd build
         - cmake .. -DCOVERAGE=1 > /dev/null
         - cmake --build . > /dev/null
@@ -69,8 +75,10 @@ jobs:
       arch: x64
       compiler: MSVC
       if: branch = release
-      script:
+      before_install:
+        - python -m pip install --upgrade pip
         - pip install conan --user
+      script:
         - python ./Deploy.py
         - file Framework.zip
       before_deploy:
@@ -83,8 +91,9 @@ jobs:
       arch: x64
       dist: xenial
       if: branch = release
-      script:
+      before_install:
         - pip install conan --user
+      script:
         - python ./Deploy.py
         - file Framework.zip
       before_deploy:
@@ -97,6 +106,8 @@ jobs:
       arch: x64
       compiler: clang
       if: branch = release
+      before_install:
+        - pip install conan --user
       script:
         - pip install conan --user
         - python ./Deploy.py
