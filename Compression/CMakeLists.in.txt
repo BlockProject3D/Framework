@@ -1,0 +1,20 @@
+include(ExternalProject)
+
+#Never ever modify this file: this file is an attempt at hacking CMake inhability to statically link zlib.
+#CMake ExternalProject is very unstable and dangerous: I lost 1 hour work trying to get it to do what it is supposed to do.
+#For some reasons there is a chance that ExternalProject_Add will cause complete destruction of source files.
+#It can also attempt to write files to C:\ without user consent.
+set(ZLIB_BINARY_DIR ${CMAKE_BINARY_DIR}/zlib-build)
+#This path is hardcoded as it is the only way to FORCE ExternalProject_Add to allow building a static library WITHOUT installing it to undesirable locations.
+#This means that compiling this module independently is not possible. Thanks to CMake buggy source destructor ExternalProject_Add function.
+set(ZLIB_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/staticzlib/src/staticzlib)
+set(ZLIB_INCLUDE_DIR2 ${CMAKE_CURRENT_BINARY_DIR}/staticzlib/src/staticzlib-build)
+
+ExternalProject_Add(
+    staticzlib
+    PREFIX "staticzlib"
+    GIT_REPOSITORY "https://github.com/madler/zlib.git"
+    GIT_TAG "v1.2.11"
+    BINARY_DIR ${ZLIB_INSTALL_DIR}
+    INSTALL_COMMAND ""
+)
