@@ -64,14 +64,14 @@ function(bp_add_module targetname modulename)
 
     # Add includes and libs
     target_include_directories(${targetname} PRIVATE "${MD_PATH}/${INCLUDE_DIR}")
-    if (EXISTS "${MD_PATH}/${BIN_DEBUG}")
-        target_link_libraries(${targetname} PRIVATE debug "${MD_PATH}/${BIN_DEBUG}")
-    else (EXISTS "${MD_PATH}/${BIN_DEBUG}")
+
+    # Handle linkage: identify what kind of Framework we are working with (pre-build vs source build) then link correct lib
+    # This if block is designed to allow correct behaviour for Makefile and Ninja
+    if (EXISTS "${MD_PATH}/${ROOT}/CMakeLists.txt") # We are a source build
         target_link_libraries(${targetname} PRIVATE debug ${modulename})
-    endif (EXISTS "${MD_PATH}/${BIN_DEBUG}")
-    if (EXISTS "${MD_PATH}/${BIN_RELEASE}")
-        target_link_libraries(${targetname} PRIVATE optimized "${MD_PATH}/${BIN_RELEASE}")
-    else (EXISTS "${MD_PATH}/${BIN_RELEASE}")
         target_link_libraries(${targetname} PRIVATE optimized ${modulename})
-    endif (EXISTS "${MD_PATH}/${BIN_RELEASE}")
+    else (EXISTS "${MD_PATH}/${ROOT}/CMakeLists.txt") # We are a pre-build
+        target_link_libraries(${targetname} PRIVATE debug "${MD_PATH}/${BIN_DEBUG}")
+        target_link_libraries(${targetname} PRIVATE optimized "${MD_PATH}/${BIN_RELEASE}")
+    endif (EXISTS "${MD_PATH}/${ROOT}/CMakeLists.txt")
 endfunction(bp_add_module)
