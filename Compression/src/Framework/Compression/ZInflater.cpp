@@ -26,29 +26,48 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-//#include "Framework/Compression/ZInflater.hpp"
+#include <Framework/Memory/Memory.hpp>
+#include <Framework/IO/IOException.hpp>
+#include "Framework/Compression/ZInflater.hpp"
 #include <zlib.h>
 
-/*using namespace bpf::compression;
+using namespace bpf::compression;
+using namespace bpf::memory;
 using namespace bpf::io;
-using namespace bpf;*/
+using namespace bpf;
 
-/*ZInflater::ZInflater()
+ZInflater::ZInflater()
+    : _handle(Memory::Malloc(sizeof(z_stream_s)))
 {
-
+    z_stream_s *stream = reinterpret_cast<z_stream_s *>(_handle);
+    stream->zalloc = Z_NULL;
+    stream->zfree = Z_NULL;
+    stream->opaque = Z_NULL;
+    stream->avail_in = 0;
+    stream->next_in = Z_NULL;
+    auto ret = inflateInit(stream);
+    if (ret != Z_OK)
+    {
+        Memory::Free(stream);
+        throw IOException(String("Could not initialize zlib: ") + String::ValueOf(ret));
+    }
 }
 
 ZInflater::~ZInflater()
 {
-    
-}*/
+    z_stream_s *stream = reinterpret_cast<z_stream_s *>(_handle);
+    inflateEnd(stream);
+    Memory::Free(stream);
+}
 
-/*ByteBuf ZInflater::Inflate(const ByteBuf &deflated)
+ByteBuf ZInflater::Inflate(const ByteBuf &deflated)
 {
-
+    return (Inflate(*deflated, deflated.Size()));
 }
 
 ByteBuf ZInflater::Inflate(const void *deflated, const fsize size)
 {
-
-}*/
+    z_stream_s *stream = reinterpret_cast<z_stream_s *>(_handle);
+    //stream->avail_in
+    return (ByteBuf(1));
+}

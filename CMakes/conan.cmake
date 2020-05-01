@@ -473,8 +473,8 @@ macro(conan_cmake_run)
         message(WARNING "CONFIGURATION_TYPES and BUILD_TYPE arguments should not be defined at the same time.")
     endif()
 
-    if(CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE AND NOT CONAN_EXPORTED
-            AND NOT ARGUMENTS_BUILD_TYPE)
+	# For some reasons the variable GENERATOR_IS_MULTI_CONFIG is broken under Windows 10 Visual Studio Community 2019
+    if(CMAKE_CONFIGURATION_TYPES AND NOT CONAN_EXPORTED AND NOT ARGUMENTS_BUILD_TYPE)
         set(CONAN_CMAKE_MULTI ON)
         if (NOT ARGUMENTS_CONFIGURATION_TYPES)
             set(ARGUMENTS_CONFIGURATION_TYPES "Release;Debug")
