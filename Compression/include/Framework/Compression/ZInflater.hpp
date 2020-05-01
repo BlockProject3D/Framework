@@ -27,23 +27,27 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Compression/IInflater.hpp"
+#include <Framework/IO/ByteBuf.hpp>
 
 namespace bpf
 {
     namespace compression
     {
-        class BPF_COMPRESSION_API ZInflater final : public IInflater
+        class BPF_COMPRESSION_API ZInflater
         {
         private:
             void *_handle;
+            io::ByteBuf _input;
 
         public:
             ZInflater();
             ~ZInflater();
 
-            io::ByteBuf Inflate(const io::ByteBuf &deflated);
-            io::ByteBuf Inflate(const void *deflated, const fsize size);
+            void SetInput(const io::ByteBuf &deflated);
+            void SetInput(io::ByteBuf &&deflated);
+
+            fsize Inflate(io::ByteBuf &out);
+            fsize Inflate(void *out, const fsize size);
         };
     }
 }

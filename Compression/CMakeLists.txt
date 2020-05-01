@@ -6,8 +6,6 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/../CMakes/Framework.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.in.txt")
 
 set(SOURCES
-    include/Framework/Compression/IInflater.hpp
-    include/Framework/Compression/IDeflater.hpp
     include/Framework/Compression/ZInflater.hpp
     include/Framework/Compression/ZDeflater.hpp
     src/Framework/Compression/ZInflater.cpp

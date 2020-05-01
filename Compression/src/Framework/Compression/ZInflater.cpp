@@ -38,6 +38,7 @@ using namespace bpf;
 
 ZInflater::ZInflater()
     : _handle(Memory::Malloc(sizeof(z_stream_s)))
+    , _input(0)
 {
     z_stream_s *stream = reinterpret_cast<z_stream_s *>(_handle);
     stream->zalloc = Z_NULL;
@@ -60,7 +61,7 @@ ZInflater::~ZInflater()
     Memory::Free(stream);
 }
 
-ByteBuf ZInflater::Inflate(const ByteBuf &deflated)
+/*ByteBuf ZInflater::Inflate(const ByteBuf &deflated)
 {
     return (Inflate(*deflated, deflated.Size()));
 }
@@ -70,4 +71,4 @@ ByteBuf ZInflater::Inflate(const void *deflated, const fsize size)
     z_stream_s *stream = reinterpret_cast<z_stream_s *>(_handle);
     //stream->avail_in
     return (ByteBuf(1));
-}
+}*/
