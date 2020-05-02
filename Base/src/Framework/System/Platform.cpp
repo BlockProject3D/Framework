@@ -31,13 +31,13 @@
     #include <Windows.h>
     #include <intrin.h>
     #undef ERROR
-#elif LINUX
-    #include <sys/utsname.h>
+#elif defined(LINUX) || defined(ANDROID)
     #include <sys/sysinfo.h>
+    #include <sys/utsname.h>
     #include <time.h>
 #else
-    #include <sys/types.h>
     #include <sys/sysctl.h>
+    #include <sys/types.h>
 #endif
 #ifndef WINDOWS
     #include <unistd.h>
@@ -45,43 +45,47 @@
 
 #ifndef WINDOWS //We assume compiler supports GCC style asm
 
-#define INSTRUCTION_CPUID(val) \
-        asm("movl $"#val", %eax"); \
+    #define INSTRUCTION_CPUID(val)   \
+        asm("movl $" #val ", %eax"); \
         asm("cpuid")
 
-#define READ_REGISTER(name, val) \
-        asm("movl %%"#name", %0" \
-            : "=r"(val) \
+    #define READ_REGISTER(name, val) \
+        asm("movl %%" #name ", %0"   \
+            : "=r"(val)              \
             :)
 
 #endif
 
+#include "Framework/System/ModuleInterface.hpp"
 #include "Framework/System/Platform.hpp"
 #include "Framework/System/TypeExpander.hpp"
-#include "Framework/System/ModuleInterface.hpp"
 
 using namespace bpf::system;
 using namespace bpf;
 
 #ifdef WINDOWS
 typedef LONG NTSTATUS, *PNTSTATUS;
-#define STATUS_SUCCESS (0x00000000)
+    #define STATUS_SUCCESS (0x00000000)
 
 typedef NTSTATUS(WINAPI *RtlGetVersionPtr)(PRTL_OSVERSIONINFOW);
 
-RTL_OSVERSIONINFOW GetRealOSVersion() {
+RTL_OSVERSIONINFOW GetRealOSVersion()
+{
     HMODULE hMod = ::GetModuleHandleW(L"ntdll.dll");
-    if (hMod) {
+    if (hMod)
+    {
         RtlGetVersionPtr fxPtr = (RtlGetVersionPtr)::GetProcAddress(hMod, "RtlGetVersion");
-        if (fxPtr != nullptr) {
-            RTL_OSVERSIONINFOW rovi = { 0 };
+        if (fxPtr != nullptr)
+        {
+            RTL_OSVERSIONINFOW rovi = {0};
             rovi.dwOSVersionInfoSize = sizeof(rovi);
-            if (STATUS_SUCCESS == fxPtr(&rovi)) {
+            if (STATUS_SUCCESS == fxPtr(&rovi))
+            {
                 return rovi;
             }
         }
     }
-    RTL_OSVERSIONINFOW rovi = { 0 };
+    RTL_OSVERSIONINFOW rovi = {0};
     return rovi;
 }
 #endif
@@ -100,7 +104,7 @@ String Platform::CPUIDIntToStr(fint data)
 String Platform::IdentifyCPUBranding()
 {
 #ifdef WINDOWS
-    fint cpuInfo[4] = { -1 };
+    fint cpuInfo[4] = {-1};
     char CPUBrandString[0x40];
     memset(CPUBrandString, 0, sizeof(CPUBrandString));
     __cpuid(cpuInfo, 0x80000002);
@@ -111,48 +115,48 @@ String Platform::IdentifyCPUBranding()
     memcpy(CPUBrandString + 32, cpuInfo, sizeof(cpuInfo));
     return (String(CPUBrandString));
 #else
-    #ifdef __arm__
-        //For getting a name here go ask ARM architecture team to provide the missing cpuid instruction or an instruction that can obtain brand name
-        return ("Generic ARM Processor");
+    #if defined(__arm__) || defined(__aarch64__)
+    //For getting a name here go ask ARM architecture team to provide the missing cpuid instruction or an instruction that can obtain brand name
+    return ("Generic ARM Processor");
     #else
-#ifdef BUILD_DEBUG
-        String res = "";
-        fint reg_eax = 0;
-        fint reg_ebx = 0;
-        fint reg_ecx = 0;
-        fint reg_edx = 0;
+        #ifdef BUILD_DEBUG
+    String res = "";
+    fint reg_eax = 0;
+    fint reg_ebx = 0;
+    fint reg_ecx = 0;
+    fint reg_edx = 0;
 
-        INSTRUCTION_CPUID(0x80000002);
-        READ_REGISTER(eax, reg_eax);
-        READ_REGISTER(ebx, reg_ebx);
-        READ_REGISTER(ecx, reg_ecx);
-        READ_REGISTER(edx, reg_edx);
-        res += CPUIDIntToStr(reg_eax);
-        res += CPUIDIntToStr(reg_ebx);
-        res += CPUIDIntToStr(reg_ecx);
-        res += CPUIDIntToStr(reg_edx);
-        INSTRUCTION_CPUID(0x80000003);
-        READ_REGISTER(eax, reg_eax);
-        READ_REGISTER(ebx, reg_ebx);
-        READ_REGISTER(ecx, reg_ecx);
-        READ_REGISTER(edx, reg_edx);
-        res += CPUIDIntToStr(reg_eax);
-        res += CPUIDIntToStr(reg_ebx);
-        res += CPUIDIntToStr(reg_ecx);
-        res += CPUIDIntToStr(reg_edx);
-        INSTRUCTION_CPUID(0x80000004);
-        READ_REGISTER(eax, reg_eax);
-        READ_REGISTER(ebx, reg_ebx);
-        READ_REGISTER(ecx, reg_ecx);
-        READ_REGISTER(edx, reg_edx);
-        res += CPUIDIntToStr(reg_eax);
-        res += CPUIDIntToStr(reg_ebx);
-        res += CPUIDIntToStr(reg_ecx);
-        res += CPUIDIntToStr(reg_edx);
-        return (res);
-#else
-        return ("Generic x86_64 CPU"); //In optimized build attempting to call cpuid crashes the application under unix
-#endif
+    INSTRUCTION_CPUID(0x80000002);
+    READ_REGISTER(eax, reg_eax);
+    READ_REGISTER(ebx, reg_ebx);
+    READ_REGISTER(ecx, reg_ecx);
+    READ_REGISTER(edx, reg_edx);
+    res += CPUIDIntToStr(reg_eax);
+    res += CPUIDIntToStr(reg_ebx);
+    res += CPUIDIntToStr(reg_ecx);
+    res += CPUIDIntToStr(reg_edx);
+    INSTRUCTION_CPUID(0x80000003);
+    READ_REGISTER(eax, reg_eax);
+    READ_REGISTER(ebx, reg_ebx);
+    READ_REGISTER(ecx, reg_ecx);
+    READ_REGISTER(edx, reg_edx);
+    res += CPUIDIntToStr(reg_eax);
+    res += CPUIDIntToStr(reg_ebx);
+    res += CPUIDIntToStr(reg_ecx);
+    res += CPUIDIntToStr(reg_edx);
+    INSTRUCTION_CPUID(0x80000004);
+    READ_REGISTER(eax, reg_eax);
+    READ_REGISTER(ebx, reg_ebx);
+    READ_REGISTER(ecx, reg_ecx);
+    READ_REGISTER(edx, reg_edx);
+    res += CPUIDIntToStr(reg_eax);
+    res += CPUIDIntToStr(reg_ebx);
+    res += CPUIDIntToStr(reg_ecx);
+    res += CPUIDIntToStr(reg_edx);
+    return (res);
+        #else
+    return ("Generic x86_64 CPU"); //In optimized build attempting to call cpuid crashes the application under unix
+        #endif
     #endif
 #endif
 }
@@ -178,9 +182,8 @@ OS Platform::InitOSInfo()
     os.NewLine = "\r\n";
     os.PathSep = "\\";
     RTL_OSVERSIONINFOW ver = GetRealOSVersion();
-    os.Version = String::ValueOf(static_cast<int>(ver.dwMajorVersion))
-        + "." + String::ValueOf(static_cast<int>(ver.dwMinorVersion));
-#elif LINUX
+    os.Version = String::ValueOf(static_cast<int>(ver.dwMajorVersion)) + "." + String::ValueOf(static_cast<int>(ver.dwMinorVersion));
+#elif defined(LINUX) || defined(ANDROID)
     os.ModuleExt = "so";
     os.Name = "Linux";
     os.NewLine = "\n";
@@ -214,7 +217,7 @@ const OS &Platform::GetOSInfo()
 
 const CPU &Platform::GetCPUInfo()
 {
-    static CPU cpi = { IdentifyCPUBranding(), 0, 0 };
+    static CPU cpi = {IdentifyCPUBranding(), 0, 0};
 
 #ifdef WINDOWS
     SYSTEM_INFO sysInfo;

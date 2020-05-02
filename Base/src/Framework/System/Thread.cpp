@@ -26,18 +26,25 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <iostream>
 #include "Framework/System/Thread.hpp"
 #include "Framework/Exception.hpp"
 #include "Framework/System/OSException.hpp"
+#include <iostream>
 
 #include <stdlib.h>
 #ifdef WINDOWS
     #include <Windows.h>
 #else
-    #include <time.h>
     #include <pthread.h>
-    using ThreadType = pthread_t;
+    #include <time.h>
+using ThreadType = pthread_t;
+#endif
+
+//Attempt at re-implementing what Google is apparently unable to implement
+#ifdef ANDROID
+int pthread_cancel(pthread_t h) {
+    return pthread_kill(h, 0);
+}
 #endif
 
 using namespace bpf::system;
