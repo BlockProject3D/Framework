@@ -47,6 +47,6 @@ TEST(Compression, InflateDeflate_Simple)
     while ((len = deflater.Deflate(chunk, 8)) > 0)
         deflated.Write(chunk, len);
     inflater.SetInput(std::move(deflated));
-    EXPECT_EQ(inflater.Inflate(inflated, 29), 29);
+    EXPECT_EQ(inflater.Inflate(inflated, 29), 29U);
     EXPECT_STREQ(reinterpret_cast<const char *>(inflated), "This is a testThis is a test");
 }
