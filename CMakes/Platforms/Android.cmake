@@ -8,7 +8,7 @@ set(BP_EXTENSION_LIB ".so")
 set(BP_LIBRARY_PREFIX "lib")
 
 function(bp_target_created name)
-    target_compile_definitions(${name} PRIVATE "LINUX")
+    target_compile_definitions(${name} PRIVATE "ANDROID")
 
     get_target_property(target_type ${name} TYPE)
     if (target_type STREQUAL "EXECUTABLE")

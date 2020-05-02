@@ -42,7 +42,8 @@ using ThreadType = pthread_t;
 
 //Attempt at re-implementing what Google is apparently unable to implement
 #ifdef ANDROID
-int pthread_cancel(pthread_t h) {
+int pthread_cancel(pthread_t h)
+{
     return pthread_kill(h, 0);
 }
 #endif
