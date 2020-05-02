@@ -38,7 +38,7 @@
         #define X86
     #endif
 #else
-    #if __x86_64__ || __ppc64__
+    #if __x86_64__ || __ppc64__ || __aarch64__
         #define X86_64
     #else
         #define X86
