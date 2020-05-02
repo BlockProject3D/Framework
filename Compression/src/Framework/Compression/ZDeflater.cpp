@@ -26,3 +26,103 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include "Framework/Compression/ZDeflater.hpp"
+#include <Framework/IO/IOException.hpp>
+#include <Framework/Memory/Memory.hpp>
+#include <Framework/Memory/MemoryException.hpp>
+#include <zlib.h>
+
+using namespace bpf::compression;
+using namespace bpf::memory;
+using namespace bpf::io;
+using namespace bpf;
+
+ZDeflater::ZDeflater(const ECompressionLevel level)
+    : _handle(Memory::Malloc(sizeof(z_stream_s)))
+    , _input(0)
+{
+    z_stream_s *stream = reinterpret_cast<z_stream_s *>(_handle);
+    stream->zalloc = Z_NULL;
+    stream->zfree = Z_NULL;
+    stream->opaque = Z_NULL;
+    stream->avail_in = 0;
+    stream->next_in = Z_NULL;
+    int lvl = Z_NO_COMPRESSION;
+    switch (level)
+    {
+    case ECompressionLevel::DEFAULT:
+        lvl = Z_DEFAULT_COMPRESSION;
+        break;
+    case ECompressionLevel::LOW:
+        lvl = Z_BEST_SPEED;
+        break;
+    case ECompressionLevel::HIGH:
+        lvl = Z_BEST_COMPRESSION;
+        break;
+    }
+    auto ret = deflateInit(stream, lvl);
+    if (ret != Z_OK)
+    {
+        Memory::Free(stream);
+        throw IOException(String("Could not initialize zlib: ") + String::ValueOf(ret));
+    }
+}
+
+ZDeflater::~ZDeflater()
+{
+    z_stream_s *stream = reinterpret_cast<z_stream_s *>(_handle);
+    deflateEnd(stream);
+    Memory::Free(stream);
+}
+
+void ZDeflater::SetInput(const io::ByteBuf &deflated)
+{
+    _input = deflated;
+    z_stream_s *stream = reinterpret_cast<z_stream_s *>(_handle);
+    stream->avail_in = (uInt)_input.Size();
+    stream->next_in = *_input;
+}
+
+void ZDeflater::SetInput(io::ByteBuf &&deflated)
+{
+    _input = std::move(deflated);
+    z_stream_s *stream = reinterpret_cast<z_stream_s *>(_handle);
+    stream->avail_in = (uInt)_input.Size();
+    stream->next_in = *_input;
+}
+
+fsize ZDeflater::Deflate(io::ByteBuf &out)
+{
+    z_stream_s *stream = reinterpret_cast<z_stream_s *>(_handle);
+    stream->avail_out = (uInt)out.Size();
+    stream->next_out = *out;
+    auto ret = deflate(stream, Z_NO_FLUSH);
+    switch (ret)
+    {
+    case Z_NEED_DICT:
+        ret = Z_DATA_ERROR; /* and fall through */
+    case Z_DATA_ERROR:
+        throw IOException("Deflate failed: Z_DATA_ERROR");
+    case Z_MEM_ERROR:
+        throw MemoryException();
+    }
+    return (out.Size() - stream->avail_out);
+}
+
+fsize ZDeflater::Deflate(void *out, const fsize size)
+{
+    z_stream_s *stream = reinterpret_cast<z_stream_s *>(_handle);
+    stream->avail_out = (uInt)size;
+    stream->next_out = reinterpret_cast<Bytef *>(out);
+    auto ret = deflate(stream, Z_NO_FLUSH);
+    switch (ret)
+    {
+    case Z_NEED_DICT:
+        ret = Z_DATA_ERROR; /* and fall through */
+    case Z_DATA_ERROR:
+        throw IOException("Deflate failed: Z_DATA_ERROR");
+    case Z_MEM_ERROR:
+        throw MemoryException();
+    }
+    return (size - stream->avail_out);
+}

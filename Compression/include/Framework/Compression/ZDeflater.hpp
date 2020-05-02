@@ -25,3 +25,36 @@
 // LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+#pragma once
+#include <Framework/IO/ByteBuf.hpp>
+
+namespace bpf
+{
+    namespace compression
+    {
+        enum class BPF_COMPRESSION_API ECompressionLevel
+        {
+            LOW,
+            HIGH,
+            DEFAULT
+        };
+
+        class BPF_COMPRESSION_API ZDeflater
+        {
+        private:
+            void *_handle;
+            io::ByteBuf _input;
+
+        public:
+            ZDeflater(const ECompressionLevel level = ECompressionLevel::DEFAULT);
+            ~ZDeflater();
+
+            void SetInput(const io::ByteBuf &inflated);
+            void SetInput(io::ByteBuf &&inflated);
+
+            fsize Deflate(io::ByteBuf &out);
+            fsize Deflate(void *out, const fsize size);
+        };
+    }
+}

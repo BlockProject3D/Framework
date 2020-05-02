@@ -46,7 +46,11 @@ namespace bpf
         public:
             explicit ByteBuf(const fsize size);
             ByteBuf(ByteBuf &&other);
+            ByteBuf(const ByteBuf &other);
             ~ByteBuf();
+
+            ByteBuf &operator=(const ByteBuf &other);
+            ByteBuf &operator=(ByteBuf &&other);
 
             void Clear();
 

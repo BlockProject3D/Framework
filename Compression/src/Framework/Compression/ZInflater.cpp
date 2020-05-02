@@ -26,9 +26,10 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <Framework/Memory/Memory.hpp>
-#include <Framework/IO/IOException.hpp>
 #include "Framework/Compression/ZInflater.hpp"
+#include <Framework/IO/IOException.hpp>
+#include <Framework/Memory/MemoryException.hpp>
+#include <Framework/Memory/Memory.hpp>
 #include <zlib.h>
 
 using namespace bpf::compression;
@@ -61,14 +62,54 @@ ZInflater::~ZInflater()
     Memory::Free(stream);
 }
 
-/*ByteBuf ZInflater::Inflate(const ByteBuf &deflated)
+void ZInflater::SetInput(const io::ByteBuf &deflated)
 {
-    return (Inflate(*deflated, deflated.Size()));
+    _input = deflated;
+    z_stream_s *stream = reinterpret_cast<z_stream_s *>(_handle);
+    stream->avail_in = (uInt)_input.Size();
+    stream->next_in = *_input;
 }
 
-ByteBuf ZInflater::Inflate(const void *deflated, const fsize size)
+void ZInflater::SetInput(io::ByteBuf &&deflated)
+{
+    _input = std::move(deflated);
+    z_stream_s *stream = reinterpret_cast<z_stream_s *>(_handle);
+    stream->avail_in = (uInt)_input.Size();
+    stream->next_in = *_input;
+}
+
+fsize ZInflater::Inflate(io::ByteBuf &out)
 {
     z_stream_s *stream = reinterpret_cast<z_stream_s *>(_handle);
-    //stream->avail_in
-    return (ByteBuf(1));
-}*/
+    stream->avail_out = (uInt)out.Size();
+    stream->next_out = *out;
+    auto ret = inflate(stream, Z_NO_FLUSH);
+    switch (ret)
+    {
+    case Z_NEED_DICT:
+        ret = Z_DATA_ERROR; /* and fall through */
+    case Z_DATA_ERROR:
+        throw IOException("Inflate failed: Z_DATA_ERROR");
+    case Z_MEM_ERROR:
+        throw MemoryException();
+    }
+    return (out.Size() - stream->avail_out);
+}
+
+fsize ZInflater::Inflate(void *out, const fsize size)
+{
+    z_stream_s *stream = reinterpret_cast<z_stream_s *>(_handle);
+    stream->avail_out = (uInt)size;
+    stream->next_out = reinterpret_cast<Bytef *>(out);
+    auto ret = inflate(stream, Z_NO_FLUSH);
+    switch (ret)
+    {
+    case Z_NEED_DICT:
+        ret = Z_DATA_ERROR; /* and fall through */
+    case Z_DATA_ERROR:
+        throw IOException("Inflate failed: Z_DATA_ERROR");
+    case Z_MEM_ERROR:
+        throw MemoryException();
+    }
+    return (size - stream->avail_out);
+}

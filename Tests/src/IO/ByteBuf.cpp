@@ -33,10 +33,37 @@
 
 TEST(ByteBuf, Construct)
 {
+    bpf::io::ByteBuf buf(1);
+    bpf::io::ByteBuf buf1(0);
+
+    EXPECT_EQ(buf.Size(), 1);
+    EXPECT_EQ(buf1.Size(), 0);
+}
+
+TEST(ByteBuf, Move)
+{
     bpf::io::ByteBuf buf(128);
     bpf::io::ByteBuf buf1(std::move(buf));
-    
+
     buf1.Clear();
+    EXPECT_EQ(buf1.Size(), 128);
+    EXPECT_EQ(buf.Size(), 0);
+    buf = std::move(buf1);
+    EXPECT_EQ(buf.Size(), 128);
+    EXPECT_EQ(buf1.Size(), 0);
+}
+
+TEST(ByteBuf, Copy)
+{
+    bpf::io::ByteBuf buf(128);
+    bpf::io::ByteBuf buf1(buf);
+
+    buf1.Clear();
+    EXPECT_EQ(buf1.Size(), 128);
+    EXPECT_EQ(buf.Size(), 128);
+    buf = buf1;
+    EXPECT_EQ(buf1.Size(), 128);
+    EXPECT_EQ(buf.Size(), 128);
 }
 
 TEST(ByteBuf, Clear)
