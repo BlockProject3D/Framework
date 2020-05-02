@@ -98,10 +98,10 @@ Thread::Thread(const String &name)
 Thread::Thread(Thread &&other)
     : _state(other._state)
     , _handle(other._handle)
+    , _name(std::move(other._name))
 {
     if (_state == RUNNING || _state == EXITING)
         throw OSException("Cannot move a running thread");
-    other._name = std::move(other._name);
     other._handle = Null;
 }
 

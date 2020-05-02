@@ -33,7 +33,7 @@ namespace bpf
 {
     namespace compression
     {
-        enum class BPF_COMPRESSION_API ECompressionLevel
+        enum class ECompressionLevel
         {
             LOW,
             HIGH,
