@@ -31,13 +31,13 @@
     #include <Windows.h>
     #include <intrin.h>
     #undef ERROR
-#elif defined(LINUX) || defined(ANDROID)
+#elif MAC
+    #include <sys/sysctl.h>
+    #include <sys/types.h>
+#else
     #include <sys/sysinfo.h>
     #include <sys/utsname.h>
     #include <time.h>
-#else
-    #include <sys/sysctl.h>
-    #include <sys/types.h>
 #endif
 #ifndef WINDOWS
     #include <unistd.h>
@@ -183,7 +183,13 @@ OS Platform::InitOSInfo()
     os.PathSep = "\\";
     RTL_OSVERSIONINFOW ver = GetRealOSVersion();
     os.Version = String::ValueOf(static_cast<int>(ver.dwMajorVersion)) + "." + String::ValueOf(static_cast<int>(ver.dwMinorVersion));
-#elif defined(LINUX) || defined(ANDROID)
+#elif MAC
+    os.ModuleExt = "dylib";
+    os.Name = "Mac";
+    os.NewLine = "\n";
+    os.PathSep = "/";
+    os.Version = "Impossible - Ask Apple why they deprecate C++ APIs !";
+#else
     os.ModuleExt = "so";
     os.Name = "Linux";
     os.NewLine = "\n";
@@ -191,12 +197,6 @@ OS Platform::InitOSInfo()
     struct utsname st;
     if (uname(&st) != -1)
         os.Version = st.version;
-#else
-    os.ModuleExt = "dylib";
-    os.Name = "Mac";
-    os.NewLine = "\n";
-    os.PathSep = "/";
-    os.Version = "Impossible - Ask Apple why they deprecate C++ APIs !";
 #endif
     return (os);
 }
@@ -224,15 +224,15 @@ const CPU &Platform::GetCPUInfo()
     GetSystemInfo(&sysInfo);
     cpi.NumCores = sysInfo.dwNumberOfProcessors;
     cpi.Freq = 1; //Cannot reliably find CPU frequency
-#elif LINUX
-    cpi.NumCores = get_nprocs();
-    cpi.Freq = 1; //Cannot reliably find CPU frequency
-#else
+#elif MAC
     fint ncores = 1;
     size_t sz = sizeof(fint);
     if (sysctlbyname("hw.activecpu", &ncores, &sz, Null, 0))
         sysctlbyname("hw.ncpu", &ncores, &sz, Null, 0);
     cpi.NumCores = ncores;
+    cpi.Freq = 1; //Cannot reliably find CPU frequency
+#else
+    cpi.NumCores = get_nprocs();
     cpi.Freq = 1; //Cannot reliably find CPU frequency
 #endif
     return (cpi);
