@@ -84,23 +84,7 @@ void ZInflater::SetInput(io::ByteBuf &&deflated)
 
 fsize ZInflater::Inflate(io::ByteBuf &out)
 {
-    z_stream_s *stream = reinterpret_cast<z_stream_s *>(_handle);
-    stream->avail_out = (uInt)out.Size();
-    stream->next_out = *out;
-    int func = Z_NO_FLUSH;
-    if (stream->total_in >= _input.Size())
-        func = Z_FINISH;
-    auto ret = inflate(stream, func);
-    switch (ret)
-    {
-    case Z_NEED_DICT:
-        ret = Z_DATA_ERROR; /* and fall through */
-    case Z_DATA_ERROR:
-        throw IOException("Inflate failed: Z_DATA_ERROR");
-    case Z_MEM_ERROR:
-        throw MemoryException();
-    }
-    return (out.Size() - stream->avail_out);
+    return (Inflate(*out, out.Size()));
 }
 
 fsize ZInflater::Inflate(void *out, const fsize size)

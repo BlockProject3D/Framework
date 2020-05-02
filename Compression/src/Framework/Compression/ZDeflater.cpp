@@ -97,23 +97,7 @@ void ZDeflater::SetInput(io::ByteBuf &&deflated)
 
 fsize ZDeflater::Deflate(io::ByteBuf &out)
 {
-    z_stream_s *stream = reinterpret_cast<z_stream_s *>(_handle);
-    stream->avail_out = (uInt)out.Size();
-    stream->next_out = *out;
-    int func = Z_NO_FLUSH;
-    if (stream->total_in >= _input.Size())
-        func = Z_FINISH;
-    auto ret = deflate(stream, func);
-    switch (ret)
-    {
-    case Z_NEED_DICT:
-        ret = Z_DATA_ERROR;
-    case Z_DATA_ERROR:
-        throw IOException("Deflate failed: Z_DATA_ERROR");
-    case Z_MEM_ERROR:
-        throw MemoryException();
-    }
-    return (out.Size() - stream->avail_out);
+    return (Deflate(*out, out.Size()));
 }
 
 fsize ZDeflater::Deflate(void *out, const fsize size)
