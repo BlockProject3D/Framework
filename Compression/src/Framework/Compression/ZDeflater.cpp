@@ -81,6 +81,8 @@ void ZDeflater::SetInput(const io::ByteBuf &deflated)
     z_stream_s *stream = reinterpret_cast<z_stream_s *>(_handle);
     stream->avail_in = (uInt)_input.Size();
     stream->next_in = *_input;
+    stream->total_in = 0;
+    stream->total_out = 0;
 }
 
 void ZDeflater::SetInput(io::ByteBuf &&deflated)
@@ -89,6 +91,8 @@ void ZDeflater::SetInput(io::ByteBuf &&deflated)
     z_stream_s *stream = reinterpret_cast<z_stream_s *>(_handle);
     stream->avail_in = (uInt)_input.Size();
     stream->next_in = *_input;
+    stream->total_in = 0;
+    stream->total_out = 0;
 }
 
 fsize ZDeflater::Deflate(io::ByteBuf &out)
@@ -96,11 +100,14 @@ fsize ZDeflater::Deflate(io::ByteBuf &out)
     z_stream_s *stream = reinterpret_cast<z_stream_s *>(_handle);
     stream->avail_out = (uInt)out.Size();
     stream->next_out = *out;
-    auto ret = deflate(stream, Z_NO_FLUSH);
+    int func = Z_NO_FLUSH;
+    if (stream->total_in >= _input.Size())
+        func = Z_FINISH;
+    auto ret = deflate(stream, func);
     switch (ret)
     {
     case Z_NEED_DICT:
-        ret = Z_DATA_ERROR; /* and fall through */
+        ret = Z_DATA_ERROR;
     case Z_DATA_ERROR:
         throw IOException("Deflate failed: Z_DATA_ERROR");
     case Z_MEM_ERROR:
@@ -114,11 +121,14 @@ fsize ZDeflater::Deflate(void *out, const fsize size)
     z_stream_s *stream = reinterpret_cast<z_stream_s *>(_handle);
     stream->avail_out = (uInt)size;
     stream->next_out = reinterpret_cast<Bytef *>(out);
-    auto ret = deflate(stream, Z_NO_FLUSH);
+    int func = Z_NO_FLUSH;
+    if (stream->total_in >= _input.Size())
+        func = Z_FINISH;
+    auto ret = deflate(stream, func);
     switch (ret)
     {
     case Z_NEED_DICT:
-        ret = Z_DATA_ERROR; /* and fall through */
+        ret = Z_DATA_ERROR;
     case Z_DATA_ERROR:
         throw IOException("Deflate failed: Z_DATA_ERROR");
     case Z_MEM_ERROR:

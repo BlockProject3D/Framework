@@ -68,6 +68,8 @@ void ZInflater::SetInput(const io::ByteBuf &deflated)
     z_stream_s *stream = reinterpret_cast<z_stream_s *>(_handle);
     stream->avail_in = (uInt)_input.Size();
     stream->next_in = *_input;
+    stream->total_in = 0;
+    stream->total_out = 0;
 }
 
 void ZInflater::SetInput(io::ByteBuf &&deflated)
@@ -76,6 +78,8 @@ void ZInflater::SetInput(io::ByteBuf &&deflated)
     z_stream_s *stream = reinterpret_cast<z_stream_s *>(_handle);
     stream->avail_in = (uInt)_input.Size();
     stream->next_in = *_input;
+    stream->total_in = 0;
+    stream->total_out = 0;
 }
 
 fsize ZInflater::Inflate(io::ByteBuf &out)
@@ -83,7 +87,10 @@ fsize ZInflater::Inflate(io::ByteBuf &out)
     z_stream_s *stream = reinterpret_cast<z_stream_s *>(_handle);
     stream->avail_out = (uInt)out.Size();
     stream->next_out = *out;
-    auto ret = inflate(stream, Z_NO_FLUSH);
+    int func = Z_NO_FLUSH;
+    if (stream->total_in >= _input.Size())
+        func = Z_FINISH;
+    auto ret = inflate(stream, func);
     switch (ret)
     {
     case Z_NEED_DICT:
@@ -101,7 +108,10 @@ fsize ZInflater::Inflate(void *out, const fsize size)
     z_stream_s *stream = reinterpret_cast<z_stream_s *>(_handle);
     stream->avail_out = (uInt)size;
     stream->next_out = reinterpret_cast<Bytef *>(out);
-    auto ret = inflate(stream, Z_NO_FLUSH);
+    int func = Z_NO_FLUSH;
+    if (stream->total_in >= _input.Size())
+        func = Z_FINISH;
+    auto ret = inflate(stream, func);
     switch (ret)
     {
     case Z_NEED_DICT:
