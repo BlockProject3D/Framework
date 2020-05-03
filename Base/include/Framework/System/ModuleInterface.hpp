@@ -31,9 +31,9 @@
 #include "Framework/Memory/Utility.hpp"
 
 #ifdef BUILD_DEBUG
-    #define BP_MODULE_VERSION_INT 0x1 * 0x42
+    #define BP_MODULE_VERSION_INT 0x2 * 0x42
 #else
-    #define BP_MODULE_VERSION_INT 0x1
+    #define BP_MODULE_VERSION_INT 0x2
 #endif
 
 #ifdef WINDOWS
