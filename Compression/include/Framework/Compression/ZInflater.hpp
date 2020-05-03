@@ -38,6 +38,7 @@ namespace bpf
         private:
             void *_handle;
             io::ByteBuf _input;
+            bool _end;
 
         public:
             ZInflater();

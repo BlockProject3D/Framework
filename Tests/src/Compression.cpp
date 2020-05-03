@@ -58,17 +58,18 @@ TEST(Compression, InflateDeflate_Simple_2)
     bpf::compression::ZInflater inflater;
     bpf::io::ByteBuf buf(29);
     bpf::io::ByteBuf deflated(128);
-    bpf::uint8 inflated[29];
-    bpf::uint8 chunk[8];
+    bpf::io::ByteBuf inflated(29);
+    bpf::io::ByteBuf chunk(8);
     bpf::fsize len = 0;
 
     buf.Write("This is a testThis is a test", 29);
     deflater.SetInput(std::move(buf));
-    while ((len = deflater.Deflate(chunk, 8)) > 0)
-        deflated.Write(chunk, len);
+    while ((len = deflater.Deflate(chunk)) > 0)
+        deflated.Write(*chunk, len);
     inflater.SetInput(std::move(deflated));
-    EXPECT_EQ(inflater.Inflate(inflated, 29), 29U);
-    EXPECT_STREQ(reinterpret_cast<const char *>(inflated), "This is a testThis is a test");
+    EXPECT_EQ(inflater.Inflate(inflated), 29U);
+    EXPECT_EQ(inflater.Inflate(inflated), 0U);
+    EXPECT_STREQ(reinterpret_cast<const char *>(*inflated), "This is a testThis is a test");
 }
 
 TEST(Compression, InflateDeflate_Simple_3)

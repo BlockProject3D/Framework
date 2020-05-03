@@ -40,6 +40,7 @@ using namespace bpf;
 ZInflater::ZInflater()
     : _handle(Memory::Malloc(sizeof(z_stream_s)))
     , _input(0)
+    , _end(false)
 {
     z_stream_s *stream = reinterpret_cast<z_stream_s *>(_handle);
     stream->zalloc = Z_NULL;
@@ -70,6 +71,7 @@ void ZInflater::SetInput(const io::ByteBuf &deflated)
     stream->next_in = *_input;
     stream->total_in = 0;
     stream->total_out = 0;
+    _end = false;
 }
 
 void ZInflater::SetInput(io::ByteBuf &&deflated)
@@ -80,6 +82,7 @@ void ZInflater::SetInput(io::ByteBuf &&deflated)
     stream->next_in = *_input;
     stream->total_in = 0;
     stream->total_out = 0;
+    _end = false;
 }
 
 fsize ZInflater::Inflate(io::ByteBuf &out)
@@ -89,13 +92,12 @@ fsize ZInflater::Inflate(io::ByteBuf &out)
 
 fsize ZInflater::Inflate(void *out, const fsize size)
 {
+    if (_end)
+        return (0);
     z_stream_s *stream = reinterpret_cast<z_stream_s *>(_handle);
     stream->avail_out = (uInt)size;
     stream->next_out = reinterpret_cast<Bytef *>(out);
-    int func = Z_NO_FLUSH;
-    if (stream->total_in >= _input.Size())
-        func = Z_FINISH;
-    auto ret = inflate(stream, func);
+    auto ret = inflate(stream, Z_NO_FLUSH);
     switch (ret)
     {
     case Z_NEED_DICT:
@@ -104,6 +106,8 @@ fsize ZInflater::Inflate(void *out, const fsize size)
         throw IOException("Inflate failed: Z_DATA_ERROR");
     case Z_MEM_ERROR:
         throw MemoryException();
+    case Z_STREAM_END:
+        _end = true;
     }
     return (size - stream->avail_out);
 }
