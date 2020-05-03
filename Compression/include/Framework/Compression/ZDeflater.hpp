@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject
 //
 // All rights reserved.
 //
@@ -27,51 +27,36 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-
-#define Null nullptr
-
-// Check windows
-#ifdef WINDOWS
-    #if _WIN64
-        #define X86_64
-    #else
-        #define X86
-    #endif
-#else
-    #if __x86_64__ || __ppc64__ || __aarch64__
-        #define X86_64
-    #else
-        #define X86
-    #endif
-#endif
+#include <Framework/IO/ByteBuf.hpp>
 
 namespace bpf
 {
-    using uint32 = unsigned int;
-    using uint8 = unsigned char;
-    using int32 = int;
-    using int64 = long long signed int;
-    using uint64 = long long unsigned int;
-    using int8 = signed char;
-    using int16 = signed short;
-    using uint16 = unsigned short;
+    namespace compression
+    {
+        enum class ECompressionLevel
+        {
+            LOW,
+            HIGH,
+            DEFAULT
+        };
 
-    using fchar = uint32;
-    using fchar16 = uint16;
+        class BPF_COMPRESSION_API ZDeflater
+        {
+        private:
+            void *_handle;
+            io::ByteBuf _input;
 
-    /**
-     * Custom int type guarenteed to be ALWAYS 32bits no matter the platform
-     */
-    using fint = int32;
+        public:
+            ZDeflater(const ECompressionLevel level = ECompressionLevel::DEFAULT);
+            ~ZDeflater();
 
-#ifdef X86_64
-    using uintptr = uint64;
-    using intptr = int64;
-#else
-    using uintptr = uint32;
-    using intptr = int32;
-#endif
+            void SetInput(const io::ByteBuf &inflated);
+            void SetInput(io::ByteBuf &&inflated);
 
-    using fsize = uintptr;
-	using fisize = intptr;
+            uint32 GetAdler32() const;
+
+            fsize Deflate(io::ByteBuf &out);
+            fsize Deflate(void *out, const fsize size);
+        };
+    }
 }

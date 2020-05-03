@@ -51,7 +51,7 @@ namespace bpf
             Json CheckJson();
         public:
             explicit inline Parser(Lexer &&lexer)
-                : _tokens(std::move(lexer.ReadTokens()))
+                : _tokens(lexer.ReadTokens())
                 , _line(1)
                 , _ignoreNulls(lexer.IgnoreNulls())
             {

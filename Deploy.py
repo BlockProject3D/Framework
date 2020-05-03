@@ -3,7 +3,8 @@ import zipfile
 import platform
 
 ModuleList = [ # [TargetName, FolderName]
-    ["BPF", "Base"]
+    ["BPF", "Base"],
+    ["BPF.Compression", "Compression"]
 ]
 
 def runCMakeBuild():

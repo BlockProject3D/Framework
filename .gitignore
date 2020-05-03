@@ -1,5 +1,6 @@
 build
 BPF.cmake
+BPF.Compression.cmake
 build_unix
 /build_linux
 /build-linux

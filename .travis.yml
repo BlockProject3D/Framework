@@ -19,6 +19,11 @@ jobs:
       if: branch != release
       env:
         - BP_TEST_RUN_CMD="./Debug/BPF.Tests"
+      before_install:
+        - choco install python3 --params "/InstallDir:C:\\Python"
+        - export PATH="/c/Python:/c/Python/Scripts:$PATH"
+        - python -m pip install --upgrade pip wheel
+        - pip install conan
       <<: *builddbgscript
     - stage: debug-test
       os: linux
@@ -29,6 +34,8 @@ jobs:
       if: branch != release
       env:
         - BP_TEST_RUN_CMD="./Debug/BPF.Tests"
+      before_install:
+        - pip install conan --user
       <<: *builddbgscript
     - stage: debug-test
       os: osx
@@ -36,6 +43,8 @@ jobs:
       if: branch != release
       env:
         - BP_TEST_RUN_CMD="./Debug/BPF.Tests"
+      before_install:
+        - pip install conan
       <<: *builddbgscript
     
     - stage: coverage
@@ -47,6 +56,7 @@ jobs:
         - BP_TEST_RUN_CMD="./Debug/BPF.Tests"
       before_install:
         - sudo apt-get install -y lcov
+        - pip install conan --user
       script:
         - mkdir build && cd build
         - cmake .. -DCOVERAGE=1 > /dev/null
@@ -64,9 +74,14 @@ jobs:
 
     - stage: build-deploy
       os: windows
-      arch: x64
+      arch: amd64
       compiler: MSVC
       if: branch = release
+      before_install:
+        - choco install python3 --params "/InstallDir:C:\\Python"
+        - export PATH="/c/Python:/c/Python/Scripts:$PATH"
+        - python -m pip install --upgrade pip wheel
+        - pip install conan
       script:
         - python ./Deploy.py
         - file Framework.zip
@@ -77,9 +92,11 @@ jobs:
         - git tag $TRAVIS_TAG
     - stage: build-deploy
       os: linux
-      arch: x64
+      arch: amd64
       dist: xenial
       if: branch = release
+      before_install:
+        - pip install conan --user
       script:
         - python ./Deploy.py
         - file Framework.zip
@@ -90,9 +107,11 @@ jobs:
         - git tag $TRAVIS_TAG
     - stage: build-deploy
       os: osx
-      arch: x64
+      arch: amd64
       compiler: clang
       if: branch = release
+      before_install:
+        - pip install conan
       script:
         - python ./Deploy.py
         - file Framework.zip
@@ -104,7 +123,7 @@ jobs:
 
 deploy:
   provider: releases
-  skip_cleanup: true
+  cleanup: false
   overwrite: true
   api_key:
     secure: "BjVvLPOO2gBvsoQdgkfe41fbFcHX/6205HtkrsSoscAwjlZ4jUjZTb5z+fmzhrQ2sqhzHpofITLGnDiAt76ir7bEYEcYhVbgWCD/zK10X4uMu9nvb3gB9T8C4RO5BFdnp6/p5a8GVWTH2vlXFdUWcKOfwT+BzMwluQ6GdWc98+9Cq/KOihMPlbWgW/YfqSxxoPPCtwc/l2ksghyyjTenZkZXGqthvPErw8N2aU0RAM+S8dbWV9sg7vnIICVnmKczHUmvtG8kLm91kC1TyPz5x4CjGtNWMaHPZbcHJOM3DMfEZ6SOP08pDIaejPMFVp4unPoQeL/Tpt6YKHjT1saF7zt3LHmAKe6HBIKLx2uSHeoig90/eWNRYyIkPlRbKy6sT9nl5O6qmLrpDM6xTUAMYwIS5//MIOir/mQPmxaFSYEE9CI1zvLG00bPnP1w8MwEj5YRIPKJvNH0zcwW7sD/wuj2aBhla8sS236zvg4jNJZhFKPxw82ymbTI/1+ZvcVpmSjAZOjXV/PQNwXBBSmG4QjmvVbWsD+7l8WoqnnL2FSJD5PByhPIQkGczwZs6lYuq3fO07RcOD21aWvirfXFd71F3852pIjGMfkAhgoKOv6t620l6EHW7eVqItHvKLPZPYe/s1rPsrKjjPmBsMdBjuypFIDQlB0Lnd/uU6AJ0PA="

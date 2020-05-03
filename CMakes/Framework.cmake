@@ -28,6 +28,19 @@ macro(bp_setup_module name apimacro)
     # Attempt at fixing templates problems under MSVC 2017
     target_compile_definitions(${name} PRIVATE "BP_TPL_API=${BP_SYMBOL_EXPORT_MACRO}")
 
+    if (MSVC)
+        target_compile_options(${name} PRIVATE /W4)
+    else (MSVC)
+        target_compile_options(${name} PRIVATE -Wall)
+    endif (MSVC)
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        #This warning is an aberation of false-positives
+        #Seriously Clang team: go learn how to code!!!
+        target_compile_options(${name} PRIVATE -Wno-self-assign-overloaded)
+    endif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    target_compile_options(${name} PRIVATE "$<$<C_COMPILER_ID:MSVC>:/utf-8>")
+    target_compile_options(${name} PRIVATE "$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
+
     if (NOT ${name} STREQUAL "BPF")
         bp_add_module(${name} "BPF")
     endif (NOT ${name} STREQUAL "BPF")
@@ -56,6 +69,14 @@ function(bp_add_module targetname modulename)
 
     # Add includes and libs
     target_include_directories(${targetname} PRIVATE "${MD_PATH}/${INCLUDE_DIR}")
-    target_link_libraries(${targetname} PRIVATE debug "${MD_PATH}/${BIN_DEBUG}")
-    target_link_libraries(${targetname} PRIVATE optimized "${MD_PATH}/${BIN_RELEASE}")
+
+    # Handle linkage: identify what kind of Framework we are working with (pre-build vs source build) then link correct lib
+    # This if block is designed to allow correct behaviour for Makefile and Ninja
+    if (EXISTS "${MD_PATH}/${ROOT}/CMakeLists.txt") # We are a source build
+        target_link_libraries(${targetname} PRIVATE debug ${modulename})
+        target_link_libraries(${targetname} PRIVATE optimized ${modulename})
+    else (EXISTS "${MD_PATH}/${ROOT}/CMakeLists.txt") # We are a pre-build
+        target_link_libraries(${targetname} PRIVATE debug "${MD_PATH}/${BIN_DEBUG}")
+        target_link_libraries(${targetname} PRIVATE optimized "${MD_PATH}/${BIN_RELEASE}")
+    endif (EXISTS "${MD_PATH}/${ROOT}/CMakeLists.txt")
 endfunction(bp_add_module)

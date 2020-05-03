@@ -64,6 +64,7 @@ set(SOURCES
     src/Json/Json.cpp
     src/Json/JsonWriter.cpp
     src/BaseConvert.cpp
+    src/Compression.cpp
     src/Tuple.cpp
     src/Name.cpp
     src/String.cpp
@@ -74,4 +75,5 @@ set(SOURCES
 )
 
 bp_setup_program(${PROJECT_NAME} include)
+bp_add_module(${PROJECT_NAME} BPF.Compression)
 target_link_libraries(${PROJECT_NAME} PRIVATE gtest_main)

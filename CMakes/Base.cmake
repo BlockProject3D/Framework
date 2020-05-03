@@ -1,5 +1,3 @@
-set(CMAKE_CXX_FLAGS_RELEASE "-O2")
-
 #Utility function used to prepend a list with a prefix
 function(bp_prepend lst prefix)
     set(listVar "")
@@ -33,17 +31,6 @@ option(COVERAGE "Enable coverage" OFF)
 
 string(TOUPPER "${CMAKE_PROJECT_NAME}_API" BP_API_MACRO)
 
-if (CMAKE_COMPILER_IS_GNUCC)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
-endif (CMAKE_COMPILER_IS_GNUCC)
-
-if (MSVC)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
-endif (MSVC)
-
-add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
-add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
-
 if (PLATFORM STREQUAL "Auto")
     if (WIN32)
         set(PLATFORM "Windows")
@@ -53,6 +40,9 @@ if (PLATFORM STREQUAL "Auto")
         else (APPLE)
             set(PLATFORM "Linux")
         endif (APPLE)
+        if (CMAKE_SYSTEM_NAME MATCHES "Android")
+            set(PLATFORM "Android")
+        endif (CMAKE_SYSTEM_NAME MATCHES "Android")
     endif (WIN32)
 endif (PLATFORM STREQUAL "Auto")
 
@@ -69,6 +59,11 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/Release)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/Release)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/Release)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DBUILD_DEBUG")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
+#Remove block when reaching cmake_minimum 1.16
+if (MSVC)
+    string(REGEX REPLACE "/W3" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS}) # Remove /W3
+endif (MSVC)
 
 include("${CMAKE_CURRENT_LIST_DIR}/Platforms/${PLATFORM}.cmake")
 
