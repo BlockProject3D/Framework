@@ -28,11 +28,12 @@
 
 #include <Framework/Compression/ZDeflater.hpp>
 #include <Framework/Compression/ZInflater.hpp>
+#include <Framework/IO/IOException.hpp>
 #include <cassert>
 #include <gtest/gtest.h>
 #include <iostream>
 
-TEST(Compression, InflateDeflate_Simple)
+TEST(Compression, InflateDeflate_Simple_1)
 {
     bpf::compression::ZDeflater deflater(bpf::compression::ECompressionLevel::HIGH);
     bpf::compression::ZInflater inflater;
@@ -49,4 +50,53 @@ TEST(Compression, InflateDeflate_Simple)
     inflater.SetInput(std::move(deflated));
     EXPECT_EQ(inflater.Inflate(inflated, 29), 29U);
     EXPECT_STREQ(reinterpret_cast<const char *>(inflated), "This is a testThis is a test");
+}
+
+TEST(Compression, InflateDeflate_Simple_2)
+{
+    bpf::compression::ZDeflater deflater(bpf::compression::ECompressionLevel::DEFAULT);
+    bpf::compression::ZInflater inflater;
+    bpf::io::ByteBuf buf(29);
+    bpf::io::ByteBuf deflated(128);
+    bpf::uint8 inflated[29];
+    bpf::uint8 chunk[8];
+    bpf::fsize len = 0;
+
+    buf.Write("This is a testThis is a test", 29);
+    deflater.SetInput(std::move(buf));
+    while ((len = deflater.Deflate(chunk, 8)) > 0)
+        deflated.Write(chunk, len);
+    inflater.SetInput(std::move(deflated));
+    EXPECT_EQ(inflater.Inflate(inflated, 29), 29U);
+    EXPECT_STREQ(reinterpret_cast<const char *>(inflated), "This is a testThis is a test");
+}
+
+TEST(Compression, InflateDeflate_Simple_3)
+{
+    bpf::compression::ZDeflater deflater(bpf::compression::ECompressionLevel::LOW);
+    bpf::compression::ZInflater inflater;
+    bpf::io::ByteBuf buf(29);
+    bpf::io::ByteBuf deflated(128);
+    bpf::uint8 inflated[29];
+    bpf::uint8 chunk[8];
+    bpf::fsize len = 0;
+
+    buf.Write("This is a testThis is a test", 29);
+    deflater.SetInput(buf);
+    while ((len = deflater.Deflate(chunk, 8)) > 0)
+        deflated.Write(chunk, len);
+    inflater.SetInput(deflated);
+    EXPECT_EQ(inflater.Inflate(inflated, 29), 29U);
+    EXPECT_STREQ(reinterpret_cast<const char *>(inflated), "This is a testThis is a test");
+}
+
+TEST(Compression, InflateDeflate_Err)
+{
+    bpf::compression::ZInflater inflater;
+    bpf::io::ByteBuf buf(29);
+    bpf::uint8 inflated[29];
+
+    buf.Write("This is a testThis is a test", 29);
+    inflater.SetInput(buf);
+    EXPECT_THROW(inflater.Inflate(inflated, 29), bpf::io::IOException);
 }
