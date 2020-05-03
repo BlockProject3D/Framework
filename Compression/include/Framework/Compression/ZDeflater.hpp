@@ -53,6 +53,8 @@ namespace bpf
             void SetInput(const io::ByteBuf &inflated);
             void SetInput(io::ByteBuf &&inflated);
 
+            uint32 GetAdler32() const;
+
             fsize Deflate(io::ByteBuf &out);
             fsize Deflate(void *out, const fsize size);
         };

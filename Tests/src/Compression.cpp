@@ -66,9 +66,12 @@ TEST(Compression, InflateDeflate_Simple_2)
     deflater.SetInput(std::move(buf));
     while ((len = deflater.Deflate(chunk)) > 0)
         deflated.Write(*chunk, len);
+    auto chksum = deflater.GetAdler32();
+    EXPECT_GT(chksum, 0U);
     inflater.SetInput(std::move(deflated));
     EXPECT_EQ(inflater.Inflate(inflated), 29U);
     EXPECT_EQ(inflater.Inflate(inflated), 0U);
+    EXPECT_EQ(inflater.GetAdler32(), chksum);
     EXPECT_STREQ(reinterpret_cast<const char *>(*inflated), "This is a testThis is a test");
 }
 

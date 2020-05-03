@@ -63,6 +63,12 @@ ZInflater::~ZInflater()
     Memory::Free(stream);
 }
 
+uint32 ZInflater::GetAdler32() const
+{
+    z_stream_s *stream = reinterpret_cast<z_stream_s *>(_handle);
+    return (stream->adler);
+}
+
 void ZInflater::SetInput(const io::ByteBuf &deflated)
 {
     _input = deflated;
@@ -71,6 +77,7 @@ void ZInflater::SetInput(const io::ByteBuf &deflated)
     stream->next_in = *_input;
     stream->total_in = 0;
     stream->total_out = 0;
+    stream->adler = 0;
     _end = false;
 }
 
@@ -82,6 +89,7 @@ void ZInflater::SetInput(io::ByteBuf &&deflated)
     stream->next_in = *_input;
     stream->total_in = 0;
     stream->total_out = 0;
+    stream->adler = 0;
     _end = false;
 }
 
