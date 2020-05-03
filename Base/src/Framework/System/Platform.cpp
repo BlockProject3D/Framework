@@ -155,7 +155,7 @@ String Platform::IdentifyCPUBranding()
     res += CPUIDIntToStr(reg_edx);
     return (res);
         #else
-    return ("Generic x86_64 CPU"); //In optimized build attempting to call cpuid crashes the application under unix
+    return ("Generic CPU"); //In optimized build attempting to call cpuid crashes the application under unix
         #endif
     #endif
 #endif

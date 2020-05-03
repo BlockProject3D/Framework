@@ -33,15 +33,15 @@
 // Check windows
 #ifdef WINDOWS
     #if _WIN64
-        #define X86_64
+        #define PLATFORM_64
     #else
-        #define X86
+        #define PLATFORM_32
     #endif
 #else
     #if __x86_64__ || __ppc64__ || __aarch64__
-        #define X86_64
+        #define PLATFORM_64
     #else
-        #define X86
+        #define PLATFORM_32
     #endif
 #endif
 
@@ -64,7 +64,7 @@ namespace bpf
      */
     using fint = int32;
 
-#ifdef X86_64
+#ifdef PLATFORM_64
     using uintptr = uint64;
     using intptr = int64;
 #else
