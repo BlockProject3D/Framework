@@ -47,7 +47,7 @@ namespace bpf
             io::ByteBuf _input;
 
         public:
-            ZDeflater(const ECompressionLevel level = ECompressionLevel::DEFAULT);
+            explicit ZDeflater(const ECompressionLevel level = ECompressionLevel::DEFAULT);
             ~ZDeflater();
 
             void SetInput(const io::ByteBuf &inflated);
