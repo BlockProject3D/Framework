@@ -53,12 +53,14 @@ namespace bpf
 		/**
 		 * Converts a number string to an actual number type 
 		 * @param nbr the number string
+		 * @return the converted number
 		 */
 		T FromString(const String &nbr);
 
 		/**
 		 * Converts a number type to a number string
 		 * @param nbr the number to convert to a string
+		 * @return the number as a string in the target base
 		 */
 		String ToString(T nbr);
 	};
