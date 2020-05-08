@@ -100,3 +100,12 @@ macro(bp_setup_target name mainincdir)
                  PREFIX ""
                  FILES ${SOURCES})
 endmacro(bp_setup_target)
+
+include(CheckCXXCompilerFlag)
+
+macro(bp_check_and_flag target w)
+    check_cxx_compiler_flag(${w} tmpvar)
+    if (tmpvar)
+        target_compile_options(${target} PRIVATE ${w})
+    endif (tmpvar)
+endmacro(bp_check_and_flag)

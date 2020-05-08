@@ -33,11 +33,6 @@ macro(bp_setup_module name apimacro)
     else (MSVC)
         target_compile_options(${name} PRIVATE -Wall)
     endif (MSVC)
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        #This warning is an aberation of false-positives
-        #Seriously Clang team: go learn how to code!!!
-        target_compile_options(${name} PRIVATE -Wno-self-assign-overloaded)
-    endif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     target_compile_options(${name} PRIVATE "$<$<C_COMPILER_ID:MSVC>:/utf-8>")
     target_compile_options(${name} PRIVATE "$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
