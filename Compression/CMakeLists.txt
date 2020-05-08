@@ -12,5 +12,11 @@ set(SOURCES
     src/Framework/Compression/ZDeflater.cpp
 )
 
+bp_product_properties(BPF.Compression
+    VERSION_MAJOR 1
+    VERSION_MINOR 0
+    DESCRIPTION "BlockProject 3D Framework"
+)
+
 bp_setup_module(BPF.Compression BPF_COMPRESSION_API)
 target_link_libraries(BPF.Compression PRIVATE CONAN_PKG::zlib)
