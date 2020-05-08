@@ -31,8 +31,9 @@
 namespace bpf
 {
     /**
-     * Returns the type name as a string of a given type
+     * Returns the cross-platform type name of a given type
      * @tparam T the type to search the name of
+     * @return low-level null-terminated c-string 
      */
     template <typename T>
     inline const char *TypeName() noexcept
@@ -43,6 +44,7 @@ namespace bpf
 
 /**
  * Defines the type name for a given type
+ * @param T the type to define the cross platform type name for
  */
 #define BP_DEFINE_TYPENAME(T) \
     namespace bpf \

@@ -32,6 +32,9 @@
 
 namespace bpf
 {
+    /**
+     * High-level exception
+     */
     class BPF_API RuntimeException : public Exception
     {
     private:
@@ -40,6 +43,12 @@ namespace bpf
 
     public:
         virtual ~RuntimeException() {}
+
+        /**
+         * Constructs a high-level exception
+         * @param type exception type name suffixed with "Exception"
+         * @param message exception message string
+         */
         RuntimeException(const String &type, const String &message) noexcept;
 
         /**

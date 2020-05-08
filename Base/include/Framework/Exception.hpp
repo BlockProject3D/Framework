@@ -30,6 +30,9 @@
 
 namespace bpf
 {
+    /**
+     * Low-level exception
+     */
     class BPF_API Exception
     {
     private:

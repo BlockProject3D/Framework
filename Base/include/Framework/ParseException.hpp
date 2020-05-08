@@ -31,14 +31,27 @@
 
 namespace bpf
 {
+    /**
+     * Represents a parsing exception
+     */
     class BPF_API ParseException : public RuntimeException
     {
     public:
+
+        /**
+         * Constructs a generic ParseException
+         * @param msg the exception message
+         */
         inline explicit ParseException(const String &msg) noexcept
             : RuntimeException("Parse", msg)
         {
         }
 
+        /**
+         * Construcs a ParseException
+         * @param type the type of exception suffixed by "ParseException"
+         * @param msg the exception message
+         */
         inline explicit ParseException(const String &type, const String &msg) noexcept
             : RuntimeException(type + "Parse", msg)
         {

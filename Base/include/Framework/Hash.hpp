@@ -31,10 +31,19 @@
 
 namespace bpf
 {
+    /**
+     * Provides hashing method for a given type
+     * @tparam T the type to provide hashing function to
+     */
     template <typename T>
     class Hash
     {
     public:
+
+        /**
+         * Returns the hash of a value
+         * @param val the value to calculate hash for
+         */
         inline static fsize ValueOf(const T &val)
         {
             return ((fsize)val);

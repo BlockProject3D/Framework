@@ -30,17 +30,34 @@
 
 #include "Framework/EvalException.hpp"
 #include "Framework/String.hpp"
+#include "Framework/IndexException.hpp"
 
 namespace bpf
 {
+	/**
+	 * Utility to evaluate simple math expressions
+	 * @tparam T the type to evaluate to
+	 */
 	template <typename T>
 	class BP_TPL_API MathEval
 	{
 	private:
 		static T EvalNbr(const char* expr, char** endptr);
 	public:
+		/**
+		 * Evaluates a math expression string
+		 * @param str the expression string
+		 * @throw EvalException when there is a math error
+		 * @return evaluated number
+		 */
 		T Evaluate(const String &str);
 
+		/**
+		 * Parses a number at the start of a string and return how many characters were read
+		 * @param str the string containing the number
+		 * @param endpos output position in str where the last character could be found
+		 * @return parsed number
+		 */
 		inline T EvalNbr(const String& str, fsize& endpos)
 		{
 			const char *data = *str;
@@ -48,6 +65,26 @@ namespace bpf
 			T num = EvalNbr(data, &ptr);
 
 			endpos = (fsize)(ptr - data);
+			return (num);
+		}
+
+		/**
+		 * Parses a number at a given position in a string and return how many characters were read
+		 * @param str the string containing the number
+		 * @param startpos the start position in the string
+		 * @param endpos output position in str where the last character could be found
+		 * @throw IndexException when startpos is out of the string bounds
+		 * @return parsed number
+		 */
+		inline T EvalNbr(const String& str, const fsize startpos, fsize& endpos)
+		{
+			if (startpos >= str.Size())
+				throw IndexException();
+			const char *data = *str + startpos;
+			char *ptr;
+			T num = EvalNbr(data, &ptr);
+
+			endpos = (fsize)(ptr - data) + startpos;
 			return (num);
 		}
 	};

@@ -31,30 +31,64 @@
 
 namespace bpf
 {
+    /**
+     * Utility class to represent a hashed string
+     */
     class BPF_API Name
     {
     private:
         fsize _hash;
 
     public:
+
+        /**
+         * Initialize an empty Name
+         */
         inline Name() noexcept
             : _hash(0)
         {
         }
+
+        /**
+         * Construct a Name from a low-level string
+         * @param str the low-level null-terminated c-string to build a hash from
+         */
         explicit Name(const char *str) noexcept;
+
+        /**
+         * Constructs a Name from a high-level string
+         * @param str the high-level string to build a hash from
+         */
         explicit Name(const String &str) noexcept;
+
+        /**
+         * Constructs a Name from an existing hash
+         * @param hash the hash to copy
+         */        
         explicit Name(const fsize hash) noexcept;
 
+        /**
+         * Returns the hash value
+         * @return the hash value for the current platform register size
+         */
         inline fsize Hash() const noexcept
         {
             return (_hash);
         }
 
+        /**
+         * Compare Name
+         * @return true if the two Names are equal false otherwise
+         */
         inline bool operator==(const Name &other) const noexcept
         {
             return (_hash == other._hash);
         }
 
+        /**
+         * Compare Name
+         * @return false if the two Names are equal true otherwise
+         */
         inline bool operator!=(const Name &other) const noexcept
         {
             return (_hash != other._hash);

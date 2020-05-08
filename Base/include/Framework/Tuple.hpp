@@ -161,24 +161,48 @@ namespace bpf
             {
             }
 
+            /**
+             * Gets an item by index
+             * In case index does not exist, a compile error is generated
+             * @tparam I the index of the item
+             * @return mutable item
+             */
             template <fsize I>
             inline ElemType<I> &Get()
             {
                 return (Elem<I, ElemType<I>>::Get());
             }
 
+            /**
+             * Gets an item by index
+             * In case index does not exist, a compile error is generated
+             * @tparam I the index of the item
+             * @return immutable item
+             */
             template <fsize I>
             inline const ElemType<I> &Get() const
             {
                 return (Elem<I, ElemType<I>>::Get());
             }
 
+            /**
+             * Gets an item by type
+             * In case type does not exist in tuple, a compile error is generated
+             * @tparam T the type of the item
+             * @return mutable item
+             */
             template <typename T>
             inline ElemType<TypeIndexer<sizeof...(Args), 0, T, Args...>::type::ID> &Get()
             {
                 return (Get<TypeIndexer<sizeof...(Args), 0, T, Args...>::type::ID>());
             }
 
+            /**
+             * Gets an item by type
+             * In case type does not exist in tuple, a compile error is generated
+             * @tparam T the type of the item
+             * @return mutable item
+             */
             template <typename T>
             inline const ElemType<TypeIndexer<sizeof...(Args), 0, T, Args...>::type::ID> &Get() const
             {
@@ -187,22 +211,37 @@ namespace bpf
         };
     }
 
+    /**
+     * Cross platform tuple with fixed DLL interface warnings on Windows
+     * Also includes non C++ 11 features like get item by type
+     * @tparam Args the types to store in the tuple
+     */
     template <typename... Args>
     class BP_TPL_API Tuple : public __internal_tp::Impl<
                                  typename __internal_tp::Range<0, sizeof...(Args), __internal_tp::Sizes<>>::type, Args...>
     {
     public:
+
+        /**
+         * Constructs a tuple using default constructor
+         */
         template <bool Flag = __internal_tp::IsAllDefaultConstructible<Args...>::Value, typename = typename std::enable_if<Flag>::type>
         inline Tuple()
             : __internal_tp::Impl<typename __internal_tp::Range<0, sizeof...(Args), __internal_tp::Sizes<>>::type, Args...>()
         {
         }
 
+        /**
+         * Constructs a tuple
+         */
         explicit inline Tuple(Args &&... args)
             : __internal_tp::Impl<typename __internal_tp::Range<0, sizeof...(Args), __internal_tp::Sizes<>>::type, Args...>(std::forward<Args &&>(args)...)
         {
         }
 
+        /**
+         * Number of items in the tuple
+         */
         constexpr fsize Size() const
         {
             return (sizeof...(Args));

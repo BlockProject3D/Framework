@@ -33,15 +33,33 @@
 
 namespace bpf
 {
+	/**
+	 * Utility class to convert numbers in bases different from decimal
+	 * WARNING: This class does not work on decimal types
+	 * @tparam T the type of number
+	 */
 	template <typename T>
 	class BP_TPL_API BaseConvert
 	{
 	private:
 		String _base;
 	public:
+		/**
+		 * Constructs an instance of BaseConvert
+		 * @pram base the set of characters to use for the base
+		 */
 		inline explicit BaseConvert(const String &base) : _base(base) {}
 
+		/**
+		 * Converts a number string to an actual number type 
+		 * @param nbr the number string
+		 */
 		T FromString(const String &nbr);
+
+		/**
+		 * Converts a number type to a number string
+		 * @param nbr the number to convert to a string
+		 */
 		String ToString(T nbr);
 	};
 }

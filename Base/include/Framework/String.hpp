@@ -85,11 +85,23 @@ namespace bpf
             return (data);
         }
     public:
+
+        /**
+         * Provides string serializing function to a type
+         * @tparam T the type to provide string conversion function to
+         */
         template <typename T>
         class Stringifier
         {
         public:
-            inline static String Stringify(const T &obj, const fsize = 0)
+
+            /**
+             * Converts the given value to it's string representation
+             * @param obj the value to convert
+             * @param prec the precision to use (mainly for number types)
+             * @return the string representation for that value
+             */
+            inline static String Stringify(const T &obj, const fsize prec = 0)
             {
                 return (obj);
             }
@@ -101,31 +113,33 @@ namespace bpf
         String();
 
         /**
-         * Constructs a new string from a string literal
+         * Constructs a new string from a low-level null-terminated c-string
          * @param str pointer to an array of bytes containing UTF-8 data
          */
         String(const char *str);
 
         /**
          * Constructs a new string from a single character
-         * @param c the character to copy in the string
+         * @param c the UTF32 code to construct the string from
          */
         String(const fchar c);
 
         /**
          * Copy constructor
+         * @param s value to copy
          */
         String(const String &s);
 
         /**
          * Move constructor
+         * @param s value to move
          */
         String(String &&s);
 
         ~String();
 
         /**
-         * Low level function to adds a single byte at the end of this string
+         * Low-level function to adds a single byte at the end of this string
          * This function ignores wether or not byte is part of a UTF8 code
          * StrLen will be incremented of 1 and UnicodeLen will be recalculated accordingly
          */
@@ -134,19 +148,22 @@ namespace bpf
         /**
          * Returns a UTF32 character from a single UTF8 code
          * @param utf8char the utf8 null-terminated byte sequence to convert to a single UTF32 character
+         * @return UTF32 code
          */
         static fchar UTF32(const char *utf8char);
 
         /**
-         * Returns a UTF8 high level String from a single UTF32 code
+         * Returns a UTF8 high-level String from a single UTF32 code
          * @param utf32char the utf32 character to convert to a UTF8 String
+         * @return UTF8 code
          */
-        static String UTF8(const fchar utf32char); // TODO : Implement
+        static String UTF8(const fchar utf32char);
 
         /**
          * Returns a byte at a given index
          * @param id the index of the byte to return
-         * @throws IndexException
+         * @throw IndexException in case the index is out of bounds
+         * @return single byte at index id
          */
         inline char ByteAt(const fisize id) const
         {
@@ -156,44 +173,58 @@ namespace bpf
         }
 
         /**
-         * Returns a new string from concatenation of this + other
+         * Concatenates two strings
+         * @param other string to append at the end of new string
+         * @return new string from concatenation of this + other
          */
         String operator+(const String &other) const;
 
         /**
-         * Returns a new string from concatenation of this + other
+         * Concatenates a string with a character
+         * @param other character to append at the end of new string
+         * @return new string from concatenation of this + other
          */
         String operator+(const fchar other) const;
 
         /**
          * Appends a string at the end of this string
+         * @param other the string to append
+         * @return modified string (this)
          */
         String &operator+=(const String &other);
 
         /**
          * Appends a UTF32 code at the end of this string
+         * @param other the UTF32 code to append
+         * @return modified string (this)
          */
         String &operator+=(const fchar other);
 
         /**
          * Copy assignment operator
+         * @param other string to replace this with
+         * @return modified string (this)
          */
         String &operator=(const String &other);
 
         /**
          * Move assignment operator
+         * @param other string to replace this with
+         * @return modified string (this)
          */
         String &operator=(String &&other);
 
         /**
-         * Returns true if this string is equal to other
+         * Compare String
          * @param other the other string to compare with
+         * @return true if strings are equal, false otherwise
          */
         bool operator==(const String &other) const;
 
         /**
-         * Returns true if this string is not equal to other
+         * Compare String
          * @param other the other string to compare with
+         * @return false if strings are equal, true otherwise
          */
         inline bool operator!=(const String &other) const
         {
@@ -201,28 +232,34 @@ namespace bpf
         }
 
         /**
-         * Compares this string with another : returns true if this is less than other
+         * Compare String
+         * Equivalent to std::string but supports UTF8 natively
          * @param other the other string to compare with
+         * @return true if this is less than other
          */
         bool operator<(const String &other) const;
 
         /**
-         * Compares this string with another : returns true if this is greater than other
+         * Compare String
+         * Equivalent to std::string but supports UTF8 natively
          * @param other the other string to compare with
+         * @return true if this is greater than other
          */
         bool operator>(const String &other) const;
 
         /**
          * Returns a new string with all occurenses of search replaced by repby
          * @param search the string to search for
-         * @param repby the string to replace occurenses of search with
+         * @param repby the replacement string
+         * @return new modifed string
          */
         String Replace(const String &search, const String &repby) const;
 
         /**
          * Returns a character of this string at offset id
          * @param id the offset of the character to get
-         * @throws IndexException
+         * @throw IndexException if the index is out of bounds
+         * @return UTF32 code
          */
         inline fchar operator[](const fisize id) const
         {
@@ -232,21 +269,47 @@ namespace bpf
         }
 
         /**
-         * Returns the data of this string ready for printing
+         * Returns the data of this string
+         * @return immutable low-level null-terminated c-string
          */
         inline const char *operator*() const
         {
             return (Data);
         }
 
+        /**
+         * Converts this string to an array of byte
+         * @return array of bytes
+         */
         collection::Array<char> ToArray() const;
+
+        /**
+         * Converts this string to an array of UTF32 codes
+         * @return array of UTF32 codes 
+         */
         collection::Array<fchar> ToUTF32() const;
+
+        /**
+         * Converts this string to an array of UTF16 codes
+         * @return array of UTF16 codes 
+         */
         collection::Array<fchar16> ToUTF16() const;
+
+        /**
+         * Converts an array of UTF16 code to a high-level string
+         * @param str array of UTF16 codes with a 0 value at the end
+         */
         static String FromUTF16(const fchar16 *str);
+
+        /**
+         * Converts an array of UTF32 code to a high-level string
+         * @param str array of UTF32 codes with a 0 value at the end
+         */
         static String FromUTF32(const fchar *str);
 
         /**
          * Returns the number of characters in this string
+         * @return number of unicode character
          */
         inline fisize Len() const
         {
@@ -255,6 +318,7 @@ namespace bpf
 
         /**
          * Returns the size in bytes of this string
+         * @return number of bytes in this string following UTF8 standard
          */
         inline fisize Size() const
         {
@@ -268,43 +332,56 @@ namespace bpf
 
         /**
          * Returns a copy of this string in all upper case
-         * Unicode not supported
+         * WARNING: Unicode is not supported
+         * @return new string
          */
         String ToUpper() const;
 
         /**
          * Returns a copy of this string in all lower case
-         * Unicode not supported
+         * WARNING: Unicode is not supported
+         * @return new string
          */
         String ToLower() const;
 
         /**
-         * Returns a copy of this string reversed
+         * Returns a copy of this string but in reversed order
+         * @return new string
          */
         String Reverse() const;
 
         /**
-         * Returns the index of the first occurence of str in this
+         * Returns the index of the first occurence of str in this string
+         * @param str the string to search for
+         * @return index in this string where the first character in str can be found
          */
         fisize IndexOf(const String &str) const;
 
         /**
-         * Returns the index of the last occurence of str in this
+         * Returns the index of the last occurence of str in this string
+         * @param str the string to search for
+         * @return index in this string where the first character in str can be found
          */
         fisize LastIndexOf(const String &str) const;
 
         /**
          * Returns the index of the first occurence of c in this
+         * @param c the character to search for
+         * @return index of character in this string
          */
         fisize IndexOf(const char c) const;
 
         /**
          * Returns the index of the last occurence of c in this
+         * @param c the character to search for
+         * @return index of character in this string
          */
         fisize LastIndexOf(const char c) const;
 
         /**
          * Returns the index of the first occurence of c in this
+         * @param c the UTF32 code to search for
+         * @return index of character in this string
          */
         inline fisize IndexOf(const fchar c) const
         {
@@ -313,6 +390,8 @@ namespace bpf
 
         /**
          * Returns the index of the last occurence of c in this
+         * @param c the UTF32 code to search for
+         * @return index of character in this string
          */
         inline fisize LastIndexOf(const fchar c) const
         {
@@ -321,14 +400,14 @@ namespace bpf
 
         /**
          * Splits this string using a delimiter
-         * @param c the sperator char
+         * @param c the sperator character
          * @return array of tokens
          */
         collection::Array<String> Explode(const char c) const;
 
         /**
          * Splits this string using a delimiter
-         * @param c the seperator char
+         * @param c the seperator character
          * @param ignore character to identify escape sequences (all characters between two of this ignore char will be interpreted as a single token)
          * @return array of tokens
          */
@@ -351,32 +430,44 @@ namespace bpf
 
         /**
          * Splits this string using multiple delimiters
-         * @param str the delimiters
+         * @param str the delimiters each character is treated as a different delimiter
          * @return array of tokens
          */
         collection::Array<String> ExplodeOr(const String &str) const;
 
         /**
          * Returns true if this string starts with other
+         * @param other the string to search for
+         * @return true if this string starts with other, false otherwise
          */
         bool StartsWith(const String &other) const;
 
         /**
          * Returns true if this string ends with other
+         * @param other the string to search for
+         * @return true if this string end with other, false otherwise
          */
         bool EndsWith(const String &other) const;
 
         /**
          * Returns true if this string contains other
+         * @param other the string to search for
+         * @return true if this string contains other, false otherwise
          */
         bool Contains(const String &other) const;
 
+        /**
+         * Returns true if this string contains other
+         * @param other the string to search for
+         * @return true if this string contains other, false otherwise
+         */
         bool Contains(const fchar other) const;
 
         /**
          * Returns a substring
          * @param begin the begin index in characters (inclusive)
          * @param count the amount of characters to read
+         * @return new string between begin and begin + count
          */
         inline String SubLen(const fisize begin, const fisize count = -1) const
         {
@@ -389,32 +480,39 @@ namespace bpf
          * Returns a substring
          * @param begin the begin index in characters (inclusive)
          * @param end the end index in characters (exclusive)
+         * @return new string between begin and end
          */
         String Sub(const fisize begin, const fisize end) const;
 
         /**
          * Returns a substring where the end is the end of this string
          * @param begin the begin index in characters (inclusive)
+         * @return new string starting at begin
          */
         String Sub(const fisize begin) const;
 
         /**
+         * Formats a string using a set of parameters and a format
          * Builds a string using the following formating syntax : '[]' for no format and [<num chars padding>,<allignment (left / right)>,<characters to serve as padding>]
-         * @tparam Args objects / scalar types to format
-         * @param format the given format
+         * @tparam Args parameter types to format
+         * @param format the format string
+         * @param Args the actual parameters to format
+         * @return new formatted string
          */
+        //TODO: Add support for center alignment
         template <typename ...Args>
         inline static String Format(const String &format, Args &&...)
         {
             return (format);
         }
 
-        //TODO : Add support for center alignment
         /**
-         * Builds a string using the following formating syntax :
-         * '[]' for no format and [(.precision,)(<num chars padding>,<allignment (left / right)>,<characters to serve as padding>)]
-         * @tparam Args objects / scalar types to format
-         * @param format the given format
+         * Formats a string using a set of parameters and a format
+         * Builds a string using the following formating syntax : '[]' for no format and [<num chars padding>,<allignment (left / right)>,<characters to serve as padding>]
+         * @tparam Args parameter types to format
+         * @param format the format string
+         * @param Args the actual parameters to format
+         * @return new formatted string
          */
         template <typename T, typename ...Args>
         static String Format(const String &format, T &&t, Args &&... args)
@@ -440,9 +538,10 @@ namespace bpf
         }
 
         /**
-         * Converts any object to it's string representation by calling ToString on it
+         * Converts any object to it's string representation by calling the appropriate Stringifier or the built-in ValueOf if it is a scalar
          * @param val value to convert to a string
          * @param prec precision for numeric types (0 means max precision)
+         * @return string representation of val
          */
         template <typename T, typename std::enable_if<std::is_class<T>::value>::type * = nullptr>
         inline static String ValueOf(const T &val, const fsize prec = 0)
@@ -454,6 +553,7 @@ namespace bpf
          * Converts any pointer type to it's string representation
          * @param val value to convert to a string
          * @param prec precision for numeric types (0 means max precision)
+         * @return string representation of val
          */
         template <typename T, typename std::enable_if<std::is_pointer<T>::value>::type * = nullptr>
         inline static String ValueOf(T val, const fsize prec = 0)
@@ -465,6 +565,7 @@ namespace bpf
          * Converts a signed integer 32 bits to it's string representation
          * @param i value to convert to a string
          * @param prec precision for numeric types (0 means max precision)
+         * @return string representation of val
          */
         static String ValueOf(fint i, const fsize prec = 0);
 
@@ -472,6 +573,7 @@ namespace bpf
          * Converts an unsigned integer 32 bits to it's string representation
          * @param i value to convert to a string
          * @param prec precision for numeric types (0 means max precision)
+         * @return string representation of val
          */
         static String ValueOf(uint32 i, const fsize prec = 0);
 
@@ -479,6 +581,7 @@ namespace bpf
          * Converts an unsigned integer 64 bits to it's string representation
          * @param i value to convert to a string
          * @param prec precision for numeric types (0 means max precision)
+         * @return string representation of val
          */
         static String ValueOf(uint64 i, const fsize prec = 0);
 
@@ -486,6 +589,7 @@ namespace bpf
          * Converts a signed integer 64 bits to it's string representation
          * @param i value to convert to a string
          * @param prec precision for numeric types (0 means max precision)
+         * @return string representation of val
          */
         static String ValueOf(int64 i, const fsize prec = 0);
 
@@ -493,6 +597,7 @@ namespace bpf
          * Converts a float to it's string representation
          * @param f value to convert to a string
          * @param prec precision for numeric types (0 means max precision)
+         * @return string representation of val
          */
         static String ValueOf(float f, const fsize prec = 0);
 
@@ -500,6 +605,7 @@ namespace bpf
          * Converts a double to it's string representation
          * @param d value to convert to a string
          * @param prec precision for numeric types (0 means max precision)
+         * @return string representation of val
          */
         static String ValueOf(double d, const fsize prec = 0);
 
@@ -507,6 +613,7 @@ namespace bpf
          * Converts a double to it's string representation
          * @param d value to convert to a string
          * @param prec precision for numeric types (0 means max precision)
+         * @return string representation of val
          */
         static String ValueOf(long double d, const fsize prec = 0);
 
@@ -514,6 +621,7 @@ namespace bpf
          * Converts a raw pointer to it's string representation
          * @param ptr value to convert to a string
          * @param prec precision for numeric types (0 means max precision)
+         * @return string representation of val
          */
         static String ValueOf(void *ptr, const fsize prec = 0);
 
@@ -521,6 +629,7 @@ namespace bpf
          * Converts a signed integer 8 bits to it's string representation
          * @param i value to convert to a string
          * @param prec precision for numeric types (0 means max precision)
+         * @return string representation of val
          */
         inline static String ValueOf(int8 i, const fsize = 0)
         {
@@ -531,6 +640,7 @@ namespace bpf
          * Converts an unsigned integer 8 bits to it's string representation
          * @param i value to convert to a string
          * @param prec precision for numeric types (0 means max precision)
+         * @return string representation of val
          */
         inline static String ValueOf(uint8 i, const fsize = 0)
         {
@@ -541,6 +651,7 @@ namespace bpf
          * Converts a signed integer 16 bits to it's string representation
          * @param i value to convert to a string
          * @param prec precision for numeric types (0 means max precision)
+         * @return string representation of val
          */
         inline static String ValueOf(int16 i, const fsize = 0)
         {
@@ -551,6 +662,7 @@ namespace bpf
          * Converts an unsigned integer 16 bits to it's string representation
          * @param i value to convert to a string
          * @param prec precision for numeric types (0 means max precision)
+         * @return string representation of val
          */
         inline static String ValueOf(uint16 i, const fsize = 0)
         {
@@ -561,6 +673,7 @@ namespace bpf
          * Converts a low-level C string to a high level string
          * @param s value to convert to a string
          * @param prec precision for numeric types (0 means max precision)
+         * @return string representation of val
          */
         inline static String ValueOf(const char *s, const fsize = 0)
         {
@@ -571,6 +684,7 @@ namespace bpf
          * Converts a bool to it's string representation
          * @param b value to convert to a string
          * @param prec precision for numeric types (0 means max precision)
+         * @return string representation of val
          */
         inline static String ValueOf(bool b, const fsize = 0)
         {

@@ -30,12 +30,26 @@
 
 namespace bpf
 {
+    /**
+     * Sets a bit inside a variable
+     * @tparam T the type of variable
+     * @param data the variable itself
+     * @param id the bit position
+     * @param flag true if the bit should be a 1 or false if the bit should be a 0
+     */
     template <typename T>
     inline void SetBit(T &data, fint id, bool flag)
     {
         flag ? (data |= 1UL << id) : (data &= ~(1UL << id));
     }
 
+    /**
+     * Returns a bit from a variable
+     * @tparam T the type of variable
+     * @param data the variable itself
+     * @param id the bit position
+     * @return true if the bit is a 1 or false if the bit is a 0
+     */
     template <typename T>
     inline bool GetBit(T data, fint id)
     {
