@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -27,18 +27,25 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include <functional>
-#include <initializer_list>
-#include "Framework/Types.hpp"
-#include "Framework/Collection/Stack.hpp"
 #include "Framework/Collection/Iterator.hpp"
+#include "Framework/Collection/Stack.hpp"
 #include "Framework/Collection/Utility.hpp"
 #include "Framework/IndexException.hpp"
+#include "Framework/Types.hpp"
+#include <functional>
+#include <initializer_list>
 
 namespace bpf
 {
     namespace collection
     {
+        /**
+         * AVL tree based map
+         * @tparam K the key type
+         * @tparam V the value type
+         * @tparam Greater the greater than operator
+         * @tparam Less the less than operator
+         */
         template <typename K, typename V, template <typename T> class Greater = ops::Greater, template <typename T> class Less = ops::Less>
         class BP_TPL_API Map
         {
@@ -140,31 +147,71 @@ namespace bpf
             Node *FindNode(const K &key) const;
 
         public:
+            /**
+             * Constructs an empty Map
+             */
             Map();
+
+            /**
+             * Copy constructor
+             */
             Map(const Map &other);
+
+            /**
+             * Move constructor
+             */
             Map(Map &&other);
+
+            /**
+             * Constructs a HashMap from an existing initializer list
+             * @param entries the initial list of key-value pairs to add to this new HashMap
+             */
             Map(const std::initializer_list<Entry> &entries);
+
             ~Map();
 
             /**
-             * Adds a new element in this hash map, replaces if key already exists
+             * Adds a new element in this map, replaces if key already exists
              * @param key the key of the element
              * @param value the value to insert
              */
             void Add(const K &key, const V &value);
 
+            /**
+             * Adds a new element in this map, replaces if key already exists
+             * @param key the key of the element
+             * @param value the value to insert
+             */
             void Add(const K &key, V &&value);
 
             /**
-             * Removes an element from the hash table
+             * Removes an element from the map
              * @param key the key of the element to remove
              */
             void RemoveAt(const K &key);
+
+            /**
+             * Removes an element from the map
+             * @param pos iterator of the element to remove
+             */
             void RemoveAt(Iterator &pos);
+
+            /**
+             * Removes an element from the map
+             * @param pos iterator of the element to remove
+             */
             void RemoveAt(Iterator &&pos);
 
+            /**
+             * Swap two elements by iterator in the Map
+             * @param a first element
+             * @param b second element
+             */
             void Swap(const Iterator &a, const Iterator &b);
 
+            /**
+             * Clears the content of this Map
+             */
             void Clear();
 
             /**
@@ -176,41 +223,101 @@ namespace bpf
             template <template <typename> class Comparator = ops::Equal>
             void Remove(const V &value, const bool all = true);
 
+            /**
+             * Compare Map by performing a per-element check
+             * @param other Map to compare with
+             * @return true if the two maps are equal, false otherwise
+             */
             bool operator==(const Map<K, V, Greater, Less> &other);
 
+            /**
+             * Compare Map by performing a per-element check
+             * @param other Map to compare with
+             * @return false if the two maps are equal, true otherwise
+             */
             inline bool operator!=(const Map<K, V, Greater, Less> &other)
             {
                 return (!operator==(other));
             }
 
+            /**
+             * Locate an item by key inside this map
+             * @param key the key of the item to search for
+             * @return iterator to the found item or end() if none
+             */
             Iterator FindByKey(const K &key);
 
+            /**
+             * Locate an item by performing per-element check
+             * @tparam Comparator comparision operator to use
+             * @param val the value to search for
+             * @return iterator to the found item or end() if none
+             */
             template <template <typename> class Comparator = ops::Equal>
             Iterator FindByValue(const V &val);
 
-            Iterator Find(const std::function<int(const Node & node)> &comparator);
+            /**
+             * Locate an item by performing per-element check
+             * @param comparator the comparision function to use: return Z- for less than, Z+ for greater than and 0 for equal
+             * @return iterator to the found item or end() if none
+             */
+            Iterator Find(const std::function<int(const Node &node)> &comparator);
 
             /**
-             * Returns the element at the specified key, if no key exists in this hash table, throws
-             * @param key the key of the element to return
+             * Returns an element const mode
+             * @param key the key of the element
+             * @throw IndexException if key is not in this map
+             * @return immutable item
              */
             const V &operator[](const K &key) const;
 
+            /**
+             * Returns the element with the minimum key value
+             * @return iterator to the minimum element
+             */
             Iterator FindMin();
+
+            /**
+             * Returns the element with the maximum key value
+             * @return iterator to the maximum element
+             */
             Iterator FindMax();
 
+            /**
+             * Returns an element non-const mode
+             * @param key the key of the element
+             * @throw IndexException if key is not in this map
+             * @return mutable item
+             */
             V &operator[](const K &key);
 
+            /**
+             * Copy assignment operator
+             */
             Map &operator=(const Map &other);
+
+            /**
+             * Move assignment operator
+             */
             Map &operator=(Map &&other);
 
+            /**
+             * Create a new Map from concatenation of two maps
+             * @param other map to concatenate with
+             * @return new Map
+             */
             Map operator+(const Map &other) const;
 
+            /**
+             * Appends the content of a Map at the end of this map
+             * @param other map to append
+             */
             void operator+=(const Map &other);
 
             /**
-             * Returns true if the specified key exists, false otherwise
+             * Check if a particular key exists
              * @param key the key to check
+             * @return true if the specified key exists, false otherwise
              */
             inline bool HasKey(const K &key) const
             {
@@ -218,26 +325,45 @@ namespace bpf
             }
 
             /**
-             * Returns the size of this hash table, that means the element count
+             * Returns the number of items in this map
+             * @return number of items as unsigned
              */
             inline fsize Size() const
             {
                 return (_count);
             }
 
+            /**
+             * Returns an iterator to the begining of the collection
+             * @return new iterator
+             */
             inline Iterator begin() const
             {
                 return (Iterator(_root, reinterpret_cast<Node *>(1)));
             }
+
+            /**
+             * Returns an iterator to the end of the collection
+             * @return new iterator
+             */
             inline Iterator end() const
             {
                 return (Iterator(_root, Null));
             }
 
+            /**
+             * Returns a reverse iterator to the begining of the collection
+             * @return new iterator
+             */
             inline ReverseIterator rbegin() const
             {
                 return (ReverseIterator(_root, reinterpret_cast<Node *>(1)));
             }
+
+            /**
+             * Returns a reverse iterator to the end of the collection
+             * @return new iterator
+             */
             inline ReverseIterator rend() const
             {
                 return (ReverseIterator(_root, Null));

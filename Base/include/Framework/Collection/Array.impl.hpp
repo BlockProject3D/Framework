@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -27,8 +27,8 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include <utility>
 #include "Framework/Memory/MemUtils.hpp"
+#include <utility>
 
 namespace bpf
 {
@@ -225,7 +225,7 @@ namespace bpf
         }
 
         template <typename T, fsize I>
-        typename Array<T, I>::Iterator Array<T, I>::Find(const std::function<bool(const fsize pos, const T & val)> &comparator)
+        typename Array<T, I>::Iterator Array<T, I>::Find(const std::function<bool(const fsize pos, const T &val)> &comparator)
         {
             fsize pos = 0;
 
@@ -239,7 +239,7 @@ namespace bpf
         }
 
         template <typename T>
-        typename Array<T>::Iterator Array<T>::Find(const std::function<bool(const fsize pos, const T & val)> &comparator)
+        typename Array<T>::Iterator Array<T>::Find(const std::function<bool(const fsize pos, const T &val)> &comparator)
         {
             fsize pos = 0;
 

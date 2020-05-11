@@ -103,6 +103,7 @@ namespace bpf
              */
             inline static String Stringify(const T &obj, const fsize prec = 0)
             {
+                (void)prec; //Required due to MSVC not able to understand the meaning of javadoc style comments
                 return (obj);
             }
         };

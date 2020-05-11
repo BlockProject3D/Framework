@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -560,7 +560,7 @@ namespace bpf
         }
 
         template <typename T>
-        typename List<T>::Iterator List<T>::Find(const std::function<bool(const fsize pos, const T & val)> &comparator)
+        typename List<T>::Iterator List<T>::Find(const std::function<bool(const fsize pos, const T &val)> &comparator)
         {
             Node *cur = _first;
             fsize pos = 0;

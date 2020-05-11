@@ -78,8 +78,8 @@ namespace bpf
 		 */
 		inline T EvalNbr(const String& str, const fsize startpos, fsize& endpos)
 		{
-			if (startpos >= str.Size())
-				throw IndexException();
+			if (startpos >= (fsize)str.Size())
+				throw IndexException(startpos);
 			const char *data = *str + startpos;
 			char *ptr;
 			T num = EvalNbr(data, &ptr);
