@@ -293,6 +293,7 @@ namespace bpf
 
         /**
          * Converts this string to an array of UTF16 codes
+         * @throw EvalException in case the the current string contains non-UTF16 encodable characters
          * @return array of UTF16 codes 
          */
         collection::Array<fchar16> ToUTF16() const;
@@ -300,12 +301,15 @@ namespace bpf
         /**
          * Converts an array of UTF16 code to a high-level string
          * @param str array of UTF16 codes with a 0 value at the end
+         * @throw EvalException in case the the array of UTF16 code contains invalid characters
+         * @return High-level string representing the UTF!^16 string given as argument
          */
         static String FromUTF16(const fchar16 *str);
 
         /**
          * Converts an array of UTF32 code to a high-level string
          * @param str array of UTF32 codes with a 0 value at the end
+         * @return High-level string representing the UTF32 string given as argument
          */
         static String FromUTF32(const fchar *str);
 
