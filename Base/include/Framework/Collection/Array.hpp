@@ -430,7 +430,7 @@ namespace bpf
             /**
              * Returns an element const mode
              * @param id the index of the element, in case of out of bounds, throws
-             * @throw bpf::IndexException if id is out of bounds
+             * @throw IndexException if id is out of bounds
              * @return immutable item at index id
              */
             const T &operator[](const fsize id) const;
@@ -438,7 +438,7 @@ namespace bpf
             /**
              * Returns an element non-const mode
              * @param id the index of the element, in case of out of bounds, throws
-             * @throw bpf::IndexException if id is out of bounds
+             * @throw IndexException if id is out of bounds
              * @return mutable item at index id
              */
             T &operator[](const fsize id);
@@ -491,7 +491,7 @@ namespace bpf
 
             /**
              * Returns the first element in this Array
-             * @throw bpf::IndexException if Array is not initialized
+             * @throw IndexException if Array is not initialized
              * @return mutable item
              */
             inline T &First()
@@ -503,7 +503,7 @@ namespace bpf
 
             /**
              * Returns the last element in this Array
-             * @throw bpf::IndexException if Array is not initialized
+             * @throw IndexException if Array is not initialized
              * @return mutable item
              */
             inline T &Last()
@@ -515,7 +515,7 @@ namespace bpf
 
             /**
              * Returns the first element in this array
-             * @throw bpf::IndexException if array is not initialized
+             * @throw IndexException if array is not initialized
              * @return immutable item
              */
             inline const T &First() const
@@ -527,7 +527,7 @@ namespace bpf
 
             /**
              * Returns the last element in this array
-             * @throw bpf::IndexException if array is not initialized
+             * @throw IndexException if array is not initialized
              * @return immutable item
              */
             inline const T &Last() const
