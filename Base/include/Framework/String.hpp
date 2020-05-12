@@ -143,6 +143,7 @@ namespace bpf
          * Low-level function to adds a single byte at the end of this string
          * This function ignores wether or not byte is part of a UTF8 code
          * StrLen will be incremented of 1 and UnicodeLen will be recalculated accordingly
+         * @param byte the byte to append
          */
         void AddSingleByte(const char byte);
 
@@ -497,7 +498,7 @@ namespace bpf
          * Builds a string using the following formating syntax : '[]' for no format and [<num chars padding>,<allignment (left / right)>,<characters to serve as padding>]
          * @tparam Args parameter types to format
          * @param format the format string
-         * @param Args the actual parameters to format
+         * @param ... the actual parameters to format
          * @return new formatted string
          */
         //TODO: Add support for center alignment
@@ -512,7 +513,7 @@ namespace bpf
          * Builds a string using the following formating syntax : '[]' for no format and [<num chars padding>,<allignment (left / right)>,<characters to serve as padding>]
          * @tparam Args parameter types to format
          * @param format the format string
-         * @param Args the actual parameters to format
+         * @param args the actual parameters to format
          * @return new formatted string
          */
         template <typename T, typename ...Args>
@@ -629,7 +630,6 @@ namespace bpf
         /**
          * Converts a signed integer 8 bits to it's string representation
          * @param i value to convert to a string
-         * @param prec precision for numeric types (0 means max precision)
          * @return string representation of val
          */
         inline static String ValueOf(int8 i, const fsize = 0)
@@ -640,7 +640,6 @@ namespace bpf
         /**
          * Converts an unsigned integer 8 bits to it's string representation
          * @param i value to convert to a string
-         * @param prec precision for numeric types (0 means max precision)
          * @return string representation of val
          */
         inline static String ValueOf(uint8 i, const fsize = 0)
@@ -651,7 +650,6 @@ namespace bpf
         /**
          * Converts a signed integer 16 bits to it's string representation
          * @param i value to convert to a string
-         * @param prec precision for numeric types (0 means max precision)
          * @return string representation of val
          */
         inline static String ValueOf(int16 i, const fsize = 0)
@@ -662,7 +660,6 @@ namespace bpf
         /**
          * Converts an unsigned integer 16 bits to it's string representation
          * @param i value to convert to a string
-         * @param prec precision for numeric types (0 means max precision)
          * @return string representation of val
          */
         inline static String ValueOf(uint16 i, const fsize = 0)
@@ -673,7 +670,6 @@ namespace bpf
         /**
          * Converts a low-level C string to a high level string
          * @param s value to convert to a string
-         * @param prec precision for numeric types (0 means max precision)
          * @return string representation of val
          */
         inline static String ValueOf(const char *s, const fsize = 0)
@@ -684,7 +680,6 @@ namespace bpf
         /**
          * Converts a bool to it's string representation
          * @param b value to convert to a string
-         * @param prec precision for numeric types (0 means max precision)
          * @return string representation of val
          */
         inline static String ValueOf(bool b, const fsize = 0)

@@ -257,28 +257,28 @@ namespace bpf
             /**
              * Inserts an item at an arbitary position in the list
              * @param pos insert position
-             * @param element element to insert
+             * @param elem element to insert
              */
             void Insert(const fsize pos, const T &elem);
 
             /**
              * Inserts an item at an arbitary position in the list
              * @param pos insert position
-             * @param element element to insert
+             * @param elem element to insert
              */
             void Insert(const fsize pos, T &&elem);
 
             /**
              * Inserts an item at an arbitary position in the list
              * @param pos insert position
-             * @param element element to insert
+             * @param elem element to insert
              */
             void Insert(const Iterator &pos, const T &elem);
 
             /**
              * Inserts an item at an arbitary position in the list
              * @param pos insert position
-             * @param element element to insert
+             * @param elem element to insert
              */
             void Insert(const Iterator &pos, T &&elem);
 
