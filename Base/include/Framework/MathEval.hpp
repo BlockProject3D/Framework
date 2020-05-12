@@ -47,7 +47,7 @@ namespace bpf
 		/**
 		 * Evaluates a math expression string
 		 * @param str the expression string
-		 * @throw EvalException when there is a math error
+		 * @throw bpf::EvalException when there is a math error
 		 * @return evaluated number
 		 */
 		T Evaluate(const String &str);
@@ -73,7 +73,7 @@ namespace bpf
 		 * @param str the string containing the number
 		 * @param startpos the start position in the string
 		 * @param endpos output position in str where the last character could be found
-		 * @throw IndexException when startpos is out of the string bounds
+		 * @throw bpf::IndexException when startpos is out of the string bounds
 		 * @return parsed number
 		 */
 		inline T EvalNbr(const String& str, const fsize startpos, fsize& endpos)

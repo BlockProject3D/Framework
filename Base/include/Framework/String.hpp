@@ -163,7 +163,7 @@ namespace bpf
         /**
          * Returns a byte at a given index
          * @param id the index of the byte to return
-         * @throw IndexException in case the index is out of bounds
+         * @throw bpf::IndexException in case the index is out of bounds
          * @return single byte at index id
          */
         inline char ByteAt(const fisize id) const
@@ -259,7 +259,7 @@ namespace bpf
         /**
          * Returns a character of this string at offset id
          * @param id the offset of the character to get
-         * @throw IndexException if the index is out of bounds
+         * @throw bpf::IndexException if the index is out of bounds
          * @return UTF32 code
          */
         inline fchar operator[](const fisize id) const

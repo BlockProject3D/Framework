@@ -150,7 +150,7 @@ namespace bpf
 
             /**
              * Returns the first element in this ArrayList
-             * @throw IndexException if none
+             * @throw bpf::IndexException if none
              * @return mutable item
              */
             inline T &First()
@@ -162,7 +162,7 @@ namespace bpf
 
             /**
              * Returns the last element in this ArrayList
-             * @throw IndexException if none
+             * @throw bpf::IndexException if none
              * @return mutable item
              */
             inline T &Last()
@@ -174,7 +174,7 @@ namespace bpf
 
             /**
              * Returns the first element in this ArrayList
-             * @throw IndexException if none
+             * @throw bpf::IndexException if none
              * @return immutable item
              */
             inline const T &First() const
@@ -186,7 +186,7 @@ namespace bpf
 
             /**
              * Returns the last element in this ArrayList
-             * @throw IndexException if none
+             * @throw bpf::IndexException if none
              * @return immutable item
              */
             inline const T &Last() const
@@ -199,7 +199,7 @@ namespace bpf
             /**
              * Returns an element non-const mode
              * @param id the index of the element, in case of out of bounds, throws
-             * @throw IndexException if id is out of bounds
+             * @throw bpf::IndexException if id is out of bounds
              * @return mutable item at index id
              */
             inline T &operator[](const fsize id)
@@ -212,7 +212,7 @@ namespace bpf
             /**
              * Returns an element const mode
              * @param id the index of the element, in case of out of bounds, throws
-             * @throw IndexException if id is out of bounds
+             * @throw bpf::IndexException if id is out of bounds
              * @return immutable item at index id
              */
             inline const T &operator[](const fsize id) const

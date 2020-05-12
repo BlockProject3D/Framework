@@ -51,7 +51,7 @@ namespace bpf
         /**
          * Parse a 32 bits int from a string
          * @param str the string to parse
-         * @throw ParseException when the string cannot be converted to a number
+         * @throw bpf::ParseException when the string cannot be converted to a number
          * @return 32 bits int parsed from string
          */
         static fint Parse(const String &str);
@@ -82,7 +82,7 @@ namespace bpf
         /**
          * Parse a 32 bits uint from a string
          * @param str the string to parse
-         * @throw ParseException when the string cannot be converted to a number
+         * @throw bpf::ParseException when the string cannot be converted to a number
          * @return 32 bits uint parsed from string
          */
         static uint32 Parse(const String &str);
@@ -113,7 +113,7 @@ namespace bpf
         /**
          * Parse an 8 bits int from a string
          * @param str the string to parse
-         * @throw ParseException when the string cannot be converted to a number
+         * @throw bpf::ParseException when the string cannot be converted to a number
          * @return 8 bits int parsed from string
          */
         static int8 Parse(const String &str);
@@ -144,7 +144,7 @@ namespace bpf
         /**
          * Parse an 8 bits uint from a string
          * @param str the string to parse
-         * @throw ParseException when the string cannot be converted to a number
+         * @throw bpf::ParseException when the string cannot be converted to a number
          * @return 8 bits uint parsed from string
          */
         static uint8 Parse(const String &str);
@@ -175,7 +175,7 @@ namespace bpf
         /**
          * Parse a 16 bits int from a string
          * @param str the string to parse
-         * @throw ParseException when the string cannot be converted to a number
+         * @throw bpf::ParseException when the string cannot be converted to a number
          * @return 16 bits int parsed from string
          */
         static int16 Parse(const String &str);
@@ -206,7 +206,7 @@ namespace bpf
         /**
          * Parse a 16 bits uint from a string
          * @param str the string to parse
-         * @throw ParseException when the string cannot be converted to a number
+         * @throw bpf::ParseException when the string cannot be converted to a number
          * @return 16 bits uint parsed from string
          */
         static uint16 Parse(const String &str);
@@ -237,7 +237,7 @@ namespace bpf
         /**
          * Parse a 64 bits int from a string
          * @param str the string to parse
-         * @throw ParseException when the string cannot be converted to a number
+         * @throw bpf::ParseException when the string cannot be converted to a number
          * @return 64 bits int parsed from string
          */
         static int64 Parse(const String &str);
@@ -268,7 +268,7 @@ namespace bpf
         /**
          * Parse a 64 bits uint from a string
          * @param str the string to parse
-         * @throw ParseException when the string cannot be converted to a number
+         * @throw bpf::ParseException when the string cannot be converted to a number
          * @return 64 bits uint parsed from string
          */
         static uint64 Parse(const String &str);
@@ -299,7 +299,7 @@ namespace bpf
         /**
          * Parse a 32 bits float from a string
          * @param str the string to parse
-         * @throw ParseException when the string cannot be converted to a number
+         * @throw bpf::ParseException when the string cannot be converted to a number
          * @return 32 bits float parsed from string
          */
         static float Parse(const String &str);
@@ -330,7 +330,7 @@ namespace bpf
         /**
          * Parse a 64 bits double from a string
          * @param str the string to parse
-         * @throw ParseException when the string cannot be converted to a number
+         * @throw bpf::ParseException when the string cannot be converted to a number
          * @return 64 bits double parsed from string
          */
         static double Parse(const String &str);
