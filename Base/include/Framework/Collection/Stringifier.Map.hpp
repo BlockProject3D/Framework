@@ -32,6 +32,13 @@
 
 namespace bpf
 {
+    /**
+     * Provides string representation to all Map types
+     * @tparam K the key type
+     * @tparam V the value type
+     * @tparam Greater the greater than operator
+     * @tparam Less the less than operator
+     */
     template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
     class String::Stringifier<collection::Map<K, V, Greater, Less>>
     {

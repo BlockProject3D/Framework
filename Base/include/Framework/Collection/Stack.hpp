@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -42,21 +42,39 @@ namespace bpf
             ArrayList<T> _data;
 
         public:
+            /**
+             * Constructs an empty Stack
+             * @param maxsize maximum size of stack (0 = infinity/unlimited)
+             */
             explicit Stack(const fsize maxsize = 0);
+
+            /**
+             * Constructs a Stack from an existing initializer list
+             * @param lst the initial list of items to push to this new stack
+             */
             Stack(const std::initializer_list<T> &lst);
 
+            /**
+             * Copy constructor
+             */
             inline Stack(const Stack<T> &other)
                 : _maxSize(other._maxSize)
                 , _data(other._data)
             {
             }
 
+            /**
+             * Move constructor
+             */
             inline Stack(Stack<T> &&other)
                 : _maxSize(other._maxSize)
                 , _data(std::move(other._data))
             {
             }
 
+            /**
+             * Copy assignment operator
+             */
             inline Stack<T> &operator=(const Stack<T> &other)
             {
                 _maxSize = other._maxSize;
@@ -64,6 +82,9 @@ namespace bpf
                 return (*this);
             }
 
+            /**
+             * Move assignment operator
+             */
             inline Stack<T> &operator=(Stack<T> &&other)
             {
                 _maxSize = other._maxSize;
@@ -71,25 +92,36 @@ namespace bpf
                 return (*this);
             }
 
+            /**
+             * Clears this stack
+             */
             void Clear();
 
             /**
              * Pushes an element on the stack
+             * @param element the element to push
+             * @throw StackOverflowException if the stack is full
              */
             void Push(const T &element);
 
             /**
              * Pushes an element on the stack
+             * @param element the element to push
+             * @throw StackOverflowException if the stack is full
              */
             void Push(T &&element);
 
             /**
              * Extracts the top of the stack
+             * @throw StackUnderflowException if the stack is empty
+             * @return the extracted/removed item
              */
             T Pop();
 
             /**
              * Returns the top of the stack
+             * @throw IndexException if the stack is empty
+             * @return mutable item
              */
             inline T &Top()
             {
@@ -98,12 +130,18 @@ namespace bpf
 
             /**
              * Returns the top of the stack
+             * @throw IndexException if the stack is empty
+             * @return immutable item
              */
             inline const T &Top() const
             {
                 return (_data.Last());
             }
 
+            /**
+             * Returns the number of items in this stack
+             * @return number of items as unsigned
+             */
             inline fsize Size() const
             {
                 return (_data.Size());
