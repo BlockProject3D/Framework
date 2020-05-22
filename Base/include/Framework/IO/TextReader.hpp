@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -28,13 +28,16 @@
 
 #pragma once
 #include "Framework/IO/ByteBuf.hpp"
-#include "Framework/IO/EStringEncoder.hpp"
+#include "Framework/IO/ECharacterEncoding.hpp"
 #include "Framework/IO/IDataInputStream.hpp"
 
 namespace bpf
 {
     namespace io
     {
+        /**
+         * Text deserializer
+         */
         class BPF_API TextReader final : public IDataInputStream
         {
         private:
@@ -42,14 +45,20 @@ namespace bpf
             ByteBuf _buf;
             bool _buffered;
             String _seps;
-            EStringEncoder _encoder;
+            ECharacterEncoding _encoder;
 
             bool ReadByte2(uint8 &out);
             bool ReadSubBuf(void *out, const fsize size);
             bool CheckIsSeparator(uint8 byte);
 
         public:
-            explicit inline TextReader(IInputStream &stream, const EStringEncoder encoder = EStringEncoder::UTF8, bool buffered = true)
+            /**
+             * Creates a TextReader
+             * @param stream the stream to read from
+             * @param encoder the string encoding to use
+             * @param buffered true to allow buffering, false otherwise
+             */
+            explicit inline TextReader(IInputStream &stream, const ECharacterEncoding encoder = ECharacterEncoding::UTF8, bool buffered = true)
                 : _stream(stream)
                 , _buf(READ_BUF_SIZE)
                 , _buffered(buffered)
@@ -68,12 +77,32 @@ namespace bpf
                 _seps = str;
             }
 
+            /**
+             * Reads reaw bytes from the stream, taking into account buffering
+             * @param buf buffer to receive the read bytes
+             * @param bufsize the size of the receiving buffer
+             * @return fsize number of bytes read
+             */
             fsize Read(void *buf, fsize bufsize);
 
+            /**
+             * Reads a line of text
+             * @param out the output text without the line separator character
+             * @return true if anything was read, false otherwise
+             */
             bool ReadLine(String &out);
 
+            /**
+             * Reads a single token
+             * @param out the output token text
+             * @return true if anything was read, false otherwise
+             */
             bool Read(String &out);
 
+            /**
+             * Reads the entire file as text
+             * @return String the file content
+             */
             String ReadAll();
 
             IDataInputStream &operator>>(uint8 &u);

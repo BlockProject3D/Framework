@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -33,10 +33,21 @@ namespace bpf
 {
     namespace io
     {
+        /**
+         * Represents an arbitary stream with read capacity
+         */
         class BPF_API IInputStream
         {
         public:
             virtual ~IInputStream() {}
+
+            /**
+             * Reads bytes from this stream
+             * WARNING: When possible the implementation should not buffer
+             * @param buf buffer to receive the read bytes
+             * @param bufsize the size of the receiving buffer
+             * @return number of bytes read
+             */
             virtual fsize Read(void *buf, fsize bufsize) = 0;
         };
     }

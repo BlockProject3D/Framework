@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -27,15 +27,18 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/IO/IDataInputStream.hpp"
 #include "Framework/IO/ByteBuf.hpp"
 #include "Framework/IO/EStringSerializer.hpp"
+#include "Framework/IO/IDataInputStream.hpp"
 #include "Framework/System/Platform.hpp"
 
 namespace bpf
 {
     namespace io
     {
+        /**
+         * Binary deserializer
+         */
         class BPF_API BinaryReader final : public IDataInputStream
         {
         private:
@@ -48,7 +51,14 @@ namespace bpf
             uint8 ReadByte();
             bool ReadByte2(uint8 &out);
             void ReadSubBuf(void *out, const fsize size);
+
         public:
+            /**
+             * Creates a BinaryReader
+             * @param stream the stream to read from
+             * @param order what byte order to use when reading data from this stream
+             * @param buffered true to allow buffering, false otherwise
+             */
             explicit inline BinaryReader(IInputStream &stream, system::EPlatformEndianess order = system::PLATFORM_LITTLEENDIAN, bool buffered = true)
                 : _stream(stream)
                 , _buf(READ_BUF_SIZE)
@@ -58,11 +68,21 @@ namespace bpf
             {
             }
 
+            /**
+             * Sets the string serializing function to use for reading strings
+             * @param ser the new string serializing function
+             */
             inline void SetStringSerializer(EStringSerializer ser)
             {
                 _serializer = ser;
             }
 
+            /**
+             * Reads reaw bytes from the stream, taking into account buffering
+             * @param buf buffer to receive the read bytes
+             * @param bufsize the size of the receiving buffer
+             * @return fsize number of bytes read
+             */
             fsize Read(void *buf, fsize bufsize);
 
             inline IDataInputStream &operator>>(uint8 &u)

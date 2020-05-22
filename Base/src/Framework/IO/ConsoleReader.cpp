@@ -42,10 +42,10 @@ ConsoleReader::ConsoleReader()
 #ifdef WINDOWS
     : _handle(GetStdHandle(STD_INPUT_HANDLE))
     , _file(GetFileType(reinterpret_cast<HANDLE>(_handle)) != FILE_TYPE_CHAR ? true : false)
-    , _reader(*this, _file ? EStringEncoder::UTF8 : EStringEncoder::UTF16)
+    , _reader(*this, _file ? ECharacterEncoding::UTF8 : ECharacterEncoding::UTF16)
 #else
     : _handle(0)
-    , _reader(*this, EStringEncoder::UTF8)
+    , _reader(*this, ECharacterEncoding::UTF8)
 #endif
 {
 }
@@ -57,7 +57,7 @@ fsize ConsoleReader::Read(void *buf, fsize bufsize)
     {
         DWORD out;
         if (!ReadFile(reinterpret_cast<HANDLE>(_handle), reinterpret_cast<LPVOID>(buf), (DWORD)bufsize, &out, NULL))
-            throw IOException(String("Console write error: ") + OSPrivate::ObtainLastErrorString());
+            throw IOException(String("Console read error: ") + OSPrivate::ObtainLastErrorString());
         return ((fsize)out);
     }
     else

@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -109,7 +109,8 @@ File File::GetAbsolutePath() const
 #ifdef WINDOWS
     WCHAR buf[PATH_MAX];
     std::memset(buf, 0, PATH_MAX);
-    GetFullPathNameW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), PATH_MAX, buf, Null);
+    if (GetFullPathNameW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), PATH_MAX, buf, Null) == 0)
+        throw IOException(String("Could not read absolute path: ") + OSPrivate::ObtainLastErrorString());
     str = String::FromUTF16(reinterpret_cast<const bpf::fchar16 *>(buf));
 #else
     char buf[PATH_MAX];
@@ -123,6 +124,8 @@ File File::GetAbsolutePath() const
 
 File File::GetParent() const
 {
+    if (FullPath.LastIndexOf('/') == -1)
+        return (File());
     return (File(FullPath.Sub(0, FullPath.LastIndexOf('/'))));
 }
 

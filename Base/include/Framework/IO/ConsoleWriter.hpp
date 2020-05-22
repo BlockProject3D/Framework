@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -35,6 +35,9 @@ namespace bpf
 {
     namespace io
     {
+        /**
+         * High-level console serializer
+         */
         class BPF_API ConsoleWriter : public IDataOutputStream
         {
         private:
@@ -45,6 +48,7 @@ namespace bpf
             int _handle;
 #endif
             TextWriter _writer;
+            EConsoleStream _stream;
 #ifdef WINDOWS
             void *GetHandle(const EConsoleStream type);
 #else
@@ -52,6 +56,10 @@ namespace bpf
 #endif
 
         public:
+            /**
+             * Constructs a ConsoleWrite
+             * @param type which stream to write to (ERROR/OUTPUT)
+             */
             explicit ConsoleWriter(const EConsoleStream type = EConsoleStream::OUTPUT);
 
             inline void Flush()
@@ -63,19 +71,34 @@ namespace bpf
              * This function performs a low level write to console
              * On Windows it expects bufsize to be a multiple of 2 and expects buf to contain UTF-16 code points
              * On Linux it expects buf to contain UTF-8 bytes (last UTF-8 code can be cut)
+             * @param buf buffer to write to console
+             * @param bufsize the size in bytes of the buffer
+             * @throw IOException in case of system error
+             * @return number of bytes written
              */
             fsize Write(const void *buf, fsize bufsize);
 
+            /**
+             * Writes a line of text
+             * @param str text to write
+             */
             inline void WriteLine(const String &str)
             {
                 _writer.WriteLine(str);
             }
 
+            /**
+             * Writes a string (without appending newline character)
+             * @param str string to write
+             */
             void Write(const String &str)
             {
                 _writer.Write(str);
             }
 
+            /**
+             * Writes a platform dependent newline character
+             */
             inline void NewLine()
             {
                 _writer.NewLine();
@@ -159,17 +182,26 @@ namespace bpf
                 return (*this);
             }
 
+            /**
+             * Sets the text style for the subsequent write operations
+             * @param style the new text style
+             * @return ConsoleWriter& 
+             */
             inline ConsoleWriter &operator<<(const Console::TextStyle &style)
             {
                 Flush();
-                Console::SetTextStyle(style);
+                Console::SetTextStyle(style, _stream);
                 return (*this);
             }
 
+            /**
+             * Resets all previous text styles
+             * @return ConsoleWriter& 
+             */
             inline ConsoleWriter &operator<<(const Console::ClearTextStyle &)
             {
                 Flush();
-                Console::ResetTextStyle();
+                Console::ResetTextStyle(_stream);
                 return (*this);
             }
         };

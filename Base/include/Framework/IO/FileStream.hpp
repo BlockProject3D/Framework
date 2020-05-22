@@ -55,9 +55,10 @@ namespace bpf
              * Creates a new FileStream from the given file and mode
              * @param file file to open
              * @param mode file mode ored (ex : FILE_MODE_READ | FILE_MODE_WRITE)
-             * @throws IOException
+             * @throw IOException in case of system error
              */
             FileStream(const File &file, fint mode);
+
             ~FileStream();
 
             /**
@@ -73,14 +74,14 @@ namespace bpf
             /**
              * Sets the file cursor position to an offset relative to the current position
              * @param offset relative offset
-             * @throws IOException
+             * @throw IOException in case of system error
              */
             void SeekOffset(int64 offset);
 
             /**
              * Sets the file cursor position to pos
              * @param pos new cursor position
-             * @throws IOException
+             * @throw IOException in case of system error
              */
             void Seek(uint64 pos);
 
@@ -90,12 +91,20 @@ namespace bpf
             void Close();
 
             /**
-             * @throws IOException
+             * Reads bytes from this stream, no buffering is performed
+             * @param buf buffer to receive the read bytes
+             * @param bufsize the size of the receiving buffer
+             * @throw IOException in case of system error
+             * @return number of bytes read
              */
             fsize Read(void *buf, fsize bufsize);
 
             /**
-             * @throws IOException
+             * Writes bytes to this stream, no buffering is performed
+             * @param buf the buffer with the bytes to write
+             * @param bufsize the size of the buffer
+             * @throw IOException in case of system error
+             * @return number of bytes written
              */
             fsize Write(const void *buf, fsize bufsize);
         };

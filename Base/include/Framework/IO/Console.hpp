@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -35,12 +35,22 @@ namespace bpf
 {
     namespace io
     {
+        /**
+         * Low-level console IO
+         */
         class BPF_API Console
         {
         public:
+            /**
+             * Structure used by ConsoleWriter to reset the text style
+             */
             struct ClearTextStyle
             {
             };
+
+            /**
+             * Class used to specify the text style
+             */
             class TextStyle
             {
             public:
@@ -54,9 +64,30 @@ namespace bpf
                 }
             };
 
+            /**
+             * Writes a line of text to the console
+             * @param str the text to write
+             * @param type which stream to write to (ERROR/OUTPUT)
+             */
             static void WriteLine(const String &str, const EConsoleStream type = EConsoleStream::OUTPUT) noexcept;
+
+            /**
+             * Sets the text style for the next write operations
+             * @param style the new text style
+             * @param type which stream to set the style (ERROR/OUTPUT)
+             */
             static void SetTextStyle(const TextStyle &style, const EConsoleStream type = EConsoleStream::OUTPUT) noexcept;
+
+            /**
+             * Resets the text style to the default for a given stream
+             * @param type which stream to set the style (ERROR/OUTPUT)
+             */
             static void ResetTextStyle(const EConsoleStream type = EConsoleStream::OUTPUT) noexcept;
+
+            /**
+             * Sets the console title
+             * @param title new title to apply to the console
+             */
             static void SetTitle(const String &title);
         };
     }

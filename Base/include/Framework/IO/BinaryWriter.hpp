@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -35,6 +35,9 @@ namespace bpf
 {
     namespace io
     {
+        /**
+         * Binary serializer
+         */
         class BPF_API BinaryWriter final : public IDataOutputStream
         {
         private:
@@ -48,6 +51,12 @@ namespace bpf
             void WriteSubBuf(void *in, const fsize size);
 
         public:
+            /**
+             * Creates a BinaryWriter
+             * @param stream the stream to write to
+             * @param order what byte order to use when writing data to this stream
+             * @param buffered true to allow buffering, false otherwise
+             */
             explicit inline BinaryWriter(IOutputStream &stream, system::EPlatformEndianess order = system::PLATFORM_LITTLEENDIAN, bool buffered = true)
                 : _stream(stream)
                 , _buf(WRITE_BUF_SIZE)
@@ -57,6 +66,10 @@ namespace bpf
             {
             }
 
+            /**
+             * Sets the string serializing function to use for reading strings
+             * @param ser the new string serializing function
+             */
             inline void SetStringSerializer(EStringSerializer ser)
             {
                 _serializer = ser;
@@ -66,6 +79,12 @@ namespace bpf
 
             void Flush();
 
+            /**
+             * Writes raw bytes to this stream, taking into account buffering
+             * @param buf the buffer with the bytes to write
+             * @param bufsize the size of the buffer
+             * @return number of bytes written
+             */
             fsize Write(const void *buf, fsize bufsize);
 
             inline IDataOutputStream &operator<<(uint8 u)

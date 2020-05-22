@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -72,10 +72,11 @@ ConsoleWriter::ConsoleWriter(const EConsoleStream type)
     : _handle(GetHandle(type))
 #ifdef WINDOWS
     , _file(GetFileType(reinterpret_cast<HANDLE>(_handle)) != FILE_TYPE_CHAR ? true : false)
-    , _writer(*this, _file ? EStringEncoder::UTF8 : EStringEncoder::UTF16)
+    , _writer(*this, _file ? ECharacterEncoding::UTF8 : ECharacterEncoding::UTF16)
 #else
-    , _writer(*this, EStringEncoder::UTF8)
+    , _writer(*this, ECharacterEncoding::UTF8)
 #endif
+    , _stream(type)
 {
 }
 

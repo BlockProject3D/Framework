@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -33,6 +33,9 @@ namespace bpf
 {
     namespace io
     {
+        /**
+         * High-level console deserializer
+         */
         class BPF_API ConsoleReader : public IDataInputStream
         {
         private:
@@ -45,8 +48,16 @@ namespace bpf
             TextReader _reader;
 
         public:
+            /**
+             * Constructs a ConsoleReader
+             */
             ConsoleReader();
 
+            /**
+             * Sets the possible characters to find that marks the end of a token.
+             * We assume the separators can only be ASCII characters
+             * @param str a string where each characters represents a character to seach for the end of a token
+             */
             inline void SetTokenSeparators(const char *str)
             {
                 _reader.SetTokenSeparators(str);
@@ -56,14 +67,28 @@ namespace bpf
              * This function performs a low level read from standard input
              * On Windows it fills buf with UTF-16 code points
              * On Linux it fills buf with UTF-8 bytes (last UTF-8 code might be cut)
+             * @param buf the buffer to receive the characters
+             * @param bufsize size in bytes of the buffer
+             * @throw IOException in case of system error
+             * @return fsize number of bytes read
              */
             fsize Read(void *buf, fsize bufsize);
 
+            /**
+             * Reads a line of text
+             * @param out the output text without the line separator character
+             * @return true if anything was read, false otherwise
+             */
             inline bool ReadLine(String &out)
             {
                 return (_reader.ReadLine(out));
             }
 
+            /**
+             * Reads a single token
+             * @param out the output token text
+             * @return true if anything was read, false otherwise
+             */
             inline bool Read(String &out)
             {
                 return (_reader.Read(out));

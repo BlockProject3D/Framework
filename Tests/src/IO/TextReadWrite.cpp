@@ -149,8 +149,8 @@ TEST(TextReadWrite, ReadWrite_Unbuffered)
     double d;
     bool b;
     bpf::io::ByteBuf buf(4096);
-    bpf::io::TextWriter w(buf, bpf::io::EStringEncoder::UTF8, false);
-    bpf::io::TextReader r(buf, bpf::io::EStringEncoder::UTF8, false);
+    bpf::io::TextWriter w(buf, bpf::io::ECharacterEncoding::UTF8, false);
+    bpf::io::TextReader r(buf, bpf::io::ECharacterEncoding::UTF8, false);
 
     w << 42 << " " << 42.42f << " " << 42.4242 << " " << true;
     w.Flush();
@@ -178,13 +178,13 @@ TEST(TextReadWrite, ReadWrite_UTF16_1)
 {
     {
         bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
-        bpf::io::TextWriter w(f, bpf::io::EStringEncoder::UTF16);
+        bpf::io::TextWriter w(f, bpf::io::ECharacterEncoding::UTF16);
 
         w << 42 << " " << 42.42f << " " << 42.4242 << " " << true;
     }
     {
         bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_READ);
-        bpf::io::TextReader r(f, bpf::io::EStringEncoder::UTF16);
+        bpf::io::TextReader r(f, bpf::io::ECharacterEncoding::UTF16);
         int i;
         float ff;
         double d;
@@ -207,14 +207,14 @@ TEST(TextReadWrite, ReadWrite_UTF16_2)
 {
     {
         bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
-        bpf::io::TextWriter w(f, bpf::io::EStringEncoder::UTF16);
+        bpf::io::TextWriter w(f, bpf::io::ECharacterEncoding::UTF16);
 
         w << bpf::Int64::MaxValue << " " << bpf::Int16::MaxValue << " " << bpf::Int8::MaxValue << " " << bpf::UInt64::MaxValue << " " << bpf::UInt::MaxValue << " " << bpf::UInt16::MaxValue << " " << bpf::UInt8::MaxValue << " " << false;
         w.Flush();
     }
     {
         bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_READ);
-        bpf::io::TextReader r(f, bpf::io::EStringEncoder::UTF16);
+        bpf::io::TextReader r(f, bpf::io::ECharacterEncoding::UTF16);
         bpf::int64 a;
         bpf::int16 b;
         bpf::int8 c;
@@ -251,8 +251,8 @@ TEST(TextReadWrite, ReadWrite_UTF16_3)
     double d;
     bool b;
     bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_READ | bpf::io::FILE_MODE_TRUNCATE);
-    bpf::io::TextWriter w(f, bpf::io::EStringEncoder::UTF16);
-    bpf::io::TextReader r(f, bpf::io::EStringEncoder::UTF16);
+    bpf::io::TextWriter w(f, bpf::io::ECharacterEncoding::UTF16);
+    bpf::io::TextReader r(f, bpf::io::ECharacterEncoding::UTF16);
 
     w << 42 << " " << 42.42f << " " << 42.4242 << " " << true;
     w.Flush();
@@ -274,13 +274,13 @@ TEST(TextReadWrite, ReadWrite_UTF32_1)
 {
     {
         bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
-        bpf::io::TextWriter w(f, bpf::io::EStringEncoder::UTF32);
+        bpf::io::TextWriter w(f, bpf::io::ECharacterEncoding::UTF32);
 
         w << 42 << " " << 42.42f << " " << 42.4242 << " " << true;
     }
     {
         bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_READ);
-        bpf::io::TextReader r(f, bpf::io::EStringEncoder::UTF32);
+        bpf::io::TextReader r(f, bpf::io::ECharacterEncoding::UTF32);
         int i;
         float ff;
         double d;
@@ -303,14 +303,14 @@ TEST(TextReadWrite, ReadWrite_UTF32_2)
 {
     {
         bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
-        bpf::io::TextWriter w(f, bpf::io::EStringEncoder::UTF32);
+        bpf::io::TextWriter w(f, bpf::io::ECharacterEncoding::UTF32);
 
         w << bpf::Int64::MaxValue << " " << bpf::Int16::MaxValue << " " << bpf::Int8::MaxValue << " " << bpf::UInt64::MaxValue << " " << bpf::UInt::MaxValue << " " << bpf::UInt16::MaxValue << " " << bpf::UInt8::MaxValue << " " << false;
         w.Flush();
     }
     {
         bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_READ);
-        bpf::io::TextReader r(f, bpf::io::EStringEncoder::UTF32);
+        bpf::io::TextReader r(f, bpf::io::ECharacterEncoding::UTF32);
         bpf::int64 a;
         bpf::int16 b;
         bpf::int8 c;
@@ -347,8 +347,8 @@ TEST(TextReadWrite, ReadWrite_UTF32_3)
     double d;
     bool b;
     bpf::io::FileStream f(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_READ | bpf::io::FILE_MODE_TRUNCATE);
-    bpf::io::TextWriter w(f, bpf::io::EStringEncoder::UTF32);
-    bpf::io::TextReader r(f, bpf::io::EStringEncoder::UTF32);
+    bpf::io::TextWriter w(f, bpf::io::ECharacterEncoding::UTF32);
+    bpf::io::TextReader r(f, bpf::io::ECharacterEncoding::UTF32);
 
     w << 42 << " " << 42.42f << " " << 42.4242 << " " << true;
     w.Flush();

@@ -87,7 +87,7 @@ bool TextReader::Read(String &out)
     {
         switch (_encoder)
         {
-        case EStringEncoder::UTF8:
+        case ECharacterEncoding::UTF8:
         {
             if (CheckIsSeparator(byte))
             {
@@ -98,7 +98,7 @@ bool TextReader::Read(String &out)
                 out.AddSingleByte((char)byte);
             break;
         }
-        case EStringEncoder::UTF16:
+        case ECharacterEncoding::UTF16:
         {
             uint8 bytes[4];
             if (!ReadByte2(bytes[1]))
@@ -116,7 +116,7 @@ bool TextReader::Read(String &out)
                 out += str;
             break;
         }
-        case EStringEncoder::UTF32:
+        case ECharacterEncoding::UTF32:
         {
             uint8 bytes[8];
             if (!ReadSubBuf(bytes + 1, 3))

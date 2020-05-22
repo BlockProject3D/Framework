@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -35,23 +35,101 @@ namespace bpf
 {
     namespace io
     {
+        /**
+         * Recommended buffer size for reading
+         */
         constexpr fsize READ_BUF_SIZE = 128;
 
+        /**
+         * Represents an arbitary stream with deserialization capability
+         */
         class BPF_API IDataInputStream : public IInputStream
         {
         public:
             virtual ~IDataInputStream() {}
+
+            /**
+             * Deserialize a number
+             * @param u deserialized uint8
+             * @return IDataInputStream&
+             */
             virtual IDataInputStream &operator>>(uint8 &u) = 0;
+
+            /**
+             * Deserialize a number
+             * @param u deserialized uint16
+             * @return IDataInputStream&
+             */
             virtual IDataInputStream &operator>>(uint16 &u) = 0;
+
+            /**
+             * Deserialize a number
+             * @param u deserialized uint21
+             * @return IDataInputStream&
+             */
             virtual IDataInputStream &operator>>(uint32 &u) = 0;
+
+            /**
+             * Deserialize a number
+             * @param u deserialized uint64
+             * @return IDataInputStream&
+             */
             virtual IDataInputStream &operator>>(uint64 &u) = 0;
+
+            /**
+             * Deserialize a number
+             * @param i deserialized int8
+             * @return IDataInputStream&
+             */
             virtual IDataInputStream &operator>>(int8 &i) = 0;
+
+            /**
+             * Deserialize a number
+             * @param i deserialized int16
+             * @return IDataInputStream&
+             */
             virtual IDataInputStream &operator>>(int16 &i) = 0;
+
+            /**
+             * Deserialize a number
+             * @param i deserialized int32
+             * @return IDataInputStream&
+             */
             virtual IDataInputStream &operator>>(fint &i) = 0;
+
+            /**
+             * Deserialize a number
+             * @param i deserialized int64
+             * @return IDataInputStream&
+             */
             virtual IDataInputStream &operator>>(int64 &i) = 0;
+
+            /**
+             * Deserialize a number
+             * @param f deserialized float
+             * @return IDataInputStream&
+             */
             virtual IDataInputStream &operator>>(float &f) = 0;
+
+            /**
+             * Deserialize a number
+             * @param d deserialized double
+             * @return IDataInputStream&
+             */
             virtual IDataInputStream &operator>>(double &d) = 0;
+
+            /**
+             * Deserialize a boolean
+             * @param b deserialized bool
+             * @return IDataInputStream&
+             */
             virtual IDataInputStream &operator>>(bool &b) = 0;
+
+            /**
+             * Deserialize a string
+             * @param str deserialized high-level string
+             * @return IDataInputStream&
+             */
             virtual IDataInputStream &operator>>(bpf::String &str) = 0;
         };
     }

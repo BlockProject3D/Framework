@@ -1,0 +1,10 @@
+BasedOnStyle: LLVM
+PointerAlignment: Right
+NamespaceIndentation: All
+BreakBeforeBraces: Allman
+IndentWidth: 4
+AccessModifierOffset: -4
+ColumnLimit: 0
+BreakConstructorInitializers: BeforeComma
+FixNamespaceComments: false
+IndentPPDirectives: BeforeHash

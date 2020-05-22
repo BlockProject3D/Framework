@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -33,9 +33,16 @@ namespace bpf
 {
     namespace io
     {
+        /**
+         * Exception thrown on failures with input/output utilities
+         */
         class BPF_API IOException : public RuntimeException
         {
         public:
+            /**
+             * Constructs an IOException
+             * @param msg the message string
+             */
             explicit inline IOException(const String &msg) noexcept
                 : RuntimeException("IO", msg)
             {

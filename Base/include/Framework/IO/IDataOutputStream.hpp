@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -35,25 +35,114 @@ namespace bpf
 {
     namespace io
     {
+        /**
+         * Recommended buffer size for writing
+         */
         constexpr fsize WRITE_BUF_SIZE = 128;
 
+        /**
+         * Represents an arbitary stream with serialization capability
+         */
         class BPF_API IDataOutputStream : public IOutputStream
         {
         public:
             virtual ~IDataOutputStream() {}
+
+            /**
+             * Serialize a number
+             * @param u uint8 to serialize
+             * @return IDataOutputStream&
+             */
             virtual IDataOutputStream &operator<<(uint8 u) = 0;
+
+            /**
+             * Serialize a number
+             * @param u uint16 to serialize
+             * @return IDataOutputStream&
+             */
             virtual IDataOutputStream &operator<<(uint16 u) = 0;
+
+            /**
+             * Serialize a number
+             * @param u uint32 to serialize
+             * @return IDataOutputStream&
+             */
             virtual IDataOutputStream &operator<<(uint32 u) = 0;
+
+            /**
+             * Serialize a number
+             * @param u uint64 to serialize
+             * @return IDataOutputStream&
+             */
             virtual IDataOutputStream &operator<<(uint64 u) = 0;
+
+            /**
+             * Serialize a number
+             * @param i int8 to serialize
+             * @return IDataOutputStream&
+             */
             virtual IDataOutputStream &operator<<(int8 i) = 0;
+
+            /**
+             * Serialize a number
+             * @param i int16 to serialize
+             * @return IDataOutputStream&
+             */
             virtual IDataOutputStream &operator<<(int16 i) = 0;
+
+            /**
+             * Serialize a number
+             * @param i int32 to serialize
+             * @return IDataOutputStream&
+             */
             virtual IDataOutputStream &operator<<(fint i) = 0;
+
+            /**
+             * Serialize a number
+             * @param i int64 to serialize
+             * @return IDataOutputStream&
+             */
             virtual IDataOutputStream &operator<<(int64 i) = 0;
+
+            /**
+             * Serialize a number
+             * @param f float to serialize
+             * @return IDataOutputStream&
+             */
             virtual IDataOutputStream &operator<<(float f) = 0;
+
+            /**
+             * Serialize a number
+             * @param d double to serialize
+             * @return IDataOutputStream&
+             */
             virtual IDataOutputStream &operator<<(double d) = 0;
+
+            /**
+             * Serialize a boolean
+             * @param b value to serialize
+             * @return IDataOutputStream&
+             */
             virtual IDataOutputStream &operator<<(bool b) = 0;
+
+            /**
+             * Serialize a string
+             * @param str high-level string to serialize
+             * @return IDataOutputStream&
+             */
             virtual IDataOutputStream &operator<<(const bpf::String &str) = 0;
+
+            /**
+             * Serialize a string
+             * @param str low-level null terminated c-like string to serialize
+             * @return IDataOutputStream&
+             */
             virtual IDataOutputStream &operator<<(const char *str) = 0;
+
+            /**
+             * Write all the content currently stored in buffer to the underlying stream
+             * Only usefull for buffered serializers
+             */
             virtual void Flush() = 0;
         };
     }

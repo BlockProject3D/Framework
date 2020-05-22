@@ -6,7 +6,7 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/../CMakes/Framework.cmake")
 set(SOURCES
     ./include/Framework/IO/File.hpp
     ./include/Framework/IO/EStringSerializer.hpp
-    ./include/Framework/IO/EStringEncoder.hpp
+    ./include/Framework/IO/ECharacterEncoding.hpp
     ./include/Framework/IO/FileStream.hpp
     ./include/Framework/IO/MemoryMapper.hpp
     ./include/Framework/IO/IOException.hpp

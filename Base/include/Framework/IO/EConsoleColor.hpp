@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -32,15 +32,49 @@ namespace bpf
 {
     namespace io
     {
+        /**
+         * Enumeration of all available text colors for console
+         */
         enum class EConsoleColor
         {
+            /**
+             * Black text color
+             */
             BLACK,
+
+            /**
+             * Red text color
+             */
             RED,
+
+            /**
+             * Green text color
+             */
             GREEN,
+
+            /**
+             * Yellow text color
+             */
             YELLOW,
+
+            /**
+             * Blue text color
+             */
             BLUE,
+
+            /**
+             * Magenta text color
+             */
             MAGENTA,
+
+            /**
+             * Cyan text color
+             */
             CYAN,
+
+            /**
+             * White text color
+             */
             WHITE
         };
     }

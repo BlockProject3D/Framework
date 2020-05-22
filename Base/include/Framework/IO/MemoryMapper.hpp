@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -53,9 +53,10 @@ namespace bpf
              * Creates a new MemoryMapper from the given file and mode
              * @param file file to open
              * @param mode file mode
-             * @throws IOException
+             * @throw IOException in case of system error
              */
             MemoryMapper(const File &file, fint mode);
+
             ~MemoryMapper();
 
             /**
@@ -71,18 +72,24 @@ namespace bpf
             /**
              * Map or re-map the file in virtual memory
              * @param pos position in bytes in the file to start mapping
-             * @param size the size in bytes to map,
-             *        if the size is greater than the size of the file,
-             *        this function throws
-             * @throws IOException
+             * @param size the size in bytes to map
+             * @throw IOException in case of system error or if the size is greater than the size of the mapped file
              */
             void Map(uint64 pos, fsize size);
 
+            /**
+             * Returns the mapped file
+             * @return immutable File reference
+             */
             const File &GetFile() const noexcept
             {
                 return (_file);
             }
 
+            /**
+             * Returns a pointer to the mapped file memory
+             * @return raw pointer to the mapped file memory
+             */
             inline void *operator*()
             {
                 return (_memoff);

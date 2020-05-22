@@ -59,16 +59,16 @@ void TextWriter::Write(const String &str)
 {
     switch (_encoder)
     {
-    case EStringEncoder::UTF8:
+    case ECharacterEncoding::UTF8:
         WriteSubBuf(*str, str.Size());
         break;
-    case EStringEncoder::UTF16:
+    case ECharacterEncoding::UTF16:
     {
         auto buf = str.ToUTF16();
         WriteSubBuf(*buf, sizeof(bpf::fchar16) * (buf.Size() - 1));
         break;
     }
-    case EStringEncoder::UTF32:
+    case ECharacterEncoding::UTF32:
     {
         auto buf = str.ToUTF32();
         WriteSubBuf(*buf, sizeof(bpf::fchar) * (buf.Size() - 1));
