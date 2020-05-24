@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -27,16 +27,19 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Memory/Utility.hpp"
-#include "Framework/Collection/Map.hpp"
 #include "Framework/Collection/List.hpp"
-#include "Framework/String.hpp"
+#include "Framework/Collection/Map.hpp"
 #include "Framework/Json/JsonException.hpp"
+#include "Framework/Memory/Utility.hpp"
+#include "Framework/String.hpp"
 
 namespace bpf
 {
     namespace json
     {
+        /**
+         * Represents an arbitary Json value
+         */
         class BPF_API Json
         {
         public:
@@ -50,6 +53,9 @@ namespace bpf
                 NONE
             };
 
+            /**
+             * Represents a Json Object
+             */
             class BPF_API Object
             {
             private:
@@ -62,77 +68,149 @@ namespace bpf
                 Object()
                 {
                 }
+
+                /**
+                 * Constructs an Object from an existing initializer list
+                 * @param entries the initial list of key-value pairs to add to this new Object
+                 */
                 explicit Object(const std::initializer_list<std::pair<String, Json>> &lst);
+
+                /**
+                 * Constructs an Object from an existing Map
+                 * @param map the map to construct from
+                 */
                 explicit inline Object(const collection::Map<String, Json> &map)
                     : _data(map)
                 {
                 }
+
+                /**
+                 * Constructs an Object from an existing Map
+                 * @param map the map to construct from
+                 */
                 explicit inline Object(collection::Map<String, Json> &&map)
                     : _data(std::move(map))
                 {
                 }
 
+                /**
+                 * Returns an element non-const mode
+                 * @param name the property name
+                 * @throw IndexException if key is not in this map
+                 * @return mutable item
+                 */
                 inline Json &operator[](const String &name)
                 {
                     return (_data[name]);
                 }
 
+                /**
+                 * Returns an element const mode
+                 * @param name the property name
+                 * @throw IndexException if key is not in this map
+                 * @return immutable item
+                 */
                 inline const Json &operator[](const String &name) const
                 {
                     return (_data[name]);
                 }
 
+                /**
+                 * Adds a new property in this object, replaces if the property already exists
+                 * @param key the property name
+                 * @param value the value to insert
+                 */
                 inline void Add(const String &name, const Json &json)
                 {
                     _data.Add(name, json);
                 }
 
+                /**
+                 * Adds a new property in this object, replaces if the property already exists
+                 * @param key the property name
+                 * @param value the value to insert
+                 */
                 inline void Add(const String &name, Json &&data)
                 {
                     _data.Add(name, std::move(data));
                 }
 
+                /**
+                 * Removes a property from this object
+                 * @param name the property name
+                 */
                 inline void RemoveAt(const String &name)
                 {
                     _data.RemoveAt(name);
                 }
 
+                /**
+                 * Returns the number of properties in this object
+                 * @return number of properties as unsigned
+                 */
                 inline fsize Size() const noexcept
                 {
                     return (_data.Size());
                 }
 
+                /**
+                 * Returns an iterator to the begining of the collection
+                 * @return new iterator
+                 */
                 inline Iterator begin() const
                 {
                     return (_data.begin());
                 }
 
+                /**
+                 * Returns an iterator to the end of the collection
+                 * @return new iterator
+                 */
                 inline Iterator end() const
                 {
                     return (_data.end());
                 }
 
+                /**
+                 * Returns a reverse iterator to the begining of the collection
+                 * @return new iterator
+                 */
                 inline ReverseIterator rbegin() const
                 {
                     return (_data.rbegin());
                 }
 
+                /**
+                 * Returns a reverse iterator to the end of the collection
+                 * @return new iterator
+                 */
                 inline ReverseIterator rend() const
                 {
                     return (_data.rend());
                 }
 
+                /**
+                 * Returns the underlying collection used to support the Json object
+                 * @return immutable reference to collection::Map
+                 */
                 inline const collection::Map<String, Json> &Properties() const noexcept
                 {
                     return (_data);
                 }
 
+                /**
+                 * Returns the underlying collection used to support the Json object
+                 * @return mutable reference to collection::Map
+                 */
                 inline collection::Map<String, Json> &Properties() noexcept
                 {
                     return (_data);
                 }
             };
 
+            /**
+             * Represents a Json Array
+             */
             class BPF_API Array
             {
             private:
@@ -145,11 +223,14 @@ namespace bpf
                 Array()
                 {
                 }
+
                 explicit Array(const std::initializer_list<Json> &vals);
+
                 explicit inline Array(const collection::List<Json> &vals)
                     : _data(vals)
                 {
                 }
+
                 explicit inline Array(collection::List<Json> &&vals)
                     : _data(std::move(vals))
                 {
