@@ -65,6 +65,9 @@ namespace bpf
                 using Iterator = collection::Map<String, Json>::Iterator;
                 using ReverseIterator = collection::Map<String, Json>::ReverseIterator;
 
+                /**
+                 * Constructs an empty object
+                 */
                 Object()
                 {
                 }
@@ -220,77 +223,144 @@ namespace bpf
                 using Iterator = collection::List<Json>::Iterator;
                 using ReverseIterator = collection::List<Json>::ReverseIterator;
 
+                /**
+                 * Constructs an empty array
+                 */
                 Array()
                 {
                 }
 
+                /**
+                 * Constructs an Array from an existing initializer list
+                 * @param entries the initial list of items to add to this new Array
+                 */
                 explicit Array(const std::initializer_list<Json> &vals);
 
+                /**
+                 * Constructs an Array from an existing List
+                 * @param vals the list to construct from
+                 */
                 explicit inline Array(const collection::List<Json> &vals)
                     : _data(vals)
                 {
                 }
 
+                /**
+                 * Constructs an Array from an existing List
+                 * @param vals the list to construct from
+                 */
                 explicit inline Array(collection::List<Json> &&vals)
                     : _data(std::move(vals))
                 {
                 }
 
+                /**
+                 * Adds a new item at the end of the array
+                 * @param json the new value to append
+                 */
                 inline void Add(const Json &json)
                 {
                     _data.Add(json);
                 }
 
+                /**
+                 * Adds a new item at the end of the array
+                 * @param json the new value to append
+                 */
                 inline void Add(Json &&data)
                 {
                     _data.Add(std::move(data));
                 }
 
-                inline void RemoveAt(const uint32 id)
+                /**
+                 * Remove an item at a given index
+                 * @param id the index of the item to remove
+                 */
+                inline void RemoveAt(const fsize id)
                 {
                     _data.RemoveAt(id);
                 }
 
-                inline Json &operator[](const uint32 id)
+                /**
+                 * Returns an element non-const mode
+                 * @param id the index of the element, in case of out of bounds, throws
+                 * @throw IndexException if id is out of bounds
+                 * @return mutable item at index id
+                 */
+                inline Json &operator[](const fsize id)
                 {
                     return (_data[id]);
                 }
 
-                inline const Json &operator[](const uint32 id) const
+                /**
+                 * Returns an element const mode
+                 * @param id the index of the element, in case of out of bounds, throws
+                 * @throw IndexException if id is out of bounds
+                 * @return immutable item at index id
+                 */
+                inline const Json &operator[](const fsize id) const
                 {
                     return (_data[id]);
                 }
 
+                /**
+                 * Returns the number of items in this list
+                 * @return number of items as unsigned
+                 */
                 inline fsize Size() const noexcept
                 {
                     return (_data.Size());
                 }
 
+                /**
+                 * Returns an iterator to the begining of the collection
+                 * @return new iterator
+                 */
                 inline Iterator begin() const
                 {
                     return (_data.begin());
                 }
 
+                /**
+                 * Returns an iterator to the end of the collection
+                 * @return new iterator
+                 */
                 inline Iterator end() const
                 {
                     return (_data.end());
                 }
 
+                /**
+                 * Returns a reverse iterator to the begining of the collection
+                 * @return new iterator
+                 */
                 inline ReverseIterator rbegin() const
                 {
                     return (_data.rbegin());
                 }
 
+                /**
+                 * Returns a reverse iterator to the end of the collection
+                 * @return new iterator
+                 */
                 inline ReverseIterator rend() const
                 {
                     return (_data.rend());
                 }
 
+                /**
+                 * Returns the underlying collection used to support the Json array
+                 * @return immutable reference to collection::List
+                 */
                 inline const collection::List<Json> &Items() const noexcept
                 {
                     return (_data);
                 }
 
+                /**
+                 * Returns the underlying collection used to support the Json array
+                 * @return mutable reference to collection::List
+                 */
                 inline collection::List<Json> &Items() noexcept
                 {
                     return (_data);
@@ -306,6 +376,9 @@ namespace bpf
             memory::UniquePtr<Array> _array;
 
         public:
+            /**
+             * Constructs a null Json value
+             */
             inline Json()
                 : _type(EType::NONE)
                 , _number(0.0)
@@ -313,6 +386,9 @@ namespace bpf
             {
             }
 
+            /**
+             * Copy constructor
+             */
             inline Json(const Json &other)
                 : _type(other._type)
                 , _number(other._number)
@@ -323,6 +399,9 @@ namespace bpf
             {
             }
 
+            /**
+             * Move constructor
+             */
             inline Json(Json &&other)
                 : _type(other._type)
                 , _number(other._number)
@@ -333,6 +412,10 @@ namespace bpf
             {
             }
 
+            /**
+             * Constructs a Json number value
+             * @param val the number to store
+             */
             inline Json(const double val)
                 : _type(EType::NUMBER)
                 , _number(val)
@@ -340,6 +423,10 @@ namespace bpf
             {
             }
 
+            /**
+             * Constructs a Json boolean value
+             * @param val the boolean to store
+             */
             inline Json(const bool val)
                 : _type(EType::BOOLEAN)
                 , _number(0.0)
@@ -347,6 +434,10 @@ namespace bpf
             {
             }
 
+            /**
+             * Constructs a Json string value
+             * @param val the string to store
+             */
             inline Json(const String &val)
                 : _type(EType::STRING)
                 , _number(0.0)
@@ -355,6 +446,10 @@ namespace bpf
             {
             }
 
+            /**
+             * Constructs a Json string value
+             * @param val the string to store
+             */
             inline Json(const char *val)
                 : _type(val != Null ? EType::STRING : EType::NONE)
                 , _number(0.0)
@@ -363,6 +458,10 @@ namespace bpf
             {
             }
 
+            /**
+             * Constructs a Json string value
+             * @param val the string to store
+             */
             inline Json(String &&val)
                 : _type(EType::STRING)
                 , _number(0.0)
@@ -371,6 +470,10 @@ namespace bpf
             {
             }
 
+            /**
+             * Constructs a Json object value
+             * @param val the object to store
+             */
             inline Json(const Object &val)
                 : _type(EType::OBJECT)
                 , _number(0.0)
@@ -380,6 +483,10 @@ namespace bpf
             {
             }
 
+            /**
+             * Constructs a Json object value
+             * @param val the object to store
+             */
             inline Json(Object &&val)
                 : _type(EType::OBJECT)
                 , _number(0.0)
@@ -389,6 +496,10 @@ namespace bpf
             {
             }
 
+            /**
+             * Constructs a Json array value
+             * @param val the array to store
+             */
             inline Json(const Array &arr)
                 : _type(EType::ARRAY)
                 , _number(0.0)
@@ -399,6 +510,10 @@ namespace bpf
             {
             }
 
+            /**
+             * Constructs a Json array value
+             * @param val the array to store
+             */
             inline Json(Array &&arr)
                 : _type(EType::ARRAY)
                 , _number(0.0)
@@ -409,10 +524,21 @@ namespace bpf
             {
             }
 
+            /**
+             * Copy assignment operator
+             */
             Json &operator=(const Json &other);
 
+            /**
+             * Move assignment operator
+             */
             Json &operator=(Json &&other);
 
+            /**
+             * Assigns this Json value to a number
+             * @param val new value
+             * @return Json& 
+             */
             inline Json &operator=(const double val)
             {
                 _type = EType::NUMBER;
@@ -420,6 +546,11 @@ namespace bpf
                 return (*this);
             }
 
+            /**
+             * Assigns this Json value to a boolean
+             * @param val new value
+             * @return Json& 
+             */
             inline Json &operator=(const bool val)
             {
                 _type = EType::BOOLEAN;
@@ -427,6 +558,11 @@ namespace bpf
                 return (*this);
             }
 
+            /**
+             * Assigns this Json value to a string
+             * @param val new value
+             * @return Json& 
+             */
             inline Json &operator=(const String &val)
             {
                 _type = EType::STRING;
@@ -434,6 +570,11 @@ namespace bpf
                 return (*this);
             }
 
+            /**
+             * Assigns this Json value to a string
+             * @param val new value
+             * @return Json& 
+             */
             inline Json &operator=(const char *val)
             {
                 _type = EType::STRING;
@@ -441,25 +582,44 @@ namespace bpf
                 return (*this);
             }
 
-            inline Json &operator=(const Object &val)
+            /**
+             * Assigns this Json value to an object
+             * @param val new value
+             * @return Json& 
+             */
+             inline Json &operator=(const Object &val)
             {
                 _type = EType::OBJECT;
                 _object = memory::MakeUnique<Object>(val);
                 return (*this);
             }
 
-            inline Json &operator=(const Array &val)
+            /**
+             * Assigns this Json value to an array
+             * @param val new value
+             * @return Json& 
+             */
+             inline Json &operator=(const Array &val)
             {
                 _type = EType::ARRAY;
                 _array = memory::MakeUnique<Array>(val);
                 return (*this);
             }
 
+            /**
+             * Returns the type of this Json value
+             * @return type enumeration
+             */
             inline EType Type() const noexcept
             {
                 return (_type);
             }
 
+            /**
+             * Compares a Json value with a number
+             * @param other value to compare with
+             * @return true if this is equal to other, false otherwise
+             */
             inline bool operator==(double other) const
             {
                 if (_type != EType::NUMBER)
@@ -467,6 +627,11 @@ namespace bpf
                 return (_number == other);
             }
 
+            /**
+             * Compares a Json value with a boolean
+             * @param other value to compare with
+             * @return true if this is equal to other, false otherwise
+             */
             inline bool operator==(bool other) const
             {
                 if (_type != EType::BOOLEAN)
@@ -474,6 +639,11 @@ namespace bpf
                 return (_bool == other);
             }
 
+            /**
+             * Compares a Json value with a string
+             * @param other value to compare with
+             * @return true if this is equal to other, false otherwise
+             */
             inline bool operator==(const String &other) const
             {
                 if (_type != EType::STRING)
@@ -481,6 +651,11 @@ namespace bpf
                 return (_string == other);
             }
 
+            /**
+             * Compares a Json value with a string
+             * @param other value to compare with
+             * @return true if this is equal to other, false otherwise
+             */
             inline bool operator==(const char *other) const
             {
                 if (_type == EType::NONE && other == Null)
@@ -490,6 +665,11 @@ namespace bpf
                 return (_string == String(other));
             }
 
+            /**
+             * Converts this value to a number
+             * @throw JsonException if the value type is not compatible
+             * @return double
+             */
             inline operator double() const
             {
                 if (_type != EType::NUMBER)
@@ -497,6 +677,11 @@ namespace bpf
                 return (_number);
             }
 
+            /**
+             * Converts this value to a boolean
+             * @throw JsonException if the value type is not compatible
+             * @return bool
+             */
             inline operator bool() const
             {
                 if (_type != EType::BOOLEAN)
@@ -504,6 +689,11 @@ namespace bpf
                 return (_bool);
             }
 
+            /**
+             * Converts this value to a string
+             * @throw JsonException if the value type is not compatible
+             * @return immutable high-level string reference
+             */
             inline operator const String &() const
             {
                 if (_type != EType::STRING)
@@ -511,6 +701,11 @@ namespace bpf
                 return (_string);
             }
 
+            /**
+             * Converts this value to a Json Array
+             * @throw JsonException if the value type is not compatible
+             * @return immutable Array reference
+             */
             inline operator const Array &() const
             {
                 if (_type != EType::ARRAY)
@@ -518,6 +713,11 @@ namespace bpf
                 return (*_array);
             }
 
+            /**
+             * Converts this value to a Json Object
+             * @throw JsonException if the value type is not compatible
+             * @return immutable Object reference
+             */
             inline operator const Object &() const
             {
                 if (_type != EType::OBJECT)
@@ -525,6 +725,11 @@ namespace bpf
                 return (*_object);
             }
 
+            /**
+             * Converts this value to a Json Array
+             * @throw JsonException if the value type is not compatible
+             * @return mutable Array reference
+             */
             inline operator Array &()
             {
                 if (_type != EType::ARRAY)
@@ -532,6 +737,11 @@ namespace bpf
                 return (*_array);
             }
 
+            /**
+             * Converts this value to a Json Object
+             * @throw JsonException if the value type is not compatible
+             * @return mutable Object reference
+             */
             inline operator Object &()
             {
                 if (_type != EType::OBJECT)
@@ -539,35 +749,60 @@ namespace bpf
                 return (*_object);
             }
 
-            inline double AsNumber() const
+            /**
+             * Converts this value to a number
+             * @throw JsonException if the value type is not compatible
+             * @return double
+             */
+            inline double ToNumber() const
             {
                 if (_type != EType::NUMBER)
                     throw JsonException("Incompatible value type");
                 return (_number);
             }
 
-            inline bool AsBool() const
+            /**
+             * Converts this value to a boolean
+             * @throw JsonException if the value type is not compatible
+             * @return bool
+             */
+            inline bool ToBoolean() const
             {
                 if (_type != EType::BOOLEAN)
                     throw JsonException("Incompatible value type");
                 return (_bool);
             }
 
-            inline const String &AsString() const
+            /**
+             * Converts this value to a string
+             * @throw JsonException if the value type is not compatible
+             * @return immutable high-level string reference
+             */
+            inline const String &ToString() const
             {
                 if (_type != EType::STRING)
                     throw JsonException("Incompatible value type");
                 return (_string);
             }
 
-            inline const Array &AsArray() const
+            /**
+             * Converts this value to a Json Array
+             * @throw JsonException if the value type is not compatible
+             * @return immutable Array reference
+             */
+            inline const Array &ToArray() const
             {
                 if (_type != EType::ARRAY)
                     throw JsonException("Incompatible value type");
                 return (*_array);
             }
 
-            inline const Object &AsObject() const
+            /**
+             * Converts this value to a Json Object
+             * @throw JsonException if the value type is not compatible
+             * @return immutable Object reference
+             */
+            inline const Object &ToObject() const
             {
                 if (_type != EType::OBJECT)
                     throw JsonException("Incompatible value type");

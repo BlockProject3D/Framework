@@ -34,6 +34,9 @@ namespace bpf
 {
     namespace json
     {
+        /**
+         * A simple Json Lexer
+         */
         class BPF_API Lexer
         {
         public:
@@ -71,10 +74,30 @@ namespace bpf
             fchar ProcessStandard(const String &str, int &pos);
 
         public:
+            /**
+             * Constructs a Lexer
+             * @param enableComments true if this Lexer should accept comments, false otherwise
+             * @param ignoreNulls true if null values should be omitted, false otherwise
+             */
             Lexer(const bool enableComments = false, const bool ignoreNulls = false);
+
+            /**
+             * Loads a string a processes it
+             * @param input the input string to load and process
+             * @throw JsonParseException when the lexer could not identify a token in the input string
+             */
             void LoadString(const String &input);
 
+            /**
+             * Extract all tokens from this Lexer, this function also purges the token cache and resets this Lexer's state
+             * @return All extracted tokens
+             */
             collection::Queue<Token> ReadTokens();
+
+            /**
+             * Check if this Lexer/Parser should ommit null values
+             * @return true if null values should be omitted, false otherwise
+             */
             inline bool IgnoreNulls() const noexcept
             {
                 return (_ignoreNulls);

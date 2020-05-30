@@ -33,6 +33,9 @@ namespace bpf
 {
     namespace json
     {
+        /**
+         * A simple Json serializer
+         */
         class BPF_API Writer
         {
         private:
@@ -47,6 +50,11 @@ namespace bpf
             String Indent();
 
         public:
+            /**
+             * Constructs a Json Writer
+             * @param pretty true to enable indenting, false otherwise
+             * @param ignoreNulls true to ommit any null value given, false otherwise
+             */
             inline Writer(const bool pretty = true, const bool ignoreNulls = false)
                 : _ignoreNulls(ignoreNulls)
                 , _pretty(pretty)
@@ -54,6 +62,11 @@ namespace bpf
             {
             }
 
+            /**
+             * Serializes the given Json value
+             * @param json the Json value to serialize
+             * @return the serialized Json value as a high-level string
+             */
             String Serialize(const Json &json);
         };
     }

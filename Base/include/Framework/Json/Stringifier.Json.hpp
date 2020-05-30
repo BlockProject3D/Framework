@@ -34,6 +34,9 @@
 
 namespace bpf
 {
+    /**
+     * Provides string representation to Json Array type
+     */
     template <>
     class String::Stringifier<json::Json::Array>
     {
@@ -44,6 +47,9 @@ namespace bpf
         }
     };
 
+    /**
+     * Provides string representation to Json Object type
+     */
     template <>
     class String::Stringifier<json::Json::Object>
     {
@@ -54,6 +60,9 @@ namespace bpf
         }
     };
 
+    /**
+     * Provides string representation to Json type
+     */
     template <>
     class String::Stringifier<json::Json>
     {
@@ -63,19 +72,19 @@ namespace bpf
             switch (val.Type())
             {
             case json::Json::EType::STRING:
-                return (val.AsString());
+                return (val.ToString());
             case json::Json::EType::NUMBER:
-                return (String::ValueOf(val.AsNumber(), prec));
+                return (String::ValueOf(val.ToNumber(), prec));
             case json::Json::EType::BOOLEAN:
-                return (String::ValueOf(val.AsBool(), prec));
+                return (String::ValueOf(val.ToBoolean(), prec));
             case json::Json::EType::NONE:
                 return ("null");
             case json::Json::EType::ARRAY:
-                return (String::ValueOf(val.AsArray(), prec));
+                return (String::ValueOf(val.ToArray(), prec));
             case json::Json::EType::OBJECT:
-                return (String::ValueOf(val.AsObject(), prec));
+                return (String::ValueOf(val.ToObject(), prec));
             }
-            throw json::JsonException("Unknown value type");
+            return ("Unknown value type");
         }
     };
 }
