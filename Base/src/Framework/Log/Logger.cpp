@@ -37,7 +37,7 @@ Logger::Logger(const String &name)
 {
 }
 
-void Logger::AddHandler(UniquePtr<ILogHandler> &&ptr)
+void Logger::AddHandler(UniquePtr<ILogAdapter> &&ptr)
 {
     _handlers.Add(std::move(ptr));
 }

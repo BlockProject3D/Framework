@@ -59,7 +59,7 @@ set(SOURCES
     ./include/Framework/Math/NonInvertibleMatrixException.hpp
     ./include/Framework/Math/Color.hpp
     ./include/Framework/Log/Logger.hpp
-    ./include/Framework/Log/ILogHandler.hpp
+    ./include/Framework/Log/ILogAdapter.hpp
     ./include/Framework/Log/ELogLevel.hpp
     ./include/Framework/Log/DefaultLogger.hpp
     ./include/Framework/Log/FileLogger.hpp

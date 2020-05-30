@@ -30,19 +30,26 @@
 #include "Framework/IO/FileStream.hpp"
 #include "Framework/IO/File.hpp"
 #include "Framework/IO/TextWriter.hpp"
-#include "Framework/Log/ILogHandler.hpp"
+#include "Framework/Log/ILogAdapter.hpp"
 
 namespace bpf
 {
     namespace log
     {
-        class BPF_API FileLogger final : public ILogHandler
+        /**
+         * A simple file log adapter
+         */
+        class BPF_API FileLogger final : public ILogAdapter
         {
         private:
             io::FileStream _stream;
             io::TextWriter _writer;
 
         public:
+            /**
+             * Constructs a FileLogger
+             * @param file the file to write logs to
+             */
             explicit FileLogger(const io::File &file);
 
             void LogMessage(ELogLevel level, const String &category, const String &msg);

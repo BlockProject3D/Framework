@@ -34,10 +34,20 @@ namespace bpf
 {
     namespace log
     {
-        class BPF_API ILogHandler
+        /**
+         * Interface for all log adapters
+         */
+        class BPF_API ILogAdapter
         {
         public:
-            virtual ~ILogHandler() {}
+            virtual ~ILogAdapter() {}
+
+            /**
+             * Logs the given message
+             * @param level the level of severity
+             * @param category the category name
+             * @param msg the message text
+             */
             virtual void LogMessage(ELogLevel level, const String &category, const String &msg) = 0;
         };
     }

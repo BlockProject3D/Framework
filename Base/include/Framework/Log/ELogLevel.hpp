@@ -32,11 +32,29 @@ namespace bpf
 {
     namespace log
     {
+        /**
+         * An enumeration of all available log serverity levels
+         */
         enum class ELogLevel
         {
+            /**
+             * Information messages
+             */
             INFO,
+
+            /**
+             * Warning messages
+             */
             WARNING,
+
+            /**
+             * Error messages
+             */
             ERROR,
+
+            /**
+             * Debug messages
+             */
             DEBUG
         };
     }

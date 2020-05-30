@@ -29,17 +29,20 @@
 #pragma once
 #include "Framework/Memory/Utility.hpp"
 #include "Framework/Collection/List.hpp"
-#include "Framework/Log/ILogHandler.hpp"
+#include "Framework/Log/ILogAdapter.hpp"
 #include "Framework/Log/ELogLevel.hpp"
 
 namespace bpf
 {
     namespace log
     {
+        /**
+         * Utility to handle message logging
+         */
         class BPF_API Logger
         {
         private:
-            collection::List<memory::UniquePtr<ILogHandler>> _handlers;
+            collection::List<memory::UniquePtr<ILogAdapter>> _handlers;
             String _name;
 
             template <typename ...Args>
@@ -49,31 +52,70 @@ namespace bpf
                     ptr->LogMessage(level, _name, String::Format(format, std::forward<Args &&>(args)...));
             }
         public:
+            /**
+             * Constructs a Logger
+             * @param name the category name
+             */
             explicit Logger(const String &name);
 
-            Logger(const Logger &other) = delete; //For some reasons MSVC is unable to identify this class cannot be coppied
-            Logger &operator=(const Logger &other) = delete; //For some reasons MSVC is unable to identify this class cannot be coppied
+            /**
+             * Explicit deleted copy constructor (MSVC Fix: for some reasons MSVC is unable to identify this class cannot be coppied)
+             */
+            Logger(const Logger &other) = delete;
 
-            void AddHandler(memory::UniquePtr<ILogHandler> &&ptr);
+            /**
+             * Explicit deleted copy assignment operator (MSVC Fix: for some reasons MSVC is unable to identify this class cannot be coppied)
+             */
+            Logger &operator=(const Logger &other) = delete;
 
+            /**
+             * Adds a new log adapter
+             * @param ptr UniquePtr to the new ILogAdapter
+             */
+            void AddHandler(memory::UniquePtr<ILogAdapter> &&ptr);
+
+            /**
+             * Logs an information message
+             * @tparam Args the type of arguments
+             * @param format the format (see bpf::String::Format for more information)
+             * @param args the argument values
+             */
             template <typename ...Args>
             inline void Info(const String &format, Args &&...args)
             {
                 LogMessage(ELogLevel::INFO, format, std::forward<Args &>(args)...);
             }
 
+            /**
+             * Logs a debug message
+             * @tparam Args the type of arguments
+             * @param format the format (see bpf::String::Format for more information)
+             * @param args the argument values
+             */
             template <typename ...Args>
             inline void Debug(const String &format, Args &&...args)
             {
                 LogMessage(ELogLevel::DEBUG, format, std::forward<Args &&>(args)...);
             }
 
+            /**
+             * Logs a warning message
+             * @tparam Args the type of arguments
+             * @param format the format (see bpf::String::Format for more information)
+             * @param args the argument values
+             */
             template <typename ...Args>
             inline void Warning(const String &format, Args &&...args)
             {
                 LogMessage(ELogLevel::WARNING, format, std::forward<Args &&>(args)...);
             }
 
+            /**
+             * Logs an error message
+             * @tparam Args the type of arguments
+             * @param format the format (see bpf::String::Format for more information)
+             * @param args the argument values
+             */
             template <typename ...Args>
             inline void Error(const String &format, Args &&...args)
             {
