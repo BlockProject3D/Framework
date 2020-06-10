@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -29,11 +29,11 @@
 #include "Framework/System/WindowsApp.hpp"
 #include "Framework/System/OSException.hpp"
 #include <Windows.h>
-#include <stdio.h>
 #include <fcntl.h>
+#include <fstream>
 #include <io.h>
 #include <iostream>
-#include <fstream>
+#include <stdio.h>
 #undef SetConsoleTitle
 
 using namespace bpf::system;
@@ -44,16 +44,16 @@ using namespace bpf;
 WindowsApp::WindowsApp(void *hinstance, bool hasConsole)
     : _hInstance(hinstance)
     , _hasConsole(hasConsole)
-    , _paths(File(), File(), File(), File())
+    , _env(SetupEnvironment())
+    , _fileName(SetupFileName())
+    , _props(SetupPaths())
+    , Application(_env, _fileName, _props)
 {
-    SetupEnvironment();
-    SetupArgs();
-    SetupFileName();
-    SetupPaths();
 }
 
-void WindowsApp::SetupEnvironment()
+HashMap<String, String> WindowsApp::SetupEnvironment()
 {
+    auto env = HashMap<String, String>();
     LPWCH ptr = GetEnvironmentStringsW();
     LPWCH wptr;
     fsize i = 0;
@@ -72,40 +72,42 @@ void WindowsApp::SetupEnvironment()
                 auto key = str.Sub(0, str.IndexOf('='));
                 auto value = str.Sub(str.IndexOf('=') + 1);
                 if (key != String::Empty && value != String::Empty)
-                    _env.Add(key, value);
+                    env.Add(key, value);
             }
         }
         ++i;
     }
     FreeEnvironmentStringsW(ptr);
+    return (env);
 }
 
-void WindowsApp::SetupArgs()
+Array<String> WindowsApp::GetArguments()
 {
     int nArgs;
     LPWSTR *args = CommandLineToArgvW(GetCommandLineW(), &nArgs);
+    auto astyudf = Array<String>(nArgs);
 
-    _args = Array<String>(nArgs);
     for (int i = 0; i != nArgs; ++i)
-        _args[i] = String::FromUTF16(reinterpret_cast<const fchar16 *>(args[i]));
+        astyudf[i] = String::FromUTF16(reinterpret_cast<const fchar16 *>(args[i]));
+    return (astyudf);
 }
 
-void WindowsApp::SetupFileName()
+String WindowsApp::SetupFileName()
 {
     WCHAR path[MAX_PATH];
     GetModuleFileNameW(reinterpret_cast<HMODULE>(_hInstance), path, MAX_PATH);
-    _fileName = String::FromUTF16(reinterpret_cast<const fchar16 *>(path));
+    return (String::FromUTF16(reinterpret_cast<const fchar16 *>(path)));
 }
 
-void WindowsApp::SetupPaths()
+Paths WindowsApp::SetupPaths()
 {
+    SetupEnvironment();
     File appRoot(_fileName.Sub(0, _fileName.LastIndexOf('\\')));
     File userHome(_env["USERPROFILE"]);
-    File cacheDir = appRoot + "Cache";
     WCHAR path[MAX_PATH];
     GetTempPathW(MAX_PATH, path);
     File tmpDir = File(String::FromUTF16(reinterpret_cast<const fchar16 *>(path)));
-    _paths = Paths(appRoot, userHome, tmpDir, cacheDir);
+    return (Paths(appRoot, userHome, tmpDir));
 }
 
 void WindowsApp::CreateConsole(const fint rows, const fint columns)
@@ -140,4 +142,20 @@ void WindowsApp::CreateConsole(const fint rows, const fint columns)
         throw OSException("Could not redirect console error output");
     std::ios::sync_with_stdio();
     _hasConsole = true;
+}
+
+File WindowsApp::GetWorkingDirectory() const
+{
+    WCHAR path[MAX_PATH];
+    if (GetCurrentDirectoryW(MAX_PATH, path) > 0)
+    {
+        return (File(String::FromUTF16(reinterpret_cast<const fchar16 *>(path))));
+    }
+    else
+        return (File("."));
+}
+
+void WindowsApp::SetWorkingDirectory(const File &file) const
+{
+    SetCurrentDirectoryW(reinterpret_cast<LPCWSTR>(*file.PlatformPath().ToUTF16()));
 }

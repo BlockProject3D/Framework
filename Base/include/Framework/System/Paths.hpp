@@ -35,40 +35,33 @@ namespace bpf
     {
         class BPF_API Paths
         {
-        private:
-            io::File _appRoot;
-            io::File _thirdParty;
-            io::File _userHome;
-            io::File _tmpDir;
-            io::File _cacheDir;
-
         public:
-            Paths(const io::File &root, const io::File &home, const io::File &tmp, const io::File &cache);
+            /**
+             * The application root folder
+             */
+            const io::File AppRoot;
 
-            inline const io::File &AppRoot() const noexcept
-            {
-                return (_appRoot);
-            }
+            /**
+             * System defined user's home directory
+             */
+            const io::File UserHome;
 
-            inline const io::File &UserHome() const noexcept
-            {
-                return (_userHome);
-            }
+            /**
+             * System defined temporary directory (usually cleared after system reboot)
+             */
+            const io::File TempDir;
 
-            inline const io::File &TempDir() const noexcept
-            {
-                return (_tmpDir);
-            }
+            /**
+             * The location for third party dependencies (will be used as fallback to search for non-system dependencies)
+             */
+            const io::File ThirdParty;
 
-            inline const io::File &CacheDir() const noexcept
-            {
-                return (_cacheDir);
-            }
+            /**
+             * Application's persistent cache directory
+             */
+            const io::File CacheDir;
 
-            inline const io::File &ThirdParty() const noexcept
-            {
-                return (_thirdParty);
-            }
+            Paths(const io::File &root, const io::File &home, const io::File &tmp);
         };
     }
 };

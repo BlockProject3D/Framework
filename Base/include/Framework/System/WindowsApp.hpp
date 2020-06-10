@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -27,51 +27,35 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/System/IApplication.hpp"
+#include "Framework/System/Application.hpp"
 
 namespace bpf
 {
     namespace system
     {
-        class BPF_API WindowsApp final : public IApplication
+        class BPF_API WindowsApp final : public Application
         {
         private:
             void *_hInstance;
             bool _hasConsole;
-            Paths _paths;
-            collection::HashMap<String, String> _env;
-            collection::Array<String> _args;
-            String _fileName;
 
-            void SetupEnvironment();
-            void SetupArgs();
-            void SetupFileName();
-            void SetupPaths();
+            collection::HashMap<String, String> _env;
+            String _fileName;
+            Paths _props;
+
+            collection::HashMap<String, String> SetupEnvironment();
+            String SetupFileName();
+            Paths SetupPaths();
 
         public:
             WindowsApp(void *hinstance, bool hasConsole);
 
             void CreateConsole(const fint rows, const fint columns);
 
-            const String &GetExeFileName() const noexcept
-            {
-                return (_fileName);
-            }
+            collection::Array<String> GetArguments();
 
-            const collection::HashMap<String, String> &GetEnvironment() const noexcept
-            {
-                return (_env);
-            }
-
-            const collection::Array<String> &GetArguments() const noexcept
-            {
-                return (_args);
-            }
-
-            const Paths &GetPaths() const noexcept
-            {
-                return (_paths);
-            }
+            io::File GetWorkingDirectory() const;
+            void SetWorkingDirectory(const io::File &file) const;
         };
     }
 };

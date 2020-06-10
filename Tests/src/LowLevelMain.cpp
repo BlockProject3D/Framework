@@ -43,7 +43,7 @@ int main(int argc, char **argv, char **envp)
     bpf::system::UnixApp app(argv, argc, envp);
 #endif
 
-    Main(app, app.GetArguments(), app.GetPaths());
+    Main(app, app.GetArguments());
     ::testing::InitGoogleTest(&argc, argv);
     int val = RUN_ALL_TESTS();
     return (val);

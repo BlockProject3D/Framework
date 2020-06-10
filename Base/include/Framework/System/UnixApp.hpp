@@ -27,44 +27,31 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/System/IApplication.hpp"
+#include "Framework/System/Application.hpp"
 
 namespace bpf
 {
     namespace system
     {
-        class BPF_API UnixApp final : public IApplication
+        class BPF_API UnixApp final : public Application
         {
         private:
-            Paths _paths;
-            collection::Array<String> _args;
-            String _fileName;
             collection::HashMap<String, String> _env;
+            String _fileName;
+            Paths _props;
+
+            Paths SetupPaths();
+            collection::HashMap<String, String> SetupEnvironment(char **env);
 
         public:
-            UnixApp(char **argv, int argc, char **env);
+            UnixApp(char **argv, char **env);
 
             inline void CreateConsole(const fint rows, const fint columns) {}
 
-            const String &GetExeFileName() const noexcept
-            {
-                return (_fileName);
-            }
+            collection::Array<String> GetArguments(char **argv, int argc);
 
-            const collection::HashMap<String, String> &GetEnvironment() const noexcept
-            {
-                return (_env);
-            }
-
-            const collection::Array<String> &GetArguments() const noexcept
-            {
-                return (_args);
-            }
-
-            const Paths &GetPaths() const noexcept
-            {
-                return (_paths);
-            }
+            io::File GetWorkingDirectory() const;
+            void SetWorkingDirectory(const io::File &file) const;
         };
     }
 };

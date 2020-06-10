@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -26,32 +26,64 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <iostream>
 #include "Framework/System/UnixApp.hpp"
+#include <limits.h>
+#include <unistd.h>
 
 using namespace bpf::system;
 using namespace bpf::collection;
 using namespace bpf::io;
 using namespace bpf;
 
-UnixApp::UnixApp(char **argv, int argc, char **env)
-    : _paths(File(), File(), File(), File())
-    , _args(argc)
+UnixApp::UnixApp(char **argv, char **env)
+    : _env(SetupEnvironment())
     , _fileName(String(argv[0]))
+    , _props(SetupPaths())
+    , Application(_env, _fileName, _props)
 {
-    for (int i = 0; i != argc; ++i)
-        _args[i] = String(argv[i]);
+}
+
+HashMap<String, String> UnixApp::SetupEnvironment(char **env)
+{
+    auto env = HashMap<String, String>();
+
     for (int i = 0; env[i]; ++i)
     {
         String str(env[i]);
         auto key = str.Sub(0, str.IndexOf('='));
         auto value = str.Sub(str.IndexOf('=') + 1);
         if (key != String::Empty && value != String::Empty)
-            _env.Add(key, value);
+            env.Add(key, value);
     }
+    return (env);
+}
+
+Array<String> UnixApp::GetArguments(char **argv, int argc)
+{
+    auto args = Array<String>(argc);
+    for (int i = 0; i != argc; ++i)
+        args[i] = String(argv[i]);
+    return (args);
+}
+
+Paths UnixApp::SetupPaths()
+{
     File home = File(_env["HOME"]);
     File root = File(_fileName.Sub(0, _fileName.LastIndexOf('/')));
-    File cache = root + "Cache";
     File tmp = _env.HasKey("TMPDIR") ? File(_env["TMPDIR"]) : File("/tmp");
-    _paths = Paths(root, home, tmp, cache);
+    return (Paths(root, home, tmp));
+}
+
+File UnixApp::GetWorkingDirectory() const
+{
+    char path[PATH_MAX];
+    if (getcwd(path, PATH_MAX) != Null)
+        return (File(path));
+    else
+        return (File("."));
+}
+
+void UnixApp::SetWorkingDirectory(const File &file) const
+{
+    chdir(*file.PlatformPath());
 }

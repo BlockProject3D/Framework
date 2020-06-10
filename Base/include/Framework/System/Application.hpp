@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -27,23 +27,62 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/Collection/HashMap.hpp"
 #include "Framework/String.hpp"
 #include "Framework/System/Paths.hpp"
-#include "Framework/Collection/HashMap.hpp"
 
 namespace bpf
 {
     namespace system
     {
-        class BPF_API IApplication
+        class BPF_API Application
         {
         public:
-            virtual ~IApplication() {}
+            /**
+             * The environment of the application
+             */
+            const collection::HashMap<String, String> &Environment;
+
+            /**
+             * The executable file name
+             */
+            const String &FileName;
+
+            /**
+             * Application's paths properties
+             */
+            const Paths &Props;
+
+            inline Application(collection::HashMap<String, String> &env, String &fileName, Paths &props)
+                : Environment(env)
+                , FileName(fileName)
+                , Props(props)
+            {
+            }
+
+            /**
+             * Virtual destructor
+             */
+            virtual ~Application() {}
+
+            /**
+             * Allocate a console for this application if it does not already have a console
+             * @param rows number of rows in the console window
+             * @param columns number of columns in the console window
+             */
             virtual void CreateConsole(const fint rows = 32, const fint columns = 80) = 0; //Only usefull when the system do not create a console
-            virtual const String &GetExeFileName() const noexcept = 0;
-            virtual const collection::HashMap<String, String> &GetEnvironment() const noexcept = 0;
-            virtual const collection::Array<String> &GetArguments() const noexcept = 0;
-            virtual const Paths &GetPaths() const noexcept = 0;
+
+            /**
+             * Gets the current working directory
+             * @return new io::File containing current working directory as given by system
+             */
+            virtual io::File GetWorkingDirectory() const = 0;
+
+            /**
+             * Sets the current working directory
+             * @param file the new current working directory (relative paths are supported)
+             */
+            virtual void SetWorkingDirectory(const io::File &file) const = 0;
         };
     }
 };

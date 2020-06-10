@@ -32,11 +32,11 @@ using namespace bpf::system;
 using namespace bpf::io;
 using namespace bpf;
 
-Paths::Paths(const File &root, const File &home, const File &tmp, const File &cache)
-    : _appRoot(root)
-    , _thirdParty(root + "ThirdParty")
-    , _userHome(home)
-    , _tmpDir(tmp)
-    , _cacheDir(cache)
+Paths::Paths(const File &root, const File &home, const File &tmp)
+    : AppRoot(root)
+    , ThirdParty(root + "ThirdParty")
+    , UserHome(home)
+    , TempDir(tmp)
+    , CacheDir(root + "Cache")
 {
 }
