@@ -53,6 +53,12 @@ namespace bpf
              */
             const Paths &Props;
 
+            /**
+             * Constructs an Application container
+             * @param env the environment map reference
+             * @param fileName the application's file name reference
+             * @param props the application's paths properties reference
+             */
             inline Application(collection::HashMap<String, String> &env, String &fileName, Paths &props)
                 : Environment(env)
                 , FileName(fileName)
