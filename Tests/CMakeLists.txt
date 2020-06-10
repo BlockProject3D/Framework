@@ -64,6 +64,7 @@ set(SOURCES
     src/Json/Json.cpp
     src/Json/JsonWriter.cpp
     src/BaseConvert.cpp
+    src/Compression.cpp
     src/Tuple.cpp
     src/Name.cpp
     src/String.cpp
@@ -74,4 +75,10 @@ set(SOURCES
 )
 
 bp_setup_program(${PROJECT_NAME} include)
+
+#This warning is an aberation of false-positives
+#Seriously Clang team: go learn how to code!!!
+bp_check_and_flag(${PROJECT_NAME} -Wno-self-assign-overloaded)
+
+bp_add_module(${PROJECT_NAME} BPF.Compression)
 target_link_libraries(${PROJECT_NAME} PRIVATE gtest_main)

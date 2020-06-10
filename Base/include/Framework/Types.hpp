@@ -1,16 +1,16 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -33,15 +33,15 @@
 // Check windows
 #ifdef WINDOWS
     #if _WIN64
-        #define X86_64
+        #define PLATFORM_64
     #else
-        #define X86
+        #define PLATFORM_32
     #endif
 #else
-    #if __x86_64__ || __ppc64__
-        #define X86_64
+    #if __x86_64__ || __ppc64__ || __aarch64__
+        #define PLATFORM_64
     #else
-        #define X86
+        #define PLATFORM_32
     #endif
 #endif
 
@@ -64,7 +64,7 @@ namespace bpf
      */
     using fint = int32;
 
-#ifdef X86_64
+#ifdef PLATFORM_64
     using uintptr = uint64;
     using intptr = int64;
 #else

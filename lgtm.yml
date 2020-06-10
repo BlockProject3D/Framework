@@ -1,0 +1,9 @@
+extraction:
+  cpp:
+    prepare:
+      packages: "python-pip"
+    after_prepare:
+    - "export PATH=$PATH:/opt/work/.local/bin"
+    - "pip3 install --local cmake conan"
+    - "pip3 install --local cmake conan --upgrade"
+    - "conan remote update conan-center https://conan.bintray.com False"
