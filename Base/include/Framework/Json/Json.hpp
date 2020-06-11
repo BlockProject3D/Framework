@@ -52,167 +52,145 @@ namespace bpf
 
             class BPF_API Object
             {
-            private:
-                collection::Map<String, Json> _data;
-
             public:
                 using Iterator = collection::Map<String, Json>::Iterator;
                 using ReverseIterator = collection::Map<String, Json>::ReverseIterator;
+
+                collection::Map<String, Json> Properties;
 
                 Object()
                 {
                 }
                 explicit Object(const std::initializer_list<std::pair<String, Json>> &lst);
                 explicit inline Object(const collection::Map<String, Json> &map)
-                    : _data(map)
+                    : Properties(map)
                 {
                 }
                 explicit inline Object(collection::Map<String, Json> &&map)
-                    : _data(std::move(map))
+                    : Properties(std::move(map))
                 {
                 }
 
                 inline Json &operator[](const String &name)
                 {
-                    return (_data[name]);
+                    return (Properties[name]);
                 }
 
                 inline const Json &operator[](const String &name) const
                 {
-                    return (_data[name]);
+                    return (Properties[name]);
                 }
 
                 inline void Add(const String &name, const Json &json)
                 {
-                    _data.Add(name, json);
+                    Properties.Add(name, json);
                 }
 
                 inline void Add(const String &name, Json &&data)
                 {
-                    _data.Add(name, std::move(data));
+                    Properties.Add(name, std::move(data));
                 }
 
                 inline void RemoveAt(const String &name)
                 {
-                    _data.RemoveAt(name);
+                    Properties.RemoveAt(name);
                 }
 
                 inline fsize Size() const noexcept
                 {
-                    return (_data.Size());
+                    return (Properties.Size());
                 }
 
                 inline Iterator begin() const
                 {
-                    return (_data.begin());
+                    return (Properties.begin());
                 }
 
                 inline Iterator end() const
                 {
-                    return (_data.end());
+                    return (Properties.end());
                 }
 
                 inline ReverseIterator rbegin() const
                 {
-                    return (_data.rbegin());
+                    return (Properties.rbegin());
                 }
 
                 inline ReverseIterator rend() const
                 {
-                    return (_data.rend());
-                }
-
-                inline const collection::Map<String, Json> &Properties() const noexcept
-                {
-                    return (_data);
-                }
-
-                inline collection::Map<String, Json> &Properties() noexcept
-                {
-                    return (_data);
+                    return (Properties.rend());
                 }
             };
 
             class BPF_API Array
             {
-            private:
-                collection::List<Json> _data;
-
             public:
                 using Iterator = collection::List<Json>::Iterator;
                 using ReverseIterator = collection::List<Json>::ReverseIterator;
+
+                collection::List<Json> Items;
 
                 Array()
                 {
                 }
                 explicit Array(const std::initializer_list<Json> &vals);
                 explicit inline Array(const collection::List<Json> &vals)
-                    : _data(vals)
+                    : Items(vals)
                 {
                 }
                 explicit inline Array(collection::List<Json> &&vals)
-                    : _data(std::move(vals))
+                    : Items(std::move(vals))
                 {
                 }
 
                 inline void Add(const Json &json)
                 {
-                    _data.Add(json);
+                    Items.Add(json);
                 }
 
                 inline void Add(Json &&data)
                 {
-                    _data.Add(std::move(data));
+                    Items.Add(std::move(data));
                 }
 
                 inline void RemoveAt(const uint32 id)
                 {
-                    _data.RemoveAt(id);
+                    Items.RemoveAt(id);
                 }
 
                 inline Json &operator[](const uint32 id)
                 {
-                    return (_data[id]);
+                    return (Items[id]);
                 }
 
                 inline const Json &operator[](const uint32 id) const
                 {
-                    return (_data[id]);
+                    return (Items[id]);
                 }
 
                 inline fsize Size() const noexcept
                 {
-                    return (_data.Size());
+                    return (Items.Size());
                 }
 
                 inline Iterator begin() const
                 {
-                    return (_data.begin());
+                    return (Items.begin());
                 }
 
                 inline Iterator end() const
                 {
-                    return (_data.end());
+                    return (Items.end());
                 }
 
                 inline ReverseIterator rbegin() const
                 {
-                    return (_data.rbegin());
+                    return (Items.rbegin());
                 }
 
                 inline ReverseIterator rend() const
                 {
-                    return (_data.rend());
-                }
-
-                inline const collection::List<Json> &Items() const noexcept
-                {
-                    return (_data);
-                }
-
-                inline collection::List<Json> &Items() noexcept
-                {
-                    return (_data);
+                    return (Items.rend());
                 }
             };
 
