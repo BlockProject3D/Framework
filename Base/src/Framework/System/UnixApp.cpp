@@ -36,7 +36,7 @@ using namespace bpf::io;
 using namespace bpf;
 
 UnixApp::UnixApp(char **argv, char **env)
-    : _env(SetupEnvironment())
+    : _env(SetupEnvironment(env))
     , _fileName(String(argv[0]))
     , _props(SetupPaths())
     , Application(_env, _fileName, _props)
@@ -45,7 +45,7 @@ UnixApp::UnixApp(char **argv, char **env)
 
 HashMap<String, String> UnixApp::SetupEnvironment(char **env)
 {
-    auto env = HashMap<String, String>();
+    auto menv = HashMap<String, String>();
 
     for (int i = 0; env[i]; ++i)
     {
@@ -53,9 +53,9 @@ HashMap<String, String> UnixApp::SetupEnvironment(char **env)
         auto key = str.Sub(0, str.IndexOf('='));
         auto value = str.Sub(str.IndexOf('=') + 1);
         if (key != String::Empty && value != String::Empty)
-            env.Add(key, value);
+            menv.Add(key, value);
     }
-    return (env);
+    return (menv);
 }
 
 Array<String> UnixApp::GetArguments(char **argv, int argc)

@@ -40,10 +40,10 @@ int main(int argc, char **argv, char **envp)
 #ifdef WINDOWS
     bpf::system::WindowsApp app(Null, true);
 #else
-    bpf::system::UnixApp app(argv, argc, envp);
+    bpf::system::UnixApp app(argv, envp);
 #endif
 
-    Main(app, app.GetArguments());
+    Main(app, app.GetArguments(argv, argc));
     ::testing::InitGoogleTest(&argc, argv);
     int val = RUN_ALL_TESTS();
     return (val);

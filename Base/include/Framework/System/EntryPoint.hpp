@@ -59,6 +59,6 @@
     int main(int argc, char **argv, char **env) \
     { \
         bpf::system::UnixApp app(argv, env); \
-        return (Main(app, app.GetArguments(argc, argv))); \
+        return (Main(app, app.GetArguments(argv, argc))); \
     }
 #endif
