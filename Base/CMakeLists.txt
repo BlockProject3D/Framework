@@ -97,6 +97,7 @@ set(SOURCES
     ./include/Framework/System/Application.hpp
     ./include/Framework/System/ScopeLock.hpp
     ./include/Framework/System/Paths.hpp
+    ./include/Framework/System/Process.hpp
     ./include/Framework/System/Stringifier.DateTime.hpp
     ./include/Framework/System/EntryPoint.hpp
     ./include/Framework/Collection/Iterator.hpp
@@ -179,6 +180,7 @@ set(SOURCES
     ./src/Framework/System/Platform.cpp
     ./src/Framework/System/Module.cpp
     ./src/Framework/System/Paths.cpp
+    ./src/Framework/System/Process.cpp
     ./src/Framework/System/DateTime.cpp
     ./src/Framework/System/TimeSpan.cpp
     ./src/Framework/System/Thread.cpp

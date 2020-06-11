@@ -1,0 +1,124 @@
+// Copyright (c) 2020, BlockProject 3D
+//
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without modification,
+// are permitted provided that the following conditions are met:
+//
+//     * Redistributions of source code must retain the above copyright notice,
+//       this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright notice,
+//       this list of conditions and the following disclaimer in the documentation
+//       and/or other materials provided with the distribution.
+//     * Neither the name of BlockProject 3D nor the names of its contributors
+//       may be used to endorse or promote products derived from this software
+//       without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+// CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+// EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+// PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+// LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+// NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+#pragma once
+#include "Framework/String.hpp"
+#include "Framework/System/Application.hpp"
+
+namespace bpf
+{
+    namespace system
+    {
+        class BPF_API Process
+        {
+        public:
+            class BPF_API Builder
+            {
+            public:
+                /**
+                 * Constructs a Process::Builder
+                 */
+                Builder();
+
+                /**
+                 * Constructs a Process::Builder
+                 * @param app instance of calling Application to copy defaults from
+                 */
+                Builder(const Application &app);
+
+                /**
+                 * Sets the application to run as a separate process
+                 * @param appName the application path or name string (this overload does automatically check the PATH using this Builder's environment)
+                 * @throw io::IOException when the application could not be found
+                 */
+                Builder &SetApplication(const String &name);
+
+                /**
+                 * Sets the process working directory
+                 * @param dir the new directory
+                 * @throw io::IOException when dir does not exist or is not a directory
+                 * @return Builder reference
+                 */
+                Builder &SetWorkingDirectory(const io::File &dir);
+
+                /**
+                 * Sets the arguments
+                 * @param args arguments to pass to the new process
+                 * @return Builder reference
+                 */
+                Builder &SetArguments(const collection::Array<String> &args);
+
+                /**
+                 * Sets the arguments
+                 * @param args arguments to pass to the new process
+                 * @return Builder reference
+                 */
+                Builder &SetArguments(collection::Array<String> &&args);
+
+                /**
+                 * Sets the environment
+                 * @param env the new environment
+                 * @return Builder reference
+                 */
+                Builder &SetEnvironment(const collection::HashMap<String, String> &env);
+
+                /**
+                 * Sets the environment
+                 * @param env the new environment
+                 * @return Builder reference
+                 */
+                Builder &SetEnvironment(collection::HashMap<String, String> &&env);
+
+                /**
+                 * Enables standard input redirect
+                 * @return Builder reference
+                 */
+                Builder &RedirectInput();
+
+                /**
+                 * Enables standard output redirect
+                 * @return Builder reference
+                 */
+                Builder &RedirectOutput();
+
+                /**
+                 * Enables standard error redirect
+                 * @return Builder reference
+                 */
+                Builder &RedirectError();
+
+                /**
+                 * Create a process from the information defined in this builder
+                 * @throw OSException in case the process could not be created
+                 * @return the new process
+                 */
+                Process Build();
+            };
+        };
+    }
+}
