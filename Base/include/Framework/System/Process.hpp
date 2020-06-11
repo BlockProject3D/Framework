@@ -34,11 +34,25 @@ namespace bpf
 {
     namespace system
     {
+#ifdef WINDOWS
+        constexpr char *PROCESS_DEFAULT_PATH = "%SystemRoot%/system32;%SystemRoot%;%SystemRoot%/System32/Wbem";
+#else
+        constexpr char *PROCESS_DEFAULT_PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin";
+#endif
         class BPF_API Process
         {
         public:
             class BPF_API Builder
             {
+            private:
+                bool _redirectStdIn;
+                bool _redirectStdOut;
+                bool _redirectStdErr;
+                io::File _workDir;
+                collection::HashMap<String, String> _envp;
+                String _appExe;
+                collection::Array<String> _argv;
+
             public:
                 /**
                  * Constructs a Process::Builder
@@ -55,6 +69,7 @@ namespace bpf
                  * Sets the application to run as a separate process
                  * @param appName the application path or name string (this overload does automatically check the PATH using this Builder's environment)
                  * @throw io::IOException when the application could not be found
+                 * @return Builder reference
                  */
                 Builder &SetApplication(const String &name);
 
@@ -71,46 +86,74 @@ namespace bpf
                  * @param args arguments to pass to the new process
                  * @return Builder reference
                  */
-                Builder &SetArguments(const collection::Array<String> &args);
+                inline Builder &SetArguments(const collection::Array<String> &args)
+                {
+                    _argv = args;
+                    return (*this);
+                }
 
                 /**
                  * Sets the arguments
                  * @param args arguments to pass to the new process
                  * @return Builder reference
                  */
-                Builder &SetArguments(collection::Array<String> &&args);
+                inline Builder &SetArguments(collection::Array<String> &&args)
+                {
+                    _argv = std::move(args);
+                    return (*this);
+                }
 
                 /**
                  * Sets the environment
                  * @param env the new environment
                  * @return Builder reference
                  */
-                Builder &SetEnvironment(const collection::HashMap<String, String> &env);
+                inline Builder &SetEnvironment(const collection::HashMap<String, String> &env)
+                {
+                    _envp = env;
+                    return (*this);
+                }
 
                 /**
                  * Sets the environment
                  * @param env the new environment
                  * @return Builder reference
                  */
-                Builder &SetEnvironment(collection::HashMap<String, String> &&env);
+                inline Builder &SetEnvironment(collection::HashMap<String, String> &&env)
+                {
+                    _envp = std::move(env);
+                    return (*this);
+                }
 
                 /**
                  * Enables standard input redirect
                  * @return Builder reference
                  */
-                Builder &RedirectInput();
+                inline Builder &RedirectInput()
+                {
+                    _redirectStdIn = true;
+                    return (*this);
+                }
 
                 /**
                  * Enables standard output redirect
                  * @return Builder reference
                  */
-                Builder &RedirectOutput();
+                inline Builder &RedirectOutput()
+                {
+                    _redirectStdOut = true;
+                    return (*this);
+                }
 
                 /**
                  * Enables standard error redirect
                  * @return Builder reference
                  */
-                Builder &RedirectError();
+                inline Builder &RedirectError()
+                {
+                    _redirectStdErr = true;
+                    return (*this);
+                }
 
                 /**
                  * Create a process from the information defined in this builder
