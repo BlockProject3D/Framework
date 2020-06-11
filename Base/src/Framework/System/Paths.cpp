@@ -34,9 +34,9 @@ using namespace bpf;
 
 Paths::Paths(const File &root, const File &home, const File &tmp)
     : AppRoot(root)
-    , ThirdParty(root + "ThirdParty")
     , UserHome(home)
     , TempDir(tmp)
+    , ThirdParty(root + "ThirdParty")
     , CacheDir(root + "Cache")
 {
 }

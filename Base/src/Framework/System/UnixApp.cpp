@@ -36,10 +36,10 @@ using namespace bpf::io;
 using namespace bpf;
 
 UnixApp::UnixApp(char **argv, char **env)
-    : _env(SetupEnvironment(env))
+    : Application(_env, _fileName, _props)
+    , _env(SetupEnvironment(env))
     , _fileName(String(argv[0]))
     , _props(SetupPaths())
-    , Application(_env, _fileName, _props)
 {
 }
 

@@ -125,7 +125,11 @@ namespace bpf
             --_count;
             if (_maxSize > 0 && _headPtr >= _maxSize)
                 _headPtr = 0;
+#ifdef WINDOWS
             return (std::move(elem));
+#else
+            return (elem); //Unix wants to be potentially slower (copy instead of move)
+#endif
         }
     }
 }

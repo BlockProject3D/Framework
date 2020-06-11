@@ -42,12 +42,12 @@ using namespace bpf::io;
 using namespace bpf;
 
 WindowsApp::WindowsApp(void *hinstance, bool hasConsole)
-    : _hInstance(hinstance)
+    : Application(_env, _fileName, _props)
+    , _hInstance(hinstance)
     , _hasConsole(hasConsole)
     , _env(SetupEnvironment())
     , _fileName(SetupFileName())
     , _props(SetupPaths())
-    , Application(_env, _fileName, _props)
 {
 }
 
