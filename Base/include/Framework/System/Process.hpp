@@ -28,6 +28,8 @@
 
 #pragma once
 #include "Framework/String.hpp"
+#include "Framework/IO/IInputStream.hpp"
+#include "Framework/IO/IOutputStream.hpp"
 #include "Framework/System/Application.hpp"
 
 namespace bpf
@@ -35,9 +37,9 @@ namespace bpf
     namespace system
     {
 #ifdef WINDOWS
-        constexpr char *PROCESS_DEFAULT_PATH = "%SystemRoot%/system32;%SystemRoot%;%SystemRoot%/System32/Wbem";
+        constexpr const char *PROCESS_DEFAULT_PATH = "%SystemRoot%/system32;%SystemRoot%;%SystemRoot%/System32/Wbem";
 #else
-        constexpr char *PROCESS_DEFAULT_PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin";
+        constexpr const char *PROCESS_DEFAULT_PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin";
 #endif
         class BPF_API Process
         {
@@ -52,6 +54,11 @@ namespace bpf
                 collection::HashMap<String, String> _envp;
                 String _appExe;
                 collection::Array<String> _argv;
+
+#ifndef WINDOWS
+                void ProcessWorker(int fdStdOut[2], int fdStdErr[2], int fdStdIn[2], int commonfd[2]);
+                Process ProcessMaster(int commonfd[2], int pid);
+#endif
 
             public:
                 /**
@@ -162,6 +169,30 @@ namespace bpf
                  */
                 Process Build();
             };
+
+        private:
+            class PStream : public IInputStream, public IOutputStream
+            {
+            public:
+                virtual fsize Read(void *buf, fsize bufsize);
+                virtual fsize Write(const void *buf, fsize bufsize);
+            };
+
+            uint32 _lastExitCode;
+
+#ifdef WINDOWS
+#else
+            Process(int pid, int fdStdIn[2], int fdStdOut[2], int fdStdErr[2]);
+#endif
+
+        public:
+            ~Process();
+
+            void Wait();
+
+            uint32 GetExitCode(); //WAITPID WNOHANG
+
+            friend Process::Builder;
         };
     }
 }

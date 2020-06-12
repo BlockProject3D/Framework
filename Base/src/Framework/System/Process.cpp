@@ -35,13 +35,15 @@ constexpr int PIPE_READ = 0;
 #ifdef WINDOWS
     #include <Windows.h>
 #else
-    #include <unistd.h>
     #include <fcntl.h>
+    #include <string.h>
+    #include <unistd.h>
 #endif
 
 using namespace bpf;
 using namespace bpf::io;
 using namespace bpf::system;
+using namespace bpf::collection;
 
 Process::Builder::Builder()
     : _redirectStdIn(false)
@@ -110,6 +112,84 @@ Process::Builder &Process::Builder::SetWorkingDirectory(const io::File &dir)
     return (*this);
 }
 
+#ifndef WINDOWS
+void Process::Builder::ProcessWorker(int fdStdOut[2], int fdStdErr[2], int fdStdIn[2], int commonfd[2])
+{
+    char **argv = reinterpret_cast<char **>(malloc(sizeof(char **) * (_argv.Size() + 1)));
+    char **envp = reinterpret_cast<char **>(malloc(sizeof(char **) * (_envp.Size() + 1)));
+    fsize i = 0;
+
+    if (argv == NULL || envp == NULL)
+        goto mallocerr;
+    for (int fd = 0; fd != 256; ++fd)
+    {
+        if (fd != fdStdOut[PIPE_WRITE] && fd != fdStdErr[PIPE_WRITE] && fd != fdStdIn[PIPE_READ] && fd != commonfd[PIPE_WRITE])
+            close(fd);
+    }
+    if (fcntl(commonfd[PIPE_WRITE], FD_CLOEXEC) != 0)
+    {
+        write(commonfd[PIPE_WRITE], "fcntl failure", 14);
+        close(commonfd[PIPE_WRITE]);
+        exit(1);
+    }
+    if (_redirectStdOut && dup2(2, fdStdOut[PIPE_WRITE]) == -1)
+        goto redirecterr;
+    if (_redirectStdErr && dup2(2, fdStdErr[PIPE_WRITE]) == -1)
+        goto redirecterr;
+    if (_redirectStdIn && dup2(0, fdStdIn[PIPE_READ]) == -1)
+        goto redirecterr;
+    chdir(*_workDir.PlatformPath());
+    for (auto &a : _argv)
+    {
+        argv[i] = reinterpret_cast<char *>(malloc(a.Size() + 1));
+        if (argv[i] == NULL)
+            goto mallocerr;
+        memcpy(argv[i], *a, a.Size() + 1); //Copy with additional '\0'
+        ++i;
+    }
+    argv[i] = NULL;
+    i = 0;
+    for (auto &kv : _envp)
+    {
+        envp[i] = reinterpret_cast<char *>(malloc(kv.Key.Size() + kv.Value.Size() + 2));
+        if (envp[i] == NULL)
+            goto mallocerr;
+        memcpy(envp[i], *kv.Key, kv.Key.Size());
+        envp[i][kv.Key.Size()] = '=';
+        memcpy(envp[i] + kv.Key.Size() + 1, *kv.Value, kv.Value.Size() + 1);
+    }
+    envp[i] = NULL;
+    if (execve(*_appExe, argv, envp) == -1)
+    {
+        write(commonfd[PIPE_WRITE], "execve failure", 15);
+        close(commonfd[PIPE_WRITE]);
+        exit(1);
+    }
+redirecterr:
+    write(commonfd[PIPE_WRITE], "Could not create one or more redirection(s)", 44);
+    close(commonfd[PIPE_WRITE]);
+    exit(1);
+mallocerr:
+    write(commonfd[PIPE_WRITE], "malloc failure", 15);
+    close(commonfd[PIPE_WRITE]);
+    exit(1);
+}
+
+Process Process::Builder::ProcessMaster(int commonfd[2], int pid)
+{
+    //TODO: Alloc process instance
+    Process p(pid);
+    char buf[4096];
+    auto len = read(commonfd[PIPE_READ], buf, 4096);
+
+    if (len > 0)
+        throw OSException(buf);
+    close(commonfd[PIPE_READ]);
+    //TODO: Return Process instance
+    return (p);
+}
+#endif
+
 Process Process::Builder::Build()
 {
 #ifdef WINDOWS
@@ -138,42 +218,11 @@ Process Process::Builder::Build()
         throw OSException("Could not create child process");
     if (pid == 0)
     {
-        //Master
-        //TODO: Alloc process instance
-        char buf[4096];
-        auto len = read(commonfd[PIPE_READ], buf, 4096);
-        if (len > 0)
-            throw OSException(buf);
-        //TODO: Return Process instance
-    }
-    else
-    {
         //Worker/Child
-        for (int fd = 0; fd != 256; ++fd)
-        {
-            if (fd != fdStdOut[PIPE_WRITE] && fd != fdStdErr[PIPE_WRITE] && fd != fdStdIn[PIPE_READ] && fd != commonfd[PIPE_WRITE])
-                close(fd);
-        }
-        if (fcntl(commonfd[PIPE_WRITE], FD_CLOEXEC) != 0)
-        {
-            write(commonfd[PIPE_WRITE], "fcntl failure", 14);
-            close(commonfd[PIPE_WRITE]);
-            exit(1);
-        }
-        if (_redirectStdOut && dup2(2, fdStdOut[PIPE_WRITE]) == -1)
-            goto redirecterr;
-        if (_redirectStdErr && dup2(2, fdStdErr[PIPE_WRITE]) == -1)
-            goto redirecterr;
-        if (_redirectStdIn && dup2(0, fdStdIn[PIPE_READ]) == -1)
-            goto redirecterr;
-        goto next;
-redirecterr:
-        write(commonfd[PIPE_WRITE], "Could not create one or more redirection(s)", 44);
-        close(commonfd[PIPE_WRITE]);
-        exit(1);
-next:
-        chdir(*_workDir.PlatformPath());
-        
+        ProcessWorker(fdStdOut, fdStdErr, fdStdIn, commonfd);
+        return (Process(0)); //This will never trigger as it either exits or execve
     }
+    else //Master
+        return (ProcessMaster(commonfd, pid));
 #endif
 }
