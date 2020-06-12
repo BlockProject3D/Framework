@@ -34,10 +34,12 @@ constexpr int PIPE_READ = 0;
 #include "Framework/System/OSException.hpp"
 #ifdef WINDOWS
     #include <Windows.h>
+    #include <set>
 #else
     #include <fcntl.h>
     #include <string.h>
     #include <unistd.h>
+    #include <wait.h>
 #endif
 
 using namespace bpf;
@@ -175,10 +177,10 @@ mallocerr:
     exit(1);
 }
 
-Process Process::Builder::ProcessMaster(int commonfd[2], int pid)
+Process Process::Builder::ProcessMaster(int pid, int fdStdOut[2], int fdStdErr[2], int fdStdIn[2], int commonfd[2])
 {
     //TODO: Alloc process instance
-    Process p(pid);
+    Process p(pid, fdStdIn, fdStdOut, fdStdErr);
     char buf[4096];
     auto len = read(commonfd[PIPE_READ], buf, 4096);
 
@@ -196,6 +198,7 @@ Process Process::Builder::Build()
 //TODO: Check SystemRoot env variable if none auto specify
 //TODO: CreatePipe
 //TODO: CreateProcess
+//TODO: PROCESS_QUERY_INFORMATION
 #else
     int fdStdOut[2] = {-1, -1};
     int fdStdIn[2] = {-1, -1};
@@ -220,9 +223,167 @@ Process Process::Builder::Build()
     {
         //Worker/Child
         ProcessWorker(fdStdOut, fdStdErr, fdStdIn, commonfd);
-        return (Process(0)); //This will never trigger as it either exits or execve
+        return (Process(0, fdStdIn, fdStdOut, fdStdErr)); //This will never trigger as it either exits or execve
     }
     else //Master
-        return (ProcessMaster(commonfd, pid));
+        return (ProcessMaster(pid, fdStdOut, fdStdErr, fdStdIn, commonfd));
 #endif
+}
+
+Process::PStream::PStream(int pipefd[2])
+{
+#ifdef WINDOWS
+#else
+    _pipfd[0] = pipefd[0];
+    _pipfd[1] = pipefd[1];
+#endif
+}
+
+Process::PStream::~PStream()
+{
+#ifdef WINDOWS
+#else
+    close(_pipfd[0]);
+    close(_pipfd[1]);
+#endif
+}
+
+fsize Process::PStream::Read(void *buf, fsize bufsize)
+{
+#ifdef WINDOWS
+#else
+    return (read(_pipfd[PIPE_READ], buf, bufsize));
+#endif
+}
+
+fsize Process::PStream::Write(const void *buf, fsize bufsize)
+{
+#ifdef WINDOWS
+#else
+    return (write(_pipfd[PIPE_WRITE], buf, bufsize));
+#endif
+}
+
+#ifdef WINDOWS
+#else
+Process::Process(int pid, int fdStdIn[2], int fdStdOut[2], int fdStdErr[2])
+    : _lastExitCode(-1)
+    , _redirectStdIn(fdStdIn[PIPE_WRITE] != -1)
+    , _redirectStdOut(fdStdOut[PIPE_READ] != -1)
+    , _redirectStdErr(fdStdErr[PIPE_READ] != -1)
+    , _stdIn(fdStdIn)
+    , _stdOut(fdStdOut)
+    , _stdErr(fdStdErr)
+    , _pid(pid)
+{
+}
+#endif
+
+Process::~Process()
+{
+#ifdef WINDOWS
+#else
+    if (_lastExitCode == -1)
+        kill(_pid, SIGKILL);
+#endif
+}
+
+void Process::Wait()
+{
+#ifdef WINDOWS
+    if (!WaitForSingleObject(_handle))
+        throw OSException("Error waiting process termination");
+#else
+    if (waitpid(_pid, &_lastExitCode, 0) == -1)
+        throw OSException("Error waiting process termination");
+#endif
+}
+
+#ifdef WINDOWS
+static std::set<DWORD> EnumerateWindowThreads(DWORD pid) {
+    std::set<DWORD> threads;
+    for (HWND hwnd = GetTopWindow(NULL); hwnd; hwnd = GetNextWindow(hwnd, GW_HWNDNEXT)) {
+        DWORD pidw;
+        DWORD tid = GetWindowThreadProcessId(hwnd, &pidw);
+        if (pidw == pid)
+            threads.emplace(tid);
+    }
+    return threads;
+}
+#endif
+
+void Process::Kill(bool force)
+{
+    if (_lastExitCode != -1)
+        return;
+#ifdef WINDOWS
+    if (!force)
+    {
+        DWORD pid = GetProcessId(_handle);
+        if (AttachConsole(pid))
+        {
+            SetConsoleCtrlHandler(NULL, true); // Disable Ctrl-C handling for our program
+            GenerateConsoleCtrlEvent(CTRL_C_EVENT, 0);
+            WaitForSingleObject(hProcess, 1000);
+            FreeConsole();
+            SetConsoleCtrlHandler(NULL, false); // Re-enable Ctrl-C handling
+        }
+        else
+        {
+            for (DWORD tid : EnumerateWindowThreads(pid))
+            {
+                if (!PostThreadMessage(tid, WM_QUIT, 0, 0))
+                    throw OSException("Error trying to send WM_QUIT message");
+            }
+        }
+    }
+    else
+    {
+        if (!TerminateProcess(_handle, 1))
+            throw OSException("Could not terminate process");
+    }
+#else
+    if (kill(_pid, force ? SIGKILL : SIGINT) == -1)
+        throw OSException("Could not terminate process");
+#endif
+}
+
+fint Process::GetExitCode()
+{
+    if (_lastExitCode != -1)
+        return (_lastExitCode);
+#ifdef WINDOWS
+    if (!GetExitCodeProcess(_handle, &_lastExitCode))
+        throw OSException("Could not poll target process");
+    if (_lastExitCode == STILL_RUNNING)
+        _lastExitCode = -1;
+#else
+    int res = waitpid(_pid, &_lastExitCode, WNOHANG);
+    if (res == -1)
+        throw OSException("Could not poll target process");
+    if (res == 0)
+        _lastExitCode = -1;
+#endif
+    return (_lastExitCode);
+}
+
+IOutputStream &Process::GetStandardInput()
+{
+    if (!_redirectStdIn)
+        throw OSException("The target process does not allow standard input redirection");
+    return (_stdIn);
+}
+
+IInputStream &Process::GetStandardOutput()
+{
+    if (!_redirectStdOut)
+        throw OSException("The target process does not allow standard output redirection");
+    return (_stdOut);
+}
+
+IInputStream &Process::GetStandardError()
+{
+    if (!_redirectStdErr)
+        throw OSException("The target process does not allow standard error redirection");
+    return (_stdErr);
 }

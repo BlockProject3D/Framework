@@ -57,7 +57,7 @@ namespace bpf
 
 #ifndef WINDOWS
                 void ProcessWorker(int fdStdOut[2], int fdStdErr[2], int fdStdIn[2], int commonfd[2]);
-                Process ProcessMaster(int commonfd[2], int pid);
+                Process ProcessMaster(int pid, int fdStdOut[2], int fdStdErr[2], int fdStdIn[2], int commonfd[2]);
 #endif
 
             public:
@@ -165,34 +165,91 @@ namespace bpf
                 /**
                  * Create a process from the information defined in this builder
                  * @throw OSException in case the process could not be created
-                 * @return the new process
+                 * @return instance to represent the new process
                  */
                 Process Build();
             };
 
         private:
-            class PStream : public IInputStream, public IOutputStream
+            class BPF_API PStream final : public io::IInputStream, public io::IOutputStream
             {
+            private:
+#ifdef WINDOWS
+#else
+                int _pipfd[2];
+                PStream(int pipefd[2]);
+                ~PStream();
+#endif
+
             public:
-                virtual fsize Read(void *buf, fsize bufsize);
-                virtual fsize Write(const void *buf, fsize bufsize);
+                fsize Read(void *buf, fsize bufsize);
+                fsize Write(const void *buf, fsize bufsize);
+
+                friend class Process;
             };
 
-            uint32 _lastExitCode;
+            fint _lastExitCode;
+            bool _redirectStdIn;
+            bool _redirectStdOut;
+            bool _redirectStdErr;
+            PStream _stdIn;
+            PStream _stdOut;
+            PStream _stdErr;
 
 #ifdef WINDOWS
 #else
+            int _pid;
             Process(int pid, int fdStdIn[2], int fdStdOut[2], int fdStdErr[2]);
 #endif
 
         public:
+            /**
+             * Destructor, the process gets automatically killed if this is reached
+             */
             ~Process();
 
+            /**
+             * Wait for the process to terminate
+             * @throw OSException in case the system can't wait for the process
+             */
             void Wait();
 
-            uint32 GetExitCode(); //WAITPID WNOHANG
+            /**
+             * Kill the target process
+             * @param force true to force kill, false otherwise
+             * @throw OSException in case the system could not send signal
+             */
+            void Kill(bool force);
 
-            friend Process::Builder;
+            /**
+             * Returns the exit code of the process
+             * @throw OSException in case the system could not poll the target process
+             * @return exit code as an integer, -1 if the process is still running
+             */
+            fint GetExitCode(); //WAITPID WNOHANG
+
+            /**
+             * Provides access to process standard input
+             * @throw OSException if the target process does not allow standard input redirection
+             * @return reference to IOutputStream
+             */
+            io::IOutputStream &GetStandardInput();
+
+            /**
+             * Provides access to process standard output
+             * @throw OSException if the target process does not allow standard output redirection
+             * @return reference to IInputStream
+             */
+            io::IInputStream &GetStandardOutput();
+
+            /**
+             * Provides access to process standard error
+             * @throw OSException if the target process does not allow standard error redirection
+             * @return reference to IInputStream
+             */
+            io::IInputStream &GetStandardError();
+
+            friend class Process::Builder;
         };
     }
 }
