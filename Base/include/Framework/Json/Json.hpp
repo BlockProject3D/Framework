@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -27,11 +27,11 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Memory/Utility.hpp"
-#include "Framework/Collection/Map.hpp"
 #include "Framework/Collection/List.hpp"
-#include "Framework/String.hpp"
+#include "Framework/Collection/Map.hpp"
 #include "Framework/Json/JsonException.hpp"
+#include "Framework/Memory/Utility.hpp"
+#include "Framework/String.hpp"
 
 namespace bpf
 {
