@@ -27,9 +27,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/String.hpp"
 #include "Framework/IO/IInputStream.hpp"
 #include "Framework/IO/IOutputStream.hpp"
+#include "Framework/String.hpp"
 #include "Framework/System/Application.hpp"
 
 namespace bpf
@@ -53,6 +53,7 @@ namespace bpf
                 io::File _workDir;
                 collection::HashMap<String, String> _envp;
                 String _appExe;
+                String _appName;
                 collection::Array<String> _argv;
 
 #ifndef WINDOWS
@@ -74,7 +75,8 @@ namespace bpf
 
                 /**
                  * Sets the application to run as a separate process
-                 * @param appName the application path or name string (this overload does automatically check the PATH using this Builder's environment)
+                 * @param appName the application path or name string (this overload does automatically check the PATH
+                 * using this Builder's environment)
                  * @throw io::IOException when the application could not be found
                  * @return Builder reference
                  */
@@ -226,7 +228,7 @@ namespace bpf
              * @throw OSException in case the system could not poll the target process
              * @return exit code as an integer, -1 if the process is still running
              */
-            fint GetExitCode(); //WAITPID WNOHANG
+            fint GetExitCode(); // WAITPID WNOHANG
 
             /**
              * Provides access to process standard input

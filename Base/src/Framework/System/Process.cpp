@@ -70,15 +70,18 @@ Process::Builder &Process::Builder::SetApplication(const String &name)
     {
         auto f = File(name);
         if (f.Exists() && !f.IsDirectory())
+        {
             _appExe = f.PlatformPath();
+            _appName = f.Name();
+        }
         else
             throw IOException(String("File '") + name + "' does not exist");
     }
     else
     {
-        auto path = _envp["PATH"];
-        if (path.Size() == 0)
-            path = PROCESS_DEFAULT_PATH;
+        auto path = String(PROCESS_DEFAULT_PATH);
+        if (_envp.HasKey("PATH"))
+            path = _envp["PATH"];
 #ifdef WINDOWS
         WCHAR buf[MAX_PATH];
         String sysDir = "C:/Windows";
@@ -95,6 +98,7 @@ Process::Builder &Process::Builder::SetApplication(const String &name)
             if (f.Exists() && !f.IsDirectory())
             {
                 _appExe = f.PlatformPath();
+                _appName = f.Name();
                 break;
             }
         }
@@ -125,7 +129,8 @@ void Process::Builder::ProcessWorker(int fdStdOut[2], int fdStdErr[2], int fdStd
         goto mallocerr;
     for (int fd = 0; fd != 256; ++fd)
     {
-        if (fd != fdStdOut[PIPE_WRITE] && fd != fdStdErr[PIPE_WRITE] && fd != fdStdIn[PIPE_READ] && fd != commonfd[PIPE_WRITE])
+        if (fd != 0 && fd != 1 && fd != 2 && fd != fdStdOut[PIPE_WRITE] && fd != fdStdErr[PIPE_WRITE] &&
+            fd != fdStdIn[PIPE_READ] && fd != commonfd[PIPE_WRITE])
             close(fd);
     }
     if (fcntl(commonfd[PIPE_WRITE], FD_CLOEXEC) != 0)
@@ -134,11 +139,11 @@ void Process::Builder::ProcessWorker(int fdStdOut[2], int fdStdErr[2], int fdStd
         close(commonfd[PIPE_WRITE]);
         exit(1);
     }
-    if (_redirectStdOut && dup2(2, fdStdOut[PIPE_WRITE]) == -1)
+    if (_redirectStdOut && dup2(fdStdOut[PIPE_WRITE], 1) == -1)
         goto redirecterr;
-    if (_redirectStdErr && dup2(2, fdStdErr[PIPE_WRITE]) == -1)
+    if (_redirectStdErr && dup2(fdStdErr[PIPE_WRITE], 2) == -1)
         goto redirecterr;
-    if (_redirectStdIn && dup2(0, fdStdIn[PIPE_READ]) == -1)
+    if (_redirectStdIn && dup2(fdStdIn[PIPE_READ], 0) == -1)
         goto redirecterr;
     chdir(*_workDir.PlatformPath());
     for (auto &a : _argv)
@@ -146,7 +151,7 @@ void Process::Builder::ProcessWorker(int fdStdOut[2], int fdStdErr[2], int fdStd
         argv[i] = reinterpret_cast<char *>(malloc(a.Size() + 1));
         if (argv[i] == NULL)
             goto mallocerr;
-        memcpy(argv[i], *a, a.Size() + 1); //Copy with additional '\0'
+        memcpy(argv[i], *a, a.Size() + 1); // Copy with additional '\0'
         ++i;
     }
     argv[i] = NULL;
@@ -159,6 +164,7 @@ void Process::Builder::ProcessWorker(int fdStdOut[2], int fdStdErr[2], int fdStd
         memcpy(envp[i], *kv.Key, kv.Key.Size());
         envp[i][kv.Key.Size()] = '=';
         memcpy(envp[i] + kv.Key.Size() + 1, *kv.Value, kv.Value.Size() + 1);
+        ++i;
     }
     envp[i] = NULL;
     if (execve(*_appExe, argv, envp) == -1)
@@ -179,7 +185,11 @@ mallocerr:
 
 Process Process::Builder::ProcessMaster(int pid, int fdStdOut[2], int fdStdErr[2], int fdStdIn[2], int commonfd[2])
 {
-    //TODO: Alloc process instance
+    close(commonfd[PIPE_WRITE]);
+    close(fdStdOut[PIPE_WRITE]);
+    close(fdStdErr[PIPE_WRITE]);
+    close(fdStdIn[PIPE_READ]);
+
     Process p(pid, fdStdIn, fdStdOut, fdStdErr);
     char buf[4096];
     auto len = read(commonfd[PIPE_READ], buf, 4096);
@@ -187,18 +197,35 @@ Process Process::Builder::ProcessMaster(int pid, int fdStdOut[2], int fdStdErr[2
     if (len > 0)
         throw OSException(buf);
     close(commonfd[PIPE_READ]);
-    //TODO: Return Process instance
     return (p);
 }
 #endif
 
 Process Process::Builder::Build()
 {
+    auto var = std::move(_argv);
+    _argv = Array<String>(var.Size() + 1);
+    _argv[0] = std::move(_appName);
+    for (fsize i = 1; i < var.Size(); ++i)
+    {
+        _argv[i] = std::move(var[i]);
+        ++i;
+    }
+    for (auto &a : _argv)
+    {
+        if (*a == Null)
+            throw OSException("Detected an attempt to crash memcpy");
+    }
+    for (auto &kv : _envp)
+    {
+        if (*kv.Key == Null || *kv.Value == Null)
+            throw OSException("Detected an attempt to crash memcpy");
+    }
 #ifdef WINDOWS
-//TODO: Check SystemRoot env variable if none auto specify
-//TODO: CreatePipe
-//TODO: CreateProcess
-//TODO: PROCESS_QUERY_INFORMATION
+// TODO: Check SystemRoot env variable if none auto specify
+// TODO: CreatePipe
+// TODO: CreateProcess
+// TODO: PROCESS_QUERY_INFORMATION
 #else
     int fdStdOut[2] = {-1, -1};
     int fdStdIn[2] = {-1, -1};
@@ -206,26 +233,22 @@ Process Process::Builder::Build()
     int commonfd[2];
     if (pipe(commonfd) != 0)
         throw OSException("Could not create common pipe");
-    close(commonfd[PIPE_WRITE]);
     if (_redirectStdOut && pipe(fdStdOut) != 0)
         throw OSException("Could not create standard output redirection");
     if (_redirectStdErr && pipe(fdStdErr) != 0)
         throw OSException("Could not create standard error redirection");
     if (_redirectStdIn && pipe(fdStdIn) != 0)
         throw OSException("Could not create standard input redirection");
-    close(fdStdOut[PIPE_WRITE]);
-    close(fdStdErr[PIPE_WRITE]);
-    close(fdStdIn[PIPE_READ]);
     auto pid = fork();
     if (pid == -1)
         throw OSException("Could not create child process");
     if (pid == 0)
     {
-        //Worker/Child
+        // Worker/Child
         ProcessWorker(fdStdOut, fdStdErr, fdStdIn, commonfd);
-        return (Process(0, fdStdIn, fdStdOut, fdStdErr)); //This will never trigger as it either exits or execve
+        return (Process(0, fdStdIn, fdStdOut, fdStdErr)); // This will never trigger as it either exits or execve
     }
-    else //Master
+    else // Master
         return (ProcessMaster(pid, fdStdOut, fdStdErr, fdStdIn, commonfd));
 #endif
 }
@@ -296,13 +319,16 @@ void Process::Wait()
 #else
     if (waitpid(_pid, &_lastExitCode, 0) == -1)
         throw OSException("Error waiting process termination");
+    _lastExitCode = WEXITSTATUS(_lastExitCode);
 #endif
 }
 
 #ifdef WINDOWS
-static std::set<DWORD> EnumerateWindowThreads(DWORD pid) {
+static std::set<DWORD> EnumerateWindowThreads(DWORD pid)
+{
     std::set<DWORD> threads;
-    for (HWND hwnd = GetTopWindow(NULL); hwnd; hwnd = GetNextWindow(hwnd, GW_HWNDNEXT)) {
+    for (HWND hwnd = GetTopWindow(NULL); hwnd; hwnd = GetNextWindow(hwnd, GW_HWNDNEXT))
+    {
         DWORD pidw;
         DWORD tid = GetWindowThreadProcessId(hwnd, &pidw);
         if (pidw == pid)
@@ -363,6 +389,8 @@ fint Process::GetExitCode()
         throw OSException("Could not poll target process");
     if (res == 0)
         _lastExitCode = -1;
+    else
+        _lastExitCode = WEXITSTATUS(_lastExitCode);
 #endif
     return (_lastExitCode);
 }
