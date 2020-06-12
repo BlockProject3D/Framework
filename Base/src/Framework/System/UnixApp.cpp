@@ -68,8 +68,16 @@ Array<String> UnixApp::GetArguments(char **argv, int argc)
 
 Paths UnixApp::SetupPaths()
 {
-    File home = File(_env["HOME"]);
-    File root = File(_fileName.Sub(0, _fileName.LastIndexOf('/')));
+    char path[PATH_MAX];
+    auto root = File("./");
+    auto home = File("./");
+    if (_env.HasKey("HOME"))
+        home = File(_env["HOME"]);
+    if (readlink("/proc/self/exe", path, PATH_MAX) != -1)
+    {
+        _fileName = String(path);
+        root = File(_fileName.Sub(0, _fileName.LastIndexOf('/')));
+    }
     File tmp = _env.HasKey("TMPDIR") ? File(_env["TMPDIR"]) : File("/tmp");
     return (Paths(root, home, tmp));
 }
