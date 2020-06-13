@@ -122,11 +122,12 @@ macro(bp_check_and_flag target w)
 endmacro(bp_check_and_flag)
 
 function(bp_package_module name hasexports)
-    install(TARGETS ${name} CONFIGURATIONS Debug DESTINATION ${CMAKE_INSTALL_PREFIX}/${BP_PACKAGE_NAME}/build/Debug)
-    install(TARGETS ${name} CONFIGURATIONS Release DESTINATION ${CMAKE_INSTALL_PREFIX}/${BP_PACKAGE_NAME}/build/Release)
+    get_filename_component(PRJ_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLUTE)
+    file(RELATIVE_PATH REL_BIN_DIR ${PRJ_ROOT} ${CMAKE_BINARY_DIR})
+    install(TARGETS ${name} CONFIGURATIONS Debug DESTINATION ${CMAKE_INSTALL_PREFIX}/${BP_PACKAGE_NAME}/${REL_BIN_DIR}/Debug)
+    install(TARGETS ${name} CONFIGURATIONS Release DESTINATION ${CMAKE_INSTALL_PREFIX}/${BP_PACKAGE_NAME}/${REL_BIN_DIR}/Release)
     if (hasexports)
         install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../${name}.cmake DESTINATION ${CMAKE_INSTALL_PREFIX}/${BP_PACKAGE_NAME})
-        get_filename_component(PRJ_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLUTE)
         file(RELATIVE_PATH REL_SRC_DIR ${PRJ_ROOT} ${CMAKE_CURRENT_SOURCE_DIR})
         install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include DESTINATION ${CMAKE_INSTALL_PREFIX}/${BP_PACKAGE_NAME}/${REL_SRC_DIR})
     endif (hasexports)
@@ -139,8 +140,10 @@ function(bp_write_module_descriptor name apimacro)
     file(RELATIVE_PATH REL_BIN_DIR ${PRJ_ROOT} ${CMAKE_BINARY_DIR})
     file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/../${name}.cmake
         "set(INCLUDE_DIR \"${REL_SRC_DIR}/include\")\n"
-        "set(BIN_DEBUG \"${REL_BIN_DIR}/Debug/${BP_LIBRARY_PREFIX}${name}${BP_EXTENSION_LIB}\")\n"
-        "set(BIN_RELEASE \"${REL_BIN_DIR}/Release/${BP_LIBRARY_PREFIX}${name}${BP_EXTENSION_LIB}\")\n"
+        "set(LIB_DEBUG \"${REL_BIN_DIR}/Debug/${BP_LIBRARY_PREFIX}${name}${BP_EXTENSION_LIB}\")\n"
+        "set(LIB_RELEASE \"${REL_BIN_DIR}/Release/${BP_LIBRARY_PREFIX}${name}${BP_EXTENSION_LIB}\")\n"
+        "set(BIN_DEBUG \"${REL_BIN_DIR}/Debug/${BP_LIBRARY_PREFIX}${name}${BP_EXTENSION_DYNAMIC}\")\n"
+        "set(BIN_RELEASE \"${REL_BIN_DIR}/Release/${BP_LIBRARY_PREFIX}${name}${BP_EXTENSION_DYNAMIC}\")\n"
         "set(ROOT \"${REL_SRC_DIR}\")\n"
         "set(API_MACRO \"${apimacro}\")\n"
     )
