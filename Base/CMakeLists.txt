@@ -164,7 +164,7 @@ set(SOURCES
     ./src/Framework/IO/TextWriter.cpp
     ./src/Framework/IO/Console.cpp
     ./src/Framework/IO/ConsoleReader.cpp
-    ./src/Framework/IO/ConsoleWriter.cpp    
+    ./src/Framework/IO/ConsoleWriter.cpp
     ./src/Framework/Log/DefaultLogger.cpp
     ./src/Framework/Log/FileLogger.cpp
     ./src/Framework/Log/Logger.cpp
@@ -213,7 +213,7 @@ bp_product_properties(BPF
     DESCRIPTION "BlockProject 3D Framework"
 )
 
-bp_setup_module(BPF BPF_API)
+bp_setup_module(BPF API_MACRO BPF_API PACKAGE)
 if (NOT WIN32)
 	target_link_libraries(BPF PRIVATE pthread)
 	target_link_libraries(BPF PRIVATE ${CMAKE_DL_LIBS})

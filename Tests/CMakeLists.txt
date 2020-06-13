@@ -24,7 +24,7 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
                  ${CMAKE_CURRENT_BINARY_DIR}/googletest-build
                  EXCLUDE_FROM_ALL)
-				 
+
 include_directories("${gtest_SOURCE_DIR}/include")
 
 set(SOURCES
@@ -74,7 +74,7 @@ set(SOURCES
     src/LowLevelMain.cpp
 )
 
-bp_setup_program(${PROJECT_NAME} include)
+bp_setup_program(${PROJECT_NAME})
 
 #This warning is an aberation of false-positives
 #Seriously Clang team: go learn how to code!!!

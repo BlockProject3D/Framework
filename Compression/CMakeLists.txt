@@ -18,5 +18,5 @@ bp_product_properties(BPF.Compression
     DESCRIPTION "BlockProject 3D Framework"
 )
 
-bp_setup_module(BPF.Compression BPF_COMPRESSION_API)
+bp_setup_module(BPF.Compression API_MACRO BPF_COMPRESSION_API PACKAGE)
 target_link_libraries(BPF.Compression PRIVATE CONAN_PKG::zlib)

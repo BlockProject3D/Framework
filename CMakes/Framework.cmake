@@ -1,22 +1,14 @@
 include("${CMAKE_CURRENT_LIST_DIR}/Base.cmake")
 
-function(bp_write_module_descriptor name)
-    message("Writing module descriptor \"${name}.cmake\"...")
-    get_filename_component(PRJ_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLUTE)
-    file(RELATIVE_PATH REL_SRC_DIR ${PRJ_ROOT} ${CMAKE_CURRENT_SOURCE_DIR})
-    file(RELATIVE_PATH REL_BIN_DIR ${PRJ_ROOT} ${CMAKE_BINARY_DIR})
-    file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/../${name}.cmake
-        "set(INCLUDE_DIR \"${REL_SRC_DIR}/include\")\n"
-        "set(BIN_DEBUG \"${REL_BIN_DIR}/Debug/${BP_LIBRARY_PREFIX}${name}${BP_EXTENSION_LIB}\")\n"
-        "set(BIN_RELEASE \"${REL_BIN_DIR}/Release/${BP_LIBRARY_PREFIX}${name}${BP_EXTENSION_LIB}\")\n"
-        "set(ROOT \"${REL_SRC_DIR}\")\n"
-        "set(API_MACRO \"${BP_API_MACRO}\")\n"
+function(bp_setup_module name)
+    set(props
+        API_MACRO
     )
-endfunction(bp_write_module_descriptor)
-
-macro(bp_setup_module name apimacro)
-    #Replace API macro by the correct one
-    set(BP_API_MACRO ${apimacro})
+    set(options
+        PACKAGE
+    )
+    set(multiValueArgs)
+    cmake_parse_arguments(MODULE_INFO "${options}" "${props}" "${multiValueArgs}" ${ARGN})
 
     if (NOT BP_ADDITIONAL_SOURCE_FILE)
         set(BP_ADDITIONAL_SOURCE_FILE "")
@@ -24,7 +16,10 @@ macro(bp_setup_module name apimacro)
 
     add_library(${name} SHARED ${SOURCES} ${BP_ADDITIONAL_SOURCE_FILE})
 
-    target_compile_definitions(${name} PRIVATE "${BP_API_MACRO}=${BP_SYMBOL_EXPORT_MACRO}")
+    if (MODULE_INFO_API_MACRO)
+        target_compile_definitions(${name} PRIVATE "${MODULE_INFO_API_MACRO}=${BP_SYMBOL_EXPORT_MACRO}")
+        bp_write_module_descriptor(${name} ${MODULE_INFO_API_MACRO})
+    endif (MODULE_INFO_API_MACRO)
     # Attempt at fixing templates problems under MSVC 2017
     target_compile_definitions(${name} PRIVATE "BP_TPL_API=${BP_SYMBOL_EXPORT_MACRO}")
 
@@ -42,8 +37,14 @@ macro(bp_setup_module name apimacro)
 
     bp_setup_target(${name} include ${SOURCES})
 
-    bp_write_module_descriptor(${name})
-endmacro(bp_setup_module)
+    if (MODULE_INFO_PACKAGE)
+        if (MODULE_INFO_API_MACRO)
+            bp_package_module(${name} true)
+        else (MODULE_INFO_API_MACRO)
+            bp_package_module(${name} false)
+        endif (MODULE_INFO_API_MACRO)
+    endif (MODULE_INFO_PACKAGE)
+endfunction(bp_setup_module)
 
 function(bp_add_module targetname modulename)
     set(MD_DESC "")
