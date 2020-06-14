@@ -121,7 +121,7 @@ macro(bp_check_and_flag target w)
     endif (tmpvar)
 endmacro(bp_check_and_flag)
 
-function(bp_package_module name hasexports)
+function(__bp_package_module name hasexports)
     get_filename_component(PRJ_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLUTE)
     file(RELATIVE_PATH REL_BIN_DIR ${PRJ_ROOT} ${CMAKE_BINARY_DIR})
     install(TARGETS ${name} CONFIGURATIONS Debug DESTINATION ${CMAKE_INSTALL_PREFIX}/${BP_PACKAGE_NAME}/${REL_BIN_DIR}/Debug)
@@ -131,9 +131,9 @@ function(bp_package_module name hasexports)
         file(RELATIVE_PATH REL_SRC_DIR ${PRJ_ROOT} ${CMAKE_CURRENT_SOURCE_DIR})
         install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include DESTINATION ${CMAKE_INSTALL_PREFIX}/${BP_PACKAGE_NAME}/${REL_SRC_DIR})
     endif (hasexports)
-endfunction(bp_package_module)
+endfunction(__bp_package_module)
 
-function(bp_write_module_descriptor name apimacro)
+function(__bp_write_module_descriptor name apimacro)
     message("Writing module descriptor \"${name}.cmake\"...")
     get_filename_component(PRJ_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLUTE)
     file(RELATIVE_PATH REL_SRC_DIR ${PRJ_ROOT} ${CMAKE_CURRENT_SOURCE_DIR})
@@ -146,5 +146,6 @@ function(bp_write_module_descriptor name apimacro)
         "set(BIN_RELEASE \"${REL_BIN_DIR}/Release/${BP_LIBRARY_PREFIX}${name}${BP_EXTENSION_DYNAMIC}\")\n"
         "set(ROOT \"${REL_SRC_DIR}\")\n"
         "set(API_MACRO \"${apimacro}\")\n"
+        "set(DEPENDENCIES \"\")\n"
     )
-endfunction(bp_write_module_descriptor)
+endfunction(__bp_write_module_descriptor)
