@@ -1,0 +1,54 @@
+name: Build
+
+on:
+  push:
+    branches-ignore: [ release ]
+  pull_request:
+    branches-ignore: [ release ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            GENERATOR: "DEB"
+            FILE: "BPF.deb"
+          - os: windows-latest
+            GENERATOR: "WIX"
+            FILE: "BPF.msi"
+          - os: macos-latest
+            GENERATOR: "ProductBuild"
+            FILE: "BPF.pkg"
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+    - uses: Yuri6037/setup-cpp@master
+    - uses: Yuri6037/Action-FakeTTY@v1
+    - name: Prepare
+      run: |
+        pip3 install conan
+        mkdir build
+    - name: Build Debug
+      run: |
+        cd build
+        cmake -DBUILD_TYPE=Debug -DINSTALL_DIR="../" ..
+        cmake --build . --target install --config Debug
+    - name: Test
+      run: faketty ./build/Debug/BPF.Tests
+    - name: Build Release
+      run: |
+        cd build
+        cmake -DBUILD_TYPE=Release -DINSTALL_DIR="../" ..
+        cmake --build . --target install --config Release
+    - name: Test
+      run: faketty ./build/Release/BPF.Tests
+    - name: Create Build Snapshot
+      run: |
+        cpack -G ${{ matrix.GENERATOR }}
+    - uses: actions/upload-artifact@v2
+      name: Upload Build Snapshot
+      with:
+        name: Snapshot-${GITHUB_REF##*/}-${{ matrix.os }}-x64
+        path: ${{ matrix.FILE }}
