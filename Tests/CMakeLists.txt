@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(BPF.Tests)
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/../CMakes/Program.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/../Version.cmake")
 
 configure_file(CMakeLists.in.txt googletest-download/CMakeLists.txt)
 execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
@@ -75,6 +76,7 @@ set(SOURCES
 )
 
 bp_setup_program(${PROJECT_NAME})
+target_compile_definitions(${PROJECT_NAME} PRIVATE "BP_VERSION_STRING=\"${BP_VERSION_STRING}\"")
 
 #This warning is an aberation of false-positives
 #Seriously Clang team: go learn how to code!!!
