@@ -1,9 +1,10 @@
 include("${CMAKE_CURRENT_LIST_DIR}/Base.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/Framework.cmake")
 
-macro(bp_setup_program name)
+function(bp_setup_program name)
     set(props
         API_MACRO
+        PACKAGE_NAME
     )
     set(options
         PACKAGE
@@ -40,10 +41,16 @@ macro(bp_setup_program name)
     bp_setup_target(${name} include ${SOURCES})
 
     if (MODULE_INFO_PACKAGE)
+        if (NOT MODULE_INFO_PACKAGE_NAME)
+            set(MODULE_INFO_PACKAGE_NAME ${BP_PACKAGE_NAME})
+        endif (NOT MODULE_INFO_PACKAGE_NAME)
+        if (NOT MODULE_INFO_PACKAGE_NAME)
+            set(MODULE_INFO_PACKAGE_NAME "")
+        endif (NOT MODULE_INFO_PACKAGE_NAME)
         if (MODULE_INFO_API_MACRO)
-            __bp_package_module(${name} true)
+            __bp_package_module(${name} true ${MODULE_INFO_PACKAGE_NAME})
         else (MODULE_INFO_API_MACRO)
-            __bp_package_module(${name} false)
+            __bp_package_module(${name} false ${MODULE_INFO_PACKAGE_NAME})
         endif (MODULE_INFO_API_MACRO)
     endif (MODULE_INFO_PACKAGE)
-endmacro(bp_setup_program)
+endfunction(bp_setup_program)
