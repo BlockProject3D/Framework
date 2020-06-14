@@ -32,14 +32,14 @@ jobs:
     - name: Build Debug
       run: |
         cd build
-        cmake .. -DBUILD_TYPE=Debug -DINSTALL_DIR=..
+        cmake .. -DBUILD_TYPE=Debug -DINSTALL_DIR="../"
         cmake --build . --target install --config Debug
     - name: Test Debug
       run: faketty ./build/Debug/BPF.Tests
     - name: Build Release
       run: |
         cd build
-        cmake .. -DBUILD_TYPE=Release -DINSTALL_DIR=..
+        cmake .. -DBUILD_TYPE=Release -DINSTALL_DIR="../"
         cmake --build . --target install --config Release
     - name: Test Release
       run: faketty ./build/Release/BPF.Tests
