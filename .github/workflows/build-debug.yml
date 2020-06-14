@@ -22,6 +22,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v2
+    - uses: nelonoel/branch-name@v1
     - uses: Yuri6037/setup-cpp@master
     - uses: Yuri6037/Action-FakeTTY@v1
     - name: Prepare
@@ -48,5 +49,5 @@ jobs:
     - uses: actions/upload-artifact@v2
       name: Upload Build Snapshot
       with:
-        name: Snapshot-${GITHUB_REF##*/}-${{ matrix.os }}-x64
+        name: Snapshot-${{ BRANCH_NAME }}-${{ matrix.os }}-x64
         path: ${{ matrix.FILE }}
