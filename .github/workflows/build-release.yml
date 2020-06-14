@@ -21,7 +21,7 @@ jobs:
             FILE: "BPF.msi"
             PRETTYOS: "Windows"
           - os: macos-latest
-            GENERATOR: "PackageMaker"
+            GENERATOR: "productbuild"
             FILE: "BPF.pkg"
             PRETTYOS: "OSX"
     steps:
