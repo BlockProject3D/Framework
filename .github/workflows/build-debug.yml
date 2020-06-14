@@ -17,7 +17,7 @@ jobs:
             GENERATOR: "WIX"
             FILE: "BPF.msi"
           - os: macos-latest
-            GENERATOR: "ProductBuild"
+            GENERATOR: "productbuild"
             FILE: "BPF.pkg"
     steps:
     - uses: actions/checkout@v2
@@ -49,5 +49,5 @@ jobs:
     - uses: actions/upload-artifact@v2
       name: Upload Build Snapshot
       with:
-        name: Snapshot-${BRANCH_NAME}-${{ matrix.os }}-x64
+        name: Snapshot-${{ env.BRANCH_NAME }}-${{ matrix.os }}-x64
         path: ${{ matrix.FILE }}
