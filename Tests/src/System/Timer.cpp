@@ -41,7 +41,7 @@ TEST(Timer, Test_1)
     int j = 0;
     for (i = 0; i < 100000000; i++)
         j += i * i;
-#ifdef RELEASE //Too unreliable under OSX and Linux in Release mode
+#ifdef BUILD_RELEASE //Too unreliable under OSX and Linux in Release mode
     EXPECT_GE(timer.Reset(), 0);
 #else
     EXPECT_GT(timer.Reset(), 0);
