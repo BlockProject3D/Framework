@@ -18,7 +18,7 @@ jobs:
             GENERATOR: "WIX"
             FILE: "BPF.msi"
           - os: macos-latest
-            GENERATOR: "PackageManager"
+            GENERATOR: "PackageMaker"
             FILE: "BPF.pkg"
     steps:
     - uses: actions/checkout@v2
