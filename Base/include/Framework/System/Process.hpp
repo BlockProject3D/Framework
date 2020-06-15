@@ -56,7 +56,10 @@ namespace bpf
                 String _appName;
                 collection::Array<String> _argv;
 
-#ifndef WINDOWS
+#ifdef WINDOWS
+                void CleanupHandles(void *fdStdOut[2], void *fdStdErr[2], void *fdStdIn[2]);
+#else
+                void CloseHandles(int fdStdOut[2], int fdStdErr[2], int fdStdIn[2], int commonfd[2]);
                 void ProcessWorker(int fdStdOut[2], int fdStdErr[2], int fdStdIn[2], int commonfd[2]);
                 Process ProcessMaster(int pid, int fdStdOut[2], int fdStdErr[2], int fdStdIn[2], int commonfd[2]);
 #endif
@@ -177,13 +180,21 @@ namespace bpf
             {
             private:
 #ifdef WINDOWS
+                void *_pipeHandles[2];
+                PStream(void *pipefd[2]);
+                ~PStream();
 #else
                 int _pipfd[2];
                 PStream(int pipefd[2]);
                 ~PStream();
 #endif
 
+                PStream(const PStream &other) = delete;
+                PStream &operator=(const PStream &other) = delete;
             public:
+                PStream(PStream &&other);
+                PStream &operator=(PStream &&other);
+
                 fsize Read(void *buf, fsize bufsize);
                 fsize Write(const void *buf, fsize bufsize);
 
@@ -199,12 +210,35 @@ namespace bpf
             PStream _stdErr;
 
 #ifdef WINDOWS
+            void *_pHandle;
+            void *_tHandle;
+            Process(void *pinfo, void *fdStdIn[2], void *fdStdOut[2], void *fdStdErr[2]);
 #else
             int _pid;
             Process(int pid, int fdStdIn[2], int fdStdOut[2], int fdStdErr[2]);
 #endif
 
         public:
+            /**
+             * Move constructor
+             */
+            Process(Process &&other);
+
+            /**
+             * Force compiler to NEVER ever copy that class
+             */
+            Process(const Process &other) = delete;
+
+            /**
+             * Force compiler to NEVER ever copy that class
+             */
+            Process &operator=(const Process &other) = delete;
+
+            /**
+             * Move assignment operator
+             */
+            Process &operator=(Process &&other);
+
             /**
              * Destructor, the process gets automatically killed if this is reached
              */

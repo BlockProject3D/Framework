@@ -30,10 +30,14 @@ constexpr int PIPE_WRITE = 1;
 constexpr int PIPE_READ = 0;
 
 #include "Framework/System/Process.hpp"
+#include "../IO/OSPrivate.hpp"
 #include "Framework/IO/IOException.hpp"
 #include "Framework/System/OSException.hpp"
+#include "Framework/Scalar.hpp"
 #ifdef WINDOWS
+    #include "Framework/Collection/ArrayList.hpp"
     #include <Windows.h>
+    #include <cstring>
     #include <set>
 #else
     #include <fcntl.h>
@@ -118,7 +122,53 @@ Process::Builder &Process::Builder::SetWorkingDirectory(const io::File &dir)
     return (*this);
 }
 
-#ifndef WINDOWS
+#ifdef WINDOWS
+
+void Process::Builder::CleanupHandles(void *fdStdOut[2], void *fdStdErr[2], void *fdStdIn[2])
+{
+    for (int i = 0; i != 2; ++i)
+    {
+        if (fdStdOut[i] != NULL)
+            CloseHandle(fdStdOut[i]);
+    }
+    for (int i = 0; i != 2; ++i)
+    {
+        if (fdStdErr[i] != NULL)
+            CloseHandle(fdStdErr[i]);
+    }
+    for (int i = 0; i != 2; ++i)
+    {
+        if (fdStdIn[i] != NULL)
+            CloseHandle(fdStdIn[i]);
+    }
+}
+
+#else
+
+void Process::Builder::CleanupHandles(int fdStdOut[2], int fdStdErr[2], int fdStdIn[2], int commonfd[2])
+{
+    for (int i = 0; i != 2; ++i)
+    {
+        if (fdStdOut[i] != -1)
+            close(fdStdOut[i]);
+    }
+    for (int i = 0; i != 2; ++i)
+    {
+        if (fdStdErr[i] != -1)
+            close(fdStdErr[i]);
+    }
+    for (int i = 0; i != 2; ++i)
+    {
+        if (fdStdIn[i] != -1)
+            close(fdStdIn[i]);
+    }
+    for (int i = 0; i != 2; ++i)
+    {
+        if (commonfd[i] != -1)
+            close(commonfd[i]);
+    }
+}
+
 void Process::Builder::ProcessWorker(int fdStdOut[2], int fdStdErr[2], int fdStdIn[2], int commonfd[2])
 {
     char **argv = reinterpret_cast<char **>(malloc(sizeof(char **) * (_argv.Size() + 1)));
@@ -185,19 +235,22 @@ mallocerr:
 
 Process Process::Builder::ProcessMaster(int pid, int fdStdOut[2], int fdStdErr[2], int fdStdIn[2], int commonfd[2])
 {
-    close(commonfd[PIPE_WRITE]);
-    close(fdStdOut[PIPE_WRITE]);
-    close(fdStdErr[PIPE_WRITE]);
-    close(fdStdIn[PIPE_READ]);
+    if (commonfd[PIPE_WRITE] != -1)
+        close(commonfd[PIPE_WRITE]);
+    if (fdStdOut[PIPE_WRITE] != -1)
+        close(fdStdOut[PIPE_WRITE]);
+    if (fdStdErr[PIPE_WRITE] != -1)
+        close(fdStdErr[PIPE_WRITE]);
+    if (fdStdIn[PIPE_READ] != -1)
+        close(fdStdIn[PIPE_READ]);
 
-    Process p(pid, fdStdIn, fdStdOut, fdStdErr);
     char buf[4096];
     auto len = read(commonfd[PIPE_READ], buf, 4096);
 
     if (len > 0)
         throw OSException(buf);
     close(commonfd[PIPE_READ]);
-    return (p);
+    return (Process(pid, fdStdIn, fdStdOut, fdStdErr));
 }
 #endif
 
@@ -222,10 +275,64 @@ Process Process::Builder::Build()
             throw OSException("Detected an attempt to crash memcpy");
     }
 #ifdef WINDOWS
-// TODO: Check SystemRoot env variable if none auto specify
-// TODO: CreatePipe
-// TODO: CreateProcess
-// TODO: PROCESS_QUERY_INFORMATION
+    if (!_envp.HasKey("SystemRoot"))
+    {
+        WCHAR buf[MAX_PATH];
+        if (!GetSystemDirectoryW(buf, MAX_PATH))
+            throw OSException("Could not obtain system root directory");
+        _envp["SystemRoot"] = String::FromUTF16(reinterpret_cast<const fchar16 *>(buf));
+    }
+    HANDLE fdStdOut[2] = {NULL, NULL};
+    HANDLE fdStdIn[2] = {NULL, NULL};
+    HANDLE fdStdErr[2] = {NULL, NULL};
+    if (_redirectStdOut && !CreatePipe(&fdStdOut[PIPE_READ], &fdStdOut[PIPE_WRITE], NULL, 0))
+        throw OSException("Could not create standard output redirection");
+    if (_redirectStdErr && !CreatePipe(&fdStdErr[PIPE_READ], &fdStdErr[PIPE_WRITE], NULL, 0))
+    {
+        CleanupHandles(fdStdOut, fdStdErr, fdStdIn);
+        throw OSException("Could not create standard error redirection");
+    }
+    if (_redirectStdIn && !CreatePipe(&fdStdIn[PIPE_READ], &fdStdIn[PIPE_WRITE], NULL, 0))
+    {
+        CleanupHandles(fdStdOut, fdStdErr, fdStdIn);
+        throw OSException("Could not create standard input redirection");
+    }
+    auto appName = _appExe.ToUTF16();
+    String cmdLine = String::Empty;
+    for (auto &a : _argv)
+        cmdLine += a + ' ';
+    cmdLine = cmdLine.Sub(0, cmdLine.Len() - 1);
+    auto u16CmdLine = cmdLine.ToUTF16();
+    ArrayList<fchar16> envBlock;
+    for (auto &kv : _envp)
+    {
+        auto wd = (kv.Key + '=' + kv.Value).ToUTF16();
+        envBlock += wd;
+        envBlock.Add('\0');
+    }
+    envBlock.Add('\0');
+    auto envBlockArr = envBlock.ToArray();
+    auto curDir = _workDir.PlatformPath().ToUTF16();
+    STARTUPINFOW stInfo;
+    memset(&stInfo, 0, sizeof(STARTUPINFOW));
+    stInfo.cb = sizeof(STARTUPINFOW);
+    if (_redirectStdErr || _redirectStdIn || _redirectStdOut)
+        stInfo.dwFlags = STARTF_USESTDHANDLES;
+    if (_redirectStdErr)
+        stInfo.hStdError = fdStdErr[PIPE_WRITE];
+    if (_redirectStdIn)
+        stInfo.hStdInput = fdStdIn[PIPE_READ];
+    if (_redirectStdOut)
+        stInfo.hStdOutput = fdStdOut[PIPE_WRITE];
+    PROCESS_INFORMATION pInfo;
+    if (!CreateProcessW(reinterpret_cast<LPCWSTR>(*appName), reinterpret_cast<LPWSTR>(*u16CmdLine), NULL, NULL, FALSE,
+                        CREATE_UNICODE_ENVIRONMENT | NORMAL_PRIORITY_CLASS, reinterpret_cast<LPVOID>(*envBlockArr),
+                        reinterpret_cast<LPCWSTR>(*curDir), &stInfo, &pInfo))
+    {
+        CleanupHandles(fdStdOut, fdStdErr, fdStdIn);
+        throw OSException(String("Could not create process: ") + OSPrivate::ObtainLastErrorString());
+    }
+    return (Process(&pInfo, fdStdIn, fdStdOut, fdStdErr));
 #else
     int fdStdOut[2] = {-1, -1};
     int fdStdIn[2] = {-1, -1};
@@ -234,14 +341,26 @@ Process Process::Builder::Build()
     if (pipe(commonfd) != 0)
         throw OSException("Could not create common pipe");
     if (_redirectStdOut && pipe(fdStdOut) != 0)
+    {
+        CleanupHandles(fdStdOut, fdStdErr, fdStdIn, commonfd);
         throw OSException("Could not create standard output redirection");
+    }
     if (_redirectStdErr && pipe(fdStdErr) != 0)
+    {
+        CleanupHandles(fdStdOut, fdStdErr, fdStdIn, commonfd);
         throw OSException("Could not create standard error redirection");
+    }
     if (_redirectStdIn && pipe(fdStdIn) != 0)
+    {
+        CleanupHandles(fdStdOut, fdStdErr, fdStdIn, commonfd);
         throw OSException("Could not create standard input redirection");
+    }
     auto pid = fork();
     if (pid == -1)
-        throw OSException("Could not create child process");
+    {
+        CleanupHandles(fdStdOut, fdStdErr, fdStdIn, commonfd);
+        throw OSException(String("Could not create process: ") + OSPrivate::ObtainLastErrorString());
+    }
     if (pid == 0)
     {
         // Worker/Child
@@ -253,41 +372,160 @@ Process Process::Builder::Build()
 #endif
 }
 
-Process::PStream::PStream(int pipefd[2])
-{
 #ifdef WINDOWS
-#else
-    _pipfd[0] = pipefd[0];
-    _pipfd[1] = pipefd[1];
-#endif
+Process::PStream::PStream(void *pipefd[2])
+{
+    _pipeHandles[0] = pipefd[0];
+    _pipeHandles[1] = pipefd[1];
 }
 
 Process::PStream::~PStream()
 {
-#ifdef WINDOWS
-#else
-    close(_pipfd[0]);
-    close(_pipfd[1]);
-#endif
+    if (_pipeHandles[0] != NULL)
+        CloseHandle(_pipeHandles[0]);
+    if (_pipeHandles[1] != NULL)
+        CloseHandle(_pipeHandles[1]);
 }
+
+Process::PStream::PStream(PStream &&other)
+{
+    _pipeHandles[0] = other._pipeHandles[0];
+    _pipeHandles[1] = other._pipeHandles[1];
+    other._pipeHandles[0] = NULL;
+    other._pipeHandles[1] = NULL;
+}
+
+Process::PStream &Process::PStream::operator=(PStream &&other)
+{
+    if (_pipeHandles[0] != NULL)
+        CloseHandle(_pipeHandles[0]);
+    if (_pipeHandles[1] != NULL)
+        CloseHandle(_pipeHandles[1]);
+    _pipeHandles[0] = other._pipeHandles[0];
+    _pipeHandles[1] = other._pipeHandles[1];
+    other._pipeHandles[0] = NULL;
+    other._pipeHandles[1] = NULL;
+    return (*this);
+}
+#else
+Process::PStream::PStream(int pipefd[2])
+{
+    _pipfd[0] = pipefd[0];
+    _pipfd[1] = pipefd[1];
+}
+
+Process::PStream::~PStream()
+{
+    if (_pipfd[0] != -1)
+        close(_pipfd[0]);
+    if (_pipfd[1] != -1)
+        close(_pipfd[1]);
+}
+
+Process::PStream::PStream(PStream &&other)
+{
+    _pipfd[0] = other._pipfd[0];
+    _pipfd[1] = other._pipfd[1];
+    other._pipfd[0] = -1;
+    other._pipfd[1] = -1;
+}
+
+Process::PStream &Process::PStream::operator=(PStream &&other)
+{
+    if (_pipfd[0] != -1)
+        close(_pipfd[0]);
+    if (_pipfd[1] != -1)
+        close(_pipfd[1]);
+    _pipfd[0] = other._pipfd[0];
+    _pipfd[1] = other._pipfd[1];
+    other._pipfd[0] = -1;
+    other._pipfd[1] = -1;
+    return (*this);
+}
+#endif
 
 fsize Process::PStream::Read(void *buf, fsize bufsize)
 {
 #ifdef WINDOWS
+    DWORD read;
+    if (!ReadFile(_pipeHandles[PIPE_READ], buf, (DWORD)bufsize, &read, NULL))
+        throw IOException("Cannot read from pipe");
+    return ((fsize)read);
 #else
-    return (read(_pipfd[PIPE_READ], buf, bufsize));
+    int res = read(_pipfd[PIPE_READ], buf, bufsize);
+    if (res == -1)
+        throw IOException("Cannot read from pipe");
+    return ((fsize)res);
 #endif
 }
 
 fsize Process::PStream::Write(const void *buf, fsize bufsize)
 {
 #ifdef WINDOWS
+    DWORD written;
+    if (!WriteFile(_pipeHandles[PIPE_WRITE], buf, (DWORD)bufsize, &written, NULL))
+        throw IOException("Cannot write to pipe");
+    return ((fsize)written);
 #else
-    return (write(_pipfd[PIPE_WRITE], buf, bufsize));
+    int res = write(_pipfd[PIPE_WRITE], buf, bufsize);
+    if (res == -1)
+        throw IOException("Cannot write to pipe");
+    return ((fsize)res);
 #endif
 }
 
 #ifdef WINDOWS
+Process::Process(void *pinfo, void *fdStdIn[2], void *fdStdOut[2], void *fdStdErr[2])
+    : _lastExitCode(-1)
+    , _redirectStdIn(fdStdIn[PIPE_WRITE] != NULL)
+    , _redirectStdOut(fdStdOut[PIPE_READ] != NULL)
+    , _redirectStdErr(fdStdErr[PIPE_READ] != NULL)
+    , _stdIn(fdStdIn)
+    , _stdOut(fdStdOut)
+    , _stdErr(fdStdErr)
+{
+    PROCESS_INFORMATION *pInfo = reinterpret_cast<PROCESS_INFORMATION *>(pinfo);
+    _pHandle = pInfo->hProcess;
+    _tHandle = pInfo->hThread;
+}
+
+Process::Process(Process &&other)
+    : _lastExitCode(other._lastExitCode)
+    , _redirectStdIn(other._redirectStdIn)
+    , _redirectStdOut(other._redirectStdOut)
+    , _redirectStdErr(other._redirectStdErr)
+    , _stdIn(std::move(other._stdIn))
+    , _stdOut(std::move(other._stdOut))
+    , _stdErr(std::move(other._stdErr))
+    , _pHandle(other._pHandle)
+    , _tHandle(other._tHandle)
+{
+    other._pHandle = NULL;
+    other._tHandle = NULL;
+}
+
+Process &Process::operator=(Process &&other)
+{
+    if (_pHandle != NULL && _tHandle != NULL)
+    {
+        if (_lastExitCode == -1)
+            TerminateProcess(_pHandle, 1);
+        CloseHandle(_pHandle);
+        CloseHandle(_tHandle);
+    }
+    _lastExitCode = other._lastExitCode;
+    _redirectStdIn = other._redirectStdIn;
+    _redirectStdOut = other._redirectStdOut;
+    _redirectStdErr = other._redirectStdErr;
+    _stdIn = std::move(other._stdIn);
+    _stdOut = std::move(other._stdOut);
+    _stdErr = std::move(other._stdErr);
+    _pHandle = other._pHandle;
+    _tHandle = other._tHandle;
+    other._pHandle = NULL;
+    other._tHandle = NULL;
+    return (*this);
+}
 #else
 Process::Process(int pid, int fdStdIn[2], int fdStdOut[2], int fdStdErr[2])
     : _lastExitCode(-1)
@@ -300,13 +538,49 @@ Process::Process(int pid, int fdStdIn[2], int fdStdOut[2], int fdStdErr[2])
     , _pid(pid)
 {
 }
+
+Process::Process(Process &&other)
+    : _lastExitCode(other._lastExitCode)
+    , _redirectStdIn(other._redirectStdIn)
+    , _redirectStdOut(other._redirectStdOut)
+    , _redirectStdErr(other._redirectStdErr)
+    , _stdIn(std::move(other._stdIn))
+    , _stdOut(std::move(other._stdOut))
+    , _stdErr(std::move(other._stdErr))
+    , _pid(other._pid)
+{
+    other._pid = -1;
+}
+
+Process &Process::operator=(Process &&other)
+{
+    if (_pid != -1 && _lastExitCode == -1)
+        kill(_pid, SIGKILL);
+    _lastExitCode = other._lastExitCode;
+    _redirectStdIn = other._redirectStdIn;
+    _redirectStdOut = other._redirectStdOut;
+    _redirectStdErr = other._redirectStdErr;
+    _stdIn = std::move(other._stdIn);
+    _stdOut = std::move(other._stdOut);
+    _stdErr = std::move(other._stdErr);
+    _pid = other._pid;
+    other._pid = -1;
+    return (*this);
+}
 #endif
 
 Process::~Process()
 {
 #ifdef WINDOWS
+    if (_pHandle != NULL && _tHandle != NULL)
+    {
+        if (_lastExitCode == -1)
+            TerminateProcess(_pHandle, 1);
+        CloseHandle(_pHandle);
+        CloseHandle(_tHandle);
+    }
 #else
-    if (_lastExitCode == -1)
+    if (_pid != -1 && _lastExitCode == -1)
         kill(_pid, SIGKILL);
 #endif
 }
@@ -314,11 +588,12 @@ Process::~Process()
 void Process::Wait()
 {
 #ifdef WINDOWS
-    if (!WaitForSingleObject(_handle))
-        throw OSException("Error waiting process termination");
+    DWORD res = WaitForSingleObject(_pHandle, UInt::MaxValue);
+    if (res != 0)
+        throw OSException(String("Error waiting process termination: ") + OSPrivate::ObtainLastErrorString());
 #else
     if (waitpid(_pid, &_lastExitCode, 0) == -1)
-        throw OSException("Error waiting process termination");
+        throw OSException(String("Error waiting process termination: ") + OSPrivate::ObtainLastErrorString());
     _lastExitCode = WEXITSTATUS(_lastExitCode);
 #endif
 }
@@ -345,12 +620,12 @@ void Process::Kill(bool force)
 #ifdef WINDOWS
     if (!force)
     {
-        DWORD pid = GetProcessId(_handle);
+        DWORD pid = GetProcessId(_pHandle);
         if (AttachConsole(pid))
         {
             SetConsoleCtrlHandler(NULL, true); // Disable Ctrl-C handling for our program
             GenerateConsoleCtrlEvent(CTRL_C_EVENT, 0);
-            WaitForSingleObject(hProcess, 1000);
+            WaitForSingleObject(_pHandle, 1000);
             FreeConsole();
             SetConsoleCtrlHandler(NULL, false); // Re-enable Ctrl-C handling
         }
@@ -365,7 +640,7 @@ void Process::Kill(bool force)
     }
     else
     {
-        if (!TerminateProcess(_handle, 1))
+        if (!TerminateProcess(_pHandle, 1))
             throw OSException("Could not terminate process");
     }
 #else
@@ -379,14 +654,17 @@ fint Process::GetExitCode()
     if (_lastExitCode != -1)
         return (_lastExitCode);
 #ifdef WINDOWS
-    if (!GetExitCodeProcess(_handle, &_lastExitCode))
-        throw OSException("Could not poll target process");
-    if (_lastExitCode == STILL_RUNNING)
+    //0x80000000
+    DWORD res;
+    if (!GetExitCodeProcess(_pHandle, &res))
+        throw OSException(String("Could not poll target process: ") + OSPrivate::ObtainLastErrorString());
+    _lastExitCode = res;
+    if (_lastExitCode == STILL_ACTIVE)
         _lastExitCode = -1;
 #else
     int res = waitpid(_pid, &_lastExitCode, WNOHANG);
     if (res == -1)
-        throw OSException("Could not poll target process");
+        throw OSException(String("Could not poll target process: ") + OSPrivate::ObtainLastErrorString());
     if (res == 0)
         _lastExitCode = -1;
     else

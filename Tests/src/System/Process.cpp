@@ -50,7 +50,7 @@ TEST(Process, Simple)
     EXPECT_THROW(proc.GetStandardError(), bpf::system::OSException);
     EXPECT_THROW(proc.GetStandardInput(), bpf::system::OSException);
     EXPECT_THROW(proc.GetStandardOutput(), bpf::system::OSException);
-    EXPECT_EQ(proc.GetExitCode(), 0);
+    EXPECT_EQ(proc.GetExitCode(), 1);
 }
 
 #ifdef WINDOWS
