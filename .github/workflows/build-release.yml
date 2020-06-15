@@ -1,0 +1,82 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*' # Release anything that starts with letter v
+
+jobs:
+  setup-release:
+    if: github.ref == 'refs/heads/release'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: 1466587594/get-current-time@v1
+      id: current-time
+      with:
+        format: "MM-DD-YYYY HH:mm:ss UTC"
+        utcOffset: "+00:00"
+    - uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release-${{ github.ref }}
+        body: |
+          Release version: ${{ github.ref }}
+          Build time: ${{ steps.current-time.outputs.time }}
+        draft: false
+        prerelease: false
+  build:
+    if: github.ref == 'refs/heads/release'
+    needs: [ setup-release ]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            GENERATOR: "DEB"
+            FILE: "BPF.deb"
+            PRETTYOS: "Ubuntu"
+          - os: windows-latest
+            GENERATOR: "WIX"
+            FILE: "BPF.msi"
+            PRETTYOS: "Windows"
+          - os: macos-latest
+            GENERATOR: "productbuild"
+            FILE: "BPF.pkg"
+            PRETTYOS: "OSX"
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+    - uses: nelonoel/branch-name@v1
+    - uses: Yuri6037/setup-cpp@master
+    - name: Prepare
+      run: |
+        pip3 install conan
+    - name: Build
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DBUILD_TYPE=Debug -DINSTALL_DIR="../"
+        cmake --build . --target install --config Debug
+        cmake .. -DBUILD_TYPE=Release -DINSTALL_DIR="../"
+        cmake --build . --target install --config Release
+    - name: Create Package
+      run: |
+        cpack -G ${{ matrix.GENERATOR }}
+        cpack -G ZIP
+    - uses: svenstaro/upload-release-action@v1-release
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: BPF.zip
+        asset_name: BPF-${{ matrix.PRETTYOS }}-x64.zip
+        tag: ${{ github.ref }}
+        overwrite: true
+    - uses: svenstaro/upload-release-action@v1-release
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: ${{ matrix.FILE }}
+        asset_name: ${{ matrix.FILE }}
+        tag: ${{ github.ref }}
+        overwrite: true

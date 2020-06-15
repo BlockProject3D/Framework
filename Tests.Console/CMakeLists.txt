@@ -8,4 +8,4 @@ set(SOURCES
     src/LowLevelMain.cpp
 )
 
-bp_setup_program(${PROJECT_NAME} include)
+bp_setup_program(${PROJECT_NAME})

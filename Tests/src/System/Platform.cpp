@@ -68,7 +68,7 @@ TEST(Platform, Env)
 
     EXPECT_STREQ(*var.ShortName, "BPF");
     EXPECT_STREQ(*var.Name, "BlockProject Framework");
-    EXPECT_STREQ(*var.Version, "2.7");
+    EXPECT_STREQ(*var.Version, BP_VERSION_STRING);
     EXPECT_EQ(var.VersionInt, BP_MODULE_VERSION_INT);
 
 }
