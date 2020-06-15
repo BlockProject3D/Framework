@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(BPF)
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/../CMakes/Framework.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/../Version.cmake")
 
 set(SOURCES
     ./include/Framework/IO/File.hpp
@@ -165,7 +166,7 @@ set(SOURCES
     ./src/Framework/IO/TextWriter.cpp
     ./src/Framework/IO/Console.cpp
     ./src/Framework/IO/ConsoleReader.cpp
-    ./src/Framework/IO/ConsoleWriter.cpp    
+    ./src/Framework/IO/ConsoleWriter.cpp
     ./src/Framework/Log/DefaultLogger.cpp
     ./src/Framework/Log/FileLogger.cpp
     ./src/Framework/Log/Logger.cpp
@@ -210,12 +211,13 @@ else (PLATFORM STREQUAL "Windows")
 endif (PLATFORM STREQUAL "Windows")
 
 bp_product_properties(BPF
-    VERSION_MAJOR 2
-    VERSION_MINOR 7
+    VERSION_MAJOR ${BP_VERSION_MAJOR}
+    VERSION_MINOR ${BP_VERSION_MINOR}
     DESCRIPTION "BlockProject 3D Framework"
 )
 
-bp_setup_module(BPF BPF_API)
+bp_setup_module(BPF API_MACRO BPF_API PACKAGE)
+target_compile_definitions(BPF PRIVATE "BP_VERSION_STRING=\"${BP_VERSION_STRING}\"")
 if (NOT WIN32)
 	target_link_libraries(BPF PRIVATE pthread)
 	target_link_libraries(BPF PRIVATE ${CMAKE_DL_LIBS})
