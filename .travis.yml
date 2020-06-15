@@ -23,7 +23,7 @@ jobs:
         - mkdir build && cd build
         - cmake .. -DCOVERAGE=1
         - cmake --build .
-        - eval ./BPF.Tests
+        - ./Debug/BPF.Tests
         - cat ../Tests.Console/InputFile | ./Debug/BPF.Tests.Console > testlog
         - diff testlog ../Tests.Console/OutputFile
         - cat ../Tests.Console/InputFileCrash | ./Debug/BPF.Tests.Console > testlog
@@ -42,7 +42,7 @@ script:
   - mkdir build && cd build
   - cmake ..
   - cmake --build .
-  - echo ./Debug/BPF.Tests
+  - ./Debug/BPF.Tests
   - cat ../Tests.Console/InputFile | ./Debug/BPF.Tests.Console > testlog
   - diff testlog ../Tests.Console/OutputFile
   - cat ../Tests.Console/InputFileCrash | ./Debug/BPF.Tests.Console > testlog
