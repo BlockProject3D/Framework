@@ -38,9 +38,9 @@ jobs:
     - name: Test Debug
       run: |
         faketty ./build/Debug/BPF.Tests
-        cat Tests.Console/InputFile | ./build/Release/BPF.Tests.Console > testlog
+        cat Tests.Console/InputFile | ./build/Debug/BPF.Tests.Console > testlog
         diff testlog Tests.Console/OutputFile
-        cat Tests.Console/InputFileCrash | ./build/Release/BPF.Tests.Console > testlog
+        cat Tests.Console/InputFileCrash | ./build/Debug/BPF.Tests.Console > testlog
         diff testlog Tests.Console/OutputFileCrash
     - name: Build Release
       run: |
