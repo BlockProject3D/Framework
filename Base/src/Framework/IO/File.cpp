@@ -69,8 +69,8 @@ File::File(const bpf::String &path)
         result = result.Sub(0, result.Len() - 1);
     FullPath = std::move(result);
     UserPath = FullPath.Replace('\\', '/');
-    FileName = path.Sub(path.LastIndexOf('\\') + 1);
-    FileExt = path.Sub(path.LastIndexOf('.') + 1);
+    FileName = FullPath.Sub(FullPath.LastIndexOf('\\') + 1);
+    FileExt = FullPath.Sub(FullPath.LastIndexOf('.') + 1);
 #else
     String result = String::Empty;
     char old = '\0';
