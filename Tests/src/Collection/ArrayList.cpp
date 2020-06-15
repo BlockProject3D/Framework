@@ -28,6 +28,7 @@
 
 #include <Framework/Collection/ArrayList.hpp>
 #include <Framework/Collection/Stringifier.ArrayList.hpp>
+#include <Framework/Collection/Stringifier.Array.hpp>
 #include <Framework/Memory/Utility.hpp>
 #include <Framework/String.hpp>
 #include <cassert>
