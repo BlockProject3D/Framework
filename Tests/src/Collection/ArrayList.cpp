@@ -145,7 +145,7 @@ TEST(ArrayList, Equal)
     EXPECT_TRUE(lst != lst3);
 }
 
-TEST(ArrayList, Concatenate)
+TEST(ArrayList, Concatenate_1)
 {
     ArrayList<int> lst = {0, 3, 7, 4};
     ArrayList<int> lst1 = {0, 3, 7, 4, 8};
@@ -155,6 +155,18 @@ TEST(ArrayList, Concatenate)
     lst1 += lst;
     EXPECT_STREQ(*String::ValueOf(lst1), "[0, 3, 7, 4, 8, 0, 3, 7, 4]");
     EXPECT_STREQ(*String::ValueOf(lst), "[0, 3, 7, 4]");
+}
+
+TEST(ArrayList, Concatenate_2)
+{
+    ArrayList<int> lst = {0, 3, 7, 4};
+    Array<int> lst1 = {0, 3, 7, 4, 8};
+
+    ArrayList<int> concatenated = lst + lst1;
+    EXPECT_STREQ(*String::ValueOf(concatenated), "[0, 3, 7, 4, 0, 3, 7, 4, 8]");
+    lst += lst1;
+    EXPECT_STREQ(*String::ValueOf(lst), "[0, 3, 7, 4, 0, 3, 7, 4, 8]");
+    EXPECT_STREQ(*String::ValueOf(lst1), "[0, 3, 7, 4, 8]");
 }
 
 TEST(ArrayList, FirstLast_1)
