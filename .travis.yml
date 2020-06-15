@@ -1,63 +1,29 @@
 language: cpp
 
-builddbgscript: &builddbgscript
-  script:
-    - mkdir build && cd build
-    - cmake ..
-    - cmake --build .
-    - echo $BP_TEST_RUN_CMD && eval $BP_TEST_RUN_CMD
-    - cat ../Tests.Console/InputFile | ./Debug/BPF.Tests.Console > testlog
-    - diff testlog ../Tests.Console/OutputFile
-    - cat ../Tests.Console/InputFileCrash | ./Debug/BPF.Tests.Console > testlog
-    - diff testlog ../Tests.Console/OutputFileCrash
-
 jobs:
   include:
     - stage: debug-test
       os: windows
       compiler: MSVC
-      env:
-        - BP_TEST_RUN_CMD="./Debug/BPF.Tests"
       before_install:
         - choco install python3 --params "/InstallDir:C:\\Python"
         - export PATH="/c/Python:/c/Python/Scripts:$PATH"
         - python -m pip install --upgrade pip wheel
         - pip install conan
-      <<: *builddbgscript
     - stage: debug-test
       os: linux
       dist: xenial
       compiler:
         - gcc
         - clang
-      env:
-        - BP_TEST_RUN_CMD="./Debug/BPF.Tests"
-      before_install:
-        - pip install conan --user
-      <<: *builddbgscript
-    - stage: debug-test
-      os: osx
-      compiler: clang
-      env:
-        - BP_TEST_RUN_CMD="./Debug/BPF.Tests"
-      before_install:
-        - pip install conan
-      <<: *builddbgscript
-
-    - stage: coverage
-      os: linux
-      dist: xenial
-      compiler: gcc
-      env:
-        - BP_TEST_RUN_CMD="./Debug/BPF.Tests"
       before_install:
         - sudo apt-get install -y lcov
         - pip install conan --user
       script:
         - mkdir build && cd build
-        - cmake .. -DCOVERAGE=1 > /dev/null
-        - cmake --build . > /dev/null
-        - eval $BP_TEST_RUN_CMD > /dev/null
+        - cmake .. -DCOVERAGE=1
+        - cmake --build .
+        - eval ./BPF.Tests
         - cat ../Tests.Console/InputFile | ./Debug/BPF.Tests.Console > testlog
         - diff testlog ../Tests.Console/OutputFile
         - cat ../Tests.Console/InputFileCrash | ./Debug/BPF.Tests.Console > testlog
@@ -67,3 +33,17 @@ jobs:
         - lcov --remove coverage.info '*/gtest/*' --output-file coverage.info
         - lcov --remove coverage.info '*Tests/*' --output-file coverage.info
         - bash <(curl -s https://codecov.io/bash) -f coverage.info || echo "Codecov did not collect coverage reports"
+    - stage: debug-test
+      os: osx
+      compiler: clang
+      before_install:
+        - pip install conan
+script:
+  - mkdir build && cd build
+  - cmake ..
+  - cmake --build .
+  - echo ./Debug/BPF.Tests
+  - cat ../Tests.Console/InputFile | ./Debug/BPF.Tests.Console > testlog
+  - diff testlog ../Tests.Console/OutputFile
+  - cat ../Tests.Console/InputFileCrash | ./Debug/BPF.Tests.Console > testlog
+  - diff testlog ../Tests.Console/OutputFileCrash
