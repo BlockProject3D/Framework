@@ -26,10 +26,10 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <Framework/IO/TextReader.hpp>
 #include <Framework/IO/IOException.hpp>
-#include <Framework/System/Process.hpp>
+#include <Framework/IO/TextReader.hpp>
 #include <Framework/System/OSException.hpp>
+#include <Framework/System/Process.hpp>
 #include <gtest/gtest.h>
 
 #ifdef WINDOWS
@@ -50,14 +50,51 @@ TEST(Process, Simple)
     EXPECT_THROW(proc.GetStandardError(), bpf::system::OSException);
     EXPECT_THROW(proc.GetStandardInput(), bpf::system::OSException);
     EXPECT_THROW(proc.GetStandardOutput(), bpf::system::OSException);
+#ifdef WINDOWS
     EXPECT_EQ(proc.GetExitCode(), 1);
+#else
+    EXPECT_EQ(proc.GetExitCode(), 0);
+#endif
 }
 
 #ifdef WINDOWS
-#else
 TEST(Process, RedirectOutput)
 {
-    auto proc = bpf::system::Process::Builder().SetApplication("uname").RedirectOutput().Build();
+    auto proc = bpf::system::Process::Builder()
+        .SetApplication("where.exe")
+        .SetArguments({"help.exe"})
+        .RedirectOutput()
+        .Build();
+    bpf::io::TextReader reader(proc.GetStandardOutput());
+    bpf::String text;
+    EXPECT_EQ(proc.GetExitCode(), 0);
+    text += reader.ReadAll();
+    EXPECT_GT(text.Size(), 0);
+    EXPECT_GT(text.Len(), 0);
+    EXPECT_TRUE(text.Contains("help.exe"));
+}
+#else
+TEST(Process, RedirectOutput_1)
+{
+    auto proc = bpf::system::Process::Builder()
+        .SetApplication("uname")
+        .RedirectOutput()
+        .Build();
+    bpf::io::TextReader reader(proc.GetStandardOutput());
+    bpf::String text;
+    EXPECT_EQ(proc.GetExitCode(), 0);
+    text += reader.ReadAll();
+    EXPECT_GT(text.Size(), 0);
+    EXPECT_GT(text.Len(), 0);
+}
+
+TEST(Process, RedirectOutput_2)
+{
+    auto proc = bpf::system::Process::Builder()
+        .SetApplication("uname")
+        .SetArguments({"-a"})
+        .RedirectOutput()
+        .Build();
     bpf::io::TextReader reader(proc.GetStandardOutput());
     bpf::String text;
     EXPECT_EQ(proc.GetExitCode(), 0);

@@ -265,8 +265,8 @@ Process Process::Builder::Build()
     auto var = std::move(_argv);
     _argv = Array<String>(var.Size() + 1);
     _argv[0] = std::move(_appName);
-    for (fsize i = 1; i < var.Size(); ++i)
-        _argv[i] = std::move(var[i]);
+    for (fsize i = 0; i != var.Size(); ++i)
+        _argv[i + 1] = std::move(var[i]);
     for (auto &a : _argv)
     {
         if (*a == Null)
