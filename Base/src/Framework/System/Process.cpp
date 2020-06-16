@@ -49,6 +49,7 @@ constexpr int PIPE_READ = 0;
     #include <string.h>
     #include <unistd.h>
     #include <sys/wait.h>
+    #include <signal.h>
 #endif
 
 using namespace bpf;
@@ -265,10 +266,7 @@ Process Process::Builder::Build()
     _argv = Array<String>(var.Size() + 1);
     _argv[0] = std::move(_appName);
     for (fsize i = 1; i < var.Size(); ++i)
-    {
         _argv[i] = std::move(var[i]);
-        ++i;
-    }
     for (auto &a : _argv)
     {
         if (*a == Null)
