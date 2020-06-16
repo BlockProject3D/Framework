@@ -131,7 +131,7 @@ set(SOURCES
     ./include/Framework/Json/Writer.hpp
     ./include/Framework/Json/JsonException.hpp
     ./include/Framework/Json/JsonParseException.hpp
-    ./include/Framework/API.hpp
+    ./include/Framework/Api.hpp
     ./include/Framework/BinUtils.hpp
     ./include/Framework/Types.hpp
     ./include/Framework/Tuple.hpp
