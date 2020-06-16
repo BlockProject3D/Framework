@@ -39,11 +39,12 @@ int main(int argc, char **argv, char **envp)
 {
 #ifdef WINDOWS
     bpf::system::WindowsApp app(Null, true);
+    Main(app, app.GetArguments());
 #else
     bpf::system::UnixApp app(argv, envp);
+    Main(app, app.GetArguments(argv, argc));
 #endif
 
-    Main(app, app.GetArguments());
     ::testing::InitGoogleTest(&argc, argv);
     int val = RUN_ALL_TESTS();
     return (val);

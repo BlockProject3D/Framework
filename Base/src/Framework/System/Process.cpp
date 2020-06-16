@@ -32,8 +32,8 @@ constexpr int PIPE_READ = 0;
 #include "Framework/System/Process.hpp"
 #include "../IO/OSPrivate.hpp"
 #include "Framework/IO/IOException.hpp"
-#include "Framework/System/OSException.hpp"
 #include "Framework/Scalar.hpp"
+#include "Framework/System/OSException.hpp"
 #ifdef WINDOWS
     #include "Framework/Collection/ArrayList.hpp"
     #include <Windows.h>
@@ -185,7 +185,7 @@ void Process::Builder::ProcessWorker(int fdStdOut[2], int fdStdErr[2], int fdStd
     }
     if (fcntl(commonfd[PIPE_WRITE], FD_CLOEXEC) != 0)
     {
-        write(commonfd[PIPE_WRITE], "fcntl failure", 14);
+        BP_IGNORE(write(commonfd[PIPE_WRITE], "fcntl failure", 14));
         close(commonfd[PIPE_WRITE]);
         exit(1);
     }
@@ -195,7 +195,7 @@ void Process::Builder::ProcessWorker(int fdStdOut[2], int fdStdErr[2], int fdStd
         goto redirecterr;
     if (_redirectStdIn && dup2(fdStdIn[PIPE_READ], 0) == -1)
         goto redirecterr;
-    chdir(*_workDir.PlatformPath());
+    BP_IGNORE(chdir(*_workDir.PlatformPath()));
     for (auto &a : _argv)
     {
         argv[i] = reinterpret_cast<char *>(malloc(a.Size() + 1));
@@ -219,16 +219,16 @@ void Process::Builder::ProcessWorker(int fdStdOut[2], int fdStdErr[2], int fdStd
     envp[i] = NULL;
     if (execve(*_appExe, argv, envp) == -1)
     {
-        write(commonfd[PIPE_WRITE], "execve failure", 15);
+        BP_IGNORE(write(commonfd[PIPE_WRITE], "execve failure", 15));
         close(commonfd[PIPE_WRITE]);
         exit(1);
     }
 redirecterr:
-    write(commonfd[PIPE_WRITE], "Could not create one or more redirection(s)", 44);
+    BP_IGNORE(write(commonfd[PIPE_WRITE], "Could not create one or more redirection(s)", 44));
     close(commonfd[PIPE_WRITE]);
     exit(1);
 mallocerr:
-    write(commonfd[PIPE_WRITE], "malloc failure", 15);
+    BP_IGNORE(write(commonfd[PIPE_WRITE], "malloc failure", 15));
     close(commonfd[PIPE_WRITE]);
     exit(1);
 }
@@ -654,7 +654,7 @@ fint Process::GetExitCode()
     if (_lastExitCode != -1)
         return (_lastExitCode);
 #ifdef WINDOWS
-    //0x80000000
+    // 0x80000000
     DWORD res;
     if (!GetExitCodeProcess(_pHandle, &res))
         throw OSException(String("Could not poll target process: ") + OSPrivate::ObtainLastErrorString());

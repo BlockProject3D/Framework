@@ -59,7 +59,7 @@ namespace bpf
 #ifdef WINDOWS
                 void CleanupHandles(void *fdStdOut[2], void *fdStdErr[2], void *fdStdIn[2]);
 #else
-                void CloseHandles(int fdStdOut[2], int fdStdErr[2], int fdStdIn[2], int commonfd[2]);
+                void CleanupHandles(int fdStdOut[2], int fdStdErr[2], int fdStdIn[2], int commonfd[2]);
                 void ProcessWorker(int fdStdOut[2], int fdStdErr[2], int fdStdIn[2], int commonfd[2]);
                 Process ProcessMaster(int pid, int fdStdOut[2], int fdStdErr[2], int fdStdIn[2], int commonfd[2]);
 #endif
