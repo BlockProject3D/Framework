@@ -39,11 +39,16 @@ constexpr int PIPE_READ = 0;
     #include <Windows.h>
     #include <cstring>
     #include <set>
-#else
+#elif LINUX
     #include <fcntl.h>
     #include <string.h>
     #include <unistd.h>
     #include <wait.h>
+#else
+    #include <fcntl.h>
+    #include <string.h>
+    #include <unistd.h>
+    #include <sys/wait.h>
 #endif
 
 using namespace bpf;
