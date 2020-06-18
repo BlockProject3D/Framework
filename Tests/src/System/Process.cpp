@@ -30,7 +30,10 @@
 #include <Framework/IO/TextReader.hpp>
 #include <Framework/System/OSException.hpp>
 #include <Framework/System/Process.hpp>
+#include <Framework/Collection/Stringifier.HashMap.hpp>
 #include <gtest/gtest.h>
+
+extern bpf::system::Application *g_app;
 
 #ifdef WINDOWS
 constexpr const char *SAMPLE_EXE_NAME = "help.exe";
@@ -41,6 +44,7 @@ constexpr const char *SAMPLE_EXE_NAME = "ls";
 TEST(Process, SimpleErr)
 {
     EXPECT_THROW(bpf::system::Process::Builder().SetApplication("does not exist").Build(), bpf::io::IOException);
+    EXPECT_THROW(bpf::system::Process::Builder().SetApplication("./does not exist").Build(), bpf::io::IOException);
 }
 
 TEST(Process, Simple)
@@ -60,13 +64,14 @@ TEST(Process, Simple)
 #ifdef WINDOWS
 TEST(Process, RedirectOutput)
 {
-    auto proc = bpf::system::Process::Builder()
+    auto proc = bpf::system::Process::Builder(*g_app)
         .SetApplication("where.exe")
         .SetArguments({"help.exe"})
         .RedirectOutput()
         .Build();
     bpf::io::TextReader reader(proc.GetStandardOutput());
     bpf::String text;
+    proc.Wait();
     EXPECT_EQ(proc.GetExitCode(), 0);
     text += reader.ReadAll();
     EXPECT_GT(text.Size(), 0);
@@ -82,6 +87,7 @@ TEST(Process, RedirectOutput_1)
         .Build();
     bpf::io::TextReader reader(proc.GetStandardOutput());
     bpf::String text;
+    proc.Wait();
     EXPECT_EQ(proc.GetExitCode(), 0);
     text += reader.ReadAll();
     EXPECT_GT(text.Size(), 0);
@@ -97,6 +103,23 @@ TEST(Process, RedirectOutput_2)
         .Build();
     bpf::io::TextReader reader(proc.GetStandardOutput());
     bpf::String text;
+    proc.Wait();
+    EXPECT_EQ(proc.GetExitCode(), 0);
+    text += reader.ReadAll();
+    EXPECT_GT(text.Size(), 0);
+    EXPECT_GT(text.Len(), 0);
+}
+
+TEST(Process, RedirectOutput_3)
+{
+    auto proc = bpf::system::Process::Builder(*g_app)
+        .SetApplication("uname")
+        .SetArguments({"-a"})
+        .RedirectOutput()
+        .Build();
+    bpf::io::TextReader reader(proc.GetStandardOutput());
+    bpf::String text;
+    proc.Wait();
     EXPECT_EQ(proc.GetExitCode(), 0);
     text += reader.ReadAll();
     EXPECT_GT(text.Size(), 0);

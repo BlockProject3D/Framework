@@ -32,8 +32,11 @@
 #include <Framework/IO/ConsoleWriter.hpp>
 #include <Framework/System/Platform.hpp>
 
+bpf::system::Application *g_app;
+
 int Main(bpf::system::Application &app, const bpf::collection::Array<bpf::String> &args)
 {
+    g_app = &app;
     bpf::io::ConsoleWriter console;
     const auto &newLine = bpf::system::Platform::GetOSInfo().NewLine;
     assert(app.Environment.Size() > 0);

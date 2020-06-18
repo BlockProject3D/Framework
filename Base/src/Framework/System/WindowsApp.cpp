@@ -78,6 +78,8 @@ HashMap<String, String> WindowsApp::SetupEnvironment()
         ++i;
     }
     FreeEnvironmentStringsW(ptr);
+    if (env.HasKey("Path"))
+        env["PATH"] = env["Path"]; // Allow apps to use "PATH" to refer to the environment path on both Unix and Windows systems
     return (env);
 }
 

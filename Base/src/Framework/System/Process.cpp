@@ -285,17 +285,21 @@ Process Process::Builder::Build()
             throw OSException("Could not obtain system root directory");
         _envp["SystemRoot"] = String::FromUTF16(reinterpret_cast<const fchar16 *>(buf));
     }
+    SECURITY_ATTRIBUTES sa;
+    sa.nLength = sizeof(SECURITY_ATTRIBUTES);
+    sa.bInheritHandle = TRUE;
+    sa.lpSecurityDescriptor = NULL;
     HANDLE fdStdOut[2] = {NULL, NULL};
     HANDLE fdStdIn[2] = {NULL, NULL};
     HANDLE fdStdErr[2] = {NULL, NULL};
-    if (_redirectStdOut && !CreatePipe(&fdStdOut[PIPE_READ], &fdStdOut[PIPE_WRITE], NULL, 0))
+    if (_redirectStdOut && (!CreatePipe(&fdStdOut[PIPE_READ], &fdStdOut[PIPE_WRITE], &sa, 0) /*|| !SetHandleInformation(fdStdOut[PIPE_READ], HANDLE_FLAG_INHERIT, 0)*/))
         throw OSException("Could not create standard output redirection");
-    if (_redirectStdErr && !CreatePipe(&fdStdErr[PIPE_READ], &fdStdErr[PIPE_WRITE], NULL, 0))
+    if (_redirectStdErr && (!CreatePipe(&fdStdErr[PIPE_READ], &fdStdErr[PIPE_WRITE], &sa, 0) /*|| !SetHandleInformation(fdStdErr[PIPE_READ], HANDLE_FLAG_INHERIT, 0)*/))
     {
         CleanupHandles(fdStdOut, fdStdErr, fdStdIn);
         throw OSException("Could not create standard error redirection");
     }
-    if (_redirectStdIn && !CreatePipe(&fdStdIn[PIPE_READ], &fdStdIn[PIPE_WRITE], NULL, 0))
+    if (_redirectStdIn && (!CreatePipe(&fdStdIn[PIPE_READ], &fdStdIn[PIPE_WRITE], &sa, 0) /*|| !SetHandleInformation(fdStdIn[PIPE_WRITE], HANDLE_FLAG_INHERIT, 0)*/))
     {
         CleanupHandles(fdStdOut, fdStdErr, fdStdIn);
         throw OSException("Could not create standard input redirection");
@@ -311,7 +315,6 @@ Process Process::Builder::Build()
     {
         auto wd = (kv.Key + '=' + kv.Value).ToUTF16();
         envBlock += wd;
-        envBlock.Add('\0');
     }
     envBlock.Add('\0');
     auto envBlockArr = envBlock.ToArray();
@@ -320,7 +323,12 @@ Process Process::Builder::Build()
     memset(&stInfo, 0, sizeof(STARTUPINFOW));
     stInfo.cb = sizeof(STARTUPINFOW);
     if (_redirectStdErr || _redirectStdIn || _redirectStdOut)
+    {
         stInfo.dwFlags = STARTF_USESTDHANDLES;
+        stInfo.hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
+        stInfo.hStdError = GetStdHandle(STD_ERROR_HANDLE);
+        stInfo.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
+    }
     if (_redirectStdErr)
         stInfo.hStdError = fdStdErr[PIPE_WRITE];
     if (_redirectStdIn)
@@ -328,13 +336,19 @@ Process Process::Builder::Build()
     if (_redirectStdOut)
         stInfo.hStdOutput = fdStdOut[PIPE_WRITE];
     PROCESS_INFORMATION pInfo;
-    if (!CreateProcessW(reinterpret_cast<LPCWSTR>(*appName), reinterpret_cast<LPWSTR>(*u16CmdLine), NULL, NULL, FALSE,
+    if (!CreateProcessW(reinterpret_cast<LPCWSTR>(*appName), reinterpret_cast<LPWSTR>(*u16CmdLine), NULL, NULL, TRUE,
                         CREATE_UNICODE_ENVIRONMENT | NORMAL_PRIORITY_CLASS, reinterpret_cast<LPVOID>(*envBlockArr),
                         reinterpret_cast<LPCWSTR>(*curDir), &stInfo, &pInfo))
     {
         CleanupHandles(fdStdOut, fdStdErr, fdStdIn);
         throw OSException(String("Could not create process: ") + OSPrivate::ObtainLastErrorString());
     }
+    if (fdStdOut[PIPE_WRITE] != NULL)
+        CloseHandle(fdStdOut[PIPE_WRITE]);
+    if (fdStdErr[PIPE_WRITE] != NULL)
+        CloseHandle(fdStdErr[PIPE_WRITE]);
+    if (fdStdIn[PIPE_READ] != NULL)
+        CloseHandle(fdStdIn[PIPE_READ]);
     return (Process(&pInfo, fdStdIn, fdStdOut, fdStdErr));
 #else
     int fdStdOut[2] = {-1, -1};
@@ -452,7 +466,7 @@ fsize Process::PStream::Read(void *buf, fsize bufsize)
 #ifdef WINDOWS
     DWORD read;
     if (!ReadFile(_pipeHandles[PIPE_READ], buf, (DWORD)bufsize, &read, NULL))
-        throw IOException("Cannot read from pipe");
+        return (0); //ReadFile is broken in this case: instead of just returning 0 bytes when empty instead it errors
     return ((fsize)read);
 #else
     int res = read(_pipfd[PIPE_READ], buf, bufsize);
