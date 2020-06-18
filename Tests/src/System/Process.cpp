@@ -48,6 +48,17 @@ TEST(Process, SimpleErr)
     EXPECT_THROW(bpf::system::Process::Builder().SetWorkingDirectory(bpf::io::File("does not exist")).Build(), bpf::io::IOException);
 }
 
+TEST(Process, ArgsEnvErr)
+{
+    auto test = bpf::String();
+    auto args = bpf::collection::Array<bpf::String>({bpf::String()}); //If not properly handled will crash the application
+    auto env = bpf::collection::HashMap<bpf::String, bpf::String>({{bpf::String(), "Value"}}); //If not properly handled will crash the application
+    auto env1 = bpf::collection::HashMap<bpf::String, bpf::String>({{"Key", bpf::String()}}); //If not properly handled will crash the application
+    EXPECT_THROW(bpf::system::Process::Builder().SetArguments(args).SetApplication(SAMPLE_EXE_NAME).Build(), bpf::system::OSException);
+    EXPECT_THROW(bpf::system::Process::Builder().SetEnvironment(env).SetApplication(SAMPLE_EXE_NAME).Build(), bpf::system::OSException);
+    EXPECT_THROW(bpf::system::Process::Builder().SetEnvironment(env1).SetApplication(SAMPLE_EXE_NAME).Build(), bpf::system::OSException);
+}
+
 TEST(Process, Simple)
 {
     auto proc = bpf::system::Process::Builder().SetApplication(SAMPLE_EXE_NAME).Build();
