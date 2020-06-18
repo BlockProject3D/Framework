@@ -435,6 +435,13 @@ String &String::operator+=(const fchar other)
 String &String::operator=(const String &other)
 {
     Memory::Free(Data);
+    if (other.Data == Null)
+    {
+        Data = Null;
+        StrLen = 0;
+        UnicodeLen = 0;
+        return (*this);
+    }
     Data = static_cast<char *>(Memory::Malloc(sizeof(char) * (other.StrLen + 1)));
     StrLen = other.StrLen;
     CopyString(other.Data, Data, StrLen);
