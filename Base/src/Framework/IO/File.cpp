@@ -121,7 +121,7 @@ bool File::HasAccess(const int type) const
         md |= R_OK;
     if (type & FILE_ACCESS_WRITE)
         md |= W_OK;
-    if (access(*PlatformPath, md) != 0)
+    if (access(*FullPath, md) != 0)
         return (false);
     return (true);
 #endif
