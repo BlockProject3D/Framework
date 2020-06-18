@@ -36,6 +36,9 @@ bpf::system::Application *g_app;
 
 int Main(bpf::system::Application &app, const bpf::collection::Array<bpf::String> &args)
 {
+#ifndef WINDOWS
+    app.CreateConsole(); //Dummy call for coverage
+#endif
     g_app = &app;
     bpf::io::ConsoleWriter console;
     const auto &newLine = bpf::system::Platform::GetOSInfo().NewLine;

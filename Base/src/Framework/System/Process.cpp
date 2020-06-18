@@ -671,7 +671,7 @@ fint Process::GetExitCode()
     if (_lastExitCode != -1)
         return (_lastExitCode);
 #ifdef WINDOWS
-    // 0x80000000
+    // if > 0x80000000 then NT STATUS
     DWORD res;
     if (!GetExitCodeProcess(_pHandle, &res))
         throw OSException(String("Could not poll target process: ") + OSPrivate::ObtainLastErrorString());

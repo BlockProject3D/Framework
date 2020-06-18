@@ -45,6 +45,7 @@ TEST(Process, SimpleErr)
 {
     EXPECT_THROW(bpf::system::Process::Builder().SetApplication("does not exist").Build(), bpf::io::IOException);
     EXPECT_THROW(bpf::system::Process::Builder().SetApplication("./does not exist").Build(), bpf::io::IOException);
+    EXPECT_THROW(bpf::system::Process::Builder().SetWorkingDirectory(bpf::io::File("does not exist")).Build(), bpf::io::IOException);
 }
 
 TEST(Process, Simple)
@@ -116,6 +117,24 @@ TEST(Process, RedirectOutput_3)
         .SetApplication("uname")
         .SetArguments({"-a"})
         .RedirectOutput()
+        .Build();
+    bpf::io::TextReader reader(proc.GetStandardOutput());
+    bpf::String text;
+    proc.Wait();
+    EXPECT_EQ(proc.GetExitCode(), 0);
+    text += reader.ReadAll();
+    EXPECT_GT(text.Size(), 0);
+    EXPECT_GT(text.Len(), 0);
+}
+
+TEST(Process, RedirectOutput_4)
+{
+    auto args = bpf::collection::Array<bpf::String>({"-a"});
+    auto proc = bpf::system::Process::Builder()
+        .SetApplication("uname")
+        .SetArguments(args)
+        .RedirectOutput()
+        .SetWorkingDirectory(bpf::io::File("."))
         .Build();
     bpf::io::TextReader reader(proc.GetStandardOutput());
     bpf::String text;
