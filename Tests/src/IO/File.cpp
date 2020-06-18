@@ -41,6 +41,7 @@ TEST(File, Basics)
     f.CreateDir();
     EXPECT_TRUE(f.Exists());
     EXPECT_TRUE(f.IsDirectory());
+    EXPECT_TRUE(f.HasAccess(bpf::io::FILE_ACCESS_READ | bpf::io::FILE_ACCESS_WRITE));
     f.Delete();
     EXPECT_FALSE(f.Exists());
     EXPECT_FALSE(f.IsDirectory());

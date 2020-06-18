@@ -35,6 +35,9 @@ namespace bpf
 {
     namespace system
     {
+        /**
+         * Class to represent the running application
+         */
         class BPF_API Application
         {
         public:

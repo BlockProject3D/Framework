@@ -32,8 +32,9 @@ using namespace bpf::system;
 using namespace bpf::io;
 using namespace bpf;
 
-Paths::Paths(const File &root, const File &home, const File &tmp)
+Paths::Paths(const File &root, const File &data, const File &home, const File &tmp)
     : AppRoot(root)
+    , DataDir(data)
     , UserHome(home)
     , TempDir(tmp)
     , ThirdParty(root + "ThirdParty")

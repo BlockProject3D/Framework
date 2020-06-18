@@ -109,7 +109,10 @@ Paths WindowsApp::SetupPaths()
     WCHAR path[MAX_PATH];
     GetTempPathW(MAX_PATH, path);
     File tmpDir = File(String::FromUTF16(reinterpret_cast<const fchar16 *>(path)));
-    return (Paths(appRoot, userHome, tmpDir));
+    if (appRoot.HasAccess(FILE_ACCESS_READ | FILE_ACCESS_WRITE))
+        return (Paths(appRoot, appRoot, userHome, tmpDir));
+    else
+        return (Paths(appRoot, userHome + File(_fileName).Name(), userHome, tmpDir));
 }
 
 void WindowsApp::CreateConsole(const fint rows, const fint columns)

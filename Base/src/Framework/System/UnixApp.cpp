@@ -79,7 +79,10 @@ Paths UnixApp::SetupPaths()
         root = File(_fileName.Sub(0, _fileName.LastIndexOf('/')));
     }
     File tmp = _env.HasKey("TMPDIR") ? File(_env["TMPDIR"]) : File("/tmp");
-    return (Paths(root, home, tmp));
+    if (root.HasAccess(FILE_ACCESS_READ | FILE_ACCESS_WRITE))
+        return (Paths(root, root, home, tmp));
+    else
+        return (Paths(root, home + File(_fileName).Name(), home, tmp));
 }
 
 File UnixApp::GetWorkingDirectory() const

@@ -47,10 +47,12 @@ int Main(bpf::system::Application &app, const bpf::collection::Array<bpf::String
     assert(app.Props.CacheDir.Path().Len() > 0);
     assert(app.Props.TempDir.Path().Len() > 0);
     assert(app.Props.UserHome.Path().Len() > 0);
+    assert(app.Props.DataDir.Path().Len() > 0);
     console << bpf::io::Console::TextStyle(bpf::io::EConsoleColor::CYAN) << "<==== Initializing high-level main ====>" << bpf::io::Console::ClearTextStyle() << newLine;
     console.WriteLine("您好!");
     console << "WorkDir: " << app.GetWorkingDirectory().Path() << newLine;
     console << "AppRoot: " << app.Props.AppRoot.Path() << newLine;
+    console << "DataDir: " << app.Props.DataDir.Path() << newLine;
     console << "ThirdParty: " << app.Props.ThirdParty.Path() << newLine;
     console << "CacheDir: " << app.Props.CacheDir.Path() << newLine;
     console << "TempDir: " << app.Props.TempDir.Path() << newLine;

@@ -33,16 +33,26 @@ namespace bpf
 {
     namespace system
     {
+        /**
+         * Class to represent various path for the application to work with
+         */
         class BPF_API Paths
         {
         public:
             /**
              * The application root folder
+             * WARNING: In certain cases this path may be read-only
              */
             const io::File AppRoot;
 
             /**
+             * The application data directory, this directory can be assumed always read-write
+             */
+            const io::File DataDir;
+
+            /**
              * System defined user's home directory
+             * WARNING: Restricive-by-design systems may not allow accessing this folder
              */
             const io::File UserHome;
 
@@ -61,7 +71,14 @@ namespace bpf
              */
             const io::File CacheDir;
 
-            Paths(const io::File &root, const io::File &home, const io::File &tmp);
+            /**
+             * Constructs a set of application paths
+             * @param root the application root directory (may be read-only)
+             * @param data the application data directory (must be read-write)
+             * @param home the user's home directory (access not defined on restrictive-by-design systems)
+             * @param tmp the system temporary directory for that application (must be read-write)
+             */
+            Paths(const io::File &root, const io::File &data, const io::File &home, const io::File &tmp);
         };
     }
 };

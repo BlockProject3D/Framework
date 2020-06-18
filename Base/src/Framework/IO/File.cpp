@@ -102,6 +102,31 @@ File::~File()
 {
 }
 
+bool File::HasAccess(const int type) const
+{
+#ifdef WINDOWS
+    int acs = 0;
+    if (type & FILE_ACCESS_READ && type & FILE_ACCESS_WRITE)
+        acs = 06;
+    else if (type & FILE_ACCESS_READ)
+        acs = 04;
+    else if (type & FILE_ACCESS_WRITE)
+        acs = 02;
+    if (_waccess(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), acs) != 0)
+        return (false);
+    return (true);
+#else
+    int md = F_OK;
+    if (type & FILE_ACCESS_READ)
+        md |= R_OK;
+    if (type & FILE_ACCESS_WRITE)
+        md |= W_OK;
+    if (access(*PlatformPath, md) != 0)
+        return (false);
+    return (true);
+#endif
+}
+
 File File::GetAbsolutePath() const
 {
     String str;

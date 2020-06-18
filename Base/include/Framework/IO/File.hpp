@@ -34,6 +34,9 @@ namespace bpf
 {
     namespace io
     {
+        constexpr int FILE_ACCESS_READ = 0x1;
+        constexpr int FILE_ACCESS_WRITE = 0x2;
+
         class BPF_API File
         {
         private:
@@ -46,6 +49,13 @@ namespace bpf
             explicit File(const String &path);
             File();
             ~File();
+
+            /**
+             * Checks wether the current application is allowed to access a given file or folder
+             * @param type the access type to check (see FILE_ACCESS_* constants)
+             * @return true if the access is granted, false otherwise
+             */
+            bool HasAccess(const int type) const;
 
             /**
              * Returns true if the file exists
