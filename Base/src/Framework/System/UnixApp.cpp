@@ -73,8 +73,10 @@ Paths UnixApp::SetupPaths()
     auto home = File("./");
     if (_env.HasKey("HOME"))
         home = File(_env["HOME"]);
-    if (readlink("/proc/self/exe", path, PATH_MAX) != -1)
+    int res = readlink("/proc/self/exe", path, PATH_MAX);
+    if (res != -1)
     {
+        path[res] = 0; // Apparently readlink is unsafe so make it safe
         _fileName = String(path);
         root = File(_fileName.Sub(0, _fileName.LastIndexOf('/')));
     }
