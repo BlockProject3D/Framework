@@ -193,6 +193,7 @@ TEST(Process, MultiRedirection_2)
         .Build();
     bpf::io::TextWriter writer(proc.GetStandardInput());
     writer.WriteLine("this is a test");
+    writer.Flush();
     proc.Wait();
     EXPECT_EQ(proc.GetExitCode(), 2);
     bpf::io::TextReader oreader(proc.GetStandardOutput());
