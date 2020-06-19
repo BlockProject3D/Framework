@@ -30,12 +30,23 @@
 #include <Framework/System/Application.hpp>
 #include <Framework/Collection/Stringifier.Array.hpp>
 #include <Framework/IO/ConsoleWriter.hpp>
+#include <Framework/IO/ConsoleReader.hpp>
 #include <Framework/System/Platform.hpp>
 
 bpf::system::Application *g_app;
 
 int Main(bpf::system::Application &app, const bpf::collection::Array<bpf::String> &args)
 {
+    if (app.Environment.HasKey("__BPF_PARSE__"))
+    {
+        bpf::io::ConsoleReader reader;
+        bpf::String str;
+        assert(reader.ReadLine(str));
+        bpf::io::Console::ResetTextStyle(); //Make sure we do not style any text to avoid future issues under Unix
+        bpf::io::Console::WriteLine(str);
+        bpf::io::Console::WriteLine(bpf::String("TestError: ") + str);
+        return (1);
+    }
 #ifndef WINDOWS
     app.CreateConsole(); //Dummy call for coverage
 #endif
