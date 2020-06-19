@@ -53,9 +53,9 @@ File::File(const bpf::String &path)
     , FileName("")
     , FileExt("")
 {
-#ifdef WINDOWS
     if (FullPath.Size() == 0)
         return;
+#ifdef WINDOWS
     FullPath = FullPath.Replace('/', '\\');
     String result = String::Empty;
     char old = '\0';
