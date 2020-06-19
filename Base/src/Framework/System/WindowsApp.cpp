@@ -70,9 +70,10 @@ HashMap<String, String> WindowsApp::SetupEnvironment()
             if (str[0] != '=')
             {
                 auto key = str.Sub(0, str.IndexOf('='));
+                if (key == String::Empty)
+                    continue;
                 auto value = str.Sub(str.IndexOf('=') + 1);
-                if (key != String::Empty)
-                    env.Add(key, value);
+                env.Add(key, value);
             }
         }
         ++i;

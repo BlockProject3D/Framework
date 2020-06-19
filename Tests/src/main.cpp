@@ -42,7 +42,6 @@ int Main(bpf::system::Application &app, const bpf::collection::Array<bpf::String
         bpf::io::ConsoleReader reader;
         bpf::String str;
         assert(reader.ReadLine(str));
-        bpf::io::Console::ResetTextStyle(); //Make sure we do not style any text to avoid future issues under Unix
         bpf::io::Console::WriteLine(str);
         bpf::io::Console::WriteLine(bpf::String("TestError: ") + str, bpf::io::EConsoleStream::ERROR);
         return (1);

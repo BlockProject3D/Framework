@@ -52,6 +52,10 @@ constexpr int PIPE_READ = 0;
     #include <unistd.h>
 #endif
 
+// This define enables a workarround for a strange bug with fcntl FD_CLOEXEC and execve:
+// FC_CLOEXEC will not work on processes that have an input pump (possibly kernel bug?)
+#define CLOSE_BEFORE_EXEC
+
 using namespace bpf;
 using namespace bpf::io;
 using namespace bpf::system;
@@ -78,17 +82,16 @@ Process::Builder &Process::Builder::SetApplication(const String &name)
 {
     auto str = name;
 #ifdef WINDOWS
-    // Automatically add .exe file extension to improve cross platform compatibility
-    if (name.LastIndexOf('.') == -1)
-        str += ".exe";
-#endif
-#ifdef WINDOWS
     if (str.Contains('/') || str.Contains('\\'))
 #else
     if (str.Contains('/'))
 #endif
     {
         auto f = File(str);
+#ifdef WINDOWS
+        if (!f.Exists())
+            str += ".exe";
+#endif
         if (f.Exists() && !f.IsDirectory())
         {
             _appExe = f.PlatformPath();
@@ -99,6 +102,11 @@ Process::Builder &Process::Builder::SetApplication(const String &name)
     }
     else
     {
+#ifdef WINDOWS
+        // Automatically add .exe file extension to improve cross platform compatibility
+        if (name.LastIndexOf('.') == -1)
+            str += ".exe";
+#endif
         auto path = String(PROCESS_DEFAULT_PATH);
         if (_envp.HasKey("PATH"))
             path = _envp["PATH"];
@@ -199,7 +207,7 @@ void Process::Builder::ProcessWorker(int fdStdOut[2], int fdStdErr[2], int fdStd
             fd != fdStdIn[PIPE_READ] && fd != commonfd[PIPE_WRITE])
             close(fd);
     }
-    if (fcntl(commonfd[PIPE_WRITE], FD_CLOEXEC) != 0)
+    if (fcntl(commonfd[PIPE_WRITE], FD_CLOEXEC, 1) != 0)
     {
         BP_IGNORE(write(commonfd[PIPE_WRITE], "fcntl failure", 14));
         close(commonfd[PIPE_WRITE]);
@@ -233,10 +241,15 @@ void Process::Builder::ProcessWorker(int fdStdOut[2], int fdStdErr[2], int fdStd
         ++i;
     }
     envp[i] = NULL;
+    #ifdef CLOSE_BEFORE_EXEC
+    close(commonfd[PIPE_WRITE]);
+    #endif
     if (execve(*_appExe, argv, envp) == -1)
     {
+    #ifndef CLOSE_BEFORE_EXEC
         BP_IGNORE(write(commonfd[PIPE_WRITE], "execve failure", 15));
         close(commonfd[PIPE_WRITE]);
+    #endif
         exit(1);
     }
 redirecterr:
@@ -302,17 +315,17 @@ Process Process::Builder::Build()
     HANDLE fdStdOut[2] = {NULL, NULL};
     HANDLE fdStdIn[2] = {NULL, NULL};
     HANDLE fdStdErr[2] = {NULL, NULL};
-    if (_redirectStdOut && (!CreatePipe(&fdStdOut[PIPE_READ], &fdStdOut[PIPE_WRITE], &sa,
-                                        0) || !SetHandleInformation(fdStdOut[PIPE_READ], HANDLE_FLAG_INHERIT, 0)))
+    if (_redirectStdOut && (!CreatePipe(&fdStdOut[PIPE_READ], &fdStdOut[PIPE_WRITE], &sa, 0) ||
+                            !SetHandleInformation(fdStdOut[PIPE_READ], HANDLE_FLAG_INHERIT, 0)))
         throw OSException("Could not create standard output redirection");
-    if (_redirectStdErr && (!CreatePipe(&fdStdErr[PIPE_READ], &fdStdErr[PIPE_WRITE], &sa,
-                                        0) || !SetHandleInformation(fdStdErr[PIPE_READ], HANDLE_FLAG_INHERIT, 0)))
+    if (_redirectStdErr && (!CreatePipe(&fdStdErr[PIPE_READ], &fdStdErr[PIPE_WRITE], &sa, 0) ||
+                            !SetHandleInformation(fdStdErr[PIPE_READ], HANDLE_FLAG_INHERIT, 0)))
     {
         CleanupHandles(fdStdOut, fdStdErr, fdStdIn);
         throw OSException("Could not create standard error redirection");
     }
-    if (_redirectStdIn && (!CreatePipe(&fdStdIn[PIPE_READ], &fdStdIn[PIPE_WRITE], &sa,
-                                       0) || !SetHandleInformation(fdStdIn[PIPE_WRITE], HANDLE_FLAG_INHERIT, 0)))
+    if (_redirectStdIn && (!CreatePipe(&fdStdIn[PIPE_READ], &fdStdIn[PIPE_WRITE], &sa, 0) ||
+                           !SetHandleInformation(fdStdIn[PIPE_WRITE], HANDLE_FLAG_INHERIT, 0)))
     {
         CleanupHandles(fdStdOut, fdStdErr, fdStdIn);
         throw OSException("Could not create standard input redirection");
