@@ -28,6 +28,7 @@
 
 #include <Framework/IO/IOException.hpp>
 #include <Framework/IO/TextReader.hpp>
+#include <Framework/IO/TextWriter.hpp>
 #include <Framework/System/OSException.hpp>
 #include <Framework/System/Process.hpp>
 #include <Framework/Collection/Stringifier.HashMap.hpp>
@@ -156,3 +157,50 @@ TEST(Process, RedirectOutput_4)
     EXPECT_GT(text.Len(), 0);
 }
 #endif
+
+TEST(Process, MultiRedirection_1)
+{
+    auto proc = bpf::system::Process::Builder()
+        .SetApplication((g_app->Props.AppRoot + "BPF.Tests.exe").Path())
+        .SetEnvironment({{"__BPF_PARSE__", ""}})
+        .RedirectInput()
+        .RedirectOutput()
+        .RedirectError()
+        .Build();
+    bpf::io::TextWriter writer(proc.GetStandardInput());
+    writer.WriteLine("this is a test");
+    writer.Flush();
+    proc.Wait();
+    EXPECT_EQ(proc.GetExitCode(), 2);
+    bpf::io::TextReader oreader(proc.GetStandardOutput());
+    bpf::io::TextReader ereader(proc.GetStandardError());
+    bpf::String line;
+    bpf::String line1;
+    EXPECT_TRUE(oreader.ReadLine(line));
+    EXPECT_TRUE(ereader.ReadLine(line1));
+    EXPECT_STREQ(*line, "this is a test");
+    EXPECT_STREQ(*line1, "TestError: this is a test");
+}
+
+TEST(Process, MultiRedirection_2)
+{
+    auto proc = bpf::system::Process::Builder()
+        .SetApplication((g_app->Props.AppRoot + "BPF.Tests.exe").PlatformPath())
+        .SetEnvironment({{"__BPF_PARSE__", ""}})
+        .RedirectInput()
+        .RedirectOutput()
+        .RedirectError()
+        .Build();
+    bpf::io::TextWriter writer(proc.GetStandardInput());
+    writer.WriteLine("this is a test");
+    proc.Wait();
+    EXPECT_EQ(proc.GetExitCode(), 2);
+    bpf::io::TextReader oreader(proc.GetStandardOutput());
+    bpf::io::TextReader ereader(proc.GetStandardError());
+    bpf::String line;
+    bpf::String line1;
+    EXPECT_TRUE(oreader.ReadLine(line));
+    EXPECT_TRUE(ereader.ReadLine(line1));
+    EXPECT_STREQ(*line, "this is a test");
+    EXPECT_STREQ(*line1, "TestError: this is a test");
+}

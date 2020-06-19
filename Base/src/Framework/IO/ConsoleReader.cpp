@@ -57,7 +57,7 @@ fsize ConsoleReader::Read(void *buf, fsize bufsize)
     {
         DWORD out;
         if (!ReadFile(reinterpret_cast<HANDLE>(_handle), reinterpret_cast<LPVOID>(buf), (DWORD)bufsize, &out, NULL))
-            throw IOException(String("Console write error: ") + OSPrivate::ObtainLastErrorString());
+            throw IOException(String("Console read error: ") + OSPrivate::ObtainLastErrorString());
         return ((fsize)out);
     }
     else

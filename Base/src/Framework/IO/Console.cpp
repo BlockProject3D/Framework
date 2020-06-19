@@ -39,7 +39,7 @@ using namespace bpf::io;
 using namespace bpf;
 
 #ifdef WINDOWS
-//Apparently Microsoft loves globals; yeah!!
+// Apparently Microsoft loves globals; yeah!!
 WORD g_Console_OldAttributes_Out = (WORD)-1;
 WORD g_Console_OldAttributes_Err = (WORD)-1;
 #endif
@@ -61,12 +61,7 @@ void Console::WriteLine(const String &str, const EConsoleStream type) noexcept
             WriteConsoleW(hdl, reinterpret_cast<const void *>(*utf16), (DWORD)utf16.Size() - 1, NULL, NULL);
         }
 #else
-#ifdef BUILD_DEBUG
-        write(2, *(str + "\n"), str.Size() + 1);
-#else
-        int gccisafuck = write(2, *(str + "\n"), str.Size() + 1);
-        (void)gccisafuck;
-#endif
+        BP_IGNORE(write(2, *(str + "\n"), str.Size() + 1));
 #endif
     }
     else
@@ -84,12 +79,7 @@ void Console::WriteLine(const String &str, const EConsoleStream type) noexcept
             WriteConsoleW(hdl, reinterpret_cast<const void *>(*utf16), (DWORD)utf16.Size() - 1, NULL, NULL);
         }
 #else
-#ifdef BUILD_DEBUG
-        write(1, *(str + "\n"), str.Size() + 1);
-#else
-        int gccisafuck = write(1, *(str + "\n"), str.Size() + 1);
-        (void)gccisafuck;
-#endif
+        BP_IGNORE(write(1, *(str + "\n"), str.Size() + 1));
 #endif
     }
 }
@@ -182,12 +172,7 @@ void Console::SetTextStyle(const TextStyle &style, const EConsoleStream type) no
         str += "37m";
         break;
     }
-#ifdef BUILD_DEBUG
-    write(fd, *str, str.Size());
-#else
-    int gccisafuck = write(fd, *str, str.Size());
-    (void)gccisafuck;
-#endif
+    BP_IGNORE(write(fd, *str, str.Size()));
 #endif
 }
 
@@ -201,12 +186,7 @@ void Console::ResetTextStyle(const EConsoleStream type) noexcept
         HANDLE hdl = GetStdHandle(STD_ERROR_HANDLE);
         SetConsoleTextAttribute(hdl, g_Console_OldAttributes_Err);
 #else
-#ifdef BUILD_DEBUG
-        write(2, "\033[0m", 4);
-#else
-        int gccisafuck = write(2, "\033[0m", 4);
-        (void)gccisafuck;
-#endif
+        BP_IGNORE(write(2, "\033[0m", 4));
 #endif
     }
     else
@@ -217,12 +197,7 @@ void Console::ResetTextStyle(const EConsoleStream type) noexcept
         HANDLE hdl = GetStdHandle(STD_OUTPUT_HANDLE);
         SetConsoleTextAttribute(hdl, g_Console_OldAttributes_Out);
 #else
-#ifdef BUILD_DEBUG
-        write(1, "\033[0m", 4);
-#else
-        int gccisafuck = write(1, "\033[0m", 4);
-        (void)gccisafuck;
-#endif
+        BP_IGNORE(write(1, "\033[0m", 4));
 #endif
     }
 }
@@ -233,11 +208,6 @@ void Console::SetTitle(const String &title)
     SetConsoleTitleW(reinterpret_cast<LPCWSTR>(*title.ToUTF16()));
 #else
     auto str = String("\e]0;") + title + "\007";
-#ifdef BUILD_DEBUG
-    write(1, *str, str.Size());
-#else
-    int gccisafuck = write(1, *str, str.Size());
-    (void)gccisafuck;
-#endif
+    BP_IGNORE(write(1, *str, str.Size()));
 #endif
 }

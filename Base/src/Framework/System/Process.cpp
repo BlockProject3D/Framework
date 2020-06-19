@@ -46,10 +46,10 @@ constexpr int PIPE_READ = 0;
     #include <wait.h>
 #else
     #include <fcntl.h>
-    #include <string.h>
-    #include <unistd.h>
-    #include <sys/wait.h>
     #include <signal.h>
+    #include <string.h>
+    #include <sys/wait.h>
+    #include <unistd.h>
 #endif
 
 using namespace bpf;
@@ -76,9 +76,19 @@ Process::Builder::Builder(const Application &app)
 
 Process::Builder &Process::Builder::SetApplication(const String &name)
 {
-    if (name.Contains('/'))
+    auto str = name;
+#ifdef WINDOWS
+    // Automatically add .exe file extension to improve cross platform compatibility
+    if (name.LastIndexOf('.') == -1)
+        str += ".exe";
+#endif
+#ifdef WINDOWS
+    if (str.Contains('/') || str.Contains('\\'))
+#else
+    if (str.Contains('/'))
+#endif
     {
-        auto f = File(name);
+        auto f = File(str);
         if (f.Exists() && !f.IsDirectory())
         {
             _appExe = f.PlatformPath();
@@ -104,7 +114,7 @@ Process::Builder &Process::Builder::SetApplication(const String &name)
 #endif
         for (auto &p : paths)
         {
-            auto f = File(p) + File(name);
+            auto f = File(p) + File(str);
             if (f.Exists() && !f.IsDirectory())
             {
                 _appExe = f.PlatformPath();
@@ -292,14 +302,17 @@ Process Process::Builder::Build()
     HANDLE fdStdOut[2] = {NULL, NULL};
     HANDLE fdStdIn[2] = {NULL, NULL};
     HANDLE fdStdErr[2] = {NULL, NULL};
-    if (_redirectStdOut && (!CreatePipe(&fdStdOut[PIPE_READ], &fdStdOut[PIPE_WRITE], &sa, 0) /*|| !SetHandleInformation(fdStdOut[PIPE_READ], HANDLE_FLAG_INHERIT, 0)*/))
+    if (_redirectStdOut && (!CreatePipe(&fdStdOut[PIPE_READ], &fdStdOut[PIPE_WRITE], &sa,
+                                        0) || !SetHandleInformation(fdStdOut[PIPE_READ], HANDLE_FLAG_INHERIT, 0)))
         throw OSException("Could not create standard output redirection");
-    if (_redirectStdErr && (!CreatePipe(&fdStdErr[PIPE_READ], &fdStdErr[PIPE_WRITE], &sa, 0) /*|| !SetHandleInformation(fdStdErr[PIPE_READ], HANDLE_FLAG_INHERIT, 0)*/))
+    if (_redirectStdErr && (!CreatePipe(&fdStdErr[PIPE_READ], &fdStdErr[PIPE_WRITE], &sa,
+                                        0) || !SetHandleInformation(fdStdErr[PIPE_READ], HANDLE_FLAG_INHERIT, 0)))
     {
         CleanupHandles(fdStdOut, fdStdErr, fdStdIn);
         throw OSException("Could not create standard error redirection");
     }
-    if (_redirectStdIn && (!CreatePipe(&fdStdIn[PIPE_READ], &fdStdIn[PIPE_WRITE], &sa, 0) /*|| !SetHandleInformation(fdStdIn[PIPE_WRITE], HANDLE_FLAG_INHERIT, 0)*/))
+    if (_redirectStdIn && (!CreatePipe(&fdStdIn[PIPE_READ], &fdStdIn[PIPE_WRITE], &sa,
+                                       0) || !SetHandleInformation(fdStdIn[PIPE_WRITE], HANDLE_FLAG_INHERIT, 0)))
     {
         CleanupHandles(fdStdOut, fdStdErr, fdStdIn);
         throw OSException("Could not create standard input redirection");
@@ -466,7 +479,7 @@ fsize Process::PStream::Read(void *buf, fsize bufsize)
 #ifdef WINDOWS
     DWORD read;
     if (!ReadFile(_pipeHandles[PIPE_READ], buf, (DWORD)bufsize, &read, NULL))
-        return (0); //ReadFile is broken in this case: instead of just returning 0 bytes when empty instead it errors
+        return (0); // ReadFile is broken in this case: instead of just returning 0 bytes when empty instead it errors
     return ((fsize)read);
 #else
     int res = read(_pipfd[PIPE_READ], buf, bufsize);
@@ -479,6 +492,9 @@ fsize Process::PStream::Read(void *buf, fsize bufsize)
 fsize Process::PStream::Write(const void *buf, fsize bufsize)
 {
 #ifdef WINDOWS
+    // It seems that when the buffer is empty the WinApi is unable to silently return instead it must throw an error
+    if (bufsize == 0)
+        return (0);
     DWORD written;
     if (!WriteFile(_pipeHandles[PIPE_WRITE], buf, (DWORD)bufsize, &written, NULL))
         throw IOException("Cannot write to pipe");

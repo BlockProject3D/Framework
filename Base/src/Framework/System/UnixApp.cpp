@@ -52,7 +52,7 @@ HashMap<String, String> UnixApp::SetupEnvironment(char **env)
         String str(env[i]);
         auto key = str.Sub(0, str.IndexOf('='));
         auto value = str.Sub(str.IndexOf('=') + 1);
-        if (key != String::Empty && value != String::Empty)
+        if (key != String::Empty)
             menv.Add(key, value);
     }
     return (menv);

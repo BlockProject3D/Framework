@@ -54,6 +54,8 @@ File::File(const bpf::String &path)
     , FileExt("")
 {
 #ifdef WINDOWS
+    if (FullPath.Size() == 0)
+        return;
     FullPath = FullPath.Replace('/', '\\');
     String result = String::Empty;
     char old = '\0';
@@ -93,6 +95,7 @@ File::File(const bpf::String &path)
 
 File::File()
     : FullPath("")
+    , UserPath("")
     , FileName(FullPath.Sub(FullPath.LastIndexOf('/') + 1))
     , FileExt(FullPath.Sub(FullPath.LastIndexOf('.') + 1))
 {

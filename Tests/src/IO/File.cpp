@@ -33,6 +33,24 @@
 #include <Framework/IO/FileStream.hpp>
 #include <Framework/IO/IOException.hpp>
 
+TEST(File, WeirdCases)
+{
+    bpf::io::File f;
+    bpf::io::File f1("");
+    bpf::io::File f2(".");
+    bpf::io::File f3("@");
+    bpf::io::File f4("!");
+    bpf::io::File f5("..");
+    EXPECT_FALSE(f.Exists());
+    EXPECT_FALSE(f1.Exists());
+    EXPECT_FALSE(f3.Exists());
+    EXPECT_FALSE(f4.Exists());
+    EXPECT_TRUE(f2.Exists());
+    EXPECT_TRUE(f2.IsDirectory());
+    EXPECT_TRUE(f5.Exists());
+    EXPECT_TRUE(f5.IsDirectory());
+}
+
 TEST(File, Basics)
 {
     bpf::io::File f("./doesnotexist.txt");

@@ -71,7 +71,7 @@ HashMap<String, String> WindowsApp::SetupEnvironment()
             {
                 auto key = str.Sub(0, str.IndexOf('='));
                 auto value = str.Sub(str.IndexOf('=') + 1);
-                if (key != String::Empty && value != String::Empty)
+                if (key != String::Empty)
                     env.Add(key, value);
             }
         }
