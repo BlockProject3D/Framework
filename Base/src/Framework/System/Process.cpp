@@ -416,13 +416,13 @@ Process Process::Builder::Build()
 }
 
 #ifdef WINDOWS
-Process::PStream::PStream(void *pipefd[2])
+Process::PipeStream::PipeStream(void *pipefd[2])
 {
     _pipeHandles[0] = pipefd[0];
     _pipeHandles[1] = pipefd[1];
 }
 
-Process::PStream::~PStream()
+Process::PipeStream::~PipeStream()
 {
     if (_pipeHandles[0] != NULL)
         CloseHandle(_pipeHandles[0]);
@@ -430,7 +430,7 @@ Process::PStream::~PStream()
         CloseHandle(_pipeHandles[1]);
 }
 
-Process::PStream::PStream(PStream &&other)
+Process::PipeStream::PipeStream(PipeStream &&other)
 {
     _pipeHandles[0] = other._pipeHandles[0];
     _pipeHandles[1] = other._pipeHandles[1];
@@ -438,7 +438,7 @@ Process::PStream::PStream(PStream &&other)
     other._pipeHandles[1] = NULL;
 }
 
-Process::PStream &Process::PStream::operator=(PStream &&other)
+Process::PipeStream &Process::PipeStream::operator=(PipeStream &&other)
 {
     if (_pipeHandles[0] != NULL)
         CloseHandle(_pipeHandles[0]);
@@ -451,13 +451,13 @@ Process::PStream &Process::PStream::operator=(PStream &&other)
     return (*this);
 }
 #else
-Process::PStream::PStream(int pipefd[2])
+Process::PipeStream::PipeStream(int pipefd[2])
 {
     _pipfd[0] = pipefd[0];
     _pipfd[1] = pipefd[1];
 }
 
-Process::PStream::~PStream()
+Process::PipeStream::~PipeStream()
 {
     if (_pipfd[0] != -1)
         close(_pipfd[0]);
@@ -465,7 +465,7 @@ Process::PStream::~PStream()
         close(_pipfd[1]);
 }
 
-Process::PStream::PStream(PStream &&other)
+Process::PipeStream::PipeStream(PipeStream &&other)
 {
     _pipfd[0] = other._pipfd[0];
     _pipfd[1] = other._pipfd[1];
@@ -473,7 +473,7 @@ Process::PStream::PStream(PStream &&other)
     other._pipfd[1] = -1;
 }
 
-Process::PStream &Process::PStream::operator=(PStream &&other)
+Process::PipeStream &Process::PipeStream::operator=(PipeStream &&other)
 {
     if (_pipfd[0] != -1)
         close(_pipfd[0]);
@@ -487,7 +487,7 @@ Process::PStream &Process::PStream::operator=(PStream &&other)
 }
 #endif
 
-fsize Process::PStream::Read(void *buf, fsize bufsize)
+fsize Process::PipeStream::Read(void *buf, fsize bufsize)
 {
 #ifdef WINDOWS
     DWORD read;
@@ -502,7 +502,7 @@ fsize Process::PStream::Read(void *buf, fsize bufsize)
 #endif
 }
 
-fsize Process::PStream::Write(const void *buf, fsize bufsize)
+fsize Process::PipeStream::Write(const void *buf, fsize bufsize)
 {
 #ifdef WINDOWS
     // It seems that when the buffer is empty the WinApi is unable to silently return instead it must throw an error
@@ -517,6 +517,21 @@ fsize Process::PStream::Write(const void *buf, fsize bufsize)
     if (res == -1)
         throw IOException("Cannot write to pipe");
     return ((fsize)res);
+#endif
+}
+
+void Process::PipeStream::Close()
+{
+#ifdef WINDOWS
+    if (_pipeHandles[0] != NULL)
+        CloseHandle(_pipeHandles[0]);
+    if (_pipeHandles[1] != NULL)
+        CloseHandle(_pipeHandles[1]);
+#else
+    if (_pipfd[0] != -1)
+        close(_pipfd[0]);
+    if (_pipfd[1] != -1)
+        close(_pipfd[1]);
 #endif
 }
 
@@ -719,21 +734,21 @@ fint Process::GetExitCode()
     return (_lastExitCode);
 }
 
-IOutputStream &Process::GetStandardInput()
+Process::PipeStream &Process::GetStandardInput()
 {
     if (!_redirectStdIn)
         throw OSException("The target process does not allow standard input redirection");
     return (_stdIn);
 }
 
-IInputStream &Process::GetStandardOutput()
+Process::PipeStream &Process::GetStandardOutput()
 {
     if (!_redirectStdOut)
         throw OSException("The target process does not allow standard output redirection");
     return (_stdOut);
 }
 
-IInputStream &Process::GetStandardError()
+Process::PipeStream &Process::GetStandardError()
 {
     if (!_redirectStdErr)
         throw OSException("The target process does not allow standard error redirection");

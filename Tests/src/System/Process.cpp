@@ -205,3 +205,24 @@ TEST(Process, MultiRedirection_2)
     EXPECT_STREQ(*line, "this is a test");
     EXPECT_STREQ(*line1, "TestError: this is a test");
 }
+
+#ifdef LINUX
+TEST(Process, SimpleCat)
+{
+    auto proc = bpf::system::Process::Builder(*g_app)
+        .SetApplication("cat")
+        .RedirectInput()
+        .RedirectOutput()
+        .Build();
+    bpf::io::TextWriter writer(proc.GetStandardInput());
+    writer.WriteLine("this is a test");
+    writer.Flush();
+    proc.GetStandardInput().Close();
+    proc.Wait();
+    EXPECT_EQ(proc.GetExitCode(), 0);
+    bpf::io::TextReader oreader(proc.GetStandardOutput());
+    bpf::String line;
+    EXPECT_TRUE(oreader.ReadLine(line));
+    EXPECT_STREQ(*line, "this is a test");
+}
+#endif

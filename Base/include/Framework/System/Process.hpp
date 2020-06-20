@@ -175,28 +175,58 @@ namespace bpf
                 Process Build();
             };
 
-        private:
-            class BPF_API PStream final : public io::IInputStream, public io::IOutputStream
+        public:
+            /**
+             * Class to represent a pipe stream to be used for process link across platforms
+             */
+            class BPF_API PipeStream final : public io::IInputStream, public io::IOutputStream
             {
             private:
 #ifdef WINDOWS
                 void *_pipeHandles[2];
-                PStream(void *pipefd[2]);
-                ~PStream();
+                PipeStream(void *pipefd[2]);
+                ~PipeStream();
 #else
                 int _pipfd[2];
-                PStream(int pipefd[2]);
-                ~PStream();
+                PipeStream(int pipefd[2]);
+                ~PipeStream();
 #endif
 
-                PStream(const PStream &other) = delete;
-                PStream &operator=(const PStream &other) = delete;
+                PipeStream(PipeStream &&other);
+                PipeStream &operator=(PipeStream &&other);
             public:
-                PStream(PStream &&other);
-                PStream &operator=(PStream &&other);
+                /**
+                 * Do not allow copy construction
+                 */
+                PipeStream(const PipeStream &other) = delete;
 
+                /**
+                 * Do not allow copy assignment
+                 */
+                PipeStream &operator=(const PipeStream &other) = delete;
+
+                /**
+                 * Reads bytes from this stream, no buffering is performed
+                 * @param buf buffer to receive the read bytes
+                 * @param bufsize the size of the receiving buffer
+                 * @throw IOException in case of system error
+                 * @return number of bytes read
+                 */ 
                 fsize Read(void *buf, fsize bufsize);
+
+                /**
+                 * Writes bytes to this stream, no buffering is performed
+                 * @param buf the buffer with the bytes to write
+                 * @param bufsize the size of the buffer
+                 * @throw IOException in case of system error
+                 * @return number of bytes written
+                 */
                 fsize Write(const void *buf, fsize bufsize);
+
+                /**
+                 * Closes the pipe
+                 */
+                void Close();
 
                 friend class Process;
             };
@@ -205,9 +235,9 @@ namespace bpf
             bool _redirectStdIn;
             bool _redirectStdOut;
             bool _redirectStdErr;
-            PStream _stdIn;
-            PStream _stdOut;
-            PStream _stdErr;
+            PipeStream _stdIn;
+            PipeStream _stdOut;
+            PipeStream _stdErr;
 
 #ifdef WINDOWS
             void *_pHandle;
@@ -269,21 +299,21 @@ namespace bpf
              * @throw OSException if the target process does not allow standard input redirection
              * @return reference to IOutputStream
              */
-            io::IOutputStream &GetStandardInput();
+            PipeStream &GetStandardInput();
 
             /**
              * Provides access to process standard output
              * @throw OSException if the target process does not allow standard output redirection
              * @return reference to IInputStream
              */
-            io::IInputStream &GetStandardOutput();
+            PipeStream &GetStandardOutput();
 
             /**
              * Provides access to process standard error
              * @throw OSException if the target process does not allow standard error redirection
              * @return reference to IInputStream
              */
-            io::IInputStream &GetStandardError();
+            PipeStream &GetStandardError();
 
             friend class Process::Builder;
         };
