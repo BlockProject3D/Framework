@@ -30,6 +30,10 @@
 #include <limits.h>
 #include <unistd.h>
 
+#ifndef LINUX
+    #include <mach-o/dyld.h>
+#endif
+
 using namespace bpf::system;
 using namespace bpf::collection;
 using namespace bpf::io;
@@ -55,7 +59,7 @@ HashMap<String, String> UnixApp::SetupEnvironment(char **env)
             continue;
         auto value = str.Sub(str.IndexOf('=') + 1);
         if (*value == Null)
-            value = ""; //Attempt to fix Linux bug of having NULL vars...
+            value = ""; // Attempt to fix Linux bug of having NULL vars...
         menv.Add(key, value);
     }
     return (menv);
@@ -76,6 +80,7 @@ Paths UnixApp::SetupPaths()
     auto home = File("./");
     if (_env.HasKey("HOME"))
         home = File(_env["HOME"]);
+#ifdef LINUX
     int res = readlink("/proc/self/exe", path, PATH_MAX);
     if (res != -1)
     {
@@ -83,6 +88,23 @@ Paths UnixApp::SetupPaths()
         _fileName = String(path);
         root = File(_fileName.Sub(0, _fileName.LastIndexOf('/')));
     }
+#else
+    int len;
+    if (_NSGetExecutablePath(path, &len) == -1)
+    {
+        Array<char> buf((fsize)len);
+        if (_NSGetExecutablePath(*buf, &len) != -1)
+        {
+            _fileName = File(String(*buf)).GetAbsolutePath().Path();
+            root = File(_fileName.Sub(0, _fileName.LastIndexOf('/')));
+        }
+    }
+    else
+    {
+        _fileName = File(String(path)).GetAbsolutePath().Path();
+        root = File(_fileName.Sub(0, _fileName.LastIndexOf('/')));
+    }
+#endif
     File tmp = _env.HasKey("TMPDIR") ? File(_env["TMPDIR"]) : File("/tmp");
     if (root.HasAccess(FILE_ACCESS_READ | FILE_ACCESS_WRITE))
         return (Paths(root, root, home, tmp));
