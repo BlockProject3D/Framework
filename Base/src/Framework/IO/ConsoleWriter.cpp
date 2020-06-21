@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -71,7 +71,7 @@ int ConsoleWriter::GetHandle(const EConsoleStream type)
 ConsoleWriter::ConsoleWriter(const EConsoleStream type)
     : _handle(GetHandle(type))
 #ifdef WINDOWS
-    , _file(GetFileType(reinterpret_cast<HANDLE>(_handle)) != FILE_TYPE_CHAR ? true : false)
+    , _file(Console::IsRedirected(type))
     , _writer(*this, _file ? EStringEncoder::UTF8 : EStringEncoder::UTF16)
 #else
     , _writer(*this, EStringEncoder::UTF8)
@@ -92,7 +92,8 @@ fsize ConsoleWriter::Write(const void *buf, fsize bufsize)
     else
     {
         DWORD out;
-        if (!WriteConsoleW(reinterpret_cast<HANDLE>(_handle), reinterpret_cast<LPCVOID>(buf), (DWORD)(bufsize / 2), &out, NULL))
+        if (!WriteConsoleW(reinterpret_cast<HANDLE>(_handle), reinterpret_cast<LPCVOID>(buf), (DWORD)(bufsize / 2),
+                           &out, NULL))
             throw IOException(String("Console write error: ") + OSPrivate::ObtainLastErrorString());
         return ((fsize)(out * 2));
     }

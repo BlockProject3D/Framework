@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -27,6 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Framework/IO/ConsoleReader.hpp"
+#include "Framework/IO/Console.hpp"
 #include "Framework/IO/IOException.hpp"
 #include "OSPrivate.hpp"
 #ifdef WINDOWS
@@ -63,7 +64,8 @@ fsize ConsoleReader::Read(void *buf, fsize bufsize)
     else
     {
         DWORD out;
-        if (!ReadConsoleW(reinterpret_cast<HANDLE>(_handle), reinterpret_cast<LPVOID>(buf), (DWORD)(bufsize / 2), &out, NULL))
+        if (!ReadConsoleW(reinterpret_cast<HANDLE>(_handle), reinterpret_cast<LPVOID>(buf), (DWORD)(bufsize / 2), &out,
+                          NULL))
             throw IOException(String("Console read error: ") + OSPrivate::ObtainLastErrorString());
         return ((fsize)(out * 2));
     }

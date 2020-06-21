@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -50,7 +50,7 @@ void Console::WriteLine(const String &str, const EConsoleStream type) noexcept
     {
 #ifdef WINDOWS
         HANDLE hdl = GetStdHandle(STD_ERROR_HANDLE);
-        if (GetFileType(hdl) != FILE_TYPE_CHAR)
+        if (IsRedirected(EConsoleStream::ERROR))
         {
             auto s = str + "\r\n";
             WriteFile(hdl, reinterpret_cast<const void *>(*s), (DWORD)s.Size(), NULL, NULL);
@@ -68,7 +68,7 @@ void Console::WriteLine(const String &str, const EConsoleStream type) noexcept
     {
 #ifdef WINDOWS
         HANDLE hdl = GetStdHandle(STD_OUTPUT_HANDLE);
-        if (GetFileType(hdl) != FILE_TYPE_CHAR)
+        if (IsRedirected())
         {
             auto s = str + "\r\n";
             WriteFile(hdl, reinterpret_cast<const void *>(*s), (DWORD)s.Size(), NULL, NULL);
@@ -86,6 +86,8 @@ void Console::WriteLine(const String &str, const EConsoleStream type) noexcept
 
 void Console::SetTextStyle(const TextStyle &style, const EConsoleStream type) noexcept
 {
+    if (IsRedirected(type))
+        return;
 #ifdef WINDOWS
     HANDLE hdl;
     if (type == EConsoleStream::ERROR)
@@ -137,7 +139,7 @@ void Console::SetTextStyle(const TextStyle &style, const EConsoleStream type) no
         break;
     }
     SetConsoleTextAttribute(hdl, color);
-    //Bold is not supported > ask why Microsoft does not know how to code a terminal!
+    // Bold is not supported > ask why Microsoft does not know how to code a terminal!
 #else
     int fd = -1;
     if (type == EConsoleStream::ERROR)
@@ -178,6 +180,8 @@ void Console::SetTextStyle(const TextStyle &style, const EConsoleStream type) no
 
 void Console::ResetTextStyle(const EConsoleStream type) noexcept
 {
+    if (IsRedirected(type))
+        return;
     if (type == EConsoleStream::ERROR)
     {
 #ifdef WINDOWS
@@ -202,12 +206,29 @@ void Console::ResetTextStyle(const EConsoleStream type) noexcept
     }
 }
 
-void Console::SetTitle(const String &title)
+void Console::SetTitle(const String &title) noexcept
 {
 #ifdef WINDOWS
     SetConsoleTitleW(reinterpret_cast<LPCWSTR>(*title.ToUTF16()));
 #else
+    if (IsRedirected())
+        return;
     auto str = String("\e]0;") + title + "\007";
     BP_IGNORE(write(1, *str, str.Size()));
+#endif
+}
+
+bool Console::IsRedirected(const EConsoleStream type) noexcept
+{
+#ifdef WINDOWS
+    HANDLE hdl = GetStdHandle(STD_OUTPUT_HANDLE);
+    if (type == EConsoleStream::ERROR)
+        hdl = GetStdHandle(STD_ERROR_HANDLE);
+    return (GetFileType(reinterpret_cast<HANDLE>(hdl)) != FILE_TYPE_CHAR ? true : false);
+#else
+    int fd = 1;
+    if (type == EConsoleStream::ERROR)
+        fd = 2;
+    return (isatty(fd) == 0 ? false : true);
 #endif
 }
