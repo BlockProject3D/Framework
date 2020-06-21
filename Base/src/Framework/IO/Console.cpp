@@ -229,6 +229,6 @@ bool Console::IsRedirected(const EConsoleStream type) noexcept
     int fd = 1;
     if (type == EConsoleStream::ERROR)
         fd = 2;
-    return (isatty(fd) == 0 ? false : true);
+    return (isatty(fd) == 0 ? true : false);
 #endif
 }
