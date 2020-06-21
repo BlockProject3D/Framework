@@ -76,7 +76,7 @@ Array<String> UnixApp::GetArguments(char **argv, int argc)
 Paths UnixApp::SetupPaths()
 {
     char path[PATH_MAX];
-    auto root = File("./");
+    auto root = File(_fileName.Sub(0, _fileName.LastIndexOf('/')));
     auto home = File("./");
     if (_env.HasKey("HOME"))
         home = File(_env["HOME"]);
