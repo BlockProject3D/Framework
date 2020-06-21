@@ -118,10 +118,12 @@ File UnixApp::GetWorkingDirectory() const
     if (getcwd(path, PATH_MAX) != Null)
         return (File(path));
     else
-        return (File("."));
+        return (File(".").GetAbsolutePath());
 }
 
-void UnixApp::SetWorkingDirectory(const File &file) const
+bool UnixApp::SetWorkingDirectory(const File &file) const
 {
-    chdir(*file.PlatformPath());
+    if (chdir(*file.PlatformPath()) == -1)
+        return (false);
+    return (true);
 }

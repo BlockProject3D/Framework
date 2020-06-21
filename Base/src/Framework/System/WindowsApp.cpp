@@ -58,7 +58,7 @@ HashMap<String, String> WindowsApp::SetupEnvironment()
     LPWCH wptr;
     fsize i = 0;
 
-    //We ignore first env var cause it's the weird "=::=::\"
+    // We ignore first env var cause it's the weird "=::=::\"
     while (true)
     {
         if (ptr[i] == 0 && ptr[i + 1] == 0)
@@ -80,7 +80,8 @@ HashMap<String, String> WindowsApp::SetupEnvironment()
     }
     FreeEnvironmentStringsW(ptr);
     if (env.HasKey("Path"))
-        env["PATH"] = env["Path"]; // Allow apps to use "PATH" to refer to the environment path on both Unix and Windows systems
+        env["PATH"] =
+            env["Path"]; // Allow apps to use "PATH" to refer to the environment path on both Unix and Windows systems
     return (env);
 }
 
@@ -154,14 +155,14 @@ File WindowsApp::GetWorkingDirectory() const
 {
     WCHAR path[MAX_PATH];
     if (GetCurrentDirectoryW(MAX_PATH, path) > 0)
-    {
         return (File(String::FromUTF16(reinterpret_cast<const fchar16 *>(path))));
-    }
     else
-        return (File("."));
+        return (File(".").GetAbsolutePath());
 }
 
-void WindowsApp::SetWorkingDirectory(const File &file) const
+bool WindowsApp::SetWorkingDirectory(const File &file) const
 {
-    SetCurrentDirectoryW(reinterpret_cast<LPCWSTR>(*file.PlatformPath().ToUTF16()));
+    if (!SetCurrentDirectoryW(reinterpret_cast<LPCWSTR>(*file.PlatformPath().ToUTF16())))
+        return (false);
+    return (true);
 }

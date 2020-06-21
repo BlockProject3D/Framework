@@ -51,7 +51,7 @@ namespace bpf
             collection::Array<String> GetArguments(char **argv, int argc);
 
             io::File GetWorkingDirectory() const;
-            void SetWorkingDirectory(const io::File &file) const;
+            bool SetWorkingDirectory(const io::File &file) const;
         };
     }
 };
