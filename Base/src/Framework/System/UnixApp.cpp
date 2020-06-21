@@ -89,7 +89,7 @@ Paths UnixApp::SetupPaths()
         root = File(_fileName.Sub(0, _fileName.LastIndexOf('/')));
     }
 #else
-    int len;
+    uint32_t len;
     if (_NSGetExecutablePath(path, &len) == -1)
     {
         Array<char> buf((fsize)len);
