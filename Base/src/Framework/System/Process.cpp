@@ -52,10 +52,6 @@ constexpr int PIPE_READ = 0;
     #include <unistd.h>
 #endif
 
-// This define enables a workarround for a strange bug with fcntl FD_CLOEXEC and execve:
-// FC_CLOEXEC will not work on processes that have an input pump (possibly kernel bug?)
-#define CLOSE_BEFORE_EXEC
-
 using namespace bpf;
 using namespace bpf::io;
 using namespace bpf::system;
@@ -207,7 +203,7 @@ void Process::Builder::ProcessWorker(int fdStdOut[2], int fdStdErr[2], int fdStd
             fd != fdStdIn[PIPE_READ] && fd != commonfd[PIPE_WRITE])
             close(fd);
     }
-    if (fcntl(commonfd[PIPE_WRITE], FD_CLOEXEC, 1) != 0)
+    if (fcntl(commonfd[PIPE_WRITE], F_SETFD, FD_CLOEXEC) != 0)
     {
         BP_IGNORE(write(commonfd[PIPE_WRITE], "fcntl failure", 14));
         close(commonfd[PIPE_WRITE]);
@@ -241,15 +237,10 @@ void Process::Builder::ProcessWorker(int fdStdOut[2], int fdStdErr[2], int fdStd
         ++i;
     }
     envp[i] = NULL;
-    #ifdef CLOSE_BEFORE_EXEC
-    close(commonfd[PIPE_WRITE]);
-    #endif
     if (execve(*_appExe, argv, envp) == -1)
     {
-    #ifndef CLOSE_BEFORE_EXEC
         BP_IGNORE(write(commonfd[PIPE_WRITE], "execve failure", 15));
         close(commonfd[PIPE_WRITE]);
-    #endif
         exit(1);
     }
 redirecterr:
@@ -504,10 +495,10 @@ fsize Process::PipeStream::Read(void *buf, fsize bufsize)
 
 fsize Process::PipeStream::Write(const void *buf, fsize bufsize)
 {
-#ifdef WINDOWS
-    // It seems that when the buffer is empty the WinApi is unable to silently return instead it must throw an error
+    //It seems that on both operating systems when the buffer is empty it is considdered as an error
     if (bufsize == 0)
         return (0);
+#ifdef WINDOWS
     DWORD written;
     if (!WriteFile(_pipeHandles[PIPE_WRITE], buf, (DWORD)bufsize, &written, NULL))
         throw IOException("Cannot write to pipe");
