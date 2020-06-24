@@ -54,9 +54,9 @@ TEST(File, WeirdCases)
 #ifdef LINUX //I have no idea which folder is not readable under windows by default
 TEST(File, HasAccess)
 {
-    EXPECT_FALSE(File("/root").HasAccess(bpf::io::FILE_MODE_READ));
-    EXPECT_FALSE(File("/root").HasAccess(bpf::io::FILE_MODE_WRITE));
-    EXPECT_FALSE(File("/root").HasAccess(bpf::io::FILE_MODE_READ | bpf::io::FILE_MODE_WRITE));
+    EXPECT_FALSE(bpf::io::File("/root").HasAccess(bpf::io::FILE_MODE_READ));
+    EXPECT_FALSE(bpf::io::File("/root").HasAccess(bpf::io::FILE_MODE_WRITE));
+    EXPECT_FALSE(bpf::io::File("/root").HasAccess(bpf::io::FILE_MODE_READ | bpf::io::FILE_MODE_WRITE));
 }
 #endif
 
