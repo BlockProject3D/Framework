@@ -47,6 +47,11 @@ TEST(Process, SimpleErr)
     EXPECT_THROW(bpf::system::Process::Builder().SetApplication("does not exist").Build(), bpf::io::IOException);
     EXPECT_THROW(bpf::system::Process::Builder().SetApplication("./does not exist").Build(), bpf::io::IOException);
     EXPECT_THROW(bpf::system::Process::Builder().SetWorkingDirectory(bpf::io::File("does not exist")).Build(), bpf::io::IOException);
+#ifdef WINDOWS
+    EXPECT_THROW(bpf::system::Process::Builder().SetWorkingDirectory(g_app->Props.AppRoot + "BPF.Tests.exe"), bpf::io::IOException);
+#else
+    EXPECT_THROW(bpf::system::Process::Builder().SetWorkingDirectory(g_app->Props.AppRoot + "BPF.Tests"), bpf::io::IOException);
+#endif
 }
 
 TEST(Process, ArgsEnvErr)
@@ -60,7 +65,7 @@ TEST(Process, ArgsEnvErr)
     EXPECT_THROW(bpf::system::Process::Builder().SetEnvironment(env1).SetApplication(SAMPLE_EXE_NAME).Build(), bpf::system::OSException);
 }
 
-TEST(Process, Simple)
+TEST(Process, Simple_1)
 {
     auto proc = bpf::system::Process::Builder().SetApplication(SAMPLE_EXE_NAME).Build();
     proc.Wait();
@@ -71,6 +76,37 @@ TEST(Process, Simple)
     EXPECT_EQ(proc.GetExitCode(), 1);
 #else
     EXPECT_EQ(proc.GetExitCode(), 0);
+#endif
+}
+
+TEST(Process, Simple_2)
+{
+    auto proc = bpf::system::Process::Builder().SetApplication(SAMPLE_EXE_NAME).Build();
+    auto p1 = std::move(proc);
+    p1.Wait();
+    EXPECT_THROW(p1.GetStandardError(), bpf::system::OSException);
+    EXPECT_THROW(p1.GetStandardInput(), bpf::system::OSException);
+    EXPECT_THROW(p1.GetStandardOutput(), bpf::system::OSException);
+#ifdef WINDOWS
+    EXPECT_EQ(p1.GetExitCode(), 1);
+#else
+    EXPECT_EQ(p1.GetExitCode(), 0);
+#endif
+}
+
+TEST(Process, Simple_3)
+{
+    auto proc = bpf::system::Process::Builder().SetApplication(SAMPLE_EXE_NAME).Build();
+    auto p1 = bpf::system::Process::Builder().SetApplication(SAMPLE_EXE_NAME).Build();
+    p1 = std::move(proc);
+    p1.Wait();
+    EXPECT_THROW(p1.GetStandardError(), bpf::system::OSException);
+    EXPECT_THROW(p1.GetStandardInput(), bpf::system::OSException);
+    EXPECT_THROW(p1.GetStandardOutput(), bpf::system::OSException);
+#ifdef WINDOWS
+    EXPECT_EQ(p1.GetExitCode(), 1);
+#else
+    EXPECT_EQ(p1.GetExitCode(), 0);
 #endif
 }
 
@@ -204,6 +240,32 @@ TEST(Process, MultiRedirection_2)
     EXPECT_TRUE(ereader.ReadLine(line1));
     EXPECT_STREQ(*line, "this is a test");
     EXPECT_STREQ(*line1, "TestError: this is a test");
+}
+
+TEST(Process, Kill_NonForce)
+{
+    auto proc = bpf::system::Process::Builder()
+        .SetApplication((g_app->Props.AppRoot + "BPF.Tests").Path())
+        .SetEnvironment({{"__BPF_PARSE__", ""}})
+        .RedirectInput()
+        .RedirectOutput()
+        .RedirectError()
+        .Build();
+    proc.Kill(false);
+    EXPECT_NE(proc.GetExitCode(), -1);
+}
+
+TEST(Process, Kill_Force)
+{
+    auto proc = bpf::system::Process::Builder()
+        .SetApplication((g_app->Props.AppRoot + "BPF.Tests").Path())
+        .SetEnvironment({{"__BPF_PARSE__", ""}})
+        .RedirectInput()
+        .RedirectOutput()
+        .RedirectError()
+        .Build();
+    proc.Kill(true);
+    EXPECT_NE(proc.GetExitCode(), -1);
 }
 
 #ifdef LINUX

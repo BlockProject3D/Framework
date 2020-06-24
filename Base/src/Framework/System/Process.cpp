@@ -87,6 +87,7 @@ Process::Builder &Process::Builder::SetApplication(const String &name)
 #ifdef WINDOWS
         if (!f.Exists())
             str += ".exe";
+        f = File(str);
 #endif
         if (f.Exists() && !f.IsDirectory())
         {
@@ -495,7 +496,7 @@ fsize Process::PipeStream::Read(void *buf, fsize bufsize)
 
 fsize Process::PipeStream::Write(const void *buf, fsize bufsize)
 {
-    //It seems that on both operating systems when the buffer is empty it is considdered as an error
+    // It seems that on both operating systems when the buffer is empty it is considdered as an error
     if (bufsize == 0)
         return (0);
 #ifdef WINDOWS
@@ -681,9 +682,17 @@ void Process::Kill(bool force)
             FreeConsole();
             SetConsoleCtrlHandler(NULL, false); // Re-enable Ctrl-C handling
         }
-        else
+        else // Windows rejected attaching the console so we assume it's a window so we try to kill the windows
         {
-            for (DWORD tid : EnumerateWindowThreads(pid))
+            auto windows = EnumerateWindowThreads(pid);
+            if (windows.size() == 0)
+            {
+                // Fact is it's definatly not a window based app so assume Windows is a peace of shit and unable to
+                // attach a process which does have a console Rely on force kill then
+                Kill(true);
+                return;
+            }
+            for (DWORD tid : windows)
             {
                 if (!PostThreadMessage(tid, WM_QUIT, 0, 0))
                     throw OSException("Error trying to send WM_QUIT message");
