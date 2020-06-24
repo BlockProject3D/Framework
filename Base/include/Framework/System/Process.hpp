@@ -68,13 +68,13 @@ namespace bpf
                 /**
                  * Constructs a Process::Builder
                  */
-                Builder();
+                explicit Builder();
 
                 /**
                  * Constructs a Process::Builder
                  * @param app instance of calling Application to copy defaults from
                  */
-                Builder(const Application &app);
+                explicit Builder(const Application &app);
 
                 /**
                  * Sets the application to run as a separate process

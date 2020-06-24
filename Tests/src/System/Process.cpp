@@ -56,7 +56,6 @@ TEST(Process, SimpleErr)
 
 TEST(Process, ArgsEnvErr)
 {
-    auto test = bpf::String();
     auto args = bpf::collection::Array<bpf::String>({bpf::String()}); //If not properly handled will crash the application
     auto env = bpf::collection::HashMap<bpf::String, bpf::String>({{bpf::String(), "Value"}}); //If not properly handled will crash the application
     auto env1 = bpf::collection::HashMap<bpf::String, bpf::String>({{"Key", bpf::String()}}); //If not properly handled will crash the application
