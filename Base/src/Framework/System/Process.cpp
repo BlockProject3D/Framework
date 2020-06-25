@@ -34,6 +34,9 @@ constexpr int PIPE_READ = 0;
 #include "Framework/IO/IOException.hpp"
 #include "Framework/Scalar.hpp"
 #include "Framework/System/OSException.hpp"
+#ifndef WINDOWS
+    #include "Framework/System/Thread.hpp"
+#endif
 #ifdef WINDOWS
     #include "Framework/Collection/ArrayList.hpp"
     #include <Windows.h>
@@ -707,6 +710,8 @@ void Process::Kill(bool force)
 #else
     if (kill(_pid, force ? SIGKILL : SIGINT) == -1)
         throw OSException("Could not terminate process");
+    //It seem that under Linux kill does not wait until the signal has been sent so attempt to emulate the expected behaviour with a sleep
+    Thread::Sleep(100);
 #endif
 }
 
