@@ -76,6 +76,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/Platforms/${PLATFORM}.cmake")
 function(bp_setup_target name mainincdir)
     target_include_directories(${name} PRIVATE ${mainincdir})
     if (COVERAGE)
+        target_compile_definitions(${name} PRIVATE COVERAGE)
         target_compile_options(${name}
             PRIVATE
             -g -O0
