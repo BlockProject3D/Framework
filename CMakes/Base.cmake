@@ -86,7 +86,8 @@ function(bp_setup_target name mainincdir)
             -fprofile-arcs
             -ftest-coverage
             -fkeep-inline-functions
-            -Wno-unused)
+            -Wno-unused
+            -std=gnu++11)
         target_link_libraries(${name}
             PRIVATE
             -g -O0
@@ -97,7 +98,8 @@ function(bp_setup_target name mainincdir)
             -fprofile-arcs
             -ftest-coverage
             -fkeep-inline-functions
-            -Wno-unused)
+            -Wno-unused
+            -std=gnu++11)
         target_link_libraries(${name} PRIVATE gcov supc++)
     endif (COVERAGE)
     bp_target_created(${name})
