@@ -241,6 +241,32 @@ TEST(Process, MultiRedirection_2)
     EXPECT_STREQ(*line1, "TestError: this is a test");
 }
 
+TEST(Process, MultiRedirection_3)
+{
+    auto p = bpf::system::Process::Builder()
+        .SetApplication((g_app->Props.AppRoot + "BPF.Tests").Path())
+        .SetEnvironment({{"__BPF_PARSE__", ""}})
+        .RedirectInput()
+        .RedirectOutput()
+        .RedirectError()
+        .Build();
+    auto proc = std::move(p);
+    EXPECT_EQ(proc.GetExitCode(), -1);
+    bpf::io::TextWriter writer(proc.GetStandardInput());
+    writer.WriteLine("this is a test");
+    writer.Flush();
+    proc.Wait();
+    EXPECT_EQ(proc.GetExitCode(), 2);
+    bpf::io::TextReader oreader(proc.GetStandardOutput());
+    bpf::io::TextReader ereader(proc.GetStandardError());
+    bpf::String line;
+    bpf::String line1;
+    EXPECT_TRUE(oreader.ReadLine(line));
+    EXPECT_TRUE(ereader.ReadLine(line1));
+    EXPECT_STREQ(*line, "this is a test");
+    EXPECT_STREQ(*line1, "TestError: this is a test");
+}
+
 TEST(Process, Kill_NonForce)
 {
     auto proc = bpf::system::Process::Builder()
@@ -251,7 +277,10 @@ TEST(Process, Kill_NonForce)
         .RedirectError()
         .Build();
     proc.Kill(false);
-    EXPECT_NE(proc.GetExitCode(), -1);
+    auto res = proc.GetExitCode();
+    EXPECT_NE(res, -1);
+    proc.Kill(false);
+    EXPECT_EQ(res, proc.GetExitCode());
 }
 
 TEST(Process, Kill_Force)
@@ -264,7 +293,10 @@ TEST(Process, Kill_Force)
         .RedirectError()
         .Build();
     proc.Kill(true);
-    EXPECT_NE(proc.GetExitCode(), -1);
+    auto res = proc.GetExitCode();
+    EXPECT_NE(res, -1);
+    proc.Kill(true);
+    EXPECT_EQ(res, proc.GetExitCode());
 }
 
 #ifdef LINUX
