@@ -54,6 +54,9 @@ constexpr int PIPE_READ = 0;
     #include <sys/wait.h>
     #include <unistd.h>
 #endif
+#ifdef COVERAGE
+    #include <gcc/gcov-io.h>
+#endif
 
 using namespace bpf;
 using namespace bpf::io;
