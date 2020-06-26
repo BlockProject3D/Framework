@@ -54,9 +54,6 @@ constexpr int PIPE_READ = 0;
     #include <sys/wait.h>
     #include <unistd.h>
 #endif
-#ifdef COVERAGE
-    #include <gcc/gcov-io.h>
-#endif
 
 using namespace bpf;
 using namespace bpf::io;
@@ -244,16 +241,10 @@ void Process::Builder::ProcessWorker(int fdStdOut[2], int fdStdErr[2], int fdStd
         ++i;
     }
     envp[i] = NULL;
-#ifdef COVERAGE
-    __gcov_flush();
-#endif
     if (execve(*_appExe, argv, envp) == -1)
     {
         BP_IGNORE(write(commonfd[PIPE_WRITE], "execve failure", 15));
         close(commonfd[PIPE_WRITE]);
-#ifdef COVERAGE
-        __gcov_flush();
-#endif
         exit(1);
     }
 redirecterr:
