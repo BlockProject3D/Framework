@@ -609,13 +609,13 @@ Array<String> String::Explode(const char c) const
     {
         if (Data[i] != c)
             cur.AddSingleByte(Data[i]);
-        else if (cur != String::Empty)
+        else if (!cur.IsEmpty())
         {
             l.Add(cur);
-            cur = String::Empty;
+            cur = "";
         }
     }
-    if (cur != String::Empty)
+    if (!cur.IsEmpty())
         l.Add(cur);
     return (l.ToArray());
 }
@@ -632,13 +632,13 @@ Array<String> String::ExplodeIgnore(const char c, const char ignore) const
             ign = !ign;
         if (Data[i] != c || ign)
             cur.AddSingleByte(Data[i]);
-        else if (cur != String::Empty)
+        else if (!cur.IsEmpty())
         {
             l.Add(cur);
-            cur = String::Empty;
+            cur = "";
         }
     }
-    if (cur != String::Empty)
+    if (!cur.IsEmpty())
         l.Add(cur);
     return (l.ToArray());
 }
@@ -652,13 +652,13 @@ Array<String> String::Explode(const String &str) const
     {
         if (Data[i] != str.Data[0])
             cur.AddSingleByte(Data[i]);
-        else if (cur != String::Empty && my_strstr(str.Data, Data + i))
+        else if (!cur.IsEmpty() && my_strstr(str.Data, Data + i))
         {
             l.Add(cur);
-            cur = String::Empty;
+            cur = "";
         }
     }
-    if (cur != String::Empty)
+    if (!cur.IsEmpty())
         l.Add(cur);
     return (l.ToArray());
 }
@@ -675,13 +675,13 @@ Array<String> String::ExplodeIgnore(const String &str, const String &ignore) con
             ign = !ign;
         if (Data[i] != str.Data[0] || ign)
             cur.AddSingleByte(Data[i]);
-        else if (cur != String::Empty && my_strstr(str.Data, Data + i))
+        else if (!cur.IsEmpty() && my_strstr(str.Data, Data + i))
         {
             l.Add(cur);
-            cur = String::Empty;
+            cur = "";
         }
     }
-    if (cur != String::Empty)
+    if (!cur.IsEmpty())
         l.Add(cur);
     return (l.ToArray());
 }
@@ -695,13 +695,13 @@ Array<String> String::ExplodeOr(const String &str) const
     {
         if (!str.Contains(operator[](i)))
             cur.AddSingleByte(Data[i]);
-        else if (cur != String::Empty)
+        else if (!cur.IsEmpty())
         {
             l.Add(cur);
-            cur = String::Empty;
+            cur = "";
         }
     }
-    if (cur != String::Empty)
+    if (!cur.IsEmpty())
         l.Add(cur);
     return (l.ToArray());
 }
@@ -836,7 +836,7 @@ String String::ToLower() const
 
 String String::Reverse() const
 {
-    String res = String::Empty;
+    String res = "";
 
     if (UnicodeLen == 0)
         return (res);

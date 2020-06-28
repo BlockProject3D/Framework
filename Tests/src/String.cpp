@@ -42,6 +42,16 @@ TEST(String, Create)
     bpf::String str2 = Null;
 }
 
+TEST(String, Empty)
+{
+    bpf::String str;
+    bpf::String str1 = "";
+    bpf::String str2 = "This is a test";
+    EXPECT_TRUE(str.IsEmpty());
+    EXPECT_TRUE(str1.IsEmpty());
+    EXPECT_FALSE(str2.IsEmpty());
+}
+
 TEST(String, CreateUnicode)
 {
     bpf::String str = " é è à ù € This is a test !";
