@@ -55,6 +55,10 @@ constexpr int PIPE_READ = 0;
     #include <unistd.h>
 #endif
 
+#ifdef COVERAGE
+void __gcov_flush(void);
+#endif
+
 using namespace bpf;
 using namespace bpf::io;
 using namespace bpf::system;
@@ -241,19 +245,31 @@ void Process::Builder::ProcessWorker(int fdStdOut[2], int fdStdErr[2], int fdStd
         ++i;
     }
     envp[i] = NULL;
+#ifdef COVERAGE
+    __gcov_flush();
+#endif
     if (execve(*_appExe, argv, envp) == -1)
     {
         BP_IGNORE(write(commonfd[PIPE_WRITE], "execve failure", 15));
         close(commonfd[PIPE_WRITE]);
+#ifdef COVERAGE
+        __gcov_flush();
+#endif
         exit(1);
     }
 redirecterr:
     BP_IGNORE(write(commonfd[PIPE_WRITE], "Could not create one or more redirection(s)", 44));
     close(commonfd[PIPE_WRITE]);
+#ifdef COVERAGE
+    __gcov_flush();
+#endif
     exit(1);
 mallocerr:
     BP_IGNORE(write(commonfd[PIPE_WRITE], "malloc failure", 15));
     close(commonfd[PIPE_WRITE]);
+#ifdef COVERAGE
+    __gcov_flush();
+#endif
     exit(1);
 }
 
