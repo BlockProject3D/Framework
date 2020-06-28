@@ -134,7 +134,7 @@ Process::Builder &Process::Builder::SetApplication(const String &name)
                 break;
             }
         }
-        if (_appExe == String::Empty)
+        if (_appExe.IsEmpty())
             throw IOException(String("Could not find file '") + name + "' in PATH");
     }
     return (*this);
@@ -342,7 +342,7 @@ Process Process::Builder::Build()
         throw OSException("Could not create standard input redirection");
     }
     auto appName = _appExe.ToUTF16();
-    String cmdLine = String::Empty;
+    String cmdLine = "";
     for (auto &a : _argv)
         cmdLine += a + ' ';
     cmdLine = cmdLine.Sub(0, cmdLine.Len() - 1);

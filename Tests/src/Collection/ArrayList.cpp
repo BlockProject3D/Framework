@@ -463,7 +463,7 @@ TEST(ArrayList, IterateForward_Test1)
 
 TEST(ArrayList, IterateForward_Test2)
 {
-    String res = String::Empty;
+    String res = "";
     ArrayList<String> lst;
 
     lst.Add("a");
@@ -491,7 +491,7 @@ TEST(ArrayList, IterateBackward_Test1)
 
 TEST(ArrayList, IterateBackward_Test2)
 {
-    String res = String::Empty;
+    String res = "";
     ArrayList<String> lst;
 
     lst.Add("a");

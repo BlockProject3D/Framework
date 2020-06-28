@@ -70,9 +70,11 @@ HashMap<String, String> WindowsApp::SetupEnvironment()
             if (str[0] != '=')
             {
                 auto key = str.Sub(0, str.IndexOf('='));
-                if (key == String::Empty)
+                if (key.IsEmpty())
                     continue;
                 auto value = str.Sub(str.IndexOf('=') + 1);
+                if (*value == Null)
+                    value = ""; // Attempt to fix Travis bug of having NULL vars...
                 env.Add(key, value);
             }
         }

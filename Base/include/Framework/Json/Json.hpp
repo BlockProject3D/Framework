@@ -272,7 +272,7 @@ namespace bpf
                 : _type(EType::OBJECT)
                 , _number(0.0)
                 , _bool(false)
-                , _string(String::Empty)
+                , _string("")
                 , _object(memory::MakeUnique<Object>(val))
             {
             }
@@ -281,7 +281,7 @@ namespace bpf
                 : _type(EType::OBJECT)
                 , _number(0.0)
                 , _bool(false)
-                , _string(String::Empty)
+                , _string("")
                 , _object(memory::MakeUnique<Object>(std::move(val)))
             {
             }
@@ -290,7 +290,7 @@ namespace bpf
                 : _type(EType::ARRAY)
                 , _number(0.0)
                 , _bool(false)
-                , _string(String::Empty)
+                , _string("")
                 , _object(Null)
                 , _array(memory::MakeUnique<Array>(arr))
             {
@@ -300,7 +300,7 @@ namespace bpf
                 : _type(EType::ARRAY)
                 , _number(0.0)
                 , _bool(false)
-                , _string(String::Empty)
+                , _string("")
                 , _object(Null)
                 , _array(memory::MakeUnique<Array>(std::move(arr)))
             {

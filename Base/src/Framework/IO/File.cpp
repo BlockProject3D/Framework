@@ -57,7 +57,7 @@ File::File(const bpf::String &path)
         return;
 #ifdef WINDOWS
     FullPath = FullPath.Replace('/', '\\');
-    String result = String::Empty;
+    String result = "";
     char old = '\0';
     for (fisize i = 0; i < FullPath.Size(); ++i)
     {

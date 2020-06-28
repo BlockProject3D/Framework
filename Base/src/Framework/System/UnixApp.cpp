@@ -55,7 +55,7 @@ HashMap<String, String> UnixApp::SetupEnvironment(char **env)
     {
         String str(env[i]);
         auto key = str.Sub(0, str.IndexOf('='));
-        if (key == String::Empty)
+        if (key.IsEmpty())
             continue;
         auto value = str.Sub(str.IndexOf('=') + 1);
         if (*value == Null)

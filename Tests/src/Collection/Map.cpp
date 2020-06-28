@@ -362,7 +362,7 @@ TEST(Map, IterateForward_Test1)
 
 TEST(Map, IterateForward_Test2)
 {
-    String res = String::Empty;
+    String res = "";
     Map<String, int> map;
 
     map["test1"] = 0;
@@ -388,7 +388,7 @@ TEST(Map, IterateBackward_Test1)
 
 TEST(Map, IterateBackward_Test2)
 {
-    String res = String::Empty;
+    String res = "";
     Map<String, int> map;
 
     map["test1"] = 0;

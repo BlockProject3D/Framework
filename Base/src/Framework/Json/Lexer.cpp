@@ -56,10 +56,10 @@ void Lexer::LoadString(const String &input)
         if (CheckString(token)
             || CheckBasic(token, _cursor < input.Len() ? input[_cursor + 1] : '\0')
             || CheckNumber(token, _cursor < input.Len() ? input[_cursor + 1] : '\0'))
-            token = String::Empty;
+            token = "";
         ++_cursor;
     }
-    if (token != String::Empty)
+    if (!token.IsEmpty())
         throw JsonParseException(_line, String("Unexpected token '") + token + "'");
 }
 
@@ -70,7 +70,7 @@ Queue<Lexer::Token> Lexer::ReadTokens()
 
 fchar Lexer::ProcessUnicode(const String &str, int &pos)
 {
-    String nbr = String::Empty;
+    String nbr = "";
     int i = pos + 2;
 
     for (; i != str.Len(); ++i)
@@ -104,7 +104,7 @@ fchar Lexer::ProcessStandard(const String &str, int &pos)
 String Lexer::ReProcessString(const String &str)
 {
     String copy = str.Sub(1, str.Len() - 1);
-    String res = String::Empty;
+    String res = "";
 
     for (int i = 0; i < copy.Len(); ++i)
     {
@@ -157,7 +157,7 @@ bool Lexer::CheckNumber(const String &token, const fchar next)
             _curNbr += '-';
         return (true);
     }
-    else if (token.IsNumeric() && _curExponent == String::Empty)
+    else if (token.IsNumeric() && _curExponent.IsEmpty())
     {
         _curNbr += token;
         if ((next < 48 || next > 57) && next != 'e' && next != 'E' && next != '.')
@@ -167,8 +167,8 @@ bool Lexer::CheckNumber(const String &token, const fchar next)
             tok.Line = _line;
             tok.Type = ETokenType::NUMBER;
             _tokens.Push(std::move(tok));
-            _curNbr = String::Empty;
-            _curExponent = String::Empty;
+            _curNbr = "";
+            _curExponent = "";
         }
         return (true);
     }
@@ -189,8 +189,8 @@ bool Lexer::CheckNumber(const String &token, const fchar next)
             tok.Line = _line;
             tok.Type = ETokenType::NUMBER;
             _tokens.Push(std::move(tok));
-            _curNbr = String::Empty;
-            _curExponent = String::Empty;
+            _curNbr = "";
+            _curExponent = "";
         }
         return (true);
     }
