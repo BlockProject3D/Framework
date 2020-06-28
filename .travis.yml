@@ -32,6 +32,7 @@ jobs:
         - lcov --remove coverage.info '/usr/*' --output-file coverage.info
         - lcov --remove coverage.info '*/gtest/*' --output-file coverage.info
         - lcov --remove coverage.info '*Tests/*' --output-file coverage.info
+        - lcov --remove coverage.info '*Tests.*/*' --output-file coverage.info
         - bash <(curl -s https://codecov.io/bash) -f coverage.info || echo "Codecov did not collect coverage reports"
     - stage: debug-test
       os: osx
