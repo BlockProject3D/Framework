@@ -267,6 +267,25 @@ TEST(Process, MultiRedirection_3)
     EXPECT_STREQ(*line1, "TestError: this is a test");
 }
 
+TEST(Process, AutoKill)
+{
+    auto p = bpf::system::Process::Builder()
+        .SetApplication((g_app->Props.AppRoot + "BPF.Tests").Path())
+        .SetEnvironment({{"__BPF_PARSE__", ""}})
+        .RedirectInput()
+        .RedirectOutput()
+        .RedirectError()
+        .Build();
+    auto p1 = bpf::system::Process::Builder()
+        .SetApplication((g_app->Props.AppRoot + "BPF.Tests").Path())
+        .SetEnvironment({{"__BPF_PARSE__", ""}})
+        .RedirectInput()
+        .RedirectOutput()
+        .RedirectError()
+        .Build();
+    p = std::move(p1);
+}
+
 TEST(Process, Kill_NonForce)
 {
     auto proc = bpf::system::Process::Builder()
