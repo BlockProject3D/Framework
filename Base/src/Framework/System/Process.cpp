@@ -56,7 +56,7 @@ constexpr int PIPE_READ = 0;
 #endif
 
 #ifdef COVERAGE
-void __gcov_flush(void);
+extern "C" void __gcov_flush(void);
 #endif
 
 using namespace bpf;
