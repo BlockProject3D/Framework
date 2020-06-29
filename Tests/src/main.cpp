@@ -37,6 +37,9 @@ bpf::system::Application *g_app;
 
 int Main(bpf::system::Application &app, const bpf::collection::Array<bpf::String> &args)
 {
+    bpf::io::Console::ResetTextStyle(bpf::io::EConsoleStream::OUTPUT);
+    bpf::io::Console::ResetTextStyle(bpf::io::EConsoleStream::ERROR);
+    bpf::io::Console::ResetTextStyle();
     if (app.Environment.HasKey("__BPF_PARSE__"))
     {
         bpf::io::ConsoleReader reader;
