@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -43,16 +43,13 @@
     #include <unistd.h>
 #endif
 
-#ifndef WINDOWS //We assume compiler supports GCC style asm
+#ifndef WINDOWS // We assume compiler supports GCC style asm
 
-    #define INSTRUCTION_CPUID(val)   \
-        asm("movl $" #val ", %eax"); \
+    #define INSTRUCTION_CPUID(val)                                                                                     \
+        asm("movl $" #val ", %eax");                                                                                   \
         asm("cpuid")
 
-    #define READ_REGISTER(name, val) \
-        asm("movl %%" #name ", %0"   \
-            : "=r"(val)              \
-            :)
+    #define READ_REGISTER(name, val) asm("movl %%" #name ", %0" : "=r"(val) :)
 
 #endif
 
@@ -116,7 +113,8 @@ String Platform::IdentifyCPUBranding()
     return (String(CPUBrandString));
 #else
     #if defined(__arm__) || defined(__aarch64__)
-    //For getting a name here go ask ARM architecture team to provide the missing cpuid instruction or an instruction that can obtain brand name
+    // For getting a name here go ask ARM architecture team to provide the missing cpuid instruction or an instruction
+    // that can obtain brand name
     return ("Generic ARM Processor");
     #else
         #ifdef BUILD_DEBUG
@@ -155,7 +153,7 @@ String Platform::IdentifyCPUBranding()
     res += CPUIDIntToStr(reg_edx);
     return (res);
         #else
-    return ("Generic CPU"); //In optimized build attempting to call cpuid crashes the application under unix
+    return ("Generic CPU"); // In optimized build attempting to call cpuid crashes the application under unix
         #endif
     #endif
 #endif
@@ -182,7 +180,8 @@ OS Platform::InitOSInfo()
     os.NewLine = "\r\n";
     os.PathSep = "\\";
     RTL_OSVERSIONINFOW ver = GetRealOSVersion();
-    os.Version = String::ValueOf(static_cast<int>(ver.dwMajorVersion)) + "." + String::ValueOf(static_cast<int>(ver.dwMinorVersion));
+    os.Version = String::ValueOf(static_cast<int>(ver.dwMajorVersion)) + "." +
+                 String::ValueOf(static_cast<int>(ver.dwMinorVersion));
 #elif MAC
     os.ModuleExt = "dylib";
     os.Name = "Mac";
@@ -223,17 +222,17 @@ const CPU &Platform::GetCPUInfo()
     SYSTEM_INFO sysInfo;
     GetSystemInfo(&sysInfo);
     cpi.NumCores = sysInfo.dwNumberOfProcessors;
-    cpi.Freq = 1; //Cannot reliably find CPU frequency
+    cpi.Freq = 1; // Cannot reliably find CPU frequency
 #elif MAC
     fint ncores = 1;
     size_t sz = sizeof(fint);
     if (sysctlbyname("hw.activecpu", &ncores, &sz, Null, 0))
         sysctlbyname("hw.ncpu", &ncores, &sz, Null, 0);
     cpi.NumCores = ncores;
-    cpi.Freq = 1; //Cannot reliably find CPU frequency
+    cpi.Freq = 1; // Cannot reliably find CPU frequency
 #else
     cpi.NumCores = get_nprocs();
-    cpi.Freq = 1; //Cannot reliably find CPU frequency
+    cpi.Freq = 1; // Cannot reliably find CPU frequency
 #endif
     return (cpi);
 }
@@ -301,4 +300,65 @@ void Platform::ReverseBuffer(void *buf, const fsize size, const fsize groupsize)
         i += groupsize;
         j -= groupsize;
     }
+}
+
+#ifdef WINDOWS
+// Reimplement missing WinAPI functionality
+// See https://docs.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-checktokenmembership
+static BOOL __internal_IsUserAdmin()
+{
+    BOOL b;
+    SID_IDENTIFIER_AUTHORITY NtAuthority = SECURITY_NT_AUTHORITY;
+    PSID AdministratorsGroup;
+
+    if (!AllocateAndInitializeSid(&NtAuthority, 2, SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS, 0, 0, 0, 0, 0,
+                                  0, &AdministratorsGroup))
+        return (FALSE);
+    if (!CheckTokenMembership(NULL, AdministratorsGroup, &b))
+    {
+        FreeSid(AdministratorsGroup);
+        return (FALSE);
+    }
+    else
+    {
+        FreeSid(AdministratorsGroup);
+        return (TRUE);
+    }
+}
+
+// Check if process is running with elevated privileges
+static BOOL __internal_GetProcessElevationType(TOKEN_ELEVATION_TYPE *elevationType)
+{
+    HANDLE token = NULL;
+    DWORD size = 0;
+
+    *elevationType = TokenElevationTypeDefault;
+    if (OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &token))
+    {
+        if (GetTokenInformation(token, TokenElevationType, elevationType, sizeof(TOKEN_ELEVATION_TYPE), &size) &&
+            size == sizeof(TOKEN_ELEVATION_TYPE))
+        {
+            CloseHandle(token);
+            return (TRUE);
+        }
+        CloseHandle(token);
+    }
+    return (FALSE);
+}
+#endif
+
+bool Platform::IsRunningAsAdmin()
+{
+#ifdef WINDOWS
+    TOKEN_ELEVATION_TYPE type;
+
+    if (!__internal_IsUserAdmin())
+        return (false);
+    if (!__internal_GetProcessElevationType(&type))
+        return (false);
+    return (type == TokenElevationTypeFull);
+#else
+    auto me = getuid();
+    return (me == 0);
+#endif
 }

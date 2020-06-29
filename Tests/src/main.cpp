@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -26,17 +26,19 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <cassert>
-#include <Framework/System/Application.hpp>
 #include <Framework/Collection/Stringifier.Array.hpp>
-#include <Framework/IO/ConsoleWriter.hpp>
 #include <Framework/IO/ConsoleReader.hpp>
+#include <Framework/IO/ConsoleWriter.hpp>
+#include <Framework/System/Application.hpp>
 #include <Framework/System/Platform.hpp>
+#include <cassert>
 
 bpf::system::Application *g_app;
 
 int Main(bpf::system::Application &app, const bpf::collection::Array<bpf::String> &args)
 {
+    if (bpf::system::Platform::IsRunningAsAdmin())
+        return (1); // Do not run testing app as admin
     bpf::io::Console::SetTitle("BPF Unit Tests");
     bpf::io::Console::ResetTextStyle(bpf::io::EConsoleStream::OUTPUT);
     bpf::io::Console::ResetTextStyle(bpf::io::EConsoleStream::ERROR);
@@ -55,13 +57,13 @@ int Main(bpf::system::Application &app, const bpf::collection::Array<bpf::String
         return (1);
     }
 #ifndef WINDOWS
-    app.CreateConsole(); //Dummy call for coverage
+    app.CreateConsole(); // Dummy call for coverage
 #endif
     g_app = &app;
     bpf::io::ConsoleWriter console;
     const auto &newLine = bpf::system::Platform::GetOSInfo().NewLine;
     assert(app.Environment.Size() > 0);
-    assert(args.Size() > 0); //At least we need the file name passed to our arguments
+    assert(args.Size() > 0); // At least we need the file name passed to our arguments
     assert(app.FileName.Len() > 0);
     assert(app.Props.AppRoot.Path().Len() > 0);
     assert(app.Props.ThirdParty.Path().Len() > 0);
@@ -69,7 +71,8 @@ int Main(bpf::system::Application &app, const bpf::collection::Array<bpf::String
     assert(app.Props.TempDir.Path().Len() > 0);
     assert(app.Props.UserHome.Path().Len() > 0);
     assert(app.Props.DataDir.Path().Len() > 0);
-    console << bpf::io::Console::TextStyle(bpf::io::EConsoleColor::CYAN) << "<==== Initializing high-level main ====>" << bpf::io::Console::ClearTextStyle() << newLine;
+    console << bpf::io::Console::TextStyle(bpf::io::EConsoleColor::CYAN) << "<==== Initializing high-level main ====>"
+            << bpf::io::Console::ClearTextStyle() << newLine;
     console.WriteLine("您好!");
     console << "WorkDir: " << app.GetWorkingDirectory().Path() << newLine;
     console << "AppRoot: " << app.Props.AppRoot.Path() << newLine;
@@ -81,7 +84,8 @@ int Main(bpf::system::Application &app, const bpf::collection::Array<bpf::String
     console << "Program args: " << bpf::String::ValueOf(args) << newLine;
     console << "Program file name: " << app.FileName << newLine;
     console << "Number of environment variables: " << app.Environment.Size() << newLine;
-    console << bpf::io::Console::TextStyle(bpf::io::EConsoleColor::CYAN) << "<======================================>" << bpf::io::Console::ClearTextStyle() << newLine;
+    console << bpf::io::Console::TextStyle(bpf::io::EConsoleColor::CYAN) << "<======================================>"
+            << bpf::io::Console::ClearTextStyle() << newLine;
     console.NewLine();
     console << "<==== Initializing GoogleTest ====>" << newLine;
     return (0);

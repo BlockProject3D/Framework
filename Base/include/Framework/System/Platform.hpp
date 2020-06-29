@@ -86,6 +86,12 @@ namespace bpf
             static EPlatformEndianess GetEndianess();
 
             /**
+             * Check if this application is running as administrator
+             * @return true if the application is currently running as administrator, false otherwise
+             */
+            static bool IsRunningAsAdmin();
+
+            /**
              * Reverse a buffer byte per byte
              * WARNING : This function modifies the input buffer
              * @param buf the buffer to reverse
