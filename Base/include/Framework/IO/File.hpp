@@ -79,13 +79,15 @@ namespace bpf
 
             /**
              * Deletes this file from the file system
+             * @return true if the operation succeeded, false otherwise
              */
-            void Delete();
+            bool Delete();
 
             /**
              * Hides or shows the file in the file explorer.
+             * @return true if the operation succeeded, false otherwise
              */
-            void Hide(const bool flag);
+            bool Hide(const bool flag);
 
             /**
              * Lists all files in that directory (of course if this is a directory)
@@ -95,8 +97,9 @@ namespace bpf
 
             /**
              * Creates the directory if this is a directory
+             * @return true if the operation succeeded, false otherwise
              */
-            void CreateDir();
+            bool CreateDir();
 
             /**
              * Copies this file to the destination, in case destination is a directory, copy in that directory under the same name

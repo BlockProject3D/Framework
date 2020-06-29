@@ -214,7 +214,7 @@ bool File::IsHidden() const
 #endif
 }
 
-void File::Hide(const bool flag)
+bool File::Hide(const bool flag)
 {
 #ifdef WINDOWS
     DWORD attr = GetFileAttributesW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()));
@@ -222,12 +222,13 @@ void File::Hide(const bool flag)
         attr |= FILE_ATTRIBUTE_HIDDEN;
     else
         attr &= ~FILE_ATTRIBUTE_HIDDEN;
-    SetFileAttributesW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), attr);
+    return (SetFileAttributesW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), attr) == TRUE);
 #else
     if (flag && !IsHidden())
     {
         File f = File(GetParent().Path() + "/" + "." + Name());
-        rename(*FullPath, *f.Path());
+        if (rename(*FullPath, *f.Path()) != 0)
+            return (false);
         FileName = f.Name();
         FullPath = f.PlatformPath();
         UserPath = f.Path();
@@ -236,12 +237,14 @@ void File::Hide(const bool flag)
     else if (IsHidden())
     {
         File f = File(GetParent().Path() + "/" + Name().Sub(1));
-        rename(*FullPath, *f.Path());
+        if (rename(*FullPath, *f.Path()) != 0)
+            return (false);
         FileName = f.Name();
         FullPath = f.PlatformPath();
         UserPath = f.Path();
         FileExt = f.Extension();
     }
+    return (true);
 #endif
 }
 
@@ -281,20 +284,20 @@ uint64 File::GetSizeBytes() const
 #endif
 }
 
-void File::Delete()
+bool File::Delete()
 {
     if (!Exists())
-        return;
+        return (false);
 #ifdef WINDOWS
     if (IsDirectory())
-        RemoveDirectoryW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()));
+        return (RemoveDirectoryW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16())) == TRUE);
     else
-        DeleteFileW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()));
+        return (DeleteFileW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16())) == TRUE);
 #else
     if (IsDirectory())
-        rmdir(*FullPath);
+        return (rmdir(*FullPath) == 0);
     else
-        unlink(*FullPath);
+        return (unlink(*FullPath) == 0);
 #endif
 }
 
@@ -329,13 +332,13 @@ List<File> File::ListFiles()
     return (flns);
 }
 
-void File::CreateDir()
+bool File::CreateDir()
 {
     if (Exists())
-        return;
+        return (false);
 #ifdef WINDOWS
-    CreateDirectoryW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), Null);
+    return (CreateDirectoryW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), Null) == TRUE);
 #else
-    mkdir(*FullPath, 0755);
+    return (mkdir(*FullPath, 0755) == 0);
 #endif
 }

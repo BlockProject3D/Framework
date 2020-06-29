@@ -42,9 +42,13 @@ TEST(File, WeirdCases)
     bpf::io::File f4("!");
     bpf::io::File f5("..");
     EXPECT_FALSE(f.Exists());
+    EXPECT_FALSE(f.IsDirectory());
     EXPECT_FALSE(f1.Exists());
+    EXPECT_FALSE(f1.IsDirectory());
     EXPECT_FALSE(f3.Exists());
+    EXPECT_FALSE(f3.IsDirectory());
     EXPECT_FALSE(f4.Exists());
+    EXPECT_FALSE(f4.IsDirectory());
     EXPECT_TRUE(f2.Exists());
     EXPECT_TRUE(f2.IsDirectory());
     EXPECT_TRUE(f5.Exists());
@@ -65,11 +69,11 @@ TEST(File, Basics)
     bpf::io::File f("./doesnotexist.txt");
 
     EXPECT_FALSE(f.Exists());
-    f.CreateDir();
+    EXPECT_TRUE(f.CreateDir());
     EXPECT_TRUE(f.Exists());
     EXPECT_TRUE(f.IsDirectory());
     EXPECT_TRUE(f.HasAccess(bpf::io::FILE_ACCESS_READ | bpf::io::FILE_ACCESS_WRITE));
-    f.Delete();
+    EXPECT_TRUE(f.Delete());
     EXPECT_FALSE(f.Exists());
     EXPECT_FALSE(f.IsDirectory());
 }
@@ -78,13 +82,13 @@ TEST(File, Hide)
 {
     bpf::io::File f("./doesnotexist.txt");
 
-    f.CreateDir();
+    EXPECT_TRUE(f.CreateDir());
     EXPECT_FALSE(f.IsHidden());
-    f.Hide(true);
+    EXPECT_TRUE(f.Hide(true));
     EXPECT_TRUE(f.IsHidden());
-    f.Hide(false);
+    EXPECT_TRUE(f.Hide(false));
     EXPECT_FALSE(f.IsHidden());
-    f.Delete();
+    EXPECT_TRUE(f.Delete());
 }
 
 TEST(File, Abs)
@@ -92,14 +96,14 @@ TEST(File, Abs)
     bpf::io::File f("./doesnotexist.txt");
 
     EXPECT_FALSE(f.Exists());
-    f.CreateDir();
+    EXPECT_TRUE(f.CreateDir());
     EXPECT_TRUE(f.Exists());
     EXPECT_TRUE(f.IsDirectory());
     bpf::io::File abs = f.GetAbsolutePath();
     std::cout << *abs.Path() << std::endl;
     EXPECT_TRUE(abs.Exists());
     EXPECT_TRUE(abs.IsDirectory());
-    f.Delete();
+    EXPECT_TRUE(f.Delete());
     EXPECT_FALSE(f.Exists());
 }
 
@@ -109,14 +113,14 @@ TEST(File, Move)
     bpf::io::File dest("./doesexist.txt");
 
     EXPECT_FALSE(f.Exists());
-    f.CreateDir();
+    EXPECT_TRUE(f.CreateDir());
     EXPECT_TRUE(f.Exists());
     EXPECT_FALSE(dest.Exists());
     EXPECT_TRUE(f.MoveTo(dest));
     EXPECT_TRUE(dest.Exists());
     EXPECT_FALSE(f.Exists());
-    f.Delete();
-    dest.Delete();
+    EXPECT_FALSE(f.Delete());
+    EXPECT_TRUE(dest.Delete());
 }
 
 #ifdef WINDOWS
@@ -197,7 +201,7 @@ TEST(File, List_Test_Err_2)
 
     SetupTestFile(f);
     EXPECT_THROW(f.ListFiles(), bpf::io::IOException);
-    f.Delete();
+    EXPECT_TRUE(f.Delete());
 }
 
 TEST(File, GetSizeBytes)
@@ -205,6 +209,6 @@ TEST(File, GetSizeBytes)
     bpf::io::File f("./test_me.txt");
     SetupTestFile(f);
     EXPECT_EQ(f.GetSizeBytes(), 14U);
-    f.Delete();
+    EXPECT_TRUE(f.Delete());
     EXPECT_THROW(f.GetSizeBytes(), bpf::io::IOException);
 }
