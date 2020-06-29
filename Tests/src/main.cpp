@@ -37,6 +37,7 @@ bpf::system::Application *g_app;
 
 int Main(bpf::system::Application &app, const bpf::collection::Array<bpf::String> &args)
 {
+    bpf::io::Console::SetTitle("BPF Unit Tests");
     bpf::io::Console::ResetTextStyle(bpf::io::EConsoleStream::OUTPUT);
     bpf::io::Console::ResetTextStyle(bpf::io::EConsoleStream::ERROR);
     bpf::io::Console::ResetTextStyle();
