@@ -30,8 +30,11 @@
 #include <iostream>
 #include <gtest/gtest.h>
 #include <Framework/IO/File.hpp>
+#include <Framework/System/Application.hpp>
 #include <Framework/IO/FileStream.hpp>
 #include <Framework/IO/IOException.hpp>
+
+extern bpf::system::Application *g_app;
 
 TEST(File, WeirdCases)
 {
@@ -62,6 +65,16 @@ TEST(File, HasAccess)
     EXPECT_FALSE(bpf::io::File("/root").HasAccess(bpf::io::FILE_ACCESS_WRITE));
     EXPECT_FALSE(bpf::io::File("/root").HasAccess(bpf::io::FILE_ACCESS_READ | bpf::io::FILE_ACCESS_WRITE));
 }
+
+TEST(File, Perm_Err)
+{
+    EXPECT_THROW(bpf::io::File("/root/.bashrc").GetSizeBytes(), bpf::io::IOException);
+    EXPECT_THROW(bpf::io::File("/root/.bashrc").GetSizeBytes(), bpf::io::IOException);
+    EXPECT_FALSE(bpf::io::File("/root/.bashrc").IsDirectory());
+    EXPECT_FALSE(bpf::io::File("/root").Hide(true));
+    EXPECT_FALSE(bpf::io::File("/etc/skel/.bashrc").Hide(false));
+    EXPECT_TRUE(bpf::io::File("/root").Hide(false)); // The /root folder is already not hidden
+}
 #endif
 
 TEST(File, Basics)
@@ -70,6 +83,7 @@ TEST(File, Basics)
 
     EXPECT_FALSE(f.Exists());
     EXPECT_TRUE(f.CreateDir());
+    EXPECT_FALSE(f.CreateDir());
     EXPECT_TRUE(f.Exists());
     EXPECT_TRUE(f.IsDirectory());
     EXPECT_TRUE(f.HasAccess(bpf::io::FILE_ACCESS_READ | bpf::io::FILE_ACCESS_WRITE));
@@ -211,4 +225,14 @@ TEST(File, GetSizeBytes)
     EXPECT_EQ(f.GetSizeBytes(), 14U);
     EXPECT_TRUE(f.Delete());
     EXPECT_THROW(f.GetSizeBytes(), bpf::io::IOException);
+}
+
+TEST(File, WorkDir)
+{
+    auto dir = g_app->GetWorkingDirectory();
+    EXPECT_TRUE(g_app->SetWorkingDirectory(dir));
+    EXPECT_STREQ(*g_app->GetWorkingDirectory().PlatformPath(), *dir.PlatformPath());
+#ifdef LINUX
+    EXPECT_FALSE(g_app->SetWorkingDirectory(bpf::io::File("/root")));
+#endif
 }

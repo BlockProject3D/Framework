@@ -38,7 +38,10 @@ bpf::system::Application *g_app;
 int Main(bpf::system::Application &app, const bpf::collection::Array<bpf::String> &args)
 {
     if (bpf::system::Platform::IsRunningAsAdmin())
+    {
+        bpf::io::Console::WriteLine("You should not run this testing program as root user as it relies on non writeable system files", bpf::io::EConsoleStream::ERROR);
         return (1); // Do not run testing app as admin
+    }
     bpf::io::Console::SetTitle("BPF Unit Tests");
     bpf::io::Console::ResetTextStyle(bpf::io::EConsoleStream::OUTPUT);
     bpf::io::Console::ResetTextStyle(bpf::io::EConsoleStream::ERROR);

@@ -74,7 +74,7 @@ File::File(const bpf::String &path)
     FileName = FullPath.Sub(FullPath.LastIndexOf('\\') + 1);
     FileExt = FullPath.Sub(FullPath.LastIndexOf('.') + 1);
 #else
-    String result = String::Empty;
+    String result = "";
     char old = '\0';
     for (fisize i = 0; i < FullPath.Size(); ++i)
     {
