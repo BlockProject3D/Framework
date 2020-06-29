@@ -150,3 +150,13 @@ TEST(ByteBuf, ReadWrite_Test4)
     EXPECT_EQ(buf.GetCursor(), (bpf::fsize)0);
     EXPECT_EQ(buf.GetWrittenBytes(), (bpf::fsize)0);
 }
+
+TEST(ByteBuf, Shift)
+{
+    bpf::io::ByteBuf buf(5);
+    buf.Write("TEST", 5);
+    EXPECT_STREQ(reinterpret_cast<const char *>(*buf), "TEST");
+    buf.Shift(2);
+    buf[4] = '\0';
+    EXPECT_STREQ(reinterpret_cast<const char *>(*buf), "ST");
+}
