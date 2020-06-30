@@ -64,6 +64,13 @@ TEST(Process, ArgsEnvErr)
     EXPECT_THROW(bpf::system::Process::Builder().SetEnvironment(env1).SetApplication(SAMPLE_EXE_NAME).Build(), bpf::system::OSException);
 }
 
+#ifndef WINDOWS
+TEST(Process, ExecErr)
+{
+    EXPECT_THROW(bpf::system::Process::Builder().SetApplication("/etc/group").Build(), bpf::system::OSException);
+}
+#endif
+
 TEST(Process, Simple_1)
 {
     auto proc = bpf::system::Process::Builder().SetApplication(SAMPLE_EXE_NAME).Build();
