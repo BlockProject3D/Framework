@@ -41,6 +41,44 @@ namespace bpf
 #else
         constexpr const char *PROCESS_DEFAULT_PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin";
 #endif
+
+        /**
+         * Checks if a process has crashed. Please note that this check may not be accurate for all applications
+         * @param exitcode the exit code as returned by Process.GetExitCode()
+         * @return true if process has crashed, false otherwise
+         */
+        inline constexpr bool ProcessCrashed(const fint exitcode)
+        {
+#ifdef WINDOWS
+            return ((uint32)exitcode > 0x80000000);
+#else
+            return (exitcode > 128);
+#endif
+        }
+
+        /**
+         * Checks if a process is running
+         * Please note that this check may not be accurate for all applications
+         * @param exitcode the exit code as returned by Process.GetExitCode()
+         * @return true if process is running, false otherwise
+         */
+        inline constexpr bool ProcessRunning(const fint exitcode)
+        {
+            return (exitcode == -1);
+        }
+
+        /**
+         * Checks if a process has finished correctly. Please note that this check may not be accurate for all
+         * applications, certain applications may trick the exit code in thinking it errored when it did not (eg:
+         * Windows help.exe)
+         * @param exitcode the exit code as returned by Process.GetExitCode()
+         * @return true if process has finished correctly, false otherwise
+         */
+        inline constexpr bool ProcessFinished(const fint exitcode)
+        {
+            return (exitcode == 0);
+        }
+
         class BPF_API Process
         {
         public:
@@ -194,6 +232,7 @@ namespace bpf
 
                 PipeStream(PipeStream &&other);
                 PipeStream &operator=(PipeStream &&other);
+
             public:
                 /**
                  * Do not allow copy construction
@@ -211,7 +250,7 @@ namespace bpf
                  * @param bufsize the size of the receiving buffer
                  * @throw IOException in case of system error
                  * @return number of bytes read
-                 */ 
+                 */
                 fsize Read(void *buf, fsize bufsize);
 
                 /**

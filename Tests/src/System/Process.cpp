@@ -71,9 +71,12 @@ TEST(Process, Simple_1)
     EXPECT_THROW(proc.GetStandardError(), bpf::system::OSException);
     EXPECT_THROW(proc.GetStandardInput(), bpf::system::OSException);
     EXPECT_THROW(proc.GetStandardOutput(), bpf::system::OSException);
+    EXPECT_FALSE(bpf::system::ProcessCrashed(proc.GetExitCode()));
+    EXPECT_FALSE(bpf::system::ProcessRunning(proc.GetExitCode()));
 #ifdef WINDOWS
     EXPECT_EQ(proc.GetExitCode(), 1);
 #else
+    EXPECT_TRUE(bpf::system::ProcessFinished(proc.GetExitCode()));
     EXPECT_EQ(proc.GetExitCode(), 0);
 #endif
 }
