@@ -51,7 +51,11 @@ namespace bpf
             collection::Array<String> GetArguments(char **argv, int argc);
 
             io::File GetWorkingDirectory() const;
-            bool SetWorkingDirectory(const io::File &file) const;
+            bool SetWorkingDirectory(const io::File &file);
+            inline void DisableErrorDialogs() noexcept
+            {
+                //Linux does not have automatic message box spawn on crash
+            }
         };
     }
 };

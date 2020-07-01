@@ -162,9 +162,15 @@ File WindowsApp::GetWorkingDirectory() const
         return (File(".").GetAbsolutePath());
 }
 
-bool WindowsApp::SetWorkingDirectory(const File &file) const
+bool WindowsApp::SetWorkingDirectory(const File &file)
 {
     if (!SetCurrentDirectoryW(reinterpret_cast<LPCWSTR>(*file.PlatformPath().ToUTF16())))
         return (false);
     return (true);
+}
+
+void WindowsApp::DisableErrorDialogs() noexcept
+{
+    SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX);
+    _set_abort_behavior(0,_WRITE_ABORT_MSG);
 }

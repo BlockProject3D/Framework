@@ -121,7 +121,7 @@ File UnixApp::GetWorkingDirectory() const
         return (File(".").GetAbsolutePath());
 }
 
-bool UnixApp::SetWorkingDirectory(const File &file) const
+bool UnixApp::SetWorkingDirectory(const File &file)
 {
     if (chdir(*file.PlatformPath()) == -1)
         return (false);

@@ -92,7 +92,9 @@ namespace bpf
              * @param file the new current working directory (relative paths are supported)
              * @return true if operation succeeded, false otherwise
              */
-            virtual bool SetWorkingDirectory(const io::File &file) const = 0;
+            virtual bool SetWorkingDirectory(const io::File &file) = 0;
+
+            virtual void DisableErrorDialogs() noexcept = 0;
         };
     }
 };
