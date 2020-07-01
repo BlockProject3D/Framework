@@ -62,6 +62,7 @@ set(SOURCES
     src/System/Platform.cpp
     src/System/Timer.cpp
     src/System/Thread.cpp
+    src/System/Process.cpp
     src/Json/Json.cpp
     src/Json/JsonWriter.cpp
     src/BaseConvert.cpp

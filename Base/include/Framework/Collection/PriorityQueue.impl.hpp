@@ -170,7 +170,11 @@ namespace bpf
             SinkDown(1);
             --_tailPtr;
             --_count;
+#ifdef WINDOWS
             return (std::move(v));
+#else
+            return (v); //Unix wants to be potentially slower (copy instead of move)
+#endif
         }
     }
 }

@@ -99,6 +99,13 @@ namespace bpf
                     throw IndexException((fint)id);
                 return (_buf[id]);
             }
+
+            inline uint8 &operator[](const fsize id)
+            {
+                if (id >= _size)
+                    throw IndexException((fint)id);
+                return (_buf[id]);
+            }
         };
     }
 }

@@ -54,6 +54,27 @@ namespace bpf
         }
 
         template <typename T>
+        ArrayList<T> ArrayList<T>::operator+(const Array<T> &other) const
+        {
+            ArrayList<T> cpy = *this;
+
+            if (cpy.Size() + other.Size() > cpy._arr.Size())
+                cpy._arr.Resize(cpy._arr.Size() + other.Size());
+            for (const auto &elem : other)
+                cpy.Add(elem);
+            return (cpy);
+        }
+
+        template <typename T>
+        void ArrayList<T>::operator+=(const Array<T> &other)
+        {
+            if (Size() + other.Size() > _arr.Size())
+                _arr.Resize(_arr.Size() + other.Size());
+            for (const auto &elem : other)
+                Add(elem);
+        }
+
+        template <typename T>
         void ArrayList<T>::RemoveAt(const fsize pos)
         {
             if (pos >= _curid)

@@ -171,9 +171,9 @@ TEST(ArrayStatic, Move)
     EXPECT_STREQ(*mv[0], "0");
     EXPECT_STREQ(*mv[1], "3");
     EXPECT_STREQ(*mv[2], "7");
-    EXPECT_EQ(lst[0], String::Empty);
-    EXPECT_EQ(lst[1], String::Empty);
-    EXPECT_EQ(lst[2], String::Empty);
+    EXPECT_TRUE(lst[0].IsEmpty());
+    EXPECT_TRUE(lst[1].IsEmpty());
+    EXPECT_TRUE(lst[2].IsEmpty());
 }
 
 TEST(ArrayStatic, Copy_2)
@@ -260,7 +260,7 @@ TEST(ArrayStatic, IterateForward_Test1)
 
 TEST(ArrayStatic, IterateForward_Test2)
 {
-    String res = String::Empty;
+    String res = "";
     Array<String, 5> lst = {"a", "b", "c", "d", "e"};
 
     for (auto &i : lst)
@@ -280,7 +280,7 @@ TEST(ArrayStatic, IterateBackward_Test1)
 
 TEST(ArrayStatic, IterateBackward_Test2)
 {
-    String res = String::Empty;
+    String res = "";
     Array<String, 5> lst = {"a", "b", "c", "d", "e"};
 
     for (auto &i : Reverse(lst))

@@ -80,7 +80,7 @@ bool TextReader::CheckIsSeparator(uint8 byte)
 
 bool TextReader::Read(String &out)
 {
-    out = String::Empty;
+    out = "";
     uint8 byte;
 
     while (ReadByte2(byte))
@@ -290,7 +290,7 @@ IDataInputStream &TextReader::operator>>(bpf::String &str)
 {
     String token;
     if (!Read(token))
-        str = String::Empty;
+        str = "";
     else
         str = token;
     return (*this);

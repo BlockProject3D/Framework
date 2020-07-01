@@ -76,6 +76,10 @@ include("${CMAKE_CURRENT_LIST_DIR}/Platforms/${PLATFORM}.cmake")
 function(bp_setup_target name mainincdir)
     target_include_directories(${name} PRIVATE ${mainincdir})
     if (COVERAGE)
+        set_target_properties(${name} PROPERTIES CXX_STANDARD 11)
+        set_target_properties(${name} PROPERTIES CXX_STANDARD_REQUIRED TRUE)
+        set_target_properties(${name} PROPERTIES CXX_EXTENSIONS TRUE)
+        target_compile_definitions(${name} PRIVATE COVERAGE)
         target_compile_options(${name}
             PRIVATE
             -g -O0
@@ -86,7 +90,8 @@ function(bp_setup_target name mainincdir)
             -fprofile-arcs
             -ftest-coverage
             -fkeep-inline-functions
-            -Wno-unused)
+            -Wno-unused
+            -std=gnu++11)
         target_link_libraries(${name}
             PRIVATE
             -g -O0
@@ -97,7 +102,8 @@ function(bp_setup_target name mainincdir)
             -fprofile-arcs
             -ftest-coverage
             -fkeep-inline-functions
-            -Wno-unused)
+            -Wno-unused
+            -std=gnu++11)
         target_link_libraries(${name} PRIVATE gcov supc++)
     endif (COVERAGE)
     bp_target_created(${name})

@@ -109,6 +109,10 @@ namespace bpf
 
             void operator+=(const ArrayList<T> &other);
 
+            ArrayList<T> operator+(const Array<T> &other) const;
+
+            void operator+=(const Array<T> &other);
+
             inline T &First()
             {
                 if (_curid == 0)

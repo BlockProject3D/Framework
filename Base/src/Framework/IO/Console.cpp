@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -39,7 +39,7 @@ using namespace bpf::io;
 using namespace bpf;
 
 #ifdef WINDOWS
-//Apparently Microsoft loves globals; yeah!!
+// Apparently Microsoft loves globals; yeah!!
 WORD g_Console_OldAttributes_Out = (WORD)-1;
 WORD g_Console_OldAttributes_Err = (WORD)-1;
 #endif
@@ -50,7 +50,7 @@ void Console::WriteLine(const String &str, const EConsoleStream type) noexcept
     {
 #ifdef WINDOWS
         HANDLE hdl = GetStdHandle(STD_ERROR_HANDLE);
-        if (GetFileType(hdl) != FILE_TYPE_CHAR)
+        if (IsRedirected(EConsoleStream::ERROR))
         {
             auto s = str + "\r\n";
             WriteFile(hdl, reinterpret_cast<const void *>(*s), (DWORD)s.Size(), NULL, NULL);
@@ -61,19 +61,14 @@ void Console::WriteLine(const String &str, const EConsoleStream type) noexcept
             WriteConsoleW(hdl, reinterpret_cast<const void *>(*utf16), (DWORD)utf16.Size() - 1, NULL, NULL);
         }
 #else
-#ifdef BUILD_DEBUG
-        write(2, *(str + "\n"), str.Size() + 1);
-#else
-        int gccisafuck = write(2, *(str + "\n"), str.Size() + 1);
-        (void)gccisafuck;
-#endif
+        BP_IGNORE(write(2, *(str + "\n"), str.Size() + 1));
 #endif
     }
     else
     {
 #ifdef WINDOWS
         HANDLE hdl = GetStdHandle(STD_OUTPUT_HANDLE);
-        if (GetFileType(hdl) != FILE_TYPE_CHAR)
+        if (IsRedirected())
         {
             auto s = str + "\r\n";
             WriteFile(hdl, reinterpret_cast<const void *>(*s), (DWORD)s.Size(), NULL, NULL);
@@ -84,18 +79,15 @@ void Console::WriteLine(const String &str, const EConsoleStream type) noexcept
             WriteConsoleW(hdl, reinterpret_cast<const void *>(*utf16), (DWORD)utf16.Size() - 1, NULL, NULL);
         }
 #else
-#ifdef BUILD_DEBUG
-        write(1, *(str + "\n"), str.Size() + 1);
-#else
-        int gccisafuck = write(1, *(str + "\n"), str.Size() + 1);
-        (void)gccisafuck;
-#endif
+        BP_IGNORE(write(1, *(str + "\n"), str.Size() + 1));
 #endif
     }
 }
 
 void Console::SetTextStyle(const TextStyle &style, const EConsoleStream type) noexcept
 {
+    if (IsRedirected(type))
+        return;
 #ifdef WINDOWS
     HANDLE hdl;
     if (type == EConsoleStream::ERROR)
@@ -147,7 +139,7 @@ void Console::SetTextStyle(const TextStyle &style, const EConsoleStream type) no
         break;
     }
     SetConsoleTextAttribute(hdl, color);
-    //Bold is not supported > ask why Microsoft does not know how to code a terminal!
+    // Bold is not supported > ask why Microsoft does not know how to code a terminal!
 #else
     int fd = -1;
     if (type == EConsoleStream::ERROR)
@@ -182,17 +174,14 @@ void Console::SetTextStyle(const TextStyle &style, const EConsoleStream type) no
         str += "37m";
         break;
     }
-#ifdef BUILD_DEBUG
-    write(fd, *str, str.Size());
-#else
-    int gccisafuck = write(fd, *str, str.Size());
-    (void)gccisafuck;
-#endif
+    BP_IGNORE(write(fd, *str, str.Size()));
 #endif
 }
 
 void Console::ResetTextStyle(const EConsoleStream type) noexcept
 {
+    if (IsRedirected(type))
+        return;
     if (type == EConsoleStream::ERROR)
     {
 #ifdef WINDOWS
@@ -201,12 +190,7 @@ void Console::ResetTextStyle(const EConsoleStream type) noexcept
         HANDLE hdl = GetStdHandle(STD_ERROR_HANDLE);
         SetConsoleTextAttribute(hdl, g_Console_OldAttributes_Err);
 #else
-#ifdef BUILD_DEBUG
-        write(2, "\033[0m", 4);
-#else
-        int gccisafuck = write(2, "\033[0m", 4);
-        (void)gccisafuck;
-#endif
+        BP_IGNORE(write(2, "\033[0m", 4));
 #endif
     }
     else
@@ -217,27 +201,34 @@ void Console::ResetTextStyle(const EConsoleStream type) noexcept
         HANDLE hdl = GetStdHandle(STD_OUTPUT_HANDLE);
         SetConsoleTextAttribute(hdl, g_Console_OldAttributes_Out);
 #else
-#ifdef BUILD_DEBUG
-        write(1, "\033[0m", 4);
-#else
-        int gccisafuck = write(1, "\033[0m", 4);
-        (void)gccisafuck;
-#endif
+        BP_IGNORE(write(1, "\033[0m", 4));
 #endif
     }
 }
 
-void Console::SetTitle(const String &title)
+void Console::SetTitle(const String &title) noexcept
 {
 #ifdef WINDOWS
     SetConsoleTitleW(reinterpret_cast<LPCWSTR>(*title.ToUTF16()));
 #else
+    if (IsRedirected())
+        return;
     auto str = String("\e]0;") + title + "\007";
-#ifdef BUILD_DEBUG
-    write(1, *str, str.Size());
-#else
-    int gccisafuck = write(1, *str, str.Size());
-    (void)gccisafuck;
+    BP_IGNORE(write(1, *str, str.Size()));
 #endif
+}
+
+bool Console::IsRedirected(const EConsoleStream type) noexcept
+{
+#ifdef WINDOWS
+    HANDLE hdl = GetStdHandle(STD_OUTPUT_HANDLE);
+    if (type == EConsoleStream::ERROR)
+        hdl = GetStdHandle(STD_ERROR_HANDLE);
+    return (GetFileType(reinterpret_cast<HANDLE>(hdl)) != FILE_TYPE_CHAR ? true : false);
+#else
+    int fd = 1;
+    if (type == EConsoleStream::ERROR)
+        fd = 2;
+    return (isatty(fd) == 0 ? true : false);
 #endif
 }

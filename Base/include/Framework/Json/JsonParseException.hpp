@@ -36,16 +36,16 @@ namespace bpf
         class BPF_API JsonParseException final : public ParseException
         {
         private:
-            int _line;
+            fsize _line;
 
         public:
-            explicit inline JsonParseException(const int line, const String &msg)
+            explicit inline JsonParseException(const fsize line, const String &msg)
                 : ParseException("Json", msg)
                 , _line(line)
             {
             }
 
-            inline int Line() const noexcept
+            inline fsize Line() const noexcept
             {
                 return (_line);
             }

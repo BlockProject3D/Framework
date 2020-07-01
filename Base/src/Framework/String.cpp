@@ -435,6 +435,13 @@ String &String::operator+=(const fchar other)
 String &String::operator=(const String &other)
 {
     Memory::Free(Data);
+    if (other.Data == Null)
+    {
+        Data = Null;
+        StrLen = 0;
+        UnicodeLen = 0;
+        return (*this);
+    }
     Data = static_cast<char *>(Memory::Malloc(sizeof(char) * (other.StrLen + 1)));
     StrLen = other.StrLen;
     CopyString(other.Data, Data, StrLen);
@@ -500,6 +507,8 @@ Array<char> String::ToArray() const
 
 fsize String::CalcStartFromUnicode(const fsize start) const
 {
+    if (UnicodeLen == StrLen)
+        return (start); //We are pure ASCII
     fsize i = 0;
 
     for (fsize j = 0; i < StrLen && j != start; ++i, ++j)
@@ -602,13 +611,13 @@ Array<String> String::Explode(const char c) const
     {
         if (Data[i] != c)
             cur.AddSingleByte(Data[i]);
-        else if (cur != String::Empty)
+        else if (!cur.IsEmpty())
         {
             l.Add(cur);
-            cur = String::Empty;
+            cur = "";
         }
     }
-    if (cur != String::Empty)
+    if (!cur.IsEmpty())
         l.Add(cur);
     return (l.ToArray());
 }
@@ -625,13 +634,13 @@ Array<String> String::ExplodeIgnore(const char c, const char ignore) const
             ign = !ign;
         if (Data[i] != c || ign)
             cur.AddSingleByte(Data[i]);
-        else if (cur != String::Empty)
+        else if (!cur.IsEmpty())
         {
             l.Add(cur);
-            cur = String::Empty;
+            cur = "";
         }
     }
-    if (cur != String::Empty)
+    if (!cur.IsEmpty())
         l.Add(cur);
     return (l.ToArray());
 }
@@ -645,13 +654,13 @@ Array<String> String::Explode(const String &str) const
     {
         if (Data[i] != str.Data[0])
             cur.AddSingleByte(Data[i]);
-        else if (cur != String::Empty && my_strstr(str.Data, Data + i))
+        else if (!cur.IsEmpty() && my_strstr(str.Data, Data + i))
         {
             l.Add(cur);
-            cur = String::Empty;
+            cur = "";
         }
     }
-    if (cur != String::Empty)
+    if (!cur.IsEmpty())
         l.Add(cur);
     return (l.ToArray());
 }
@@ -668,13 +677,13 @@ Array<String> String::ExplodeIgnore(const String &str, const String &ignore) con
             ign = !ign;
         if (Data[i] != str.Data[0] || ign)
             cur.AddSingleByte(Data[i]);
-        else if (cur != String::Empty && my_strstr(str.Data, Data + i))
+        else if (!cur.IsEmpty() && my_strstr(str.Data, Data + i))
         {
             l.Add(cur);
-            cur = String::Empty;
+            cur = "";
         }
     }
-    if (cur != String::Empty)
+    if (!cur.IsEmpty())
         l.Add(cur);
     return (l.ToArray());
 }
@@ -688,13 +697,13 @@ Array<String> String::ExplodeOr(const String &str) const
     {
         if (!str.Contains(operator[](i)))
             cur.AddSingleByte(Data[i]);
-        else if (cur != String::Empty)
+        else if (!cur.IsEmpty())
         {
             l.Add(cur);
-            cur = String::Empty;
+            cur = "";
         }
     }
-    if (cur != String::Empty)
+    if (!cur.IsEmpty())
         l.Add(cur);
     return (l.ToArray());
 }
@@ -829,7 +838,7 @@ String String::ToLower() const
 
 String String::Reverse() const
 {
-    String res = String::Empty;
+    String res = "";
 
     if (UnicodeLen == 0)
         return (res);

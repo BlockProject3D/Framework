@@ -95,9 +95,10 @@ set(SOURCES
     ./include/Framework/System/Mutex.hpp
     ./include/Framework/System/ThreadManager.hpp
     ./include/Framework/System/ModuleInterface.hpp
-    ./include/Framework/System/IApplication.hpp
+    ./include/Framework/System/Application.hpp
     ./include/Framework/System/ScopeLock.hpp
     ./include/Framework/System/Paths.hpp
+    ./include/Framework/System/Process.hpp
     ./include/Framework/System/Stringifier.DateTime.hpp
     ./include/Framework/System/EntryPoint.hpp
     ./include/Framework/Collection/Iterator.hpp
@@ -130,7 +131,7 @@ set(SOURCES
     ./include/Framework/Json/Writer.hpp
     ./include/Framework/Json/JsonException.hpp
     ./include/Framework/Json/JsonParseException.hpp
-    ./include/Framework/API.hpp
+    ./include/Framework/Api.hpp
     ./include/Framework/BinUtils.hpp
     ./include/Framework/Types.hpp
     ./include/Framework/Tuple.hpp
@@ -180,6 +181,7 @@ set(SOURCES
     ./src/Framework/System/Platform.cpp
     ./src/Framework/System/Module.cpp
     ./src/Framework/System/Paths.cpp
+    ./src/Framework/System/Process.cpp
     ./src/Framework/System/DateTime.cpp
     ./src/Framework/System/TimeSpan.cpp
     ./src/Framework/System/Thread.cpp

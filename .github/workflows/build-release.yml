@@ -43,9 +43,11 @@ jobs:
             FILE: "BPF.msi"
             PRETTYOS: "Windows"
           - os: macos-latest
-            GENERATOR: "productbuild"
-            FILE: "BPF.pkg"
+            GENERATOR: "STGZ" #productbuild is bugged in CPack
+            FILE: "BPF.sh"
             PRETTYOS: "OSX"
+            env:
+              INSTALL_DIR: ""
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v2

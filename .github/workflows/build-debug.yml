@@ -18,8 +18,10 @@ jobs:
             GENERATOR: "WIX"
             FILE: "BPF.msi"
           - os: macos-latest
-            GENERATOR: "productbuild"
-            FILE: "BPF.pkg"
+            GENERATOR: "STGZ" #productbuild is bugged in CPack
+            FILE: "BPF.sh"
+            env:
+              INSTALL_DIR: ""
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v2
