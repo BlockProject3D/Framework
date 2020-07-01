@@ -81,9 +81,9 @@ TEST(Process, Simple_1)
     EXPECT_FALSE(proc.IsRunning());
     EXPECT_FALSE(proc.IsCrashed());
 #ifdef WINDOWS
-    EXPECT_EQ(proc.GetExitCode(), 1);
+    EXPECT_EQ(proc.GetExitCode(), 1U);
 #else
-    EXPECT_EQ(proc.GetExitCode(), 0);
+    EXPECT_EQ(proc.GetExitCode(), 0U);
 #endif
 }
 
@@ -96,9 +96,9 @@ TEST(Process, Simple_2)
     EXPECT_THROW(p1.GetStandardInput(), bpf::system::OSException);
     EXPECT_THROW(p1.GetStandardOutput(), bpf::system::OSException);
 #ifdef WINDOWS
-    EXPECT_EQ(p1.GetExitCode(), 1);
+    EXPECT_EQ(p1.GetExitCode(), 1U);
 #else
-    EXPECT_EQ(p1.GetExitCode(), 0);
+    EXPECT_EQ(p1.GetExitCode(), 0U);
 #endif
 }
 
@@ -112,9 +112,9 @@ TEST(Process, Simple_3)
     EXPECT_THROW(p1.GetStandardInput(), bpf::system::OSException);
     EXPECT_THROW(p1.GetStandardOutput(), bpf::system::OSException);
 #ifdef WINDOWS
-    EXPECT_EQ(p1.GetExitCode(), 1);
+    EXPECT_EQ(p1.GetExitCode(), 1U);
 #else
-    EXPECT_EQ(p1.GetExitCode(), 0);
+    EXPECT_EQ(p1.GetExitCode(), 0U);
 #endif
 }
 
@@ -129,7 +129,7 @@ TEST(Process, RedirectOutput)
     bpf::io::TextReader reader(proc.GetStandardOutput());
     bpf::String text;
     proc.Wait();
-    EXPECT_EQ(proc.GetExitCode(), 0);
+    EXPECT_EQ(proc.GetExitCode(), 0U);
     text += reader.ReadAll();
     EXPECT_GT(text.Size(), 0);
     EXPECT_GT(text.Len(), 0);
@@ -145,7 +145,7 @@ TEST(Process, RedirectOutput_1)
     bpf::io::TextReader reader(proc.GetStandardOutput());
     bpf::String text;
     proc.Wait();
-    EXPECT_EQ(proc.GetExitCode(), 0);
+    EXPECT_EQ(proc.GetExitCode(), 0U);
     text += reader.ReadAll();
     EXPECT_GT(text.Size(), 0);
     EXPECT_GT(text.Len(), 0);
@@ -161,7 +161,7 @@ TEST(Process, RedirectOutput_2)
     bpf::io::TextReader reader(proc.GetStandardOutput());
     bpf::String text;
     proc.Wait();
-    EXPECT_EQ(proc.GetExitCode(), 0);
+    EXPECT_EQ(proc.GetExitCode(), 0U);
     text += reader.ReadAll();
     EXPECT_GT(text.Size(), 0);
     EXPECT_GT(text.Len(), 0);
@@ -177,7 +177,7 @@ TEST(Process, RedirectOutput_3)
     bpf::io::TextReader reader(proc.GetStandardOutput());
     bpf::String text;
     proc.Wait();
-    EXPECT_EQ(proc.GetExitCode(), 0);
+    EXPECT_EQ(proc.GetExitCode(), 0U);
     text += reader.ReadAll();
     EXPECT_GT(text.Size(), 0);
     EXPECT_GT(text.Len(), 0);
@@ -195,7 +195,7 @@ TEST(Process, RedirectOutput_4)
     bpf::io::TextReader reader(proc.GetStandardOutput());
     bpf::String text;
     proc.Wait();
-    EXPECT_EQ(proc.GetExitCode(), 0);
+    EXPECT_EQ(proc.GetExitCode(), 0U);
     text += reader.ReadAll();
     EXPECT_GT(text.Size(), 0);
     EXPECT_GT(text.Len(), 0);
@@ -215,7 +215,7 @@ TEST(Process, MultiRedirection_1)
     writer.WriteLine("this is a test");
     writer.Flush();
     proc.Wait();
-    EXPECT_EQ(proc.GetExitCode(), 2);
+    EXPECT_EQ(proc.GetExitCode(), 2U);
     bpf::io::TextReader oreader(proc.GetStandardOutput());
     bpf::io::TextReader ereader(proc.GetStandardError());
     bpf::String line;
@@ -248,6 +248,7 @@ TEST(Process, PipeErr)
     bpf::String line;
     bpf::String line1;
 #ifdef WINDOWS
+    // Unfortunatly windows does not distinguish from actual error and empty pipes
     EXPECT_FALSE(oreader.ReadLine(line));
     EXPECT_FALSE(ereader.ReadLine(line1));
 #else
@@ -269,7 +270,7 @@ TEST(Process, MultiRedirection_2)
     writer.WriteLine("this is a test");
     writer.Flush();
     proc.Wait();
-    EXPECT_EQ(proc.GetExitCode(), 2);
+    EXPECT_EQ(proc.GetExitCode(), 2U);
     bpf::io::TextReader oreader(proc.GetStandardOutput());
     bpf::io::TextReader ereader(proc.GetStandardError());
     bpf::String line;
@@ -295,7 +296,7 @@ TEST(Process, MultiRedirection_3)
     writer.WriteLine("this is a test");
     writer.Flush();
     proc.Wait();
-    EXPECT_EQ(proc.GetExitCode(), 2);
+    EXPECT_EQ(proc.GetExitCode(), 2U);
     bpf::io::TextReader oreader(proc.GetStandardOutput());
     bpf::io::TextReader ereader(proc.GetStandardError());
     bpf::String line;
@@ -337,7 +338,7 @@ TEST(Process, Kill_NonForce)
     proc.Kill(false);
     auto res = proc.GetExitCode();
     EXPECT_FALSE(proc.IsRunning());
-    EXPECT_NE(res, 0);
+    EXPECT_NE(res, 0U);
     proc.Kill(false);
     EXPECT_EQ(res, proc.GetExitCode());
 }
@@ -354,7 +355,7 @@ TEST(Process, Kill_Force)
     proc.Kill(true);
     auto res = proc.GetExitCode();
     EXPECT_FALSE(proc.IsRunning());
-    EXPECT_NE(res, 0);
+    EXPECT_NE(res, 0U);
     proc.Kill(true);
     EXPECT_EQ(res, proc.GetExitCode());
 }
@@ -372,7 +373,7 @@ TEST(Process, SimpleCat)
     writer.Flush();
     proc.GetStandardInput().Close();
     proc.Wait();
-    EXPECT_EQ(proc.GetExitCode(), 0);
+    EXPECT_EQ(proc.GetExitCode(), 0U);
     bpf::io::TextReader oreader(proc.GetStandardOutput());
     bpf::String line;
     EXPECT_TRUE(oreader.ReadLine(line));

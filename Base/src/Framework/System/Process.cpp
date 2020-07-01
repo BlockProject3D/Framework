@@ -381,11 +381,20 @@ Process Process::Builder::Build()
         throw OSException(String("Could not create process: ") + OSPrivate::ObtainLastErrorString());
     }
     if (fdStdOut[PIPE_WRITE] != NULL)
+    {
         CloseHandle(fdStdOut[PIPE_WRITE]);
+        fdStdOut[PIPE_WRITE] = NULL;
+    }
     if (fdStdErr[PIPE_WRITE] != NULL)
+    {
         CloseHandle(fdStdErr[PIPE_WRITE]);
+        fdStdErr[PIPE_WRITE] = NULL;
+    }
     if (fdStdIn[PIPE_READ] != NULL)
+    {
         CloseHandle(fdStdIn[PIPE_READ]);
+        fdStdIn[PIPE_READ] = NULL;
+    }
     return (Process(&pInfo, fdStdIn, fdStdOut, fdStdErr));
 #else
     int fdStdOut[2] = {-1, -1};
@@ -762,7 +771,7 @@ uint32 Process::GetExitCode()
     _lastExitCode = res;
     if (_lastExitCode != STILL_ACTIVE)
     {
-        _crashed = _lastExitCode > 0x80000000;
+        _crashed = _lastExitCode > 0x80000000 || _lastExitCode == 3;
         _running = false;
     }
     return (_lastExitCode);
