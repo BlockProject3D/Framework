@@ -78,12 +78,11 @@ TEST(Process, Simple_1)
     EXPECT_THROW(proc.GetStandardError(), bpf::system::OSException);
     EXPECT_THROW(proc.GetStandardInput(), bpf::system::OSException);
     EXPECT_THROW(proc.GetStandardOutput(), bpf::system::OSException);
-    EXPECT_FALSE(bpf::system::ProcessCrashed(proc.GetExitCode()));
-    EXPECT_FALSE(bpf::system::ProcessRunning(proc.GetExitCode()));
+    EXPECT_FALSE(proc.IsRunning());
+    EXPECT_FALSE(proc.IsCrashed());
 #ifdef WINDOWS
     EXPECT_EQ(proc.GetExitCode(), 1);
 #else
-    EXPECT_TRUE(bpf::system::ProcessFinished(proc.GetExitCode()));
     EXPECT_EQ(proc.GetExitCode(), 0);
 #endif
 }
@@ -227,6 +226,36 @@ TEST(Process, MultiRedirection_1)
     EXPECT_STREQ(*line1, "TestError: this is a test");
 }
 
+TEST(Process, PipeErr)
+{
+    auto proc = bpf::system::Process::Builder()
+        .SetApplication((g_app->Props.AppRoot + "BPF.Tests").Path())
+        .SetEnvironment({{"__BPF_PARSE__", ""}})
+        .RedirectInput()
+        .RedirectOutput()
+        .RedirectError()
+        .Build();
+    proc.GetStandardInput().Close();
+    proc.GetStandardOutput().Close();
+    proc.GetStandardError().Close();
+    bpf::io::TextWriter writer(proc.GetStandardInput());
+    writer.WriteLine("this is a test");
+    EXPECT_THROW(writer.Flush(), bpf::io::IOException);
+    proc.Wait();
+    EXPECT_TRUE(proc.IsCrashed());
+    bpf::io::TextReader oreader(proc.GetStandardOutput());
+    bpf::io::TextReader ereader(proc.GetStandardError());
+    bpf::String line;
+    bpf::String line1;
+#ifdef WINDOWS
+    EXPECT_FALSE(oreader.ReadLine(line));
+    EXPECT_FALSE(ereader.ReadLine(line1));
+#else
+    EXPECT_THROW(oreader.ReadLine(line), bpf::io::IOException);
+    EXPECT_THROW(ereader.ReadLine(line1), bpf::io::IOException);
+#endif
+}
+
 TEST(Process, MultiRedirection_2)
 {
     auto proc = bpf::system::Process::Builder()
@@ -261,7 +290,7 @@ TEST(Process, MultiRedirection_3)
         .RedirectError()
         .Build();
     auto proc = std::move(p);
-    EXPECT_EQ(proc.GetExitCode(), -1);
+    EXPECT_TRUE(proc.IsRunning());
     bpf::io::TextWriter writer(proc.GetStandardInput());
     writer.WriteLine("this is a test");
     writer.Flush();
@@ -307,7 +336,8 @@ TEST(Process, Kill_NonForce)
         .Build();
     proc.Kill(false);
     auto res = proc.GetExitCode();
-    EXPECT_NE(res, -1);
+    EXPECT_FALSE(proc.IsRunning());
+    EXPECT_NE(res, 0);
     proc.Kill(false);
     EXPECT_EQ(res, proc.GetExitCode());
 }
@@ -323,7 +353,8 @@ TEST(Process, Kill_Force)
         .Build();
     proc.Kill(true);
     auto res = proc.GetExitCode();
-    EXPECT_NE(res, -1);
+    EXPECT_FALSE(proc.IsRunning());
+    EXPECT_NE(res, 0);
     proc.Kill(true);
     EXPECT_EQ(res, proc.GetExitCode());
 }

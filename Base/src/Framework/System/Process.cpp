@@ -245,31 +245,31 @@ void Process::Builder::ProcessWorker(int fdStdOut[2], int fdStdErr[2], int fdStd
         ++i;
     }
     envp[i] = NULL;
-#ifdef COVERAGE
+    #ifdef COVERAGE
     __gcov_flush();
-#endif
+    #endif
     if (execve(*_appExe, argv, envp) == -1)
     {
         BP_IGNORE(write(commonfd[PIPE_WRITE], "execve failure", 15));
         close(commonfd[PIPE_WRITE]);
-#ifdef COVERAGE
+    #ifdef COVERAGE
         __gcov_flush();
-#endif
+    #endif
         exit(1);
     }
 redirecterr:
     BP_IGNORE(write(commonfd[PIPE_WRITE], "Could not create one or more redirection(s)", 44));
     close(commonfd[PIPE_WRITE]);
-#ifdef COVERAGE
+    #ifdef COVERAGE
     __gcov_flush();
-#endif
+    #endif
     exit(1);
 mallocerr:
     BP_IGNORE(write(commonfd[PIPE_WRITE], "malloc failure", 15));
     close(commonfd[PIPE_WRITE]);
-#ifdef COVERAGE
+    #ifdef COVERAGE
     __gcov_flush();
-#endif
+    #endif
     exit(1);
 }
 
@@ -535,7 +535,7 @@ void Process::PipeStream::Close()
 {
 #ifdef WINDOWS
     if (_pipeHandles[0] != NULL)
-        CloseHandle(_pipeHandles[0]);
+        CloseHandle(_pipeHandles[0]); //TODO: double close is not handled by winmotherfucker
     if (_pipeHandles[1] != NULL)
         CloseHandle(_pipeHandles[1]);
 #else
@@ -548,7 +548,9 @@ void Process::PipeStream::Close()
 
 #ifdef WINDOWS
 Process::Process(void *pinfo, void *fdStdIn[2], void *fdStdOut[2], void *fdStdErr[2])
-    : _lastExitCode(-1)
+    : _lastExitCode(0)
+    , _crashed(false)
+    , _running(true)
     , _redirectStdIn(fdStdIn[PIPE_WRITE] != NULL)
     , _redirectStdOut(fdStdOut[PIPE_READ] != NULL)
     , _redirectStdErr(fdStdErr[PIPE_READ] != NULL)
@@ -563,6 +565,8 @@ Process::Process(void *pinfo, void *fdStdIn[2], void *fdStdOut[2], void *fdStdEr
 
 Process::Process(Process &&other)
     : _lastExitCode(other._lastExitCode)
+    , _crashed(other._crashed)
+    , _running(other._running)
     , _redirectStdIn(other._redirectStdIn)
     , _redirectStdOut(other._redirectStdOut)
     , _redirectStdErr(other._redirectStdErr)
@@ -580,12 +584,14 @@ Process &Process::operator=(Process &&other)
 {
     if (_pHandle != NULL && _tHandle != NULL)
     {
-        if (_lastExitCode == -1)
+        if (_running)
             TerminateProcess(_pHandle, 1);
         CloseHandle(_pHandle);
         CloseHandle(_tHandle);
     }
     _lastExitCode = other._lastExitCode;
+    _crashed = other._crashed;
+    _running = other._running;
     _redirectStdIn = other._redirectStdIn;
     _redirectStdOut = other._redirectStdOut;
     _redirectStdErr = other._redirectStdErr;
@@ -600,7 +606,9 @@ Process &Process::operator=(Process &&other)
 }
 #else
 Process::Process(int pid, int fdStdIn[2], int fdStdOut[2], int fdStdErr[2])
-    : _lastExitCode(-1)
+    : _lastExitCode(0)
+    , _crashed(false)
+    , _running(true)
     , _redirectStdIn(fdStdIn[PIPE_WRITE] != -1)
     , _redirectStdOut(fdStdOut[PIPE_READ] != -1)
     , _redirectStdErr(fdStdErr[PIPE_READ] != -1)
@@ -613,6 +621,8 @@ Process::Process(int pid, int fdStdIn[2], int fdStdOut[2], int fdStdErr[2])
 
 Process::Process(Process &&other)
     : _lastExitCode(other._lastExitCode)
+    , _crashed(other._crashed)
+    , _running(other._running)
     , _redirectStdIn(other._redirectStdIn)
     , _redirectStdOut(other._redirectStdOut)
     , _redirectStdErr(other._redirectStdErr)
@@ -626,9 +636,11 @@ Process::Process(Process &&other)
 
 Process &Process::operator=(Process &&other)
 {
-    if (_pid != -1 && _lastExitCode == -1)
+    if (_pid != -1 && _running)
         kill(_pid, SIGKILL);
     _lastExitCode = other._lastExitCode;
+    _crashed = other._crashed;
+    _running = other._running;
     _redirectStdIn = other._redirectStdIn;
     _redirectStdOut = other._redirectStdOut;
     _redirectStdErr = other._redirectStdErr;
@@ -646,13 +658,13 @@ Process::~Process()
 #ifdef WINDOWS
     if (_pHandle != NULL && _tHandle != NULL)
     {
-        if (_lastExitCode == -1)
+        if (_running)
             TerminateProcess(_pHandle, 1);
         CloseHandle(_pHandle);
         CloseHandle(_tHandle);
     }
 #else
-    if (_pid != -1 && _lastExitCode == -1)
+    if (_pid != -1 && _running)
         kill(_pid, SIGKILL);
 #endif
 }
@@ -663,10 +675,14 @@ void Process::Wait()
     DWORD res = WaitForSingleObject(_pHandle, UInt::MaxValue);
     if (res != 0)
         throw OSException(String("Error waiting process termination: ") + OSPrivate::ObtainLastErrorString());
+    _lastExitCode = (uint32)-1;
+    GetExitCode();
 #else
     if (waitpid(_pid, &_lastExitCode, 0) == -1)
         throw OSException(String("Error waiting process termination: ") + OSPrivate::ObtainLastErrorString());
-    _lastExitCode = WEXITSTATUS(_lastExitCode);
+    _lastExitCode = WIFSIGNALED(_lastExitCode) ? WTERMSIG(_lastExitCode) : WEXITSTATUS(_lastExitCode);
+    _crashed = WIFSIGNALED(_lastExitCode);
+    _running = false;
 #endif
 }
 
@@ -687,7 +703,7 @@ static std::set<DWORD> EnumerateWindowThreads(DWORD pid)
 
 void Process::Kill(bool force)
 {
-    if (_lastExitCode != -1)
+    if (!_running)
         return;
 #ifdef WINDOWS
     if (!force)
@@ -722,36 +738,47 @@ void Process::Kill(bool force)
     {
         if (!TerminateProcess(_pHandle, 1))
             throw OSException("Could not terminate process");
+        _lastExitCode = (uint32)-1;
+        GetExitCode();
     }
 #else
     if (kill(_pid, force ? SIGKILL : SIGINT) == -1)
         throw OSException("Could not terminate process");
-    //It seem that under Linux kill does not wait until the signal has been sent so attempt to emulate the expected behaviour with a sleep
+    // It seem that under Linux kill does not wait until the signal has been sent so attempt to emulate the expected
+    // behaviour with a sleep
     Thread::Sleep(100);
+    GetExitCode();
 #endif
 }
 
-fint Process::GetExitCode()
+uint32 Process::GetExitCode()
 {
-    if (_lastExitCode != -1)
-        return (_lastExitCode);
 #ifdef WINDOWS
+    if (_lastExitCode != (uint32)-1)
+        return (_lastExitCode);
     DWORD res;
     if (!GetExitCodeProcess(_pHandle, &res))
         throw OSException(String("Could not poll target process: ") + OSPrivate::ObtainLastErrorString());
     _lastExitCode = res;
-    if (_lastExitCode == STILL_ACTIVE)
-        _lastExitCode = -1;
+    if (_lastExitCode != STILL_ACTIVE)
+    {
+        _crashed = _lastExitCode > 0x80000000;
+        _running = false;
+    }
+    return (_lastExitCode);
 #else
+    if (!_running)
+        return (_lastExitCode);
     int res = waitpid(_pid, &_lastExitCode, WNOHANG);
     if (res == -1)
         throw OSException(String("Could not poll target process: ") + OSPrivate::ObtainLastErrorString());
-    if (res == 0)
-        _lastExitCode = -1;
-    else
-        _lastExitCode = WEXITSTATUS(_lastExitCode);
+    if (res != 0)
+    {
+        _lastExitCode = WIFSIGNALED(_lastExitCode) ? WTERMSIG(_lastExitCode) : WEXITSTATUS(_lastExitCode);
+        _running = false;
+    }
+    return ((uint32)_lastExitCode);
 #endif
-    return (_lastExitCode);
 }
 
 Process::PipeStream &Process::GetStandardInput()

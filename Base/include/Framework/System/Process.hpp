@@ -42,43 +42,6 @@ namespace bpf
         constexpr const char *PROCESS_DEFAULT_PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin";
 #endif
 
-        /**
-         * Checks if a process has crashed. Please note that this check may not be accurate for all applications
-         * @param exitcode the exit code as returned by Process.GetExitCode()
-         * @return true if process has crashed, false otherwise
-         */
-        inline constexpr bool ProcessCrashed(const fint exitcode)
-        {
-#ifdef WINDOWS
-            return ((uint32)exitcode > 0x80000000);
-#else
-            return (exitcode > 128);
-#endif
-        }
-
-        /**
-         * Checks if a process is running
-         * Please note that this check may not be accurate for all applications
-         * @param exitcode the exit code as returned by Process.GetExitCode()
-         * @return true if process is running, false otherwise
-         */
-        inline constexpr bool ProcessRunning(const fint exitcode)
-        {
-            return (exitcode == -1);
-        }
-
-        /**
-         * Checks if a process has finished correctly. Please note that this check may not be accurate for all
-         * applications, certain applications may trick the exit code in thinking it errored when it did not (eg:
-         * Windows help.exe)
-         * @param exitcode the exit code as returned by Process.GetExitCode()
-         * @return true if process has finished correctly, false otherwise
-         */
-        inline constexpr bool ProcessFinished(const fint exitcode)
-        {
-            return (exitcode == 0);
-        }
-
         class BPF_API Process
         {
         public:
@@ -270,7 +233,13 @@ namespace bpf
                 friend class Process;
             };
 
+#ifdef WINDOWS
+            uint32 _lastExitCode;
+#else
             fint _lastExitCode;
+#endif
+            bool _crashed;
+            bool _running;
             bool _redirectStdIn;
             bool _redirectStdOut;
             bool _redirectStdErr;
@@ -329,9 +298,27 @@ namespace bpf
             /**
              * Returns the exit code of the process
              * @throw OSException in case the system could not poll the target process
-             * @return exit code as an integer, -1 if the process is still running
+             * @return exit code as an integer, undefined if process is still running
              */
-            fint GetExitCode(); // WAITPID WNOHANG
+            uint32 GetExitCode();
+
+            /**
+             * Checks if this process is still running
+             * @return true if the process is running, false otherwise
+             */
+            inline bool IsRunning() const noexcept
+            {
+                return (_running);
+            }
+
+            /**
+             * Checks if this process is crashed
+             * @return true if the process is crashed, false otherwise
+             */
+            inline bool IsCrashed() const noexcept
+            {
+                return (_crashed);
+            }
 
             /**
              * Provides access to process standard input
