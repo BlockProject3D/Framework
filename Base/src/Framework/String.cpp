@@ -507,6 +507,8 @@ Array<char> String::ToArray() const
 
 fsize String::CalcStartFromUnicode(const fsize start) const
 {
+    if (UnicodeLen == StrLen)
+        return (start); //We are pure ASCII
     fsize i = 0;
 
     for (fsize j = 0; i < StrLen && j != start; ++i, ++j)

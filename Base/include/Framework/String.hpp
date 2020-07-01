@@ -237,6 +237,8 @@ namespace bpf
         {
             if (id < 0 || id > Len())
                 throw IndexException(id);
+            if (UnicodeLen == StrLen)
+                return ((fchar)Data[id]);
             return (String::UTF32(Data + CalcStartFromUnicode(id)));
         }
 
