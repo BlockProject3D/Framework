@@ -50,11 +50,7 @@ int Main(bpf::system::Application &app, const bpf::collection::Array<bpf::String
     {
         bpf::io::ConsoleReader reader;
         bpf::String str;
-#ifdef BUILD_DEBUG
-        assert(reader.ReadLine(str));
-#else
         reader.ReadLine(str);
-#endif
         bpf::io::Console::WriteLine(str);
         bpf::io::Console::WriteLine(bpf::String("TestError: ") + str, bpf::io::EConsoleStream::ERROR);
         return (1);
