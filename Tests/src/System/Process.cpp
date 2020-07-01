@@ -324,6 +324,7 @@ TEST(Process, AutoKill)
         .RedirectError()
         .Build();
     p = std::move(p1);
+    (void)p;
 }
 
 TEST(Process, Kill_NonForce)
