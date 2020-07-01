@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -109,8 +109,10 @@ void TextWriter::Flush()
 {
     if (_buffered)
     {
-        _stream.Write(*_buf, _buf.GetWrittenBytes());
+        // Inverse logic to avoid re-throwing the same exception
+        auto size = _buf.GetWrittenBytes();
         _buf.Reset();
+        _stream.Write(*_buf, size);
     }
 }
 
