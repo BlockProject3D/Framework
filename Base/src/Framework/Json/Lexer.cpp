@@ -68,10 +68,10 @@ Queue<Lexer::Token> Lexer::ReadTokens()
     return (std::move(_tokens));
 }
 
-fchar Lexer::ProcessUnicode(const String &str, int &pos)
+fchar Lexer::ProcessUnicode(const String &str, fisize &pos)
 {
     String nbr = "";
-    int i = pos + 2;
+    fisize i = pos + 2;
 
     for (; i != str.Len(); ++i)
     {
@@ -82,7 +82,7 @@ fchar Lexer::ProcessUnicode(const String &str, int &pos)
     return (UInt::Parse(nbr));
 }
 
-fchar Lexer::ProcessStandard(const String &str, int &pos)
+fchar Lexer::ProcessStandard(const String &str, fisize &pos)
 {
     if (pos + 1 >= str.Len())
     {
@@ -106,7 +106,7 @@ String Lexer::ReProcessString(const String &str)
     String copy = str.Sub(1, str.Len() - 1);
     String res = "";
 
-    for (int i = 0; i < copy.Len(); ++i)
+    for (fisize i = 0; i < copy.Len(); ++i)
     {
         if (copy[i] == '\\')
         {
