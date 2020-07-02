@@ -2,12 +2,13 @@ name: Release
 
 on:
   push:
+    branches:
+      - 'release/**'
     tags:
       - 'v*' # Release anything that starts with letter v
 
 jobs:
   setup-release:
-    if: github.ref == 'refs/heads/release'
     runs-on: ubuntu-latest
     steps:
     - uses: 1466587594/get-current-time@v1
@@ -15,37 +16,38 @@ jobs:
       with:
         format: "MM-DD-YYYY HH:mm:ss UTC"
         utcOffset: "+00:00"
+    - name: Get Version
+      id: get_version
+      run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
     - uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release-${{ github.ref }}
+        tag_name: ${{ steps.get_version.outputs.VERSION }}
+        release_name: Release-${{ steps.get_version.outputs.VERSION }}
         body: |
-          Release version: ${{ github.ref }}
+          Release version: ${{ steps.get_version.outputs.VERSION }}
           Build time: ${{ steps.current-time.outputs.time }}
         draft: false
         prerelease: false
   build:
-    if: github.ref == 'refs/heads/release'
     needs: [ setup-release ]
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         include:
           - os: ubuntu-latest
-            GENERATOR: "DEB"
-            FILE: "BPF.deb"
-            PRETTYOS: "Ubuntu"
+            generator: "DEB"
+            ext: "deb"
+            osname: "Ubuntu"
           - os: windows-latest
-            GENERATOR: "WIX"
-            FILE: "BPF.msi"
-            PRETTYOS: "Windows"
+            generator: "WIX"
+            ext: "msi"
+            osname: "Windows"
           - os: macos-latest
-            GENERATOR: "STGZ" #productbuild is bugged in CPack
-            FILE: "BPF.sh"
-            PRETTYOS: "OSX"
+            generator: "STGZ" #productbuild is bugged in CPack
+            ext: "sh"
+            osname: "OSX"
             env:
               INSTALL_DIR: ""
     steps:
@@ -66,19 +68,19 @@ jobs:
         cmake --build . --target install --config Release
     - name: Create Package
       run: |
-        cpack -G ${{ matrix.GENERATOR }}
+        cpack -G ${{ matrix.generator }}
         cpack -G ZIP
     - uses: svenstaro/upload-release-action@v1-release
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: BPF.zip
-        asset_name: BPF-${{ matrix.PRETTYOS }}-x64.zip
+        asset_name: BPF-${{ matrix.osname }}-x64.zip
         tag: ${{ github.ref }}
         overwrite: true
     - uses: svenstaro/upload-release-action@v1-release
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: ${{ matrix.FILE }}
-        asset_name: ${{ matrix.FILE }}
+        file: BPF.${{ matrix.ext }}
+        asset_name: BPF-${{ matrix.osname }}-x64.${{ matrix.ext }}
         tag: ${{ github.ref }}
         overwrite: true
