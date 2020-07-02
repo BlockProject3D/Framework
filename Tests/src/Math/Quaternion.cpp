@@ -110,7 +110,7 @@ TEST(Quat, Interpolation)
 {
     bpf::Quatld q = bpf::Quatld(bpf::Vector3ld(bpf::math::Mathld::Pi / 2.0, bpf::math::Mathld::Pi / 2.0, bpf::math::Mathld::Pi / 4.0));
     bpf::Quatld q1 = bpf::Quatld(bpf::Vector3ld(1, 0, 0), bpf::math::Mathld::Pi / 2.0);
-    bpf::Quatld q2 = bpf::Quatld(bpf::Vector3ld(1, 0, 0), -bpf::math::Mathld::Pi / 2.0);
+    bpf::Quatld q2 = bpf::Quatld(bpf::Vector3ld(-1, -1, 1), bpf::math::Mathld::Pi / 2.0);
 
     EXPECT_EQ(bpf::Quatld::Lerp(q, q, 1.0f), q);
     EXPECT_EQ(bpf::Quatld::Lerp(q, q, 0.1f), q);
