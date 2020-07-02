@@ -167,7 +167,7 @@ namespace bpf
             }
             if (dot > (T)0.9995)
             {
-                return ((q + (q1 - q) * t).Normalize());
+                return ((quat + (q1 - quat) * t).Normalize());
             }
             T theta0 = Math<T>::ArcCos(dot);
             T theta = theta0 * t;
@@ -175,7 +175,7 @@ namespace bpf
             T stheta0 = Math<T>::Sin(theta0);
             T s0 = Math<T>::Cos(theta) - dot * stheta / stheta0;
             T s1 = stheta / stheta0;
-            return ((q * s0) + (q1 * s1));
+            return ((quat * s0) + (q1 * s1));
         }
 
         template <typename T>
