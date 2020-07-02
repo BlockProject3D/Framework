@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -28,34 +28,33 @@
 
 #pragma once
 #include "Framework/Math/Math.hpp"
-#include "Framework/Math/Vector.hpp"
 #include "Framework/Math/Matrix.hpp"
+#include "Framework/Math/Vector.hpp"
 
 namespace bpf
 {
     namespace math
     {
-        template <typename T>
-        class BP_TPL_API Quaternion
+        template <typename T> class BP_TPL_API Quaternion
         {
         public:
-            T X;
-            T Y;
-            T Z;
+            T I;
+            T J;
+            T K;
             T W;
 
             inline Quaternion()
-                : X(0)
-                , Y(0)
-                , Z(0)
+                : I(0)
+                , J(0)
+                , K(0)
                 , W(1)
             {
             }
 
-            inline Quaternion(const T w, const T x, const T y, const T z)
-                : X(x)
-                , Y(y)
-                , Z(z)
+            inline Quaternion(const T w, const T i, const T j, const T k)
+                : I(i)
+                , J(j)
+                , K(k)
                 , W(w)
             {
             }
@@ -105,18 +104,18 @@ namespace bpf
 
             inline Quaternion<T> Inverse() const
             {
-                return (Quaternion<T>(W, -X, -Y, -Z));
+                return (Quaternion<T>(W, -I, -J, -K));
             }
 
             inline T Norm() const noexcept
             {
-                return (Math<T>::Sqrt(W * W + X * X + Y * Y + Z * Z));
+                return (Math<T>::Sqrt(W * W + I * I + J * J + K * K));
             }
 
             inline Quaternion<T> Normalize() const noexcept
             {
                 T v = Norm();
-                return (Quaternion<T>(W / v, X / v, Y / v, Z / v));
+                return (Quaternion<T>(W / v, I / v, J / v, K / v));
             }
 
             bool operator==(const Quaternion<T> &other) const;
@@ -126,17 +125,22 @@ namespace bpf
              */
             Quaternion<T> operator*(const Quaternion<T> &other) const;
 
-            inline Quaternion<T> operator+(const Quaternion<T> &other) const
+            inline Quaternion<T> operator*(const T &other) const
             {
-                return (Quaternion<T>(W + other.W, X + other.X, Y + other.Y, Z + other.Z));
+                return (Quaternion<T>(W * other, I * other, J * other, K * other));
             }
 
-            /**
-             * Returns a copy of this quaternion raised to the power of n
-             */
-            Quaternion<T> Pow(const T n) const;
-            Quaternion<T> Exp() const;
-            Quaternion<T> Log() const;
+            inline Quaternion<T> operator+(const Quaternion<T> &other) const
+            {
+                return (Quaternion<T>(W + other.W, I + other.I, J + other.J, K + other.K));
+            }
+
+            inline Quaternion<T> operator-(const Quaternion<T> &other) const
+            {
+                return (Quaternion<T>(W - other.W, I - other.I, J - other.J, K - other.K));
+            }
+
+            T Dot(const Quaternion<T> &other) const;
 
             /**
              * Returns the angle between two quaternions
@@ -163,6 +167,9 @@ namespace bpf
              */
             static Quaternion<T> Slerp(const Quaternion<T> &q, const Quaternion<T> &q1, const T t);
 
+            static Quaternion<T> LookAt(const Vector3<T> &dir, const Vector3<T> &forward = Vector3<T>::Forward,
+                                        const Vector3<T> &up = Vector3<T>::Up);
+
             /**
              * Zero quaternion
              */
@@ -174,10 +181,8 @@ namespace bpf
             static const Quaternion<T> Identity;
         };
 
-        template <typename T>
-        const Quaternion<T> Quaternion<T>::Zero = Quaternion<T>(0, 0, 0, 0);
-        template <typename T>
-        const Quaternion<T> Quaternion<T>::Identity = Quaternion<T>(1, 0, 0, 0);
+        template <typename T> const Quaternion<T> Quaternion<T>::Zero = Quaternion<T>(0, 0, 0, 0);
+        template <typename T> const Quaternion<T> Quaternion<T>::Identity = Quaternion<T>(1, 0, 0, 0);
 
         using Quaternionf = Quaternion<float>;
     }

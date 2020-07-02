@@ -32,18 +32,25 @@ namespace bpf
 {
     namespace system
     {
-        template <typename BaseClass>
-        void ModuleManager<BaseClass>::LoadModule(const Name &virtualName, const String &fileName)
-        {
-            String moduleFile = _modulePath + fileName;
 
-            if (HasModule(virtualName))
+        template <typename BaseClass>
+        ModuleManager<BaseClass>::~ModuleManager()
+        {
+            for (auto &md : _map)
+                UnloadModule(md.Key);
+        }
+
+        template <typename BaseClass>
+        void ModuleManager<BaseClass>::LoadModule(const String &virtualName, const String &fileName)
+        {
+            io::File moduleFile = _modulePath + fileName;
+
+            if (HasModule(Name(virtualName)))
                 throw ModuleException("Module already loaded");
             Entry md;
-            md.Handle = Module(moduleFile);
-            md.Name = virtualName;
+            md.Handle = Module(moduleFile.PlatformPath());
             String moduleLnkSymbol = virtualName + "_Link";
-            String moduleDescSymbol = virtualName + "_Describe";
+            String moduleDescSymbol = virtualName + "_Version";
             ModuleLinkFunc sym = static_cast<ModuleLinkFunc>(md.Handle.LoadSymbol(moduleLnkSymbol));
             ModuleDescribeFunc sym1 = static_cast<ModuleDescribeFunc>(md.Handle.LoadSymbol(moduleDescSymbol));
             fint version = sym1();
@@ -51,9 +58,9 @@ namespace bpf
                 throw ModuleException("Module has been built against a new version of the Framework");
             else if (version < Platform::GetEnvInfo().VersionInt)
                 throw ModuleException("Module has been built against an older version of the Framework");
-            if ((md.Interface = sym()) == Null)
+            if ((md.Interface = memory::UniquePtr<BaseClass>(sym())) == Null)
                 throw ModuleException("Module interface allocation failure");
-            _map.Add(virtualName, std::move(md));
+            _map.Add(Name(virtualName), std::move(md));
         }
 
         template <typename BaseClass>
@@ -61,6 +68,7 @@ namespace bpf
         {
             if (!HasModule(virtualName))
                 return;
+            _map[virtualName].Interface = Null;
             _map[virtualName].Handle = Module();
             _map.RemoveAt(virtualName);
         }

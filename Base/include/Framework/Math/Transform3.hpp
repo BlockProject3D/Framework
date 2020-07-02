@@ -90,6 +90,11 @@ namespace bpf
             void operator+=(const Transform3 &other);
 
             void RotateArround(const Vector3<T> &pivot, const Quaternion<T> &rotation) noexcept;
+
+            inline void LookAt(const Vector3<T> &target, const Vector3<T> &forward = Vector3<T>::Forward, const Vector3<T> &up = Vector3<T>::Up) noexcept
+            {
+                Rotation = Quaternion<T>::LookAt(target - Position, forward, up);
+            }
         };
 
         using Transform3f = Transform3<float>;
