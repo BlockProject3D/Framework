@@ -65,11 +65,11 @@ jobs:
     - uses: actions/download-artifact@v2
       with:
         name: Snapshot-${{ matrix.os }}-Debug-x64
-    - run: unzip -o BPF.zip -d BPF
+    - run: unzip -o BPF.zip
     - uses: actions/download-artifact@v2
       with:
         name: Snapshot-${{ matrix.os }}-Release-x64
-    - run: unzip -o BPF.zip -d BPF
+    - run: unzip -o BPF.zip
     - name: Build Package
       run: |
         cpack -G ${{ matrix.generator }}
