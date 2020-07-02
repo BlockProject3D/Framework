@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -32,8 +32,7 @@ namespace bpf
 {
     namespace math
     {
-        template <typename T>
-        Quaternion<T>::Quaternion(const Vector<T, 3> &euler)
+        template <typename T> Quaternion<T>::Quaternion(const Vector<T, 3> &euler)
         {
             T cr = Math<T>::Cos(euler.X / (T)2);
             T cp = Math<T>::Cos(euler.Y / (T)2);
@@ -48,8 +47,7 @@ namespace bpf
             K = cr * cp * sy - sr * sp * cy;
         }
 
-        template <typename T>
-        Quaternion<T>::Quaternion(const Vector<T, 3> &from, const Vector<T, 3> &to)
+        template <typename T> Quaternion<T>::Quaternion(const Vector<T, 3> &from, const Vector<T, 3> &to)
         {
             Vector3<T> a = from.Cross(to);
 
@@ -64,10 +62,9 @@ namespace bpf
             W /= norm;
         }
 
-        template <typename T>
-        Quaternion<T>::Quaternion(const Vector<T, 3> &axis, const T ang)
+        template <typename T> Quaternion<T>::Quaternion(const Vector<T, 3> &axis, const T ang)
         {
-            //Not using initializer to allow performance improvement
+            // Not using initializer to allow performance improvement
             T v = Math<T>::Sin((ang / (T)2));
             I = axis.X * v;
             J = axis.Y * v;
@@ -75,35 +72,42 @@ namespace bpf
             W = Math<T>::Cos((ang / (T)2));
         }
 
-        template <typename T>
-        T Quaternion<T>::Dot(const Quaternion<T> &other) const
+        template <typename T> T Quaternion<T>::Dot(const Quaternion<T> &other) const
         {
             return (I * other.I + J * other.J + K * other.K + W * other.W);
         }
 
-        template <typename T>
-        Vector<T, 3> Quaternion<T>::Rotate(const Vector<T, 3> &v) const
+        template <typename T> Vector<T, 3> Quaternion<T>::Rotate(const Vector<T, 3> &v) const
         {
             Quaternion<T> p(0, v.X, v.Y, v.Z);
-            Quaternion<T> pprime = *this * p  * Inverse(); //I had the math backward...
+            Quaternion<T> pprime = *this * p * Inverse(); // I had the math backward...
 
             return (Vector<T, 3>(pprime.I, pprime.J, pprime.K));
         }
 
-        template <typename T>
-        Matrix<T, 4, 4> Quaternion<T>::ToMatrix() const
+        template <typename T> Matrix<T, 4, 4> Quaternion<T>::ToMatrix() const
         {
-            Matrix<T, 4, 4> mat = {
-                W * W + I * I - J * J - K * K, 2 * I * J - 2 * W * K, 2 * I * K + 2 * W * J, 0,
-                2 * I * J + 2 * W * K, W * W - I * I + J * J - K * K, 2 * J * K - 2 * W * I, 0,
-                2 * I * K - 2 * W * J, 2 * J * K + 2 * W * I, W * W - I * I - J * J + K * K, 0,
-                0, 0, 0, 1};
+            Matrix<T, 4, 4> mat = {W * W + I * I - J * J - K * K,
+                                   2 * I * J - 2 * W * K,
+                                   2 * I * K + 2 * W * J,
+                                   0,
+                                   2 * I * J + 2 * W * K,
+                                   W * W - I * I + J * J - K * K,
+                                   2 * J * K - 2 * W * I,
+                                   0,
+                                   2 * I * K - 2 * W * J,
+                                   2 * J * K + 2 * W * I,
+                                   W * W - I * I - J * J + K * K,
+                                   0,
+                                   0,
+                                   0,
+                                   0,
+                                   1};
 
             return (mat);
         }
 
-        template <typename T>
-        Quaternion<T> Quaternion<T>::operator*(const Quaternion<T> &other) const
+        template <typename T> Quaternion<T> Quaternion<T>::operator*(const Quaternion<T> &other) const
         {
             Quaternion<T> res;
 
@@ -114,19 +118,18 @@ namespace bpf
             return (res);
         }
 
-        template <typename T>
-        bool Quaternion<T>::operator==(const Quaternion<T> &other) const
+        template <typename T> bool Quaternion<T>::operator==(const Quaternion<T> &other) const
         {
             T diffx = Math<T>::Abs(I - other.I);
             T diffy = Math<T>::Abs(J - other.J);
             T diffz = Math<T>::Abs(K - other.K);
             T diffw = Math<T>::Abs(W - other.W);
 
-            return (diffx <= Math<T>::Epsilon && diffy <= Math<T>::Epsilon && diffz <= Math<T>::Epsilon && diffw <= Math<T>::Epsilon);
+            return (diffx <= Math<T>::Epsilon && diffy <= Math<T>::Epsilon && diffz <= Math<T>::Epsilon &&
+                    diffw <= Math<T>::Epsilon);
         }
 
-        template <typename T>
-        T Quaternion<T>::Angle(const Quaternion<T> &other) const
+        template <typename T> T Quaternion<T>::Angle(const Quaternion<T> &other) const
         {
             Quaternion<T> q = other * Inverse();
             T a = Math<T>::ArcCos(q.W) * 2;
@@ -134,8 +137,7 @@ namespace bpf
             return (a > Math<T>::Pi ? Math<T>::TwoPi - a : a);
         }
 
-        template <typename T>
-        Vector<T, 3> Quaternion<T>::ToEulerAngles() const
+        template <typename T> Vector<T, 3> Quaternion<T>::ToEulerAngles() const
         {
             T roll = Math<T>::ArcTan2(2 * J * W + 2 * I * K, 1 - 2 * J * J - 2 * K * K);
             T pitch = Math<T>::ArcTan2(2 * I * W + 2 * J * K, 1 - 2 * I * I - 2 * K * K);
@@ -147,8 +149,8 @@ namespace bpf
         template <typename T>
         Quaternion<T> Quaternion<T>::Lerp(const Quaternion<T> &q, const Quaternion<T> &q1, const T t)
         {
-            Quaternion<T> res(Math<T>::Lerp(q.W, q1.W, t), Math<T>::Lerp(q.I, q1.I, t),
-                              Math<T>::Lerp(q.J, q1.J, t), Math<T>::Lerp(q.K, q1.K, t));
+            Quaternion<T> res(Math<T>::Lerp(q.W, q1.W, t), Math<T>::Lerp(q.I, q1.I, t), Math<T>::Lerp(q.J, q1.J, t),
+                              Math<T>::Lerp(q.K, q1.K, t));
 
             return (res);
         }

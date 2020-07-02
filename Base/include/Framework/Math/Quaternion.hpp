@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -28,15 +28,14 @@
 
 #pragma once
 #include "Framework/Math/Math.hpp"
-#include "Framework/Math/Vector.hpp"
 #include "Framework/Math/Matrix.hpp"
+#include "Framework/Math/Vector.hpp"
 
 namespace bpf
 {
     namespace math
     {
-        template <typename T>
-        class BP_TPL_API Quaternion
+        template <typename T> class BP_TPL_API Quaternion
         {
         public:
             T I;
@@ -168,7 +167,8 @@ namespace bpf
              */
             static Quaternion<T> Slerp(const Quaternion<T> &q, const Quaternion<T> &q1, const T t);
 
-            static Quaternion<T> LookAt(const Vector3<T> &dir, const Vector3<T> &forward = Vector3<T>::Forward, const Vector3<T> &up = Vector3<T>::Up);
+            static Quaternion<T> LookAt(const Vector3<T> &dir, const Vector3<T> &forward = Vector3<T>::Forward,
+                                        const Vector3<T> &up = Vector3<T>::Up);
 
             /**
              * Zero quaternion
@@ -181,10 +181,8 @@ namespace bpf
             static const Quaternion<T> Identity;
         };
 
-        template <typename T>
-        const Quaternion<T> Quaternion<T>::Zero = Quaternion<T>(0, 0, 0, 0);
-        template <typename T>
-        const Quaternion<T> Quaternion<T>::Identity = Quaternion<T>(1, 0, 0, 0);
+        template <typename T> const Quaternion<T> Quaternion<T>::Zero = Quaternion<T>(0, 0, 0, 0);
+        template <typename T> const Quaternion<T> Quaternion<T>::Identity = Quaternion<T>(1, 0, 0, 0);
 
         using Quaternionf = Quaternion<float>;
     }
