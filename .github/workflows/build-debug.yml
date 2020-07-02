@@ -49,15 +49,15 @@ jobs:
           - os: ubuntu-latest
             generator: "DEB"
             env:
-              FILE: "BPF.deb"
+              IFILE: "BPF.deb"
           - os: windows-latest
             generator: "WIX"
             env:
-              FILE: "BPF.msi"
+              IFILE: "BPF.msi"
           - os: macos-latest
             generator: "STGZ" #productbuild is bugged in CPack
             env:
-              FILE: "BPF.sh"
+              IFILE: "BPF.sh"
               INSTALL_DIR: ""
     needs: [build]
     steps:
@@ -79,7 +79,7 @@ jobs:
       name: Upload Package
       with:
         name: Install-${{ matrix.os }}-${{ env.BRANCH_NAME }}-x64
-        path: ${{ env.FILE }}
+        path: ${{ env.IFILE }}
     - uses: geekyeggo/delete-artifact@v1
       with:
         name: Snapshot-${{ matrix.os }}-Debug-x64
