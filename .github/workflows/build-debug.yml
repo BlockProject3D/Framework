@@ -10,57 +10,77 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        include:
-          - os: ubuntu-latest
-            GENERATOR: "DEB"
-            FILE: "BPF.deb"
-          - os: windows-latest
-            GENERATOR: "WIX"
-            FILE: "BPF.msi"
-          - os: macos-latest
-            GENERATOR: "STGZ" #productbuild is bugged in CPack
-            FILE: "BPF.sh"
-            env:
-              INSTALL_DIR: ""
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        buildType: [Debug, Release]
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v2
-    - uses: nelonoel/branch-name@v1
     - uses: Yuri6037/setup-cpp@master
     - uses: Yuri6037/Action-FakeTTY@v1
     - name: Prepare
       run: |
         pip3 install conan
         mkdir build
-    - name: Build Debug
+    - name: Build
       run: |
         cd build
-        cmake .. -DBUILD_TYPE=Debug -DINSTALL_DIR="../"
-        cmake --build . --target install --config Debug
-    - name: Test Debug
+        cmake .. -DBUILD_TYPE=${{ matrix.buildType }} -DINSTALL_DIR="../"
+        cmake --build . --target install --config ${{ matrix.buildType }}
+    - name: Test
       run: |
-        faketty ./build/Debug/BPF.Tests
-        cat Tests.Console/InputFile | ./build/Debug/BPF.Tests.Console > testlog
+        faketty ./build/${{ matrix.buildType }}/BPF.Tests
+        cat Tests.Console/InputFile | ./build/${{ matrix.buildType }}/BPF.Tests.Console > testlog
         diff testlog Tests.Console/OutputFile
-        cat Tests.Console/InputFileCrash | ./build/Debug/BPF.Tests.Console > testlog
-        diff testlog Tests.Console/OutputFileCrash
-    - name: Build Release
-      run: |
-        cd build
-        cmake .. -DBUILD_TYPE=Release -DINSTALL_DIR="../"
-        cmake --build . --target install --config Release
-    - name: Test Release
-      run: |
-        faketty ./build/Release/BPF.Tests
-        cat Tests.Console/InputFile | ./build/Release/BPF.Tests.Console > testlog
-        diff testlog Tests.Console/OutputFile
-        cat Tests.Console/InputFileCrash | ./build/Release/BPF.Tests.Console > testlog
+        cat Tests.Console/InputFileCrash | ./build/${{ matrix.buildType }}/BPF.Tests.Console > testlog
         diff testlog Tests.Console/OutputFileCrash
     - name: Create Build Snapshot
-      run: |
-        cpack -G ${{ matrix.GENERATOR }}
+      run: cpack -G ZIP
     - uses: actions/upload-artifact@v2
       name: Upload Build Snapshot
       with:
-        name: Snapshot-${{ env.BRANCH_NAME }}-${{ matrix.os }}-x64
-        path: ${{ matrix.FILE }}
+        name: Snapshot-${{ matrix.os }}-${{ matrix.buildType }}-x64
+        path: BPF.zip
+
+  package:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            generator: "DEB"
+            file: "BPF.deb"
+          - os: windows-latest
+            generator: "WIX"
+            file: "BPF.msi"
+          - os: macos-latest
+            generator: "STGZ" #productbuild is bugged in CPack
+            file: "BPF.sh"
+            env:
+              INSTALL_DIR: ""
+    needs: [build]
+    steps:
+    - uses: actions/checkout@v2
+    - uses: nelonoel/branch-name@v1
+    - uses: actions/download-artifact@v2
+      with:
+        name: Snapshot-${{ matrix.os }}-Debug-x64
+    - run: unzip BPF.zip
+    - run: rm BPF.zip
+    - uses: actions/download-artifact@v2
+      with:
+        name: Snapshot-${{ matrix.os }}-Release-x64
+    - run: unzip BPF.zip
+    - name: Build Package
+      run: |
+        cpack -G ${{ matrix.generator }}
+    - uses: actions/upload-artifact@v2
+      name: Upload Package
+      with:
+        name: Snapshot-${{ matrix.os }}-${{ env.BRANCH_NAME }}-x64
+        path: BPF.zip
+    - uses: geekyeggo/delete-artifact@v1
+      with:
+        name: Snapshot-${{ matrix.os }}-Debug-x64
+    - uses: geekyeggo/delete-artifact@v1
+      with:
+        name: Snapshot-${{ matrix.os }}-Release-x64
