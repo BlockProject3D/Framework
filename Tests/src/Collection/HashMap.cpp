@@ -359,7 +359,7 @@ TEST(HashMap, IterateForward_Test1)
 
 TEST(HashMap, IterateForward_Test2)
 {
-    String res = String::Empty;
+    String res = "";
     HashMap<String, int> map;
 
     map["test1"] = 0;
@@ -385,7 +385,7 @@ TEST(HashMap, IterateBackward_Test1)
 
 TEST(HashMap, IterateBackward_Test2)
 {
-    String res = String::Empty;
+    String res = "";
     HashMap<String, int> map;
 
     map["test1"] = 0;

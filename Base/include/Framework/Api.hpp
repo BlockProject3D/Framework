@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -26,15 +26,48 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef API_H_
-#define API_H_
+#pragma once
+#include "Framework/Types.hpp"
 
 #if defined(__GNUC__) || defined(__clang__)
-    #define DEPRECATED(func) func __attribute__((deprecated))
+    /**
+     * Use this macro to define a declaration as deprecated
+     * @param message the deprecation message
+     */
+    #define BP_DEPRECATED(message) __attribute__((deprecated(message)))
 #elif defined(_MSC_VER)
-    #define DEPRECATED(func) __declspec(deprecated) func
+    /**
+     * Use this macro to define a declaration as deprecated
+     * @param message the deprecation message
+     */
+    #define BP_DEPRECATED(message) __declspec(deprecated(message))
+#else
+    #pargma message "WARNING: Your compiler is not supported"
+
+    /**
+     * Use this macro to define a declaration as deprecated
+     * @param message the deprecation message
+     */
+    #define BP_DEPRECATED(message)
 #endif
 
-#define ENGINE_API BPF_API
-
-#endif /* !API_H_ */
+#ifdef __GNUC__
+    /**
+     * Forces ignore of a function return value
+     * @param v the function cal to ignore the return value
+     */
+    #define BP_IGNORE(v)                                                                                               \
+        if (v)                                                                                                         \
+        {                                                                                                              \
+        }
+// Because GCC is a peace of shit we must make the code slower, please GCC learn how to code it's FUCKING ANNOYING how
+// bad you are at coding Even Microsoft is able to do better
+#else
+    /**
+     * Forces ignore of a function return value
+     * @param v the function cal to ignore the return value
+     */
+    #define BP_IGNORE(v) (void)v
+// Yeah everyone else in the world understood how things should be done! MOTHER FUCKER GNU LEARN FROM THAT YOU PEACE OF
+// MOTHERSHIT
+#endif

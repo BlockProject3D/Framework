@@ -53,9 +53,11 @@ File::File(const bpf::String &path)
     , FileName("")
     , FileExt("")
 {
+    if (FullPath.Size() == 0)
+        return;
 #ifdef WINDOWS
     FullPath = FullPath.Replace('/', '\\');
-    String result = String::Empty;
+    String result = "";
     char old = '\0';
     for (fisize i = 0; i < FullPath.Size(); ++i)
     {
@@ -69,10 +71,10 @@ File::File(const bpf::String &path)
         result = result.Sub(0, result.Len() - 1);
     FullPath = std::move(result);
     UserPath = FullPath.Replace('\\', '/');
-    FileName = path.Sub(path.LastIndexOf('\\') + 1);
-    FileExt = path.Sub(path.LastIndexOf('.') + 1);
+    FileName = FullPath.Sub(FullPath.LastIndexOf('\\') + 1);
+    FileExt = FullPath.Sub(FullPath.LastIndexOf('.') + 1);
 #else
-    String result = String::Empty;
+    String result = "";
     char old = '\0';
     for (fisize i = 0; i < FullPath.Size(); ++i)
     {
@@ -93,6 +95,7 @@ File::File(const bpf::String &path)
 
 File::File()
     : FullPath("")
+    , UserPath("")
     , FileName(FullPath.Sub(FullPath.LastIndexOf('/') + 1))
     , FileExt(FullPath.Sub(FullPath.LastIndexOf('.') + 1))
 {
@@ -100,6 +103,31 @@ File::File()
 
 File::~File()
 {
+}
+
+bool File::HasAccess(const int type) const
+{
+#ifdef WINDOWS
+    int acs = 0;
+    if (type & FILE_ACCESS_READ && type & FILE_ACCESS_WRITE)
+        acs = 06;
+    else if (type & FILE_ACCESS_READ)
+        acs = 04;
+    else if (type & FILE_ACCESS_WRITE)
+        acs = 02;
+    if (_waccess(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), acs) != 0)
+        return (false);
+    return (true);
+#else
+    int md = F_OK;
+    if (type & FILE_ACCESS_READ)
+        md |= R_OK;
+    if (type & FILE_ACCESS_WRITE)
+        md |= W_OK;
+    if (access(*FullPath, md) != 0)
+        return (false);
+    return (true);
+#endif
 }
 
 File File::GetAbsolutePath() const
@@ -186,7 +214,7 @@ bool File::IsHidden() const
 #endif
 }
 
-void File::Hide(const bool flag)
+bool File::Hide(const bool flag)
 {
 #ifdef WINDOWS
     DWORD attr = GetFileAttributesW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()));
@@ -194,12 +222,13 @@ void File::Hide(const bool flag)
         attr |= FILE_ATTRIBUTE_HIDDEN;
     else
         attr &= ~FILE_ATTRIBUTE_HIDDEN;
-    SetFileAttributesW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), attr);
+    return (SetFileAttributesW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), attr) == TRUE);
 #else
     if (flag && !IsHidden())
     {
         File f = File(GetParent().Path() + "/" + "." + Name());
-        rename(*FullPath, *f.Path());
+        if (rename(*FullPath, *f.Path()) != 0)
+            return (false);
         FileName = f.Name();
         FullPath = f.PlatformPath();
         UserPath = f.Path();
@@ -208,12 +237,14 @@ void File::Hide(const bool flag)
     else if (IsHidden())
     {
         File f = File(GetParent().Path() + "/" + Name().Sub(1));
-        rename(*FullPath, *f.Path());
+        if (rename(*FullPath, *f.Path()) != 0)
+            return (false);
         FileName = f.Name();
         FullPath = f.PlatformPath();
         UserPath = f.Path();
         FileExt = f.Extension();
     }
+    return (true);
 #endif
 }
 
@@ -253,20 +284,20 @@ uint64 File::GetSizeBytes() const
 #endif
 }
 
-void File::Delete()
+bool File::Delete()
 {
     if (!Exists())
-        return;
+        return (false);
 #ifdef WINDOWS
     if (IsDirectory())
-        RemoveDirectoryW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()));
+        return (RemoveDirectoryW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16())) == TRUE);
     else
-        DeleteFileW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()));
+        return (DeleteFileW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16())) == TRUE);
 #else
     if (IsDirectory())
-        rmdir(*FullPath);
+        return (rmdir(*FullPath) == 0);
     else
-        unlink(*FullPath);
+        return (unlink(*FullPath) == 0);
 #endif
 }
 
@@ -301,13 +332,13 @@ List<File> File::ListFiles()
     return (flns);
 }
 
-void File::CreateDir()
+bool File::CreateDir()
 {
     if (Exists())
-        return;
+        return (false);
 #ifdef WINDOWS
-    CreateDirectoryW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), Null);
+    return (CreateDirectoryW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), Null) == TRUE);
 #else
-    mkdir(*FullPath, 0755);
+    return (mkdir(*FullPath, 0755) == 0);
 #endif
 }

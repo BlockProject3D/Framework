@@ -57,7 +57,8 @@ namespace bpf
             static void WriteLine(const String &str, const EConsoleStream type = EConsoleStream::OUTPUT) noexcept;
             static void SetTextStyle(const TextStyle &style, const EConsoleStream type = EConsoleStream::OUTPUT) noexcept;
             static void ResetTextStyle(const EConsoleStream type = EConsoleStream::OUTPUT) noexcept;
-            static void SetTitle(const String &title);
+            static void SetTitle(const String &title) noexcept;
+            static bool IsRedirected(const EConsoleStream type = EConsoleStream::OUTPUT) noexcept;
         };
     }
 }

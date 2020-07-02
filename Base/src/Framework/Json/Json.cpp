@@ -35,13 +35,13 @@ using namespace bpf;
 Json::Array::Array(const std::initializer_list<Json> &vals)
 {
     for (auto &it : vals)
-        _data.Add(it);
+        Items.Add(it);
 }
 
 Json::Object::Object(const std::initializer_list<std::pair<String, Json>> &lst)
 {
     for (auto &it : lst)
-        _data[it.first] = it.second;
+        Properties[it.first] = it.second;
 }
 
 Json &Json::operator=(const Json &other)

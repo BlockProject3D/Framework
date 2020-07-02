@@ -87,19 +87,19 @@ IDataInputStream &BinaryReader::operator>>(bpf::String &str)
     switch (_serializer)
     {
     case EStringSerializer::VARCHAR_32:
-        str = String::Empty;
+        str = "";
         ReadSubBuf(&size, 4);
         for (uint32 i = 0; i < size; ++i)
             str += (char)ReadByte();
         break;
     case EStringSerializer::VARCHAR_16:
-        str = String::Empty;
+        str = "";
         ReadSubBuf(&size, 2);
         for (uint32 i = 0; i < size; ++i)
             str += (char)ReadByte();
         break;
     case EStringSerializer::VARCHAR_8:
-        str = String::Empty;
+        str = "";
         ReadSubBuf(&size, 1);
         for (uint32 i = 0; i < size; ++i)
             str += (char)ReadByte();

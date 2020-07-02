@@ -47,18 +47,18 @@ namespace bpf
             struct BPF_API Token
             {
                 String Data;
-                int Line;
+                fsize Line;
                 ETokenType Type;
             };
 
         private:
-            int _line;
+            fsize _line;
             bool _enableComments;
             bool _ignoreNulls;
             bool _comment;
             bool _lineComment;
             bool _string;
-            int _cursor;
+            fisize _cursor;
             String _curNbr;
             String _curExponent;
             collection::Queue<Token> _tokens;
@@ -67,8 +67,8 @@ namespace bpf
             bool CheckNumber(const String &token, const fchar next);
             bool CheckBasic(const String &token, const fchar next);
             String ReProcessString(const String &str);
-            fchar ProcessUnicode(const String &str, int &pos);
-            fchar ProcessStandard(const String &str, int &pos);
+            fchar ProcessUnicode(const String &str, fisize &pos);
+            fchar ProcessStandard(const String &str, fisize &pos);
 
         public:
             Lexer(const bool enableComments = false, const bool ignoreNulls = false);

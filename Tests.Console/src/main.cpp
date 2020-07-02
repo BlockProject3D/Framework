@@ -30,10 +30,10 @@
 #include <Framework/IO/ConsoleReader.hpp>
 #include <Framework/IO/ConsoleWriter.hpp>
 #include <Framework/RuntimeException.hpp>
-#include <Framework/System/IApplication.hpp>
+#include <Framework/System/Application.hpp>
 #include <Framework/System/Platform.hpp>
 
-int Main(bpf::system::IApplication &, const bpf::collection::Array<bpf::String> &, const bpf::system::Paths &)
+int Main(bpf::system::Application &, const bpf::collection::Array<bpf::String> &)
 {
     bpf::io::ConsoleWriter writer;
     bpf::io::ConsoleReader reader;

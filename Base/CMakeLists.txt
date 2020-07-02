@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(BPF)
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/../CMakes/Framework.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/../Version.cmake")
 
 set(SOURCES
     ./include/Framework/IO/File.hpp
@@ -94,9 +95,10 @@ set(SOURCES
     ./include/Framework/System/Mutex.hpp
     ./include/Framework/System/ThreadManager.hpp
     ./include/Framework/System/ModuleInterface.hpp
-    ./include/Framework/System/IApplication.hpp
+    ./include/Framework/System/Application.hpp
     ./include/Framework/System/ScopeLock.hpp
     ./include/Framework/System/Paths.hpp
+    ./include/Framework/System/Process.hpp
     ./include/Framework/System/Stringifier.DateTime.hpp
     ./include/Framework/System/EntryPoint.hpp
     ./include/Framework/Collection/Iterator.hpp
@@ -129,7 +131,7 @@ set(SOURCES
     ./include/Framework/Json/Writer.hpp
     ./include/Framework/Json/JsonException.hpp
     ./include/Framework/Json/JsonParseException.hpp
-    ./include/Framework/API.hpp
+    ./include/Framework/Api.hpp
     ./include/Framework/BinUtils.hpp
     ./include/Framework/Types.hpp
     ./include/Framework/Tuple.hpp
@@ -164,7 +166,7 @@ set(SOURCES
     ./src/Framework/IO/TextWriter.cpp
     ./src/Framework/IO/Console.cpp
     ./src/Framework/IO/ConsoleReader.cpp
-    ./src/Framework/IO/ConsoleWriter.cpp    
+    ./src/Framework/IO/ConsoleWriter.cpp
     ./src/Framework/Log/DefaultLogger.cpp
     ./src/Framework/Log/FileLogger.cpp
     ./src/Framework/Log/Logger.cpp
@@ -179,6 +181,7 @@ set(SOURCES
     ./src/Framework/System/Platform.cpp
     ./src/Framework/System/Module.cpp
     ./src/Framework/System/Paths.cpp
+    ./src/Framework/System/Process.cpp
     ./src/Framework/System/DateTime.cpp
     ./src/Framework/System/TimeSpan.cpp
     ./src/Framework/System/Thread.cpp
@@ -208,12 +211,13 @@ else (PLATFORM STREQUAL "Windows")
 endif (PLATFORM STREQUAL "Windows")
 
 bp_product_properties(BPF
-    VERSION_MAJOR 2
-    VERSION_MINOR 7
+    VERSION_MAJOR ${BP_VERSION_MAJOR}
+    VERSION_MINOR ${BP_VERSION_MINOR}
     DESCRIPTION "BlockProject 3D Framework"
 )
 
-bp_setup_module(BPF BPF_API)
+bp_setup_module(BPF API_MACRO BPF_API PACKAGE)
+target_compile_definitions(BPF PRIVATE "BP_VERSION_STRING=\"${BP_VERSION_STRING}\"")
 if (NOT WIN32)
 	target_link_libraries(BPF PRIVATE pthread)
 	target_link_libraries(BPF PRIVATE ${CMAKE_DL_LIBS})

@@ -273,7 +273,7 @@ TEST(ArrayDynamic, IterateForward_Test1)
 
 TEST(ArrayDynamic, IterateForward_Test2)
 {
-    String res = String::Empty;
+    String res = "";
     Array<String> lst = {"a", "b", "c", "d", "e"};
 
     for (auto &i : lst)
@@ -293,7 +293,7 @@ TEST(ArrayDynamic, IterateBackward_Test1)
 
 TEST(ArrayDynamic, IterateBackward_Test2)
 {
-    String res = String::Empty;
+    String res = "";
     Array<String> lst = {"a", "b", "c", "d", "e"};
 
     for (auto &i : Reverse(lst))

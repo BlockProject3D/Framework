@@ -109,7 +109,6 @@ fsize ZInflater::Inflate(void *out, const fsize size)
     switch (ret)
     {
     case Z_NEED_DICT:
-        ret = Z_DATA_ERROR; /* and fall through */
     case Z_DATA_ERROR:
         throw IOException("Inflate failed: Z_DATA_ERROR");
     case Z_MEM_ERROR:

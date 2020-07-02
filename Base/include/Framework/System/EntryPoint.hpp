@@ -28,7 +28,7 @@
 
 #pragma once
 
-#define BP_DECLARE_HIGH_MAIN int Main(bpf::system::IApplication &app, const bpf::collection::Array<bpf::String> &args, const bpf::system::Paths &paths)
+#define BP_DECLARE_HIGH_MAIN int Main(bpf::system::Application &app, const bpf::collection::Array<bpf::String> &args)
 
 #ifdef WINDOWS
     #include "Framework/System/WindowsApp.hpp"
@@ -40,7 +40,7 @@
         int main() \
         { \
             bpf::system::WindowsApp app(reinterpret_cast<void *>(GetModuleHandle(Null)), true); \
-            return (Main(app, app.GetArguments(), app.GetPaths())); \
+            return (Main(app, app.GetArguments())); \
         }
     #else
         #define BP_SETUP_ENTRY_POINT() \
@@ -48,7 +48,7 @@
         int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) \
         { \
             bpf::system::WindowsApp app(reinterpret_cast<void *>(hInstance), false); \
-            return (Main(app, app.GetArguments(), app.GetPaths())); \
+            return (Main(app, app.GetArguments())); \
         }
     #endif
 #else
@@ -58,7 +58,7 @@
     BP_DECLARE_HIGH_MAIN; \
     int main(int argc, char **argv, char **env) \
     { \
-        bpf::system::UnixApp app(argv, argc, env); \
-        return (Main(app, app.GetArguments(), app.GetPaths())); \
+        bpf::system::UnixApp app(argv, env); \
+        return (Main(app, app.GetArguments(argv, argc))); \
     }
 #endif
