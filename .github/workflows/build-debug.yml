@@ -48,36 +48,38 @@ jobs:
         include:
           - os: ubuntu-latest
             generator: "DEB"
-            file: "BPF.deb"
+            env:
+              FILE: "BPF.deb"
           - os: windows-latest
             generator: "WIX"
-            file: "BPF.msi"
+            env:
+              FILE: "BPF.msi"
           - os: macos-latest
             generator: "STGZ" #productbuild is bugged in CPack
-            file: "BPF.sh"
             env:
+              FILE: "BPF.sh"
               INSTALL_DIR: ""
     needs: [build]
     steps:
+    - run: mkdir BPF
     - uses: actions/checkout@v2
     - uses: nelonoel/branch-name@v1
     - uses: actions/download-artifact@v2
       with:
         name: Snapshot-${{ matrix.os }}-Debug-x64
-    - run: unzip BPF.zip
-    - run: rm BPF.zip
+    - run: unzip -o BPF.zip -d BPF
     - uses: actions/download-artifact@v2
       with:
         name: Snapshot-${{ matrix.os }}-Release-x64
-    - run: unzip BPF.zip
+    - run: unzip -o BPF.zip -d BPF
     - name: Build Package
       run: |
         cpack -G ${{ matrix.generator }}
     - uses: actions/upload-artifact@v2
       name: Upload Package
       with:
-        name: Snapshot-${{ matrix.os }}-${{ env.BRANCH_NAME }}-x64
-        path: BPF.zip
+        name: Install-${{ matrix.os }}-${{ env.BRANCH_NAME }}-x64
+        path: ${{ env.FILE }}
     - uses: geekyeggo/delete-artifact@v1
       with:
         name: Snapshot-${{ matrix.os }}-Debug-x64
