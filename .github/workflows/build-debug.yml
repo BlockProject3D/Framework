@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
+    env:
+      INSTALL_DIR: ""
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
