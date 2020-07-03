@@ -116,13 +116,14 @@ function(bp_use_module targetname modulename)
 
     # Handle linkage: identify what kind of Framework we are working with (pre-build vs source build) then link correct lib
     # This if block is designed to allow correct behaviour for Makefile and Ninja
-    if (EXISTS "${MD_PATH}/${ROOT}/CMakeLists.txt") # We are a source build
-        target_link_libraries(${targetname} PRIVATE debug ${modulename})
-        target_link_libraries(${targetname} PRIVATE optimized ${modulename})
-    else (EXISTS "${MD_PATH}/${ROOT}/CMakeLists.txt") # We are a pre-build
-        target_link_libraries(${targetname} PRIVATE debug "${MD_PATH}/${LIB_DEBUG}")
-        target_link_libraries(${targetname} PRIVATE optimized "${MD_PATH}/${LIB_RELEASE}")
-    endif (EXISTS "${MD_PATH}/${ROOT}/CMakeLists.txt")
+    if (NOT TARGET ${modulename})
+        add_library(${modulename} SHARED IMPORTED)
+        set_property(TARGET ${modulename} PROPERTY IMPORTED_LOCATION_DEBUG "${MD_PATH}/${LIB_DEBUG}")
+        set_property(TARGET ${modulename} PROPERTY IMPORTED_LOCATION_RELEASE "${MD_PATH}/${LIB_RELEASE}")
+    endif (NOT TARGET ${modulename})
+
+    target_link_libraries(${targetname} PRIVATE debug ${modulename})
+    target_link_libraries(${targetname} PRIVATE optimized ${modulename})
 
     # Copy module binarries
     __bp_copy_module_bin()
