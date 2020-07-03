@@ -11,11 +11,7 @@ function(bp_setup_module name)
     set(multiValueArgs)
     cmake_parse_arguments(MODULE_INFO "${options}" "${props}" "${multiValueArgs}" ${ARGN})
 
-    if (NOT BP_ADDITIONAL_SOURCE_FILE)
-        set(BP_ADDITIONAL_SOURCE_FILE "")
-    endif(NOT BP_ADDITIONAL_SOURCE_FILE)
-
-    add_library(${name} SHARED ${SOURCES} ${BP_ADDITIONAL_SOURCE_FILE})
+    add_library(${name} SHARED ${SOURCES} ${BP_GENERATED_SOURCE_FILES})
 
     if (MODULE_INFO_API_MACRO)
         target_compile_definitions(${name} PRIVATE "${MODULE_INFO_API_MACRO}=${BP_SYMBOL_EXPORT_MACRO}")

@@ -12,12 +12,8 @@ function(bp_setup_program name)
     set(multiValueArgs)
     cmake_parse_arguments(MODULE_INFO "${options}" "${props}" "${multiValueArgs}" ${ARGN})
 
-    if (NOT BP_ADDITIONAL_SOURCE_FILE)
-        set(BP_ADDITIONAL_SOURCE_FILE "")
-    endif(NOT BP_ADDITIONAL_SOURCE_FILE)
-
     if ("${ARGV2}" STREQUAL GUI)
-        add_executable(${name} WIN32 MACOSX_BUNDLE ${SOURCES} ${BP_ADDITIONAL_SOURCE_FILE})
+        add_executable(${name} WIN32 MACOSX_BUNDLE ${SOURCES} ${BP_GENERATED_SOURCE_FILES})
     else ("${ARGV2}" STREQUAL GUI)
         add_executable(${name} ${SOURCES} ${BP_ADDITIONAL_SOURCE_FILE})
     endif ("${ARGV2}" STREQUAL GUI)

@@ -24,6 +24,7 @@ endfunction(bp_fixheaderlist)
 
 set(BP_MODULE_PATH "")
 list(APPEND BP_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../")
+set(BP_GENERATED_SOURCE_FILES "")
 
 set(PLATFORM "Auto" CACHE STRING "Platform name")
 set(BUILD_TYPE "Debug" CACHE STRING "Build type either Debug or Release")
@@ -110,6 +111,7 @@ function(bp_setup_target name mainincdir)
     source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}"
                  PREFIX ""
                  FILES ${SOURCES})
+    source_group(".generated" FILES ${BP_GENERATED_SOURCE_FILES})
 endfunction(bp_setup_target)
 
 include(CheckCXXCompilerFlag)
