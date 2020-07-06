@@ -11,11 +11,7 @@ function(bp_setup_module name)
     set(multiValueArgs)
     cmake_parse_arguments(MODULE_INFO "${options}" "${props}" "${multiValueArgs}" ${ARGN})
 
-    if (NOT BP_ADDITIONAL_SOURCE_FILE)
-        set(BP_ADDITIONAL_SOURCE_FILE "")
-    endif(NOT BP_ADDITIONAL_SOURCE_FILE)
-
-    add_library(${name} SHARED ${SOURCES} ${BP_ADDITIONAL_SOURCE_FILE})
+    add_library(${name} SHARED ${SOURCES} ${BP_GENERATED_SOURCE_FILES})
 
     if (MODULE_INFO_API_MACRO)
         target_compile_definitions(${name} PRIVATE "${MODULE_INFO_API_MACRO}=${BP_SYMBOL_EXPORT_MACRO}")
@@ -43,7 +39,7 @@ function(bp_setup_module name)
             set(MODULE_INFO_PACKAGE_NAME ${BP_PACKAGE_NAME})
         endif (NOT MODULE_INFO_PACKAGE_NAME)
         if (NOT MODULE_INFO_PACKAGE_NAME)
-            set(MODULE_INFO_PACKAGE_NAME "")
+            set(MODULE_INFO_PACKAGE_NAME ${CMAKE_PROJECT_NAME})
         endif (NOT MODULE_INFO_PACKAGE_NAME)
         if (MODULE_INFO_API_MACRO)
             __bp_package_module(${name} true ${MODULE_INFO_PACKAGE_NAME})
@@ -116,13 +112,14 @@ function(bp_use_module targetname modulename)
 
     # Handle linkage: identify what kind of Framework we are working with (pre-build vs source build) then link correct lib
     # This if block is designed to allow correct behaviour for Makefile and Ninja
-    if (EXISTS "${MD_PATH}/${ROOT}/CMakeLists.txt") # We are a source build
-        target_link_libraries(${targetname} PRIVATE debug ${modulename})
-        target_link_libraries(${targetname} PRIVATE optimized ${modulename})
-    else (EXISTS "${MD_PATH}/${ROOT}/CMakeLists.txt") # We are a pre-build
-        target_link_libraries(${targetname} PRIVATE debug "${MD_PATH}/${LIB_DEBUG}")
-        target_link_libraries(${targetname} PRIVATE optimized "${MD_PATH}/${LIB_RELEASE}")
-    endif (EXISTS "${MD_PATH}/${ROOT}/CMakeLists.txt")
+    if (NOT TARGET ${modulename})
+        add_library(${modulename} SHARED IMPORTED)
+        set_property(TARGET ${modulename} PROPERTY IMPORTED_LOCATION_DEBUG "${MD_PATH}/${LIB_DEBUG}")
+        set_property(TARGET ${modulename} PROPERTY IMPORTED_LOCATION_RELEASE "${MD_PATH}/${LIB_RELEASE}")
+    endif (NOT TARGET ${modulename})
+
+    target_link_libraries(${targetname} PRIVATE debug ${modulename})
+    target_link_libraries(${targetname} PRIVATE optimized ${modulename})
 
     # Copy module binarries
     __bp_copy_module_bin()

@@ -63,5 +63,6 @@ function(bp_product_properties targetname)
         COMPANY_NAME ${PRODUCT_COMPANY}
         FILE_DESCRIPTION ${PRODUCT_DESCRIPTION}
     )
-    set(BP_ADDITIONAL_SOURCE_FILE ${tmpVar} PARENT_SCOPE)
+    list(APPEND BP_GENERATED_SOURCE_FILES ${tmpVar})
+    set(BP_GENERATED_SOURCE_FILES ${BP_GENERATED_SOURCE_FILES} PARENT_SCOPE)
 endfunction(bp_product_properties)
