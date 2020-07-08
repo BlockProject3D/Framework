@@ -46,6 +46,7 @@ namespace bpf
              * WARNING: When possible the implementation should not buffer
              * @param buf buffer to receive the read bytes
              * @param bufsize the size of the receiving buffer
+             * @throw IOException in case of system error
              * @return number of bytes read
              */
             virtual fsize Read(void *buf, fsize bufsize) = 0;

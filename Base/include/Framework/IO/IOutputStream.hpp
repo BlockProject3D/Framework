@@ -46,6 +46,7 @@ namespace bpf
              * WARNING: When possible the implementation should not buffer
              * @param buf the buffer with the bytes to write
              * @param bufsize the size of the buffer
+             * @throw IOException in case of system error
              * @return number of bytes written
              */
             virtual fsize Write(const void *buf, fsize bufsize) = 0;
