@@ -35,11 +35,19 @@ namespace bpf
 {
     namespace io
     {
-        constexpr fint FILE_MODE_READ = 0x10;
-        constexpr fint FILE_MODE_WRITE = 0x20;
+        /**
+         * Open a file for always appending data at the end
+         */
         constexpr fint FILE_MODE_APPEND = 0x40;
+
+        /**
+         * If this flag is specified when opening a file, the file is always emptied
+         */
         constexpr fint FILE_MODE_TRUNCATE = 0x80;
 
+        /**
+         * Class to represent a file stream open as read, write or random access
+         */
         class BPF_API FileStream : public IInputStream, public IOutputStream
         {
         private:
@@ -54,7 +62,7 @@ namespace bpf
             /**
              * Creates a new FileStream from the given file and mode
              * @param file file to open
-             * @param mode file mode ored (ex : FILE_MODE_READ | FILE_MODE_WRITE)
+             * @param mode file mode and flags or'ed (ex : FILE_MODE_READ | FILE_MODE_WRITE)
              * @throw IOException in case of system error
              */
             FileStream(const File &file, fint mode);

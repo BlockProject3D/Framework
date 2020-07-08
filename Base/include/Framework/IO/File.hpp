@@ -35,14 +35,14 @@ namespace bpf
     namespace io
     {
         /**
-         * Constant to use with HasAccess to check if file has read access to this application
+         * Open a file for reading, also used to check if a file is readable
          */
-        constexpr int FILE_ACCESS_READ = 0x1;
+        constexpr fint FILE_MODE_READ = 0x10;
 
         /**
-         * Constant to use with HasAccess to check if file has write access to this application
+         * Open a file for writing, also used to check if a file is readable
          */
-        constexpr int FILE_ACCESS_WRITE = 0x2;
+        constexpr fint FILE_MODE_WRITE = 0x20;
 
         /**
          * Cross platform file utilities
@@ -71,7 +71,7 @@ namespace bpf
 
             /**
              * Checks wether the current application is allowed to access a given file or folder
-             * @param type the access type to check (see FILE_ACCESS_* constants)
+             * @param type the access type to check (see FILE_MODE_* constants)
              * @return true if the access is granted, false otherwise
              */
             bool HasAccess(const int type) const;

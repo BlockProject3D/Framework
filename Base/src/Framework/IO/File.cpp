@@ -41,6 +41,7 @@
 #endif
 #include "./OSPrivate.hpp"
 #include "Framework/IO/File.hpp"
+#include "Framework/IO/FileStream.hpp"
 #include "Framework/IO/IOException.hpp"
 
 using namespace bpf::io;
@@ -109,20 +110,20 @@ bool File::HasAccess(const int type) const
 {
 #ifdef WINDOWS
     int acs = 0;
-    if (type & FILE_ACCESS_READ && type & FILE_ACCESS_WRITE)
+    if (type & FILE_MODE_READ && type & FILE_MODE_WRITE)
         acs = 06;
-    else if (type & FILE_ACCESS_READ)
+    else if (type & FILE_MODE_READ)
         acs = 04;
-    else if (type & FILE_ACCESS_WRITE)
+    else if (type & FILE_MODE_WRITE)
         acs = 02;
     if (_waccess(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), acs) != 0)
         return (false);
     return (true);
 #else
     int md = F_OK;
-    if (type & FILE_ACCESS_READ)
+    if (type & FILE_MODE_READ)
         md |= R_OK;
-    if (type & FILE_ACCESS_WRITE)
+    if (type & FILE_MODE_WRITE)
         md |= W_OK;
     if (access(*FullPath, md) != 0)
         return (false);

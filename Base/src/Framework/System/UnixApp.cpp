@@ -106,7 +106,7 @@ Paths UnixApp::SetupPaths()
     }
 #endif
     File tmp = _env.HasKey("TMPDIR") ? File(_env["TMPDIR"]) : File("/tmp");
-    if (root.HasAccess(FILE_ACCESS_READ | FILE_ACCESS_WRITE))
+    if (root.HasAccess(FILE_MODE_READ | FILE_MODE_WRITE))
         return (Paths(root, root, home, tmp));
     else
         return (Paths(root, home + File(_fileName).Name(), home, tmp));
