@@ -554,7 +554,7 @@ void Process::PipeStream::Close()
         close(_pipfd[0]);
     if (_pipfd[1] != -1)
         close(_pipfd[1]);
-    _piofd[0] = -1;
+    _pipfd[0] = -1;
     _pipfd[1] = -1;
 #endif
 }
