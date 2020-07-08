@@ -49,7 +49,7 @@ namespace bpf
 	template <typename T>
 	String BaseConvert<T>::ToString(T nbr)
 	{
-		String res = String::Empty;
+		String res = "";
 
 		if (nbr == 0)
 			return ("0");

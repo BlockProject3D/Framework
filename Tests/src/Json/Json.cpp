@@ -71,7 +71,7 @@ TEST(Json, API_1)
     arr.RemoveAt(0);
     EXPECT_EQ(carr.Size(), 3U);
     EXPECT_EQ(arr.Size(), 3U);
-    arr.Items().Clear();
+    arr.Items.Clear();
     EXPECT_EQ(carr.Size(), 0U);
     EXPECT_EQ(arr.Size(), 0U);
     const J::Object &cobj = objConst["TestObject"];
@@ -89,7 +89,7 @@ TEST(Json, API_1)
     mobj.RemoveAt("a");
     EXPECT_EQ(mobj.Size(), 3U);
     EXPECT_EQ(cobj.Size(), 3U);
-    mobj.Properties().Clear();
+    mobj.Properties.Clear();
     EXPECT_EQ(mobj.Size(), 0U);
     EXPECT_EQ(cobj.Size(), 0U);
 }
@@ -319,7 +319,7 @@ TEST(Json, LexerParser_Comments)
     EXPECT_STREQ(*bpf::String::ValueOf(testObject["Array"].ToArray()), "[TRUE, FALSE, null, 0.1, 1, 42, 4242, 0.4242]");
     EXPECT_STREQ(*bpf::String::ValueOf(testObject["StrArray"].ToArray()), "[test, test1]");
     EXPECT_STREQ(*bpf::String::ValueOf(testObject["AdvTestStr"]), "String with special \b\t characters\b\t.");
-    EXPECT_FALSE(testObject.Properties().HasKey("Unicode"));
+    EXPECT_FALSE(testObject.Properties.HasKey("Unicode"));
     EXPECT_STREQ(*bpf::String::ValueOf(testObject["Special"]), "\t\b");
 }
 
@@ -357,7 +357,7 @@ TEST(Json, LexerParser_IgnoreNulls)
     EXPECT_EQ(testObj.Type(), bpf::json::Json::OBJECT);
     J::Object testObject = std::move(testObj);
     EXPECT_EQ(testObject["test"], 1.0);
-    EXPECT_FALSE(testObject.Properties().HasKey("testStr"));
+    EXPECT_FALSE(testObject.Properties.HasKey("testStr"));
 }
 
 TEST(Json, Lexer_Err)

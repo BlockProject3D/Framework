@@ -88,7 +88,14 @@ namespace bpf
              * Sets the console title
              * @param title new title to apply to the console
              */
-            static void SetTitle(const String &title);
+            static void SetTitle(const String &title) noexcept;
+
+            /**
+             * Checks if this console is redirected
+             * @param type type of console to check
+             * @return true if the given console type is redirected, false otherwise
+             */
+            static bool IsRedirected(const EConsoleStream type = EConsoleStream::OUTPUT) noexcept;
         };
     }
 }

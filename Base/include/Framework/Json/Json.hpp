@@ -58,12 +58,14 @@ namespace bpf
              */
             class BPF_API Object
             {
-            private:
-                collection::Map<String, Json> _data;
-
             public:
                 using Iterator = collection::Map<String, Json>::Iterator;
                 using ReverseIterator = collection::Map<String, Json>::ReverseIterator;
+
+                /**
+                 * Object properties
+                 */
+                collection::Map<String, Json> Properties;
 
                 /**
                  * Constructs an empty object
@@ -83,7 +85,7 @@ namespace bpf
                  * @param map the map to construct from
                  */
                 explicit inline Object(const collection::Map<String, Json> &map)
-                    : _data(map)
+                    : Properties(map)
                 {
                 }
 
@@ -92,7 +94,7 @@ namespace bpf
                  * @param map the map to construct from
                  */
                 explicit inline Object(collection::Map<String, Json> &&map)
-                    : _data(std::move(map))
+                    : Properties(std::move(map))
                 {
                 }
 
@@ -104,7 +106,7 @@ namespace bpf
                  */
                 inline Json &operator[](const String &name)
                 {
-                    return (_data[name]);
+                    return (Properties[name]);
                 }
 
                 /**
@@ -115,7 +117,7 @@ namespace bpf
                  */
                 inline const Json &operator[](const String &name) const
                 {
-                    return (_data[name]);
+                    return (Properties[name]);
                 }
 
                 /**
@@ -125,7 +127,7 @@ namespace bpf
                  */
                 inline void Add(const String &name, const Json &json)
                 {
-                    _data.Add(name, json);
+                    Properties.Add(name, json);
                 }
 
                 /**
@@ -135,7 +137,7 @@ namespace bpf
                  */
                 inline void Add(const String &name, Json &&data)
                 {
-                    _data.Add(name, std::move(data));
+                    Properties.Add(name, std::move(data));
                 }
 
                 /**
@@ -144,7 +146,7 @@ namespace bpf
                  */
                 inline void RemoveAt(const String &name)
                 {
-                    _data.RemoveAt(name);
+                    Properties.RemoveAt(name);
                 }
 
                 /**
@@ -153,7 +155,7 @@ namespace bpf
                  */
                 inline fsize Size() const noexcept
                 {
-                    return (_data.Size());
+                    return (Properties.Size());
                 }
 
                 /**
@@ -162,7 +164,7 @@ namespace bpf
                  */
                 inline Iterator begin() const
                 {
-                    return (_data.begin());
+                    return (Properties.begin());
                 }
 
                 /**
@@ -171,7 +173,7 @@ namespace bpf
                  */
                 inline Iterator end() const
                 {
-                    return (_data.end());
+                    return (Properties.end());
                 }
 
                 /**
@@ -180,7 +182,7 @@ namespace bpf
                  */
                 inline ReverseIterator rbegin() const
                 {
-                    return (_data.rbegin());
+                    return (Properties.rbegin());
                 }
 
                 /**
@@ -189,25 +191,7 @@ namespace bpf
                  */
                 inline ReverseIterator rend() const
                 {
-                    return (_data.rend());
-                }
-
-                /**
-                 * Returns the underlying collection used to support the Json object
-                 * @return immutable reference to collection::Map
-                 */
-                inline const collection::Map<String, Json> &Properties() const noexcept
-                {
-                    return (_data);
-                }
-
-                /**
-                 * Returns the underlying collection used to support the Json object
-                 * @return mutable reference to collection::Map
-                 */
-                inline collection::Map<String, Json> &Properties() noexcept
-                {
-                    return (_data);
+                    return (Properties.rend());
                 }
             };
 
@@ -216,12 +200,14 @@ namespace bpf
              */
             class BPF_API Array
             {
-            private:
-                collection::List<Json> _data;
-
             public:
                 using Iterator = collection::List<Json>::Iterator;
                 using ReverseIterator = collection::List<Json>::ReverseIterator;
+
+                /**
+                 * Array content
+                 */
+                collection::List<Json> Items;
 
                 /**
                  * Constructs an empty array
@@ -241,7 +227,7 @@ namespace bpf
                  * @param vals the list to construct from
                  */
                 explicit inline Array(const collection::List<Json> &vals)
-                    : _data(vals)
+                    : Items(vals)
                 {
                 }
 
@@ -250,7 +236,7 @@ namespace bpf
                  * @param vals the list to construct from
                  */
                 explicit inline Array(collection::List<Json> &&vals)
-                    : _data(std::move(vals))
+                    : Items(std::move(vals))
                 {
                 }
 
@@ -260,7 +246,7 @@ namespace bpf
                  */
                 inline void Add(const Json &json)
                 {
-                    _data.Add(json);
+                    Items.Add(json);
                 }
 
                 /**
@@ -269,7 +255,7 @@ namespace bpf
                  */
                 inline void Add(Json &&data)
                 {
-                    _data.Add(std::move(data));
+                    Items.Add(std::move(data));
                 }
 
                 /**
@@ -278,7 +264,7 @@ namespace bpf
                  */
                 inline void RemoveAt(const fsize id)
                 {
-                    _data.RemoveAt(id);
+                    Items.RemoveAt(id);
                 }
 
                 /**
@@ -289,7 +275,7 @@ namespace bpf
                  */
                 inline Json &operator[](const fsize id)
                 {
-                    return (_data[id]);
+                    return (Items[id]);
                 }
 
                 /**
@@ -300,7 +286,7 @@ namespace bpf
                  */
                 inline const Json &operator[](const fsize id) const
                 {
-                    return (_data[id]);
+                    return (Items[id]);
                 }
 
                 /**
@@ -309,7 +295,7 @@ namespace bpf
                  */
                 inline fsize Size() const noexcept
                 {
-                    return (_data.Size());
+                    return (Items.Size());
                 }
 
                 /**
@@ -318,7 +304,7 @@ namespace bpf
                  */
                 inline Iterator begin() const
                 {
-                    return (_data.begin());
+                    return (Items.begin());
                 }
 
                 /**
@@ -327,7 +313,7 @@ namespace bpf
                  */
                 inline Iterator end() const
                 {
-                    return (_data.end());
+                    return (Items.end());
                 }
 
                 /**
@@ -336,7 +322,7 @@ namespace bpf
                  */
                 inline ReverseIterator rbegin() const
                 {
-                    return (_data.rbegin());
+                    return (Items.rbegin());
                 }
 
                 /**
@@ -345,25 +331,7 @@ namespace bpf
                  */
                 inline ReverseIterator rend() const
                 {
-                    return (_data.rend());
-                }
-
-                /**
-                 * Returns the underlying collection used to support the Json array
-                 * @return immutable reference to collection::List
-                 */
-                inline const collection::List<Json> &Items() const noexcept
-                {
-                    return (_data);
-                }
-
-                /**
-                 * Returns the underlying collection used to support the Json array
-                 * @return mutable reference to collection::List
-                 */
-                inline collection::List<Json> &Items() noexcept
-                {
-                    return (_data);
+                    return (Items.rend());
                 }
             };
 
@@ -478,7 +446,7 @@ namespace bpf
                 : _type(EType::OBJECT)
                 , _number(0.0)
                 , _bool(false)
-                , _string(String::Empty)
+                , _string("")
                 , _object(memory::MakeUnique<Object>(val))
             {
             }
@@ -491,7 +459,7 @@ namespace bpf
                 : _type(EType::OBJECT)
                 , _number(0.0)
                 , _bool(false)
-                , _string(String::Empty)
+                , _string("")
                 , _object(memory::MakeUnique<Object>(std::move(val)))
             {
             }
@@ -504,7 +472,7 @@ namespace bpf
                 : _type(EType::ARRAY)
                 , _number(0.0)
                 , _bool(false)
-                , _string(String::Empty)
+                , _string("")
                 , _object(Null)
                 , _array(memory::MakeUnique<Array>(arr))
             {
@@ -518,7 +486,7 @@ namespace bpf
                 : _type(EType::ARRAY)
                 , _number(0.0)
                 , _bool(false)
-                , _string(String::Empty)
+                , _string("")
                 , _object(Null)
                 , _array(memory::MakeUnique<Array>(std::move(arr)))
             {

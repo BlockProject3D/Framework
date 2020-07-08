@@ -40,6 +40,18 @@ TEST(ByteBuf, Construct)
     EXPECT_EQ(buf1.Size(), 0U);
 }
 
+TEST(ByteBuf, Index)
+{
+    bpf::io::ByteBuf buf(1);
+    const auto &b = buf;
+    EXPECT_THROW(buf[1], bpf::IndexException);
+    EXPECT_THROW(b[1], bpf::IndexException);
+    buf[0] = 0;
+    EXPECT_EQ(buf[0], 0);
+    buf[0] = 5;
+    EXPECT_EQ(buf[0], 5);
+}
+
 TEST(ByteBuf, Move)
 {
     bpf::io::ByteBuf buf(128);
@@ -149,4 +161,14 @@ TEST(ByteBuf, ReadWrite_Test4)
     EXPECT_EQ(buf.Read(Null, 0), (bpf::fsize)0);
     EXPECT_EQ(buf.GetCursor(), (bpf::fsize)0);
     EXPECT_EQ(buf.GetWrittenBytes(), (bpf::fsize)0);
+}
+
+TEST(ByteBuf, Shift)
+{
+    bpf::io::ByteBuf buf(5);
+    buf.Write("TEST", 5);
+    EXPECT_STREQ(reinterpret_cast<const char *>(*buf), "TEST");
+    buf.Shift(2);
+    buf[4] = '\0';
+    EXPECT_STREQ(reinterpret_cast<const char *>(*buf), "ST");
 }

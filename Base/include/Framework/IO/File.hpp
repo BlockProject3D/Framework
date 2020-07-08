@@ -35,6 +35,16 @@ namespace bpf
     namespace io
     {
         /**
+         * Constant to use with HasAccess to check if file has read access to this application
+         */
+        constexpr int FILE_ACCESS_READ = 0x1;
+
+        /**
+         * Constant to use with HasAccess to check if file has write access to this application
+         */
+        constexpr int FILE_ACCESS_WRITE = 0x2;
+
+        /**
          * Cross platform file utilities
          */
         class BPF_API File
@@ -58,6 +68,13 @@ namespace bpf
             File();
 
             ~File();
+
+            /**
+             * Checks wether the current application is allowed to access a given file or folder
+             * @param type the access type to check (see FILE_ACCESS_* constants)
+             * @return true if the access is granted, false otherwise
+             */
+            bool HasAccess(const int type) const;
 
             /**
              * Checks if the file exists
@@ -86,14 +103,16 @@ namespace bpf
 
             /**
              * Deletes this file from the file system
+             * @return true if the operation succeeded, false otherwise
              */
-            void Delete();
+            bool Delete();
 
             /**
              * Marks this file as hidden to the current platform
              * @param flag true to hide the file, false to make the file visible
+             * @return true if the operation succeeded, false otherwise
              */
-            void Hide(const bool flag);
+            bool Hide(const bool flag);
 
             /**
              * Lists all files in that directory/folder (of course if this file is a directory/folder)
@@ -104,8 +123,9 @@ namespace bpf
 
             /**
              * Creates the directory/folder
+             * @return true if the operation succeeded, false otherwise
              */
-            void CreateDir();
+            bool CreateDir();
 
             /**
              * Copies this file to the destination, in case destination is a directory/folder, copy in that directory/folder under the same name

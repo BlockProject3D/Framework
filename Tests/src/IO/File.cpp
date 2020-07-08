@@ -30,18 +30,64 @@
 #include <iostream>
 #include <gtest/gtest.h>
 #include <Framework/IO/File.hpp>
+#include <Framework/System/Application.hpp>
 #include <Framework/IO/FileStream.hpp>
 #include <Framework/IO/IOException.hpp>
+
+extern bpf::system::Application *g_app;
+
+TEST(File, WeirdCases)
+{
+    bpf::io::File f;
+    bpf::io::File f1("");
+    bpf::io::File f2(".");
+    bpf::io::File f3("@");
+    bpf::io::File f4("!");
+    bpf::io::File f5("..");
+    EXPECT_FALSE(f.Exists());
+    EXPECT_FALSE(f.IsDirectory());
+    EXPECT_FALSE(f1.Exists());
+    EXPECT_FALSE(f1.IsDirectory());
+    EXPECT_FALSE(f3.Exists());
+    EXPECT_FALSE(f3.IsDirectory());
+    EXPECT_FALSE(f4.Exists());
+    EXPECT_FALSE(f4.IsDirectory());
+    EXPECT_TRUE(f2.Exists());
+    EXPECT_TRUE(f2.IsDirectory());
+    EXPECT_TRUE(f5.Exists());
+    EXPECT_TRUE(f5.IsDirectory());
+}
+
+#ifdef LINUX //I have no idea which folder is not readable under windows by default
+TEST(File, HasAccess)
+{
+    EXPECT_FALSE(bpf::io::File("/root").HasAccess(bpf::io::FILE_ACCESS_READ));
+    EXPECT_FALSE(bpf::io::File("/root").HasAccess(bpf::io::FILE_ACCESS_WRITE));
+    EXPECT_FALSE(bpf::io::File("/root").HasAccess(bpf::io::FILE_ACCESS_READ | bpf::io::FILE_ACCESS_WRITE));
+}
+
+TEST(File, Perm_Err)
+{
+    EXPECT_THROW(bpf::io::File("/root/.bashrc").GetSizeBytes(), bpf::io::IOException);
+    EXPECT_THROW(bpf::io::File("/root/.bashrc").GetSizeBytes(), bpf::io::IOException);
+    EXPECT_FALSE(bpf::io::File("/root/.bashrc").IsDirectory());
+    EXPECT_FALSE(bpf::io::File("/root").Hide(true));
+    EXPECT_FALSE(bpf::io::File("/etc/skel/.bashrc").Hide(false));
+    EXPECT_TRUE(bpf::io::File("/root").Hide(false)); // The /root folder is already not hidden
+}
+#endif
 
 TEST(File, Basics)
 {
     bpf::io::File f("./doesnotexist.txt");
 
     EXPECT_FALSE(f.Exists());
-    f.CreateDir();
+    EXPECT_TRUE(f.CreateDir());
+    EXPECT_FALSE(f.CreateDir());
     EXPECT_TRUE(f.Exists());
     EXPECT_TRUE(f.IsDirectory());
-    f.Delete();
+    EXPECT_TRUE(f.HasAccess(bpf::io::FILE_ACCESS_READ | bpf::io::FILE_ACCESS_WRITE));
+    EXPECT_TRUE(f.Delete());
     EXPECT_FALSE(f.Exists());
     EXPECT_FALSE(f.IsDirectory());
 }
@@ -50,13 +96,13 @@ TEST(File, Hide)
 {
     bpf::io::File f("./doesnotexist.txt");
 
-    f.CreateDir();
+    EXPECT_TRUE(f.CreateDir());
     EXPECT_FALSE(f.IsHidden());
-    f.Hide(true);
+    EXPECT_TRUE(f.Hide(true));
     EXPECT_TRUE(f.IsHidden());
-    f.Hide(false);
+    EXPECT_TRUE(f.Hide(false));
     EXPECT_FALSE(f.IsHidden());
-    f.Delete();
+    EXPECT_TRUE(f.Delete());
 }
 
 TEST(File, Abs)
@@ -64,14 +110,14 @@ TEST(File, Abs)
     bpf::io::File f("./doesnotexist.txt");
 
     EXPECT_FALSE(f.Exists());
-    f.CreateDir();
+    EXPECT_TRUE(f.CreateDir());
     EXPECT_TRUE(f.Exists());
     EXPECT_TRUE(f.IsDirectory());
     bpf::io::File abs = f.GetAbsolutePath();
     std::cout << *abs.Path() << std::endl;
     EXPECT_TRUE(abs.Exists());
     EXPECT_TRUE(abs.IsDirectory());
-    f.Delete();
+    EXPECT_TRUE(f.Delete());
     EXPECT_FALSE(f.Exists());
 }
 
@@ -81,14 +127,14 @@ TEST(File, Move)
     bpf::io::File dest("./doesexist.txt");
 
     EXPECT_FALSE(f.Exists());
-    f.CreateDir();
+    EXPECT_TRUE(f.CreateDir());
     EXPECT_TRUE(f.Exists());
     EXPECT_FALSE(dest.Exists());
     EXPECT_TRUE(f.MoveTo(dest));
     EXPECT_TRUE(dest.Exists());
     EXPECT_FALSE(f.Exists());
-    f.Delete();
-    dest.Delete();
+    EXPECT_FALSE(f.Delete());
+    EXPECT_TRUE(dest.Delete());
 }
 
 #ifdef WINDOWS
@@ -169,7 +215,7 @@ TEST(File, List_Test_Err_2)
 
     SetupTestFile(f);
     EXPECT_THROW(f.ListFiles(), bpf::io::IOException);
-    f.Delete();
+    EXPECT_TRUE(f.Delete());
 }
 
 TEST(File, GetSizeBytes)
@@ -177,6 +223,16 @@ TEST(File, GetSizeBytes)
     bpf::io::File f("./test_me.txt");
     SetupTestFile(f);
     EXPECT_EQ(f.GetSizeBytes(), 14U);
-    f.Delete();
+    EXPECT_TRUE(f.Delete());
     EXPECT_THROW(f.GetSizeBytes(), bpf::io::IOException);
+}
+
+TEST(File, WorkDir)
+{
+    auto dir = g_app->GetWorkingDirectory();
+    EXPECT_TRUE(g_app->SetWorkingDirectory(dir));
+    EXPECT_STREQ(*g_app->GetWorkingDirectory().PlatformPath(), *dir.PlatformPath());
+#ifdef LINUX
+    EXPECT_FALSE(g_app->SetWorkingDirectory(bpf::io::File("/root")));
+#endif
 }

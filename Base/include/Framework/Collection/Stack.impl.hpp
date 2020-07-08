@@ -75,7 +75,11 @@ namespace bpf
                 throw StackUnderflowException();
             auto ref = std::move(_data.Last());
             _data.RemoveLast();
+#ifdef WINDOWS
             return (std::move(ref));
+#else
+            return (ref); //Unix wants to be potentially slower (copy instead of move)
+#endif
         }
     }
 }

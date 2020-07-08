@@ -33,42 +33,52 @@ namespace bpf
 {
     namespace system
     {
+        /**
+         * Class to represent various path for the application to work with
+         */
         class BPF_API Paths
         {
-        private:
-            io::File _appRoot;
-            io::File _thirdParty;
-            io::File _userHome;
-            io::File _tmpDir;
-            io::File _cacheDir;
-
         public:
-            Paths(const io::File &root, const io::File &home, const io::File &tmp, const io::File &cache);
+            /**
+             * The application root folder
+             * WARNING: In certain cases this path may be read-only
+             */
+            const io::File AppRoot;
 
-            inline const io::File &AppRoot() const noexcept
-            {
-                return (_appRoot);
-            }
+            /**
+             * The application data directory, this directory can be assumed always read-write
+             */
+            const io::File DataDir;
 
-            inline const io::File &UserHome() const noexcept
-            {
-                return (_userHome);
-            }
+            /**
+             * System defined user's home directory
+             * WARNING: Restricive-by-design systems may not allow accessing this folder
+             */
+            const io::File UserHome;
 
-            inline const io::File &TempDir() const noexcept
-            {
-                return (_tmpDir);
-            }
+            /**
+             * System defined temporary directory (usually cleared after system reboot)
+             */
+            const io::File TempDir;
 
-            inline const io::File &CacheDir() const noexcept
-            {
-                return (_cacheDir);
-            }
+            /**
+             * The location for third party dependencies (will be used as fallback to search for non-system dependencies)
+             */
+            const io::File ThirdParty;
 
-            inline const io::File &ThirdParty() const noexcept
-            {
-                return (_thirdParty);
-            }
+            /**
+             * Application's persistent cache directory
+             */
+            const io::File CacheDir;
+
+            /**
+             * Constructs a set of application paths
+             * @param root the application root directory (may be read-only)
+             * @param data the application data directory (must be read-write)
+             * @param home the user's home directory (access not defined on restrictive-by-design systems)
+             * @param tmp the system temporary directory for that application (must be read-write)
+             */
+            Paths(const io::File &root, const io::File &data, const io::File &home, const io::File &tmp);
         };
     }
 };

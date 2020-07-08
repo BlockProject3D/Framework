@@ -43,7 +43,7 @@ namespace bpf
     public:
         inline static String Stringify(const json::Json::Array &val, const fsize prec)
         {
-            return (String::ValueOf(val.Items(), prec));
+            return (String::ValueOf(val.Items, prec));
         }
     };
 
@@ -56,7 +56,7 @@ namespace bpf
     public:
         inline static String Stringify(const json::Json::Object &val, const fsize prec)
         {
-            return (String::ValueOf(val.Properties(), prec));
+            return (String::ValueOf(val.Properties, prec));
         }
     };
 

@@ -41,7 +41,7 @@ namespace bpf
         {
         private:
             collection::Queue<Lexer::Token> _tokens;
-            int _line; //Keep track of last line
+            fsize _line; //Keep track of last line
             bool _ignoreNulls;
 
             bool CheckObject(Json &j);

@@ -505,7 +505,7 @@ TEST(List, IterateForward_Test1)
 
 TEST(List, IterateForward_Test2)
 {
-    String res = String::Empty;
+    String res = "";
     List<String> lst;
 
     lst.Add("a");
@@ -533,7 +533,7 @@ TEST(List, IterateBackward_Test1)
 
 TEST(List, IterateBackward_Test2)
 {
-    String res = String::Empty;
+    String res = "";
     List<String> lst;
 
     lst.Add("a");

@@ -33,7 +33,7 @@
 #include "Framework/TypeInfo.hpp"
 #include "Framework/Collection/Array.hpp"
 #include "Framework/IndexException.hpp"
-#include "Framework/API.hpp"
+#include "Framework/Api.hpp"
 
 namespace bpf
 {
@@ -217,6 +217,15 @@ namespace bpf
         String &operator=(String &&other);
 
         /**
+         * Checks if this string is empty
+         * @return true if this string is null or 0 bytes long, false otherwise
+         */
+        inline bool IsEmpty() const noexcept
+        {
+            return (Data == Null || StrLen == 0);
+        }
+
+        /**
          * Compare String
          * @param other the other string to compare with
          * @return true if strings are equal, false otherwise
@@ -267,6 +276,8 @@ namespace bpf
         {
             if (id < 0 || id > Len())
                 throw IndexException(id);
+            if (UnicodeLen == StrLen)
+                return ((fchar)Data[id]);
             return (String::UTF32(Data + CalcStartFromUnicode(id)));
         }
 
@@ -694,6 +705,6 @@ namespace bpf
         /**
          * Empty string constant
          */
-        static const String Empty;
+        BP_DEPRECATED("To check for empty string use String.IsEmpty, to create an empty string use litteral \"\". This constant will be removed in a future version.") static const String Empty;
     };
 }

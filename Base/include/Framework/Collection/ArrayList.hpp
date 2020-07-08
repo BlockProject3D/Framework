@@ -149,6 +149,19 @@ namespace bpf
             void operator+=(const ArrayList<T> &other);
 
             /**
+             * Create a new list from concatenation of a list and an array
+             * @param other array to concatenate with
+             * @return new list
+             */
+            ArrayList<T> operator+(const Array<T> &other) const;
+
+            /**
+             * Appends the content of an array at the end of this list
+             * @param other array to append
+             */
+            void operator+=(const Array<T> &other);
+
+            /**
              * Returns the first element in this ArrayList
              * @throw IndexException if none
              * @return mutable item

@@ -71,8 +71,8 @@ int ConsoleWriter::GetHandle(const EConsoleStream type)
 ConsoleWriter::ConsoleWriter(const EConsoleStream type)
     : _handle(GetHandle(type))
 #ifdef WINDOWS
-    , _file(GetFileType(reinterpret_cast<HANDLE>(_handle)) != FILE_TYPE_CHAR ? true : false)
-    , _writer(*this, _file ? ECharacterEncoding::UTF8 : ECharacterEncoding::UTF16)
+    , _file(Console::IsRedirected(type))
+    , _writer(*this, _file ? EStringEncoder::UTF8 : EStringEncoder::UTF16)
 #else
     , _writer(*this, ECharacterEncoding::UTF8)
 #endif
@@ -93,7 +93,8 @@ fsize ConsoleWriter::Write(const void *buf, fsize bufsize)
     else
     {
         DWORD out;
-        if (!WriteConsoleW(reinterpret_cast<HANDLE>(_handle), reinterpret_cast<LPCVOID>(buf), (DWORD)(bufsize / 2), &out, NULL))
+        if (!WriteConsoleW(reinterpret_cast<HANDLE>(_handle), reinterpret_cast<LPCVOID>(buf), (DWORD)(bufsize / 2),
+                           &out, NULL))
             throw IOException(String("Console write error: ") + OSPrivate::ObtainLastErrorString());
         return ((fsize)(out * 2));
     }

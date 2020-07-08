@@ -50,7 +50,7 @@ namespace bpf
              */
             explicit Module(const bpf::String &path);
             inline Module() noexcept
-                : _path(String::Empty)
+                : _path("")
                 , _handle(Null)
             {
             }
