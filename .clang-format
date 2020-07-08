@@ -9,3 +9,4 @@ BreakConstructorInitializers: BeforeComma
 FixNamespaceComments: false
 IndentPPDirectives: BeforeHash
 AllowShortFunctionsOnASingleLine: false
+AlwaysBreakTemplateDeclarations: Yes

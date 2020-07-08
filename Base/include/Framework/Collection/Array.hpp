@@ -39,6 +39,11 @@ namespace bpf
 {
     namespace collection
     {
+        /**
+         * Static array
+         * @tparam T the type of element to store
+         * @tparam I the size of the array as a constant expression
+         */
         template <typename T, fsize I = 0>
         class BP_TPL_API Array
         {
@@ -139,26 +144,42 @@ namespace bpf
             T _arr[I];
 
         public:
+            /**
+             * Constructs an empty array
+             */
             inline Array()
             {
                 for (fsize i = 0; i != I; ++i)
                     _arr[i] = T();
             }
 
+            /**
+             * Constructs an array from a list of values
+             * @param lst the list of values to copy the values from
+             */
             Array(const std::initializer_list<T> &lst);
 
+            /**
+             * Copy constructor
+             */
             inline Array(const Array<T, I> &arr)
             {
                 for (fsize i = 0; i != I; ++i)
                     _arr[i] = arr._arr[i];
             }
 
+            /**
+             * Move constructor
+             */
             inline Array(Array<T, I> &&arr)
             {
                 for (fsize i = 0; i != I; ++i)
                     _arr[i] = std::move(arr._arr[i]);
             }
 
+            /**
+             * Copy assignment operator
+             */
             inline Array<T, I> &operator=(const Array<T, I> &arr)
             {
                 for (fsize i = 0; i != I; ++i)
@@ -166,6 +187,9 @@ namespace bpf
                 return (*this);
             }
 
+            /**
+             * Move assignment operator
+             */
             inline Array<T, I> &operator=(Array<T, I> &&arr)
             {
                 for (fsize i = 0; i != I; ++i)
@@ -173,43 +197,82 @@ namespace bpf
                 return (*this);
             }
 
+            /**
+             * Swap two elements by iterator in the Array
+             * @param a first element
+             * @param b second element
+             */
             void Swap(const Iterator &a, const Iterator &b);
 
+            /**
+             * Returns the length of the array
+             * @return size of collection as an unsigned number
+             */
             constexpr inline fsize Size() const
             {
                 return (I);
             }
 
+            /**
+             * Returns the first element in this Array
+             * @return mutable item
+             */
             inline T &First()
             {
                 return (_arr[0]);
             }
 
+            /**
+             * Returns the last element in this Array
+             * @return mutable item
+             */
             inline T &Last()
             {
                 return (_arr[I - 1]);
             }
 
+            /**
+             * Returns the first element in this array
+             * @return immutable item
+             */
             inline const T &First() const
             {
                 return (_arr[0]);
             }
 
+            /**
+             * Returns the last element in this array
+             * @return immutable item
+             */
             inline const T &Last() const
             {
                 return (_arr[I - 1]);
             }
 
+            /**
+             * Returns an immutable low-level c-like arrray
+             * @return low-level c-like arrray pointer
+             */
             inline const T *operator*() const
             {
                 return (_arr);
             }
 
+            /**
+             * Returns a mutable low-level c-like arrray
+             * @return low-level c-like arrray pointer
+             */
             inline T *operator*()
             {
                 return (_arr);
             }
 
+            /**
+             * Returns an element non-const mode
+             * @param id the index of the element, in case of out of bounds, throws
+             * @throw IndexException if id is out of bounds
+             * @return mutable item at index id
+             */
             inline T &operator[](const fsize id)
             {
                 if (id >= I)
@@ -217,6 +280,12 @@ namespace bpf
                 return (_arr[id]);
             }
 
+            /**
+             * Returns an element const mode
+             * @param id the index of the element, in case of out of bounds, throws
+             * @throw IndexException if id is out of bounds
+             * @return immutable item at index id
+             */
             inline const T &operator[](const fsize id) const
             {
                 if (id >= I)
@@ -224,22 +293,49 @@ namespace bpf
                 return (_arr[id]);
             }
 
+            /**
+             * Compare Array by performing a per-element check
+             * @param other Array to compare with
+             * @return true if the two arrays are equal, false otherwise
+             */
             bool operator==(const Array<T, I> &other);
 
+            /**
+             * Compare Array by performing a per-element check
+             * @param other Array to compare with
+             * @return false if the two arrays are equal, true otherwise
+             */
             inline bool operator!=(const Array<T, I> &other)
             {
                 return (!operator==(other));
             }
 
+            /**
+             * Locate an item by index inside this array
+             * @param pos the index of the item to search for
+             * @return iterator to the found item or end() if none
+             */
             Iterator FindByKey(const fsize pos);
 
+            /**
+             * Locate an item by performing per-element check
+             * @tparam Comparator comparision operator to use
+             * @param val the value to search for
+             * @return iterator to the found item or end() if none
+             */
             template <template <typename> class Comparator = ops::Equal>
             Iterator FindByValue(const T &val);
 
+            /**
+             * Locate an item by performing per-element check
+             * @param comparator the comparision function to use
+             * @return iterator to the found item or end() if none
+             */
             Iterator Find(const std::function<bool(const fsize pos, const T &val)> &comparator);
 
             /**
              * Returns an iterator to the begining of the array
+             * @return new iterator
              */
             inline Iterator begin() const
             {
@@ -248,6 +344,7 @@ namespace bpf
 
             /**
              * Returns an iterator to the end of the array
+             * @return new iterator
              */
             inline Iterator end() const
             {
@@ -256,6 +353,7 @@ namespace bpf
 
             /**
              * Returns a reverse iterator to the begining of the array
+             * @return new iterator
              */
             inline ReverseIterator rbegin() const
             {
@@ -264,6 +362,7 @@ namespace bpf
 
             /**
              * Returns a reverse iterator to the end of the array
+             * @return new iterator
              */
             inline ReverseIterator rend() const
             {
@@ -566,8 +665,8 @@ namespace bpf
 
             /**
              * Terminates management of the raw pointer and returns it
-             * WARNING: You are responsible for calling MemUtils::DeleteArray on the raw pointer after calling this function.
-             *          Do not call this function unless you know what you're doing
+             * WARNING: You are responsible for calling MemUtils::DeleteArray on the raw pointer after calling this
+             * function. Do not call this function unless you know what you're doing
              * @return low-level c-like arrray pointer
              */
             inline T *Release()
