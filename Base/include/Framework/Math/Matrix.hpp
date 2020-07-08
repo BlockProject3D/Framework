@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -27,11 +27,11 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include <cstring>
-#include <initializer_list>
-#include "Framework/Types.hpp"
 #include "Framework/IndexException.hpp"
 #include "Framework/Math/Vector.hpp"
+#include "Framework/Types.hpp"
+#include <cstring>
+#include <initializer_list>
 
 namespace bpf
 {
@@ -358,7 +358,8 @@ namespace bpf
 
             /**
              * Calculates the inverse of this matrix
-             * @throws MatrixException if the matrix is not invertible (ie determinant is null) or if it is not a square matrix
+             * @throws MatrixException if the matrix is not invertible (ie determinant is null) or if it is not a square
+             * matrix
              * @return the inverse of this matrix
              */
             Matrix<T> Inverse() const;
