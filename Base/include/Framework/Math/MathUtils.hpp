@@ -33,12 +33,16 @@ namespace bpf
 {
     namespace math
     {
+        /**
+         * Special Math utilities
+         */
         class BPF_API MathUtils
         {
         public:
             /**
-             * Returns true if nb is a power of two
+             * Check if a number is a power of two
              * @param nb the number to check
+             * @return true if nb is a power of two, false otherwise
              */
             inline static bool IsPowerOfTwo(const fsize nb)
             {
@@ -46,27 +50,30 @@ namespace bpf
             }
 
             /**
-             * Finds the next power of two starting at nb + 1
+             * Finds the next power of two of a given number
              * @param nb the number to find the next power of two
+             * @return next power of two > nb
              */
             static fsize FindNextPowerOfTwo(fsize nb);
 
             /**
-             * Returns true if a given number is prime
+             * Check if a number is prime
              * @param nb the number to check
+             * @return true if nb is a prime number, false otherwise
              */
             static bool IsPrime(const fisize nb);
 
             /**
-             * Finds the next prime number starting at nb + 1
+             * Finds the next prime number of a given number
              * @param nb the number to find the next prime
+             * @return next prime number > nb
              */
             static fisize FindNextPrime(const fisize nb);
 
             /**
-             * Returns the inverse square root of a floating point number
-             * Uses the Fast Inverse Square Root
+             * Computes the fast inverse square root of a number
              * @param nb the number to find the inverse square root
+             * @return inverse square root of nb
              */
             static float InvSqrt(const float nb);
         };
