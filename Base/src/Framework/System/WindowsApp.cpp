@@ -113,7 +113,7 @@ Paths WindowsApp::SetupPaths()
     WCHAR path[MAX_PATH];
     GetTempPathW(MAX_PATH, path);
     File tmpDir = File(String::FromUTF16(reinterpret_cast<const fchar16 *>(path)));
-    if (appRoot.HasAccess(FILE_ACCESS_READ | FILE_ACCESS_WRITE))
+    if (appRoot.HasAccess(FILE_MODE_READ | FILE_MODE_WRITE))
         return (Paths(appRoot, appRoot, userHome, tmpDir));
     else
         return (Paths(appRoot, userHome + File(_fileName).Name(), userHome, tmpDir));

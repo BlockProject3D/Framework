@@ -547,11 +547,15 @@ void Process::PipeStream::Close()
         CloseHandle(_pipeHandles[0]); //TODO: double close is not handled by winmotherfucker
     if (_pipeHandles[1] != NULL)
         CloseHandle(_pipeHandles[1]);
+    _pipeHandles[0] = NULL;
+    _pipeHandles[1] = NULL;
 #else
     if (_pipfd[0] != -1)
         close(_pipfd[0]);
     if (_pipfd[1] != -1)
         close(_pipfd[1]);
+    _piofd[0] = -1;
+    _pipfd[1] = -1;
 #endif
 }
 

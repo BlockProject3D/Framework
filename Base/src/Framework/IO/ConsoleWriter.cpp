@@ -72,7 +72,7 @@ ConsoleWriter::ConsoleWriter(const EConsoleStream type)
     : _handle(GetHandle(type))
 #ifdef WINDOWS
     , _file(Console::IsRedirected(type))
-    , _writer(*this, _file ? EStringEncoder::UTF8 : EStringEncoder::UTF16)
+    , _writer(*this, _file ? ECharacterEncoding::UTF8 : ECharacterEncoding::UTF16)
 #else
     , _writer(*this, ECharacterEncoding::UTF8)
 #endif
