@@ -69,12 +69,12 @@ DWORD WINAPI ThreadRoutine(void *ptr)
     try
     {
         thread->Run();
-        __internalstate(*thread, Thread::FINISHED);
+        _bpf_internal_state(*thread, Thread::FINISHED);
     }
     catch (const bpf::Exception &)
     {
         //TODO: print ex
-        __internalstate(*thread, Thread::STOPPED);
+        _bpf_internal_state(*thread, Thread::STOPPED);
     }
     return (0);
 }

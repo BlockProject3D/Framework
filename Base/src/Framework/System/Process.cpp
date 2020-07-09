@@ -450,7 +450,7 @@ Process::PipeStream::~PipeStream()
         CloseHandle(_pipeHandles[1]);
 }
 
-Process::PipeStream::PipeStream(PipeStream &&other)
+Process::PipeStream::PipeStream(PipeStream &&other) noexcept
 {
     _pipeHandles[0] = other._pipeHandles[0];
     _pipeHandles[1] = other._pipeHandles[1];
@@ -458,7 +458,7 @@ Process::PipeStream::PipeStream(PipeStream &&other)
     other._pipeHandles[1] = NULL;
 }
 
-Process::PipeStream &Process::PipeStream::operator=(PipeStream &&other)
+Process::PipeStream &Process::PipeStream::operator=(PipeStream &&other) noexcept
 {
     if (_pipeHandles[0] != NULL)
         CloseHandle(_pipeHandles[0]);
@@ -576,7 +576,7 @@ Process::Process(void *pinfo, void *fdStdIn[2], void *fdStdOut[2], void *fdStdEr
     _tHandle = pInfo->hThread;
 }
 
-Process::Process(Process &&other)
+Process::Process(Process &&other) noexcept
     : _lastExitCode(other._lastExitCode)
     , _crashed(other._crashed)
     , _running(other._running)
@@ -593,7 +593,7 @@ Process::Process(Process &&other)
     other._tHandle = NULL;
 }
 
-Process &Process::operator=(Process &&other)
+Process &Process::operator=(Process &&other) noexcept
 {
     if (_pHandle != NULL && _tHandle != NULL)
     {
