@@ -42,7 +42,7 @@ namespace bpf
     namespace math
     {
         template <typename T, fsize N>
-        Matrix<T, N, N> Matrix<T, N, N>::GenIdentity()
+        Matrix<T, N, N> Matrix<T, N, N>::GenIdentity() noexcept
         {
             Matrix<T, N, N> res;
 
@@ -101,17 +101,16 @@ namespace bpf
         template <typename T, fsize N, fsize M>
         Vector<T, N> Matrix<T, N, M>::operator*(const Vector<T, N> &other) const
         {
-            Vector<T, N> res;
+            Vector<T, N> vec;
 
             for (fsize i = 0; i < N; ++i)
             {
                 T res = 0;
                 for (fsize k = 0; k < N; ++k)
                     res += other(k) * _arr[i * N + k];
-                res(i) = res;
+                vec(i) = res;
             }
-            return (res);
-
+            return (vec);
         }
 
         template <typename T, fsize N, fsize M>
@@ -168,16 +167,16 @@ namespace bpf
         template <typename T, fsize N>
         Vector<T, N> Matrix<T, N, N>::operator*(const Vector<T, N> &other) const
         {
-            Vector<T, N> asda;
+            Vector<T, N> vec;
 
             for (fsize i = 0; i < N; ++i)
             {
                 T res = 0;
                 for (fsize k = 0; k < N; ++k)
                     res += other(k) * _arr[i * N + k];
-                asda(i) = res;
+                vec(i) = res;
             }
-            return (asda);
+            return (vec);
 
         }
 
@@ -368,7 +367,7 @@ namespace bpf
         }
 
         template <typename T>
-        Matrix<T>::Matrix(Matrix<T> &&other)
+        Matrix<T>::Matrix(Matrix<T> &&other) noexcept
             : _arr(other._arr)
             , _n(other._n)
             , _m(other._m)
@@ -387,6 +386,8 @@ namespace bpf
         template <typename T>
         Matrix<T> &Matrix<T>::operator=(const Matrix<T> &other)
         {
+            if (this == &other)
+                return (*this);
             if (_arr != Null)
                 memory::MemUtils::DeleteArray(_arr, _n * _m);
             _n = other._n;
@@ -394,10 +395,11 @@ namespace bpf
             _arr = memory::MemUtils::NewArray<T>(_n * _m);
             for (fsize i = 0; i != _m * _n; ++i)
                 _arr[i] = other._arr[i];
+            return (*this);
         }
 
         template <typename T>
-        Matrix<T> &Matrix<T>::operator=(Matrix<T> &&other)
+        Matrix<T> &Matrix<T>::operator=(Matrix<T> &&other) noexcept
         {
             if (_arr != Null)
                 memory::MemUtils::DeleteArray(_arr, _n * _m);
@@ -407,6 +409,7 @@ namespace bpf
             other._arr = Null;
             other._n = 0;
             other._m = 0;
+            return (*this);
         }
 
         template <typename T>
@@ -553,16 +556,16 @@ namespace bpf
         {
             if (_n != other.Dim())
                 throw IncompatibleMatrixSizeException((fisize)_n, (fisize)other.Dim());
-            Vector<T> res;
+            Vector<T> vec;
 
             for (fsize i = 0; i < _n; ++i)
             {
                 T res = 0;
                 for (fsize k = 0; k < _n; ++k)
                     res += other(k) * _arr[i * _n + k];
-                res(i) = res;
+                vec(i) = res;
             }
-            return (res);
+            return (vec);
         }
 
         template <typename T>

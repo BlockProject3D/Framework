@@ -68,7 +68,7 @@ void *Memory::Malloc(fsize size)
 #endif
 }
 
-void Memory::Free(void *addr)
+void Memory::Free(void *addr) noexcept
 {
 #ifdef BUILD_DEBUG
     if (addr == Null)

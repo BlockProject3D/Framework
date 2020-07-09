@@ -50,7 +50,7 @@ namespace bpf
 #endif
         public:
             static void *Malloc(fsize size);
-            static void Free(void *addr);
+            static void Free(void *addr) noexcept;
             static void *Realloc(void *addr, fsize newsize);
 
 #ifdef BUILD_DEBUG
