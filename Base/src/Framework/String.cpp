@@ -32,8 +32,7 @@
 #include "Framework/EvalException.hpp"
 #include "Framework/IndexException.hpp"
 #include "Framework/Memory/Memory.hpp"
-#include <cstdlib>
-#include <locale>
+#include "Framework/Scalar.hpp"
 #include <sstream>
 
 using namespace bpf::memory;
@@ -42,11 +41,16 @@ using namespace bpf;
 
 const String String::Empty = String();
 
-String::String()
+String::String() noexcept
     : Data(Null)
     , StrLen(0)
     , UnicodeLen(0)
 {
+}
+
+fint String::InternalToInt(const String &str)
+{
+    return (bpf::Int::Parse((str)));
 }
 
 fchar String::UTF32(const char *utf8char)
@@ -305,7 +309,7 @@ String::String(const String &s)
     CopyString(s.Data, Data, s.StrLen);
 }
 
-String::String(String &&s)
+String::String(String &&s) noexcept
     : Data(s.Data)
     , StrLen(s.StrLen)
     , UnicodeLen(s.UnicodeLen)
@@ -315,19 +319,19 @@ String::String(String &&s)
     s.UnicodeLen = 0;
 }
 
-void String::MakeSized(String &str, const fsize len) const
+void String::MakeSized(String &str, const fsize len)
 {
     str.StrLen = len;
     str.Data = static_cast<char *>(Memory::Malloc(sizeof(char) * (len + 1)));
 }
 
-String &String::operator=(String &&other)
+String &String::operator=(String &&other) noexcept
 {
     Memory::Free(Data);
     Data = other.Data;
     StrLen = other.StrLen;
     UnicodeLen = other.UnicodeLen;
-    other.Data = NULL;
+    other.Data = Null;
     other.StrLen = 0;
     other.UnicodeLen = 0;
     return (*this);
@@ -434,6 +438,8 @@ String &String::operator+=(const fchar other)
 
 String &String::operator=(const String &other)
 {
+    if (this == &other)
+        return (*this);
     Memory::Free(Data);
     if (other.Data == Null)
     {
@@ -454,16 +460,16 @@ String::~String()
     Memory::Free(Data);
 }
 
-void String::CopyString(const char *src, char *dest, const fsize len) const
+void String::CopyString(const char *src, char *dest, const fsize len)
 {
-    fsize const *fsrc = reinterpret_cast<fsize const *>(src);
-    fsize *fdest = reinterpret_cast<fsize *>(dest);
+    const auto *fsrc = reinterpret_cast<const fsize *>(src);
+    auto *fdest = reinterpret_cast<fsize *>(dest);
     fsize flen = len / sizeof(fsize);
 
     for (fsize i = 0; i < flen; ++i, ++fsrc, ++fdest)
         *fdest = *fsrc;
     dest = reinterpret_cast<char *>(fdest);
-    src = reinterpret_cast<char const *>(fsrc);
+    src = reinterpret_cast<const char *>(fsrc);
     for (fsize i = flen * sizeof(fsize); i < len; ++i, ++dest, ++src)
         *dest = *src;
     *dest = '\0';
@@ -483,12 +489,11 @@ uint8 String::CalcCharIncrement(const char c) // 1101 & 1111
     return 0;
 }
 
-fsize String::CalcUnicodeLen(const char *str, const fsize len) const
+fsize String::CalcUnicodeLen(const char *str, const fsize len)
 {
     fsize ulen = 0;
-    fsize i = 0;
 
-    for (i = 0; i < len; i++)
+    for (fsize i = 0; i < len; i++)
     {
         i += CalcCharIncrement(str[i]);
         ++ulen;
@@ -856,7 +861,7 @@ String String::ValueOf(fint i, const fsize prec)
     {
         strs << i;
         String str = strs.str().c_str();
-        fisize len = (fisize)(prec - str.Len());
+        auto len = (fisize)(prec - str.Len());
         if (len < 0)
             return (str);
         if (str[0] == '-')
@@ -880,7 +885,7 @@ String String::ValueOf(uint32 i, const fsize prec)
     {
         strs << i;
         String str = strs.str().c_str();
-        fisize len = (fisize)(prec - str.Len());
+        auto len = (fisize)(prec - str.Len());
         if (len < 0)
             return (str);
         for (fisize j = 0; j < len; ++j)
@@ -900,7 +905,7 @@ String String::ValueOf(uint64 i, const fsize prec)
     {
         strs << i;
         String str = strs.str().c_str();
-        fisize len = (fisize)(prec - str.Len());
+        auto len = (fisize)(prec - str.Len());
         if (len < 0)
             return (str);
         for (fisize j = 0; j < len; ++j)
@@ -920,7 +925,7 @@ String String::ValueOf(int64 i, const fsize prec)
     {
         strs << i;
         String str = strs.str().c_str();
-        fisize len = (fisize)(prec - str.Len());
+        auto len = (fisize)(prec - str.Len());
         if (len < 0)
             return (str);
         if (str[0] == '-')

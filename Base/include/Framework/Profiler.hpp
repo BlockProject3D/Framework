@@ -69,19 +69,23 @@ namespace bpf
 
     public:
         static Profiler &Instance();
+
+        BP_DEPRECATED("Old Framework utilities are unsupported and may be removed in a future release")
         collection::Array<ProfilerSection> GenDisplayList();
-        
+
+        BP_DEPRECATED("Old Framework utilities are unsupported and may be removed in a future release")
         inline static void PushSection(const String &name)
         {
             Instance().Push(name);
         }
 
+        BP_DEPRECATED("Old Framework utilities are unsupported and may be removed in a future release")
         inline static void PopSection()
         {
             Instance().Pop();
         }
     };
-};
+}
 
 /**
  * OLD FRAMEWORK END

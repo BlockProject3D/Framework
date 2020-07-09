@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -27,12 +27,12 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include <type_traits>
 #include "Framework/Types.hpp"
+#include <type_traits>
 
 namespace bpf
 {
-    namespace __internal_tp
+    namespace _bpf_internal_tp
     {
         struct CorrectFalseType
         {
@@ -51,7 +51,9 @@ namespace bpf
         template <typename Arg, typename... Args>
         struct IsAllDefaultConstructible<Arg, Args...>
         {
-            static constexpr bool Value = std::conditional<std::is_default_constructible<Arg>::value, IsAllDefaultConstructible<Args...>, CorrectFalseType>::type::Value;
+            static constexpr bool Value =
+                std::conditional<std::is_default_constructible<Arg>::value, IsAllDefaultConstructible<Args...>,
+                                 CorrectFalseType>::type::Value;
         };
 
         template <fsize MaxN, fsize N, typename Search, typename Arg, typename... Args>
@@ -119,7 +121,8 @@ namespace bpf
             Arg arg;
 
         public:
-            template <fsize N1 = N, typename Arg1 = Arg, typename = typename std::enable_if<std::is_default_constructible<Arg1>::value>::type>
+            template <fsize N1 = N, typename Arg1 = Arg,
+                      typename = typename std::enable_if<std::is_default_constructible<Arg1>::value>::type>
             inline Elem()
             {
             }
@@ -150,7 +153,8 @@ namespace bpf
             template <fsize I>
             using ElemType = typename Chooser<I, Args...>::type;
 
-            template <bool Flag = __internal_tp::IsAllDefaultConstructible<Args...>::Value, typename = typename std::enable_if<Flag>::type>
+            template <bool Flag = _bpf_internal_tp::IsAllDefaultConstructible<Args...>::Value,
+                      typename = typename std::enable_if<Flag>::type>
             inline Impl()
                 : Elem<N, Args>()...
             {
@@ -217,17 +221,19 @@ namespace bpf
      * @tparam Args the types to store in the tuple
      */
     template <typename... Args>
-    class BP_TPL_API Tuple : public __internal_tp::Impl<
-                                 typename __internal_tp::Range<0, sizeof...(Args), __internal_tp::Sizes<>>::type, Args...>
+    class BP_TPL_API Tuple
+        : public _bpf_internal_tp::Impl<
+              typename _bpf_internal_tp::Range<0, sizeof...(Args), _bpf_internal_tp::Sizes<>>::type, Args...>
     {
     public:
-
         /**
          * Constructs a tuple using default constructor
          */
-        template <bool Flag = __internal_tp::IsAllDefaultConstructible<Args...>::Value, typename = typename std::enable_if<Flag>::type>
+        template <bool Flag = _bpf_internal_tp::IsAllDefaultConstructible<Args...>::Value,
+                  typename = typename std::enable_if<Flag>::type>
         inline Tuple()
-            : __internal_tp::Impl<typename __internal_tp::Range<0, sizeof...(Args), __internal_tp::Sizes<>>::type, Args...>()
+            : _bpf_internal_tp::Impl<
+                  typename _bpf_internal_tp::Range<0, sizeof...(Args), _bpf_internal_tp::Sizes<>>::type, Args...>()
         {
         }
 
@@ -235,7 +241,9 @@ namespace bpf
          * Constructs a tuple
          */
         explicit inline Tuple(Args &&... args)
-            : __internal_tp::Impl<typename __internal_tp::Range<0, sizeof...(Args), __internal_tp::Sizes<>>::type, Args...>(std::forward<Args &&>(args)...)
+            : _bpf_internal_tp::Impl<
+                  typename _bpf_internal_tp::Range<0, sizeof...(Args), _bpf_internal_tp::Sizes<>>::type, Args...>(
+                  std::forward<Args &&>(args)...)
         {
         }
 

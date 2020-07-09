@@ -57,6 +57,6 @@ namespace bpf
     }
 
 
-BP_DEFINE_TYPENAME(int);
-BP_DEFINE_TYPENAME(float);
-BP_DEFINE_TYPENAME(double);
+BP_DEFINE_TYPENAME(int)
+BP_DEFINE_TYPENAME(float)
+BP_DEFINE_TYPENAME(double)

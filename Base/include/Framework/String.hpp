@@ -44,11 +44,12 @@ namespace bpf
         fsize StrLen;
         fsize UnicodeLen;
 
-        void CopyString(const char *src, char *dest, const fsize len) const;
-        fsize CalcUnicodeLen(const char *str, const fsize len) const;
-        fsize CalcStartFromUnicode(const fsize start) const;
-        static uint8 CalcCharIncrement(const char c);
-        void MakeSized(String &str, const fsize len) const;
+        static void CopyString(const char *src, char *dest, fsize len) ;
+        static fsize CalcUnicodeLen(const char *str, fsize len) ;
+        fsize CalcStartFromUnicode(fsize start) const;
+        static uint8 CalcCharIncrement(char c);
+        static void MakeSized(String &str, fsize len) ;
+        static fint InternalToInt(const String &str);
 
         //* '[]' for no format and [(.precision,)(<num chars padding>,<allignment (left / right)>,<characters to serve as padding>)]
         template <typename T>
@@ -60,12 +61,12 @@ namespace bpf
             fsize prec = 0;
             if (tokens[0][0] == '.')
             {
-                prec = std::atoi(*tokens[0].Sub(1));
+                prec = InternalToInt(tokens[0].Sub(1));
                 ++tokId;
             }
             if (tokens.Size() - tokId < 3)
                 return (ValueOf(t, prec));
-            fint maxn = std::atoi(*tokens[tokId]);
+            fint maxn = InternalToInt(tokens[tokId]);
             bool left = tokens[tokId + 1] == "left";
             String leading = tokens[tokId + 2];
             String data = ValueOf(t, prec);
@@ -111,7 +112,7 @@ namespace bpf
         /**
          * Constructs a new empty string
          */
-        String();
+        String() noexcept;
 
         /**
          * Constructs a new string from a low-level null-terminated c-string
@@ -123,7 +124,7 @@ namespace bpf
          * Constructs a new string from a single character
          * @param c the UTF32 code to construct the string from
          */
-        String(const fchar c);
+        String(fchar c);
 
         /**
          * Copy constructor
@@ -135,7 +136,7 @@ namespace bpf
          * Move constructor
          * @param s value to move
          */
-        String(String &&s);
+        String(String &&s) noexcept;
 
         ~String();
 
@@ -145,7 +146,7 @@ namespace bpf
          * StrLen will be incremented of 1 and UnicodeLen will be recalculated accordingly
          * @param byte the byte to append
          */
-        void AddSingleByte(const char byte);
+        void AddSingleByte(char byte);
 
         /**
          * Returns a UTF32 character from a single UTF8 code
@@ -159,7 +160,7 @@ namespace bpf
          * @param utf32char the utf32 character to convert to a UTF8 String
          * @return UTF8 code
          */
-        static String UTF8(const fchar utf32char);
+        static String UTF8(fchar utf32char);
 
         /**
          * Returns a byte at a given index
@@ -186,7 +187,7 @@ namespace bpf
          * @param other character to append at the end of new string
          * @return new string from concatenation of this + other
          */
-        String operator+(const fchar other) const;
+        String operator+(fchar other) const;
 
         /**
          * Appends a string at the end of this string
@@ -200,7 +201,7 @@ namespace bpf
          * @param other the UTF32 code to append
          * @return modified string (this)
          */
-        String &operator+=(const fchar other);
+        String &operator+=(fchar other);
 
         /**
          * Copy assignment operator
@@ -214,7 +215,7 @@ namespace bpf
          * @param other string to replace this with
          * @return modified string (this)
          */
-        String &operator=(String &&other);
+        String &operator=(String &&other) noexcept;
 
         /**
          * Checks if this string is empty
@@ -386,21 +387,21 @@ namespace bpf
          * @param c the character to search for
          * @return index of character in this string
          */
-        fisize IndexOf(const char c) const;
+        fisize IndexOf(char c) const;
 
         /**
          * Returns the index of the last occurence of c in this
          * @param c the character to search for
          * @return index of character in this string
          */
-        fisize LastIndexOf(const char c) const;
+        fisize LastIndexOf(char c) const;
 
         /**
          * Returns the index of the first occurence of c in this
          * @param c the UTF32 code to search for
          * @return index of character in this string
          */
-        inline fisize IndexOf(const fchar c) const
+        inline fisize IndexOf(fchar c) const
         {
             return (IndexOf(UTF8(c)));
         }
@@ -410,7 +411,7 @@ namespace bpf
          * @param c the UTF32 code to search for
          * @return index of character in this string
          */
-        inline fisize LastIndexOf(const fchar c) const
+        inline fisize LastIndexOf(fchar c) const
         {
             return (LastIndexOf(UTF8(c)));
         }
@@ -420,7 +421,7 @@ namespace bpf
          * @param c the sperator character
          * @return array of tokens
          */
-        collection::Array<String> Explode(const char c) const;
+        collection::Array<String> Explode(char c) const;
 
         /**
          * Splits this string using a delimiter
@@ -428,7 +429,7 @@ namespace bpf
          * @param ignore character to identify escape sequences (all characters between two of this ignore char will be interpreted as a single token)
          * @return array of tokens
          */
-        collection::Array<String> ExplodeIgnore(const char c, const char ignore) const;
+        collection::Array<String> ExplodeIgnore(char c, char ignore) const;
 
         /**
          * Splits this string using a delimiter
@@ -478,7 +479,7 @@ namespace bpf
          * @param other the string to search for
          * @return true if this string contains other, false otherwise
          */
-        bool Contains(const fchar other) const;
+        bool Contains(fchar other) const;
 
         /**
          * Returns a substring
@@ -499,14 +500,14 @@ namespace bpf
          * @param end the end index in characters (exclusive)
          * @return new string between begin and end
          */
-        String Sub(const fisize begin, const fisize end) const;
+        String Sub(fisize begin, fisize end) const;
 
         /**
          * Returns a substring where the end is the end of this string
          * @param begin the begin index in characters (inclusive)
          * @return new string starting at begin
          */
-        String Sub(const fisize begin) const;
+        String Sub(fisize begin) const;
 
         /**
          * Formats a string using a set of parameters and a format
@@ -569,11 +570,10 @@ namespace bpf
         /**
          * Converts any pointer type to it's string representation
          * @param val value to convert to a string
-         * @param prec precision for numeric types (0 means max precision)
          * @return string representation of val
          */
         template <typename T, typename std::enable_if<std::is_pointer<T>::value>::type * = nullptr>
-        inline static String ValueOf(T val, const fsize prec = 0)
+        inline static String ValueOf(T val, fsize = 0)
         {
             return (ValueOf((void *)val));
         }
@@ -584,7 +584,7 @@ namespace bpf
          * @param prec precision for numeric types (0 means max precision)
          * @return string representation of val
          */
-        static String ValueOf(fint i, const fsize prec = 0);
+        static String ValueOf(fint i, fsize prec = 0);
 
         /**
          * Converts an unsigned integer 32 bits to it's string representation
@@ -592,7 +592,7 @@ namespace bpf
          * @param prec precision for numeric types (0 means max precision)
          * @return string representation of val
          */
-        static String ValueOf(uint32 i, const fsize prec = 0);
+        static String ValueOf(uint32 i, fsize prec = 0);
 
         /**
          * Converts an unsigned integer 64 bits to it's string representation
@@ -600,7 +600,7 @@ namespace bpf
          * @param prec precision for numeric types (0 means max precision)
          * @return string representation of val
          */
-        static String ValueOf(uint64 i, const fsize prec = 0);
+        static String ValueOf(uint64 i, fsize prec = 0);
 
         /**
          * Converts a signed integer 64 bits to it's string representation
@@ -608,7 +608,7 @@ namespace bpf
          * @param prec precision for numeric types (0 means max precision)
          * @return string representation of val
          */
-        static String ValueOf(int64 i, const fsize prec = 0);
+        static String ValueOf(int64 i, fsize prec = 0);
 
         /**
          * Converts a float to it's string representation
@@ -616,7 +616,7 @@ namespace bpf
          * @param prec precision for numeric types (0 means max precision)
          * @return string representation of val
          */
-        static String ValueOf(float f, const fsize prec = 0);
+        static String ValueOf(float f, fsize prec = 0);
 
         /**
          * Converts a double to it's string representation
@@ -624,7 +624,7 @@ namespace bpf
          * @param prec precision for numeric types (0 means max precision)
          * @return string representation of val
          */
-        static String ValueOf(double d, const fsize prec = 0);
+        static String ValueOf(double d, fsize prec = 0);
 
         /**
          * Converts a double to it's string representation
@@ -632,7 +632,7 @@ namespace bpf
          * @param prec precision for numeric types (0 means max precision)
          * @return string representation of val
          */
-        static String ValueOf(long double d, const fsize prec = 0);
+        static String ValueOf(long double d, fsize prec = 0);
 
         /**
          * Converts a raw pointer to it's string representation
@@ -640,14 +640,14 @@ namespace bpf
          * @param prec precision for numeric types (0 means max precision)
          * @return string representation of val
          */
-        static String ValueOf(void *ptr, const fsize prec = 0);
+        static String ValueOf(void *ptr, fsize prec = 0);
 
         /**
          * Converts a signed integer 8 bits to it's string representation
          * @param i value to convert to a string
          * @return string representation of val
          */
-        inline static String ValueOf(int8 i, const fsize = 0)
+        inline static String ValueOf(int8 i, fsize = 0)
         {
             return (ValueOf(static_cast<int>(i)));
         }
@@ -657,7 +657,7 @@ namespace bpf
          * @param i value to convert to a string
          * @return string representation of val
          */
-        inline static String ValueOf(uint8 i, const fsize = 0)
+        inline static String ValueOf(uint8 i, fsize = 0)
         {
             return (ValueOf(static_cast<int>(i)));
         }

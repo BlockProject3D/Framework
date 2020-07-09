@@ -65,7 +65,7 @@ namespace bpf
          * Constructs a Name from an existing hash
          * @param hash the hash to copy
          */        
-        explicit Name(const fsize hash) noexcept;
+        explicit Name(fsize hash) noexcept;
 
         /**
          * Returns the hash value

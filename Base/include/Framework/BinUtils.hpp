@@ -38,7 +38,7 @@ namespace bpf
      * @param flag true if the bit should be a 1 or false if the bit should be a 0
      */
     template <typename T>
-    inline void SetBit(T &data, fint id, bool flag)
+    inline void SetBit(T &data, uint32 id, bool flag)
     {
         flag ? (data |= 1UL << id) : (data &= ~(1UL << id));
     }
@@ -51,7 +51,7 @@ namespace bpf
      * @return true if the bit is a 1 or false if the bit is a 0
      */
     template <typename T>
-    inline bool GetBit(T data, fint id)
+    inline bool GetBit(T data, uint32 id)
     {
         return ((data >> id) & 0x1);
     }

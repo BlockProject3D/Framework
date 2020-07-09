@@ -60,11 +60,11 @@ namespace bpf
             return (ID);
         }
 
-        const char *Type() const noexcept
+        const char *Type() const noexcept final
         {
             return ("Index");
         }
 
-        void Print() const;
+        void Print() const final;
     };
 }
