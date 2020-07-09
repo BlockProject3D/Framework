@@ -26,7 +26,6 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <cassert>
 #include <iostream>
 #include <gtest/gtest.h>
 #include <Framework/Json/Json.hpp>
@@ -334,7 +333,7 @@ TEST(Json, LexerParser_MultiLoadString)
     lexer.LoadString("  //A commented number");
     lexer.LoadString("  /*\"test\": 42,*/");
     lexer.LoadString("  //A string");
-    lexer.LoadString("  \"testStr\": \"this is the end\"");
+    lexer.LoadString(R"(  "testStr": "this is the end")");
     lexer.LoadString("}");
 
     J testObj = bpf::json::Parser(std::move(lexer)).Parse();

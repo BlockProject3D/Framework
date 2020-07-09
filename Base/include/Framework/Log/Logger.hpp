@@ -56,7 +56,7 @@ namespace bpf
              * Constructs a Logger
              * @param name the category name
              */
-            explicit Logger(const String &name);
+            explicit Logger(String name);
 
             /**
              * Explicit deleted copy constructor (MSVC Fix: for some reasons MSVC is unable to identify this class cannot be coppied)

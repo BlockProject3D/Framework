@@ -74,7 +74,7 @@ namespace bpf
              * @param type the access type to check (see FILE_MODE_* constants)
              * @return true if the access is granted, false otherwise
              */
-            bool HasAccess(const int type) const;
+            bool HasAccess(fint type) const;
 
             /**
              * Checks if the file exists
@@ -112,7 +112,7 @@ namespace bpf
              * @param flag true to hide the file, false to make the file visible
              * @return true if the operation succeeded, false otherwise
              */
-            bool Hide(const bool flag);
+            bool Hide(bool flag);
 
             /**
              * Lists all files in that directory/folder (of course if this file is a directory/folder)
@@ -213,4 +213,4 @@ namespace bpf
             }
         };
     }
-};
+}

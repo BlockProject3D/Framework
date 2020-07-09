@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include <limits.h>
+#include "Framework/Scalar.hpp"
 #include "Framework/Types.hpp"
 
 namespace bpf
@@ -37,22 +37,22 @@ namespace bpf
         class BPF_API Random
         {
         private:
-            fint IntBounds(const fint min, const fint max);
+            static fint IntBounds(fint min, fint max);
 
         public:
             Random();
-            explicit Random(const long seed);
-            fint NextInt(const fint max = INT_MAX);
-            fint NextInt(const fint min, const fint max);
-            uint8 NextByte(const uint8 max = 255);
-            uint8 NextByte(const uint8 min, const uint8 max);
-            uint16 NextShort(const uint16 max = 65535);
-            uint16 NextShort(const uint16 min, const uint16 max);
+            explicit Random(long seed);
+            fint NextInt(fint max = bpf::Int::MaxValue);
+            fint NextInt(fint min, fint max);
+            uint8 NextByte(uint8 max = bpf::UInt8::MaxValue);
+            uint8 NextByte(uint8 min, uint8 max);
+            uint16 NextShort(uint16 max = bpf::UInt16::MaxValue);
+            uint16 NextShort(uint16 min, uint16 max);
 
             /**
              * Returns random float between 0 and 1
              */
-            float NextFloat(const float min = 0);
+            float NextFloat(float min = 0);
 
             /**
              * Returns random double between 0 and 1
@@ -60,4 +60,4 @@ namespace bpf
             double NextDouble();
         };
     }
-};
+}

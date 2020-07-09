@@ -171,7 +171,7 @@ namespace bpf
             /**
              * Move constructor
              */
-            inline Array(Array<T, I> &&arr)
+            inline Array(Array<T, I> &&arr) noexcept
             {
                 for (fsize i = 0; i != I; ++i)
                     _arr[i] = std::move(arr._arr[i]);
@@ -182,6 +182,8 @@ namespace bpf
              */
             inline Array<T, I> &operator=(const Array<T, I> &arr)
             {
+                if (this == &arr)
+                    return (*this);
                 for (fsize i = 0; i != I; ++i)
                     _arr[i] = arr._arr[i];
                 return (*this);
@@ -190,7 +192,7 @@ namespace bpf
             /**
              * Move assignment operator
              */
-            inline Array<T, I> &operator=(Array<T, I> &&arr)
+            inline Array<T, I> &operator=(Array<T, I> &&arr) noexcept
             {
                 for (fsize i = 0; i != I; ++i)
                     _arr[i] = std::move(arr._arr[i]);
@@ -315,7 +317,7 @@ namespace bpf
              * @param pos the index of the item to search for
              * @return iterator to the found item or end() if none
              */
-            Iterator FindByKey(const fsize pos);
+            Iterator FindByKey(fsize pos);
 
             /**
              * Locate an item by performing per-element check
@@ -490,7 +492,7 @@ namespace bpf
              * Constructs an array of given size
              * @param size the size of the new array
              */
-            explicit Array(const fsize size);
+            explicit Array(fsize size);
 
             /**
              * Constructs an array from a list of values
@@ -501,7 +503,7 @@ namespace bpf
             /**
              * Move constructor
              */
-            Array(Array<T> &&arr);
+            Array(Array<T> &&arr) noexcept;
 
             /**
              * Copy constructor
@@ -512,7 +514,7 @@ namespace bpf
             /**
              * Move assignment operator
              */
-            Array<T> &operator=(Array<T> &&arr);
+            Array<T> &operator=(Array<T> &&arr) noexcept;
 
             /**
              * Copy assignment operator
@@ -532,7 +534,7 @@ namespace bpf
              * @throw IndexException if id is out of bounds
              * @return immutable item at index id
              */
-            const T &operator[](const fsize id) const;
+            const T &operator[](fsize id) const;
 
             /**
              * Returns an element non-const mode
@@ -540,13 +542,13 @@ namespace bpf
              * @throw IndexException if id is out of bounds
              * @return mutable item at index id
              */
-            T &operator[](const fsize id);
+            T &operator[](fsize id);
 
             /**
              * Resizes the array to a different size
              * @param newSize the new array size
              */
-            void Resize(const fsize newSize);
+            void Resize(fsize newSize);
 
             /**
              * Compare Array by performing a per-element check
@@ -570,7 +572,7 @@ namespace bpf
              * @param pos the index of the item to search for
              * @return iterator to the found item or end() if none
              */
-            Iterator FindByKey(const fsize pos);
+            Iterator FindByKey(fsize pos);
 
             /**
              * Locate an item by performing per-element check
@@ -714,6 +716,6 @@ namespace bpf
             }
         };
     }
-};
+}
 
 #include "Framework/Collection/Array.impl.hpp"

@@ -52,7 +52,7 @@ namespace bpf
              */
             explicit FileLogger(const io::File &file);
 
-            void LogMessage(ELogLevel level, const String &category, const String &msg);
+            void LogMessage(ELogLevel level, const String &category, const String &msg) final;
         };
     }
 }

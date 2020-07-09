@@ -70,7 +70,7 @@ namespace bpf
                 MemUtils::Delete(RawPtr);
             }
 
-            UniquePtr<T> &operator=(UniquePtr<T> &&other);
+            UniquePtr<T> &operator=(UniquePtr<T> &&other) noexcept;
 
             inline T &operator*() const noexcept
             {

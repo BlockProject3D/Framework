@@ -370,7 +370,7 @@ namespace bpf
             /**
              * Move constructor
              */
-            inline Json(Json &&other)
+            inline Json(Json &&other) noexcept
                 : _type(other._type)
                 , _number(other._number)
                 , _bool(other._bool)
@@ -500,7 +500,7 @@ namespace bpf
             /**
              * Move assignment operator
              */
-            Json &operator=(Json &&other);
+            Json &operator=(Json &&other) noexcept;
 
             /**
              * Assigns this Json value to a number

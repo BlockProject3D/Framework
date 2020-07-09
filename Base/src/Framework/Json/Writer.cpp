@@ -57,7 +57,7 @@ String Writer::SerializeArray(const Json::Array &json)
     return (res);
 }
 
-String Writer::Indent()
+String Writer::Indent() const
 {
     String res;
 

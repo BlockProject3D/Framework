@@ -42,7 +42,7 @@ namespace bpf
         }
 
         template <typename T>
-        inline Array<T>::Array(Array<T> &&arr)
+        inline Array<T>::Array(Array<T> &&arr) noexcept
             : _size(arr._size)
             , _arr(arr._arr)
         {
@@ -106,7 +106,7 @@ namespace bpf
         }
 
         template <typename T>
-        Array<T> &Array<T>::operator=(Array<T> &&arr)
+        Array<T> &Array<T>::operator=(Array<T> &&arr) noexcept
         {
             memory::MemUtils::DeleteArray(_arr, _size);
             _size = arr._size;
@@ -119,6 +119,8 @@ namespace bpf
         template <typename T>
         Array<T> &Array<T>::operator=(const Array<T> &arr)
         {
+            if (this == &arr)
+                return (*this);
             memory::MemUtils::DeleteArray(_arr, _size);
             _size = arr._size;
             _arr = memory::MemUtils::NewArray<T>(_size);

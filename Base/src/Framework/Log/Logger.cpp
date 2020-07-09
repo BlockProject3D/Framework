@@ -32,8 +32,8 @@ using namespace bpf::memory;
 using namespace bpf::log;
 using namespace bpf;
 
-Logger::Logger(const String &name)
-    : _name(name)
+Logger::Logger(String name)
+    : _name(std::move(name))
 {
 }
 

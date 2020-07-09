@@ -61,7 +61,7 @@ void Console::WriteLine(const String &str, const EConsoleStream type) noexcept
             WriteConsoleW(hdl, reinterpret_cast<const void *>(*utf16), (DWORD)utf16.Size() - 1, NULL, NULL);
         }
 #else
-        BP_IGNORE(write(2, *(str + "\n"), str.Size() + 1));
+        BP_IGNORE(write(2, *(str + "\n"), str.Size() + 1))
 #endif
     }
     else
@@ -79,7 +79,7 @@ void Console::WriteLine(const String &str, const EConsoleStream type) noexcept
             WriteConsoleW(hdl, reinterpret_cast<const void *>(*utf16), (DWORD)utf16.Size() - 1, NULL, NULL);
         }
 #else
-        BP_IGNORE(write(1, *(str + "\n"), str.Size() + 1));
+        BP_IGNORE(write(1, *(str + "\n"), str.Size() + 1))
 #endif
     }
 }
@@ -141,7 +141,7 @@ void Console::SetTextStyle(const TextStyle &style, const EConsoleStream type) no
     SetConsoleTextAttribute(hdl, color);
     // Bold is not supported > ask why Microsoft does not know how to code a terminal!
 #else
-    int fd = -1;
+    int fd;
     if (type == EConsoleStream::ERROR)
         fd = 2;
     else
@@ -174,7 +174,7 @@ void Console::SetTextStyle(const TextStyle &style, const EConsoleStream type) no
         str += "37m";
         break;
     }
-    BP_IGNORE(write(fd, *str, str.Size()));
+    BP_IGNORE(write(fd, *str, str.Size()))
 #endif
 }
 
@@ -190,7 +190,7 @@ void Console::ResetTextStyle(const EConsoleStream type) noexcept
         HANDLE hdl = GetStdHandle(STD_ERROR_HANDLE);
         SetConsoleTextAttribute(hdl, g_Console_OldAttributes_Err);
 #else
-        BP_IGNORE(write(2, "\033[0m", 4));
+        BP_IGNORE(write(2, "\033[0m", 4))
 #endif
     }
     else
@@ -201,7 +201,7 @@ void Console::ResetTextStyle(const EConsoleStream type) noexcept
         HANDLE hdl = GetStdHandle(STD_OUTPUT_HANDLE);
         SetConsoleTextAttribute(hdl, g_Console_OldAttributes_Out);
 #else
-        BP_IGNORE(write(1, "\033[0m", 4));
+        BP_IGNORE(write(1, "\033[0m", 4))
 #endif
     }
 }
@@ -214,7 +214,7 @@ void Console::SetTitle(const String &title) noexcept
     if (IsRedirected())
         return;
     auto str = String("\e]0;") + title + "\007";
-    BP_IGNORE(write(1, *str, str.Size()));
+    BP_IGNORE(write(1, *str, str.Size()))
 #endif
 }
 
@@ -229,6 +229,6 @@ bool Console::IsRedirected(const EConsoleStream type) noexcept
     int fd = 1;
     if (type == EConsoleStream::ERROR)
         fd = 2;
-    return (isatty(fd) == 0 ? true : false);
+    return (isatty(fd) == 0);
 #endif
 }

@@ -41,7 +41,7 @@ namespace bpf
                 return ("NonInvertibleMatrix");
             }
 
-            void Print() const;
+            void Print() const final;
         };
     }
 }

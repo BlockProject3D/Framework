@@ -46,7 +46,7 @@ namespace bpf
         class BPF_API IDataOutputStream : public IOutputStream
         {
         public:
-            virtual ~IDataOutputStream() {}
+            ~IDataOutputStream() override {}
 
             /**
              * Serialize a number

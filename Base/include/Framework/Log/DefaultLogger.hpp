@@ -39,7 +39,7 @@ namespace bpf
         class BPF_API DefaultLogger final : public ILogAdapter
         {
         public:
-            void LogMessage(ELogLevel level, const String &category, const String &msg);
+            void LogMessage(ELogLevel level, const String &category, const String &msg) final;
         };
     }
 }

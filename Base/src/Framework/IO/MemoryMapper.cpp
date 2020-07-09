@@ -80,7 +80,7 @@ MemoryMapper::MemoryMapper(const File &file, fint mode)
         throw IOException(String("Could not create mapper for file '") + file.PlatformPath() + "' : " + OSPrivate::ObtainLastErrorString());
     }
 #else
-    int md = 0;
+    int md;
     if ((mode & FILE_MODE_READ) && (mode & FILE_MODE_WRITE))
         md = O_RDWR | O_CREAT;
     else if (mode & FILE_MODE_READ)
@@ -160,7 +160,7 @@ void MemoryMapper::Map(uint64 pos, fsize size)
     _size = size;
     if (_mem == MAP_FAILED)
         throw IOException(String("Could not map file '") + _file.PlatformPath() + "' : " + OSPrivate::ObtainLastErrorString());
-    uint8 *addr = reinterpret_cast<uint8 *>(_mem);
+    auto *addr = reinterpret_cast<uint8 *>(_mem);
     addr += pos - nearestpsize;
     _memoff = addr;
 #endif

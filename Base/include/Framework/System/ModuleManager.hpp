@@ -89,6 +89,6 @@ namespace bpf
             }
         };
     }
-};
+}
 
 #include "Framework/System/ModuleManager.impl.hpp"

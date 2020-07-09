@@ -42,7 +42,7 @@ namespace bpf
         }
 
         template <typename T>
-        inline List<T>::List(List<T> &&other)
+        inline List<T>::List(List<T> &&other) noexcept
             : _first(other._first)
             , _last(other._last)
             , _count(other._count)
@@ -79,7 +79,7 @@ namespace bpf
         }
 
         template <typename T>
-        List<T> &List<T>::operator=(List<T> &&other)
+        List<T> &List<T>::operator=(List<T> &&other) noexcept
         {
             Clear();
             _first = other._first;
@@ -94,6 +94,8 @@ namespace bpf
         template <typename T>
         List<T> &List<T>::operator=(const List<T> &other)
         {
+            if (this == &other)
+                return (*this);
             Clear();
             for (auto &elem : other)
                 Add(elem);

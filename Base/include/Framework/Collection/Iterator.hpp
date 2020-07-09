@@ -82,4 +82,4 @@ namespace bpf
             return (ReverseAdapter<C>(container));
         }
     }
-};
+}

@@ -49,8 +49,8 @@ namespace bpf
             {
                 fsize i = 0;
 
-                for (auto it = d.begin(); it != d.end(); ++it)
-                    Bytes[i++] = *it;
+                for (unsigned char it : d)
+                    Bytes[i++] = it;
             }
 
             inline TypeExpander()

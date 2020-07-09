@@ -48,7 +48,7 @@ namespace bpf
         /**
          * Class to represent a file stream open as read, write or random access
          */
-        class BPF_API FileStream : public IInputStream, public IOutputStream
+        class BPF_API FileStream final : public IInputStream, public IOutputStream
         {
         private:
             fint _mode;
@@ -67,7 +67,7 @@ namespace bpf
              */
             FileStream(const File &file, fint mode);
 
-            ~FileStream();
+            ~FileStream() final;
 
             /**
              * Cannot copy a FileStream
@@ -84,14 +84,14 @@ namespace bpf
              * @param offset relative offset
              * @throw IOException in case of system error
              */
-            void SeekOffset(int64 offset);
+            void SeekOffset(int64 offset) const;
 
             /**
              * Sets the file cursor position to pos
              * @param pos new cursor position
              * @throw IOException in case of system error
              */
-            void Seek(uint64 pos);
+            void Seek(uint64 pos) const;
 
             /**
              * Closes this FileStream, calling any more IO functions will throw IOException
@@ -105,7 +105,7 @@ namespace bpf
              * @throw IOException in case of system error
              * @return number of bytes read
              */
-            fsize Read(void *buf, fsize bufsize);
+            fsize Read(void *buf, fsize bufsize) final;
 
             /**
              * Writes bytes to this stream, no buffering is performed
@@ -114,7 +114,7 @@ namespace bpf
              * @throw IOException in case of system error
              * @return number of bytes written
              */
-            fsize Write(const void *buf, fsize bufsize);
+            fsize Write(const void *buf, fsize bufsize) final;
         };
     }
 }

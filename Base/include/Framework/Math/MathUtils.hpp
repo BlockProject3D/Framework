@@ -61,21 +61,21 @@ namespace bpf
              * @param nb the number to check
              * @return true if nb is a prime number, false otherwise
              */
-            static bool IsPrime(const fisize nb);
+            static bool IsPrime(fisize nb);
 
             /**
              * Finds the next prime number of a given number
              * @param nb the number to find the next prime
              * @return next prime number > nb
              */
-            static fisize FindNextPrime(const fisize nb);
+            static fisize FindNextPrime(fisize nb);
 
             /**
              * Computes the fast inverse square root of a number
              * @param nb the number to find the inverse square root
              * @return inverse square root of nb
              */
-            static float InvSqrt(const float nb);
+            static float InvSqrt(float nb);
         };
     }
 }

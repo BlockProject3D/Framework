@@ -49,7 +49,7 @@ namespace bpf
             EStringSerializer _serializer;
 
             void WriteByte(uint8 byte);
-            void WriteSubBuf(void *in, const fsize size);
+            void WriteSubBuf(void *in, fsize size);
 
         public:
             /**
@@ -76,9 +76,9 @@ namespace bpf
                 _serializer = ser;
             }
 
-            ~BinaryWriter();
+            ~BinaryWriter() final;
 
-            void Flush();
+            void Flush() final;
 
             /**
              * Writes raw bytes to this stream, taking into account buffering
@@ -86,69 +86,69 @@ namespace bpf
              * @param bufsize the size of the buffer
              * @return number of bytes written
              */
-            fsize Write(const void *buf, fsize bufsize);
+            fsize Write(const void *buf, fsize bufsize) final;
 
-            inline IDataOutputStream &operator<<(uint8 u)
+            inline IDataOutputStream &operator<<(uint8 u) final
             {
                 WriteByte(u);
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(uint16 u)
+            inline IDataOutputStream &operator<<(uint16 u) final
             {
                 WriteSubBuf(&u, 2);
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(uint32 u)
+            inline IDataOutputStream &operator<<(uint32 u) final
             {
                 WriteSubBuf(&u, 4);
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(uint64 u)
+            inline IDataOutputStream &operator<<(uint64 u) final
             {
                 WriteSubBuf(&u, 8);
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(int8 i)
+            inline IDataOutputStream &operator<<(int8 i) final
             {
                 WriteByte((uint8)i);
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(int16 i)
+            inline IDataOutputStream &operator<<(int16 i) final
             {
                 WriteSubBuf(&i, 2);
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(fint i)
+            inline IDataOutputStream &operator<<(fint i) final
             {
                 WriteSubBuf(&i, 4);
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(int64 i)
+            inline IDataOutputStream &operator<<(int64 i) final
             {
                 WriteSubBuf(&i, 8);
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(float f)
+            inline IDataOutputStream &operator<<(float f) final
             {
                 WriteSubBuf(&f, 4);
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(double d)
+            inline IDataOutputStream &operator<<(double d) final
             {
                 WriteSubBuf(&d, 8);
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(bool b)
+            inline IDataOutputStream &operator<<(bool b) final
             {
                 if (b)
                     WriteByte(1);
@@ -157,8 +157,8 @@ namespace bpf
                 return (*this);
             }
 
-            IDataOutputStream &operator<<(const bpf::String &str);
-            IDataOutputStream &operator<<(const char *str);
+            IDataOutputStream &operator<<(const bpf::String &str) final;
+            IDataOutputStream &operator<<(const char *str) final;
         };
     }
 }

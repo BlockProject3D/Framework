@@ -188,7 +188,7 @@ namespace bpf
         }
 
         template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
-        Map<K, V, Greater, Less>::Map(Map &&other)
+        Map<K, V, Greater, Less>::Map(Map &&other) noexcept
             : _root(other._root)
             , _count(other._count)
         {
@@ -235,6 +235,8 @@ namespace bpf
         template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
         Map<K, V, Greater, Less> &Map<K, V, Greater, Less>::operator=(const Map &other)
         {
+            if (this == &other)
+                return (*this);
             Clear();
             for (auto &entry : other)
                 Add(entry.Key, entry.Value);
@@ -242,7 +244,7 @@ namespace bpf
         }
 
         template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
-        Map<K, V, Greater, Less> &Map<K, V, Greater, Less>::operator=(Map &&other)
+        Map<K, V, Greater, Less> &Map<K, V, Greater, Less>::operator=(Map &&other) noexcept
         {
             Clear();
             _root = other._root;

@@ -77,7 +77,7 @@ namespace bpf
                     _arr[i] = other._arr[i];
             }
 
-            inline Vector(Vector &&other)
+            inline Vector(Vector &&other) noexcept
             {
                 for (fsize i = 0; i != I; ++i)
                     _arr[i] = std::move(other._arr[i]);
@@ -103,23 +103,23 @@ namespace bpf
             }
 
             Vector &operator=(const Vector &other);
-            Vector &operator=(Vector &&other);
+            Vector &operator=(Vector &&other) noexcept;
 
             Vector operator+(const Vector &other) const;
             Vector operator-(const Vector &other) const;
             Vector operator*(const Vector &other) const;
             Vector operator/(const Vector &other) const;
 
-            Vector operator*(const T other) const;
-            Vector operator/(const T other) const;
+            Vector operator*(T other) const;
+            Vector operator/(T other) const;
 
             void operator+=(const Vector &other);
             void operator-=(const Vector &other);
             void operator*=(const Vector &other);
             void operator/=(const Vector &other);
 
-            void operator*=(const T other);
-            void operator/=(const T other);
+            void operator*=(T other);
+            void operator/=(T other);
 
             Vector operator-() const;
 
@@ -150,7 +150,7 @@ namespace bpf
                 return (_arr);
             }
 
-            static Vector Lerp(const Vector &v, const Vector &v1, const T t);
+            static Vector Lerp(const Vector &v, const Vector &v1, T t);
         };
 
         template <typename T>
@@ -206,7 +206,7 @@ namespace bpf
                     _arr[i] = other._arr[i];
             }
 
-            inline Vector(Vector &&other)
+            inline Vector(Vector &&other) noexcept
                 : _arr(other._arr)
                 , _l(other._l)
             {
@@ -239,23 +239,23 @@ namespace bpf
             }
 
             Vector &operator=(const Vector &other);
-            Vector &operator=(Vector &&other);
+            Vector &operator=(Vector &&other) noexcept;
 
             Vector operator+(const Vector &other) const;
             Vector operator-(const Vector &other) const;
             Vector operator*(const Vector &other) const;
             Vector operator/(const Vector &other) const;
 
-            Vector operator*(const T other) const;
-            Vector operator/(const T other) const;
+            Vector operator*(T other) const;
+            Vector operator/(T other) const;
 
             void operator+=(const Vector &other);
             void operator-=(const Vector &other);
             void operator*=(const Vector &other);
             void operator/=(const Vector &other);
 
-            void operator*=(const T other);
-            void operator/=(const T other);
+            void operator*=(T other);
+            void operator/=(T other);
 
             Vector operator-() const;
 
@@ -286,7 +286,7 @@ namespace bpf
                 return (_arr);
             }
 
-            static Vector Lerp(const Vector &v, const Vector &v1, const T t);
+            static Vector Lerp(const Vector &v, const Vector &v1, T t);
         };
 
         template <typename T, fsize I>

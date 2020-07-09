@@ -34,7 +34,7 @@ namespace bpf
 {
     namespace math
     {
-        namespace __internal_math
+        namespace _bpf_internal_math
         {
             template <typename T>
             inline constexpr T GetEpsilon()
@@ -92,7 +92,7 @@ namespace bpf
             /**
              * Very small value to represent acceptable rounding errors for type T
              */
-            static constexpr T Epsilon = __internal_math::GetEpsilon<T>();
+            static constexpr T Epsilon = _bpf_internal_math::GetEpsilon<T>();
 
             /**
              * Absolute value

@@ -83,7 +83,7 @@ namespace bpf
                 void SearchPrevEntry();
 
             public:
-                Iterator(Node *data, fsize start, fsize size, const bool reverse = false);
+                Iterator(Node *data, fsize start, fsize size, bool reverse = false);
                 Iterator &operator++();
                 Iterator &operator--();
                 inline const Entry &operator*() const
@@ -142,7 +142,7 @@ namespace bpf
             /**
              * Move constructor
              */
-            HashMap(HashMap &&other);
+            HashMap(HashMap &&other) noexcept;
 
             /**
              * Constructs a HashMap from an existing initializer list
@@ -203,7 +203,7 @@ namespace bpf
              * @tparam Comparator the comparision operator to use for comparing values
              */
             template <template <typename> class Comparator = ops::Equal>
-            void Remove(const V &value, const bool all = true);
+            void Remove(const V &value, bool all = true);
 
             /**
              * Compare HashMap by performing a per-element check
@@ -269,7 +269,7 @@ namespace bpf
             /**
              * Move assignment operator
              */
-            HashMap &operator=(HashMap &&other);
+            HashMap &operator=(HashMap &&other) noexcept;
 
             /**
              * Create a new HashMap from concatenation of two maps
@@ -337,6 +337,6 @@ namespace bpf
             }
         };
     }
-};
+}
 
 #include "Framework/Collection/HashMap.impl.hpp"

@@ -50,6 +50,8 @@ namespace bpf
                 case 2:
                     Z = elem;
                     break;
+                default:
+                    break;
                 }
                 ++i;
             }

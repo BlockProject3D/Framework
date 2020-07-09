@@ -45,13 +45,15 @@ namespace bpf
         template <typename T, fsize I>
         Vector<T, I> &Vector<T, I>::operator=(const Vector &other)
         {
+            if (this == &other)
+                return (*this);
             for (fsize i = 0; i != I; ++i)
                 _arr[i] = other._arr[i];
             return (*this);
         }
 
         template <typename T, fsize I>
-        Vector<T, I> &Vector<T, I>::operator=(Vector &&other)
+        Vector<T, I> &Vector<T, I>::operator=(Vector &&other) noexcept
         {
             for (fsize i = 0; i != I; ++i)
                 _arr[i] = std::move(other._arr[i]);
@@ -307,6 +309,8 @@ namespace bpf
         template <typename T>
         Vector<T> &Vector<T>::operator=(const Vector &other)
         {
+            if (this == &other)
+                return (*this);
             memory::MemUtils::DeleteArray(_arr, _l);
             _l = other._l;
             _arr = memory::MemUtils::NewArray<T>(_l);
@@ -316,7 +320,7 @@ namespace bpf
         }
 
         template <typename T>
-        Vector<T> &Vector<T>::operator=(Vector &&other)
+        Vector<T> &Vector<T>::operator=(Vector &&other) noexcept
         {
             memory::MemUtils::DeleteArray(_arr, _l);
             _arr = other._arr;

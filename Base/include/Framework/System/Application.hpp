@@ -75,11 +75,12 @@ namespace bpf
             virtual ~Application() {}
 
             /**
-             * Allocate a console for this application if it does not already have a console
+             * Allocate a console for this application if it does not already have a console.
+             * Only usefull when the system do not create a console
              * @param rows number of rows in the console window
              * @param columns number of columns in the console window
              */
-            virtual void CreateConsole(const fint rows = 32, const fint columns = 80) = 0; //Only usefull when the system do not create a console
+            virtual void CreateConsole(fint rows = 32, fint columns = 80) = 0;
 
             /**
              * Gets the current working directory

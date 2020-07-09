@@ -33,7 +33,7 @@ namespace bpf
     namespace memory
     {
         template <typename T>
-        UniquePtr<T> &UniquePtr<T>::operator=(UniquePtr<T> &&other)
+        UniquePtr<T> &UniquePtr<T>::operator=(UniquePtr<T> &&other) noexcept
         {
             if (RawPtr != Null)
                 MemUtils::Delete(RawPtr);

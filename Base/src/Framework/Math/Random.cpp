@@ -26,8 +26,8 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <stdlib.h>
-#include <time.h>
+#include <cstdlib>
+#include <ctime>
 #include "Framework/Math/Random.hpp"
 #include "Framework/Math/Math.hpp"
 
@@ -50,7 +50,7 @@ Random::Random(const long seed)
 
 Random::Random()
 {
-    srand((unsigned int)time(NULL));
+    srand((unsigned int)time(Null));
 }
 
 fint Random::NextInt(const fint max)

@@ -53,6 +53,8 @@ namespace bpf
                 case 3:
                     W = elem;
                     break;
+                default:
+                    break;
                 }
                 ++i;
             }

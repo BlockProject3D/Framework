@@ -46,7 +46,9 @@ namespace bpf
         class BPF_API IDataInputStream : public IInputStream
         {
         public:
-            virtual ~IDataInputStream() {}
+            ~IDataInputStream() override
+            {
+            }
 
             /**
              * Deserialize a number

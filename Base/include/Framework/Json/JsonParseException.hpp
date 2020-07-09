@@ -62,7 +62,7 @@ namespace bpf
                 return (_line);
             }
 
-            void Print() const;
+            void Print() const final;
         };
     }
 }

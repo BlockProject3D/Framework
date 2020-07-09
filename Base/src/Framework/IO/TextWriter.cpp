@@ -49,7 +49,7 @@ void TextWriter::WriteByte(uint8 byte)
 
 void TextWriter::WriteSubBuf(const void *out, const fsize size)
 {
-    const uint8 *res = reinterpret_cast<const uint8 *>(out);
+    auto *res = reinterpret_cast<const uint8 *>(out);
 
     for (fsize i = 0; i != size; ++i)
         WriteByte(res[i]);
@@ -96,7 +96,7 @@ fsize TextWriter::Write(const void *buf, fsize bufsize)
 {
     if (_buffered)
     {
-        const uint8 *data = reinterpret_cast<const uint8 *>(buf);
+        auto *data = reinterpret_cast<const uint8 *>(buf);
         for (fsize i = 0; i != bufsize; ++i)
             WriteByte(data[i]);
         return (bufsize);

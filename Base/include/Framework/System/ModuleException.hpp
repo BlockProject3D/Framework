@@ -33,7 +33,7 @@ namespace bpf
 {
     namespace system
     {
-        class BPF_API ModuleException : public RuntimeException
+        class BPF_API ModuleException final : public RuntimeException
         {
         public:
             explicit inline ModuleException(const String &msg) noexcept

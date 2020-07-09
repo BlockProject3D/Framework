@@ -36,7 +36,7 @@ namespace bpf
         /**
          * High-level console deserializer
          */
-        class BPF_API ConsoleReader : public IDataInputStream
+        class BPF_API ConsoleReader final : public IDataInputStream
         {
         private:
 #ifdef WINDOWS
@@ -72,7 +72,7 @@ namespace bpf
              * @throw IOException in case of system error
              * @return fsize number of bytes read
              */
-            fsize Read(void *buf, fsize bufsize);
+            fsize Read(void *buf, fsize bufsize) final;
 
             /**
              * Reads a line of text
@@ -94,73 +94,73 @@ namespace bpf
                 return (_reader.Read(out));
             }
 
-            inline IDataInputStream &operator>>(uint8 &u)
+            inline IDataInputStream &operator>>(uint8 &u) final
             {
                 _reader >> u;
                 return (*this);
             }
 
-            inline IDataInputStream &operator>>(uint16 &u)
+            inline IDataInputStream &operator>>(uint16 &u) final
             {
                 _reader >> u;
                 return (*this);
             }
 
-            inline IDataInputStream &operator>>(uint32 &u)
+            inline IDataInputStream &operator>>(uint32 &u) final
             {
                 _reader >> u;
                 return (*this);
             }
 
-            inline IDataInputStream &operator>>(uint64 &u)
+            inline IDataInputStream &operator>>(uint64 &u) final
             {
                 _reader >> u;
                 return (*this);
             }
 
-            inline IDataInputStream &operator>>(int8 &i)
+            inline IDataInputStream &operator>>(int8 &i) final
             {
                 _reader >> i;
                 return (*this);
             }
 
-            inline IDataInputStream &operator>>(int16 &i)
+            inline IDataInputStream &operator>>(int16 &i) final
             {
                 _reader >> i;
                 return (*this);
             }
 
-            inline IDataInputStream &operator>>(fint &i)
+            inline IDataInputStream &operator>>(fint &i) final
             {
                 _reader >> i;
                 return (*this);
             }
 
-            inline IDataInputStream &operator>>(int64 &i)
+            inline IDataInputStream &operator>>(int64 &i) final
             {
                 _reader >> i;
                 return (*this);
             }
 
-            inline IDataInputStream &operator>>(float &f)
+            inline IDataInputStream &operator>>(float &f) final
             {
                 _reader >> f;
                 return (*this);
             }
 
-            inline IDataInputStream &operator>>(double &d)
+            inline IDataInputStream &operator>>(double &d) final
             {
                 _reader >> d;
                 return (*this);
             }
 
-            inline IDataInputStream &operator>>(bool &b)
+            inline IDataInputStream &operator>>(bool &b) final
             {
                 _reader >> b;
                 return (*this);
             }
 
-            inline IDataInputStream &operator>>(bpf::String &str)
+            inline IDataInputStream &operator>>(bpf::String &str) final
             {
                 _reader >> str;
                 return (*this);

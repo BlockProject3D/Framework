@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Framework/System/UnixApp.hpp"
-#include <limits.h>
+#include <climits>
 #include <unistd.h>
 
 #ifndef LINUX
@@ -123,7 +123,5 @@ File UnixApp::GetWorkingDirectory() const
 
 bool UnixApp::SetWorkingDirectory(const File &file)
 {
-    if (chdir(*file.PlatformPath()) == -1)
-        return (false);
-    return (true);
+    return (chdir(*file.PlatformPath()) != -1);
 }

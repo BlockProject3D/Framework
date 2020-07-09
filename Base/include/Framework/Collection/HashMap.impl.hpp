@@ -150,6 +150,8 @@ namespace bpf
         template <typename K, typename V, typename HashOp>
         HashMap<K, V, HashOp> &HashMap<K, V, HashOp>::operator=(const HashMap &other)
         {
+            if (this == &other)
+                return (*this);
             memory::MemUtils::DeleteArray(_data, CurSize);
             _data = memory::MemUtils::NewArray<Node>(HASH_MAP_INIT_BUF_SIZE);
             _data[0].State = ENTRY_STATE_NON_EXISTANT;
@@ -179,7 +181,7 @@ namespace bpf
         }
 
         template <typename K, typename V, typename HashOp>
-        HashMap<K, V, HashOp>::HashMap(HashMap &&other)
+        HashMap<K, V, HashOp>::HashMap(HashMap &&other) noexcept
             : _data(other._data)
             , CurSize(other.CurSize)
             , ElemCount(other.ElemCount)
@@ -190,7 +192,7 @@ namespace bpf
         }
 
         template <typename K, typename V, typename HashOp>
-        HashMap<K, V, HashOp> &HashMap<K, V, HashOp>::operator=(HashMap &&other)
+        HashMap<K, V, HashOp> &HashMap<K, V, HashOp>::operator=(HashMap &&other) noexcept
         {
             memory::MemUtils::DeleteArray(_data, CurSize);
             _data = other._data;

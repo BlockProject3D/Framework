@@ -26,7 +26,6 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <cassert>
 #include <iostream>
 #include <gtest/gtest.h>
 #include <Framework/Math/Vector.hpp>
@@ -86,7 +85,7 @@ TEST(VectorStatic, Operators_1)
     EXPECT_EQ(zero / identity, zero);
     identity -= zero;
     identity += zero;
-    identity /= identity;
+    identity /= bpf::math::Vector2f::Identity;
     EXPECT_EQ(identity, bpf::math::Vector2f::Identity);
     identity *= zero;
     EXPECT_EQ(identity, bpf::math::Vector2f::Zero);
@@ -250,7 +249,7 @@ TEST(VectorStatic, Operators_2)
     EXPECT_EQ(zero / identity, zero);
     identity -= zero;
     identity += zero;
-    identity /= identity;
+    identity /= bpf::math::Vector3f::Identity;
     EXPECT_EQ(identity, bpf::math::Vector3f::Identity);
     identity *= zero;
     EXPECT_EQ(identity, bpf::math::Vector3f::Zero);
@@ -433,7 +432,7 @@ TEST(VectorStatic, Operators_3)
     EXPECT_EQ(zero / identity, zero);
     identity -= zero;
     identity += zero;
-    identity /= identity;
+    identity /= bpf::math::Vector4f::Identity;
     EXPECT_EQ(identity, bpf::math::Vector4f::Identity);
     identity *= zero;
     EXPECT_EQ(identity, bpf::math::Vector4f::Zero);
@@ -609,7 +608,7 @@ TEST(VectorStatic, Operators_4)
     EXPECT_EQ(zero / identity, zero);
     identity -= zero;
     identity += zero;
-    identity /= identity;
+    identity /= Vector5f::Identity;
     EXPECT_EQ(identity, Vector5f::Identity);
     identity *= zero;
     EXPECT_EQ(identity, Vector5f::Zero);

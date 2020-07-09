@@ -47,7 +47,7 @@ namespace bpf
             ECharacterEncoding _encoder;
 
             void WriteByte(uint8 byte);
-            void WriteSubBuf(const void *in, const fsize size);
+            void WriteSubBuf(const void *in, fsize size);
 
         public:
             /**
@@ -64,9 +64,9 @@ namespace bpf
             {
             }
 
-            ~TextWriter();
+            ~TextWriter() final;
 
-            void Flush();
+            void Flush() final;
 
             /**
              * Writes raw bytes to this stream, taking into account buffering
@@ -74,7 +74,7 @@ namespace bpf
              * @param bufsize the size of the buffer
              * @return number of bytes written
              */
-            fsize Write(const void *buf, fsize bufsize);
+            fsize Write(const void *buf, fsize bufsize) final;
 
             /**
              * Writes a line of text
@@ -93,79 +93,79 @@ namespace bpf
              */
             void NewLine();
 
-            inline IDataOutputStream &operator<<(uint8 u)
+            inline IDataOutputStream &operator<<(uint8 u) final
             {
                 Write(String::ValueOf(u));
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(uint16 u)
+            inline IDataOutputStream &operator<<(uint16 u) final
             {
                 Write(String::ValueOf(u));
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(uint32 u)
+            inline IDataOutputStream &operator<<(uint32 u) final
             {
                 Write(String::ValueOf(u));
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(uint64 u)
+            inline IDataOutputStream &operator<<(uint64 u) final
             {
                 Write(String::ValueOf(u));
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(int8 i)
+            inline IDataOutputStream &operator<<(int8 i) final
             {
                 Write(String::ValueOf(i));
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(int16 i)
+            inline IDataOutputStream &operator<<(int16 i) final
             {
                 Write(String::ValueOf(i));
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(fint i)
+            inline IDataOutputStream &operator<<(fint i) final
             {
                 Write(String::ValueOf(i));
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(int64 i)
+            inline IDataOutputStream &operator<<(int64 i) final
             {
                 Write(String::ValueOf(i));
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(float f)
+            inline IDataOutputStream &operator<<(float f) final
             {
                 Write(String::ValueOf(f));
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(double d)
+            inline IDataOutputStream &operator<<(double d) final
             {
                 Write(String::ValueOf(d));
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(bool b)
+            inline IDataOutputStream &operator<<(bool b) final
             {
                 Write(String::ValueOf(b));
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(const bpf::String &str)
+            inline IDataOutputStream &operator<<(const bpf::String &str) final
             {
                 Write(str);
                 return (*this);
             }
 
-            inline IDataOutputStream &operator<<(const char *str)
+            inline IDataOutputStream &operator<<(const char *str) final
             {
                 Write(String(str));
                 return (*this);

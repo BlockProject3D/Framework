@@ -67,11 +67,11 @@ namespace bpf
             collection::Queue<Token> _tokens;
 
             bool CheckString(const String &token);
-            bool CheckNumber(const String &token, const fchar next);
-            bool CheckBasic(const String &token, const fchar next);
-            String ReProcessString(const String &str);
-            fchar ProcessUnicode(const String &str, fisize &pos);
-            fchar ProcessStandard(const String &str, fisize &pos);
+            bool CheckNumber(const String &token, fchar next);
+            bool CheckBasic(const String &token, fchar next);
+            static String ReProcessString(const String &str);
+            static fchar ProcessUnicode(const String &str, fisize &pos);
+            static fchar ProcessStandard(const String &str, fisize &pos);
 
         public:
             /**
@@ -79,7 +79,7 @@ namespace bpf
              * @param enableComments true if this Lexer should accept comments, false otherwise
              * @param ignoreNulls true if null values should be omitted, false otherwise
              */
-            Lexer(const bool enableComments = false, const bool ignoreNulls = false);
+            Lexer(bool enableComments = false, bool ignoreNulls = false);
 
             /**
              * Loads a string a processes it

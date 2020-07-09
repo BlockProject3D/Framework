@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -41,21 +41,23 @@ namespace bpf
             Paths _props;
 
             Paths SetupPaths();
-            collection::HashMap<String, String> SetupEnvironment(char **env);
+            static collection::HashMap<String, String> SetupEnvironment(char **env);
 
         public:
             UnixApp(char **argv, char **env);
 
-            inline void CreateConsole(const fint rows, const fint columns) {}
-
-            collection::Array<String> GetArguments(char **argv, int argc);
-
-            io::File GetWorkingDirectory() const;
-            bool SetWorkingDirectory(const io::File &file);
-            inline void DisableErrorDialogs() noexcept
+            inline void CreateConsole(const fint rows, const fint columns) final
             {
-                //Linux does not have automatic message box spawn on crash
+            }
+
+            static collection::Array<String> GetArguments(char **argv, int argc);
+
+            io::File GetWorkingDirectory() const final;
+            bool SetWorkingDirectory(const io::File &file) final;
+            inline void DisableErrorDialogs() noexcept final
+            {
+                // Linux does not have automatic message box spawn on crash
             }
         };
     }
-};
+}

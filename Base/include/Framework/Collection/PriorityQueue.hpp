@@ -68,7 +68,7 @@ namespace bpf
              * Constructs an empty PriorityQueue
              * @param maxsize maximum size of queue (0 = infinity/unlimited)
              */
-            explicit PriorityQueue(const fsize maxsize = 0);
+            explicit PriorityQueue(fsize maxsize = 0);
 
             /**
              * Constructs a PriorityQueue from an existing initializer list
@@ -91,7 +91,7 @@ namespace bpf
             /**
              * Move constructor
              */
-            inline PriorityQueue(PriorityQueue<K, V, HeapFunc> &&other)
+            inline PriorityQueue(PriorityQueue<K, V, HeapFunc> &&other) noexcept
                 : _maxSize(other._maxSize)
                 , _tailPtr(other._tailPtr)
                 , _count(other._count)
@@ -107,6 +107,8 @@ namespace bpf
              */
             inline PriorityQueue<K, V, HeapFunc> &operator=(const PriorityQueue<K, V, HeapFunc> &other)
             {
+                if (this == &other)
+                    return (*this);
                 _maxSize = other._maxSize;
                 _tailPtr = other._tailPtr;
                 _count = other._count;
@@ -118,7 +120,7 @@ namespace bpf
             /**
              * Move assignment operator
              */
-            inline PriorityQueue<K, V, HeapFunc> &operator=(PriorityQueue<K, V, HeapFunc> &&other)
+            inline PriorityQueue<K, V, HeapFunc> &operator=(PriorityQueue<K, V, HeapFunc> &&other) noexcept
             {
                 _maxSize = other._maxSize;
                 _tailPtr = other._tailPtr;
@@ -190,6 +192,6 @@ namespace bpf
             }
         };
     }
-};
+}
 
 #include "Framework/Collection/PriorityQueue.impl.hpp"

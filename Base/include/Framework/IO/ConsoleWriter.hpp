@@ -38,7 +38,7 @@ namespace bpf
         /**
          * High-level console serializer
          */
-        class BPF_API ConsoleWriter : public IDataOutputStream
+        class BPF_API ConsoleWriter final : public IDataOutputStream
         {
         private:
 #ifdef WINDOWS
@@ -52,7 +52,7 @@ namespace bpf
 #ifdef WINDOWS
             void *GetHandle(const EConsoleStream type);
 #else
-            int GetHandle(const EConsoleStream type);
+            static int GetHandle(EConsoleStream type);
 #endif
 
         public:
@@ -60,9 +60,9 @@ namespace bpf
              * Constructs a ConsoleWrite
              * @param type which stream to write to (ERROR/OUTPUT)
              */
-            explicit ConsoleWriter(const EConsoleStream type = EConsoleStream::OUTPUT);
+            explicit ConsoleWriter(EConsoleStream type = EConsoleStream::OUTPUT);
 
-            inline void Flush()
+            inline void Flush() final
             {
                 _writer.Flush();
             }
@@ -76,7 +76,7 @@ namespace bpf
              * @throw IOException in case of system error
              * @return number of bytes written
              */
-            fsize Write(const void *buf, fsize bufsize);
+            fsize Write(const void *buf, fsize bufsize) final;
 
             /**
              * Writes a line of text
@@ -104,79 +104,79 @@ namespace bpf
                 _writer.NewLine();
             }
 
-            inline ConsoleWriter &operator<<(uint8 u)
+            inline ConsoleWriter &operator<<(uint8 u) final
             {
                 _writer << u;
                 return (*this);
             }
 
-            inline ConsoleWriter &operator<<(uint16 u)
+            inline ConsoleWriter &operator<<(uint16 u) final
             {
                 _writer << u;
                 return (*this);
             }
 
-            inline ConsoleWriter &operator<<(uint32 u)
+            inline ConsoleWriter &operator<<(uint32 u) final
             {
                 _writer << u;
                 return (*this);
             }
 
-            inline ConsoleWriter &operator<<(uint64 u)
+            inline ConsoleWriter &operator<<(uint64 u) final
             {
                 _writer << u;
                 return (*this);
             }
 
-            inline ConsoleWriter &operator<<(int8 i)
+            inline ConsoleWriter &operator<<(int8 i) final
             {
                 _writer << i;
                 return (*this);
             }
 
-            inline ConsoleWriter &operator<<(int16 i)
+            inline ConsoleWriter &operator<<(int16 i) final
             {
                 _writer << i;
                 return (*this);
             }
 
-            inline ConsoleWriter &operator<<(fint i)
+            inline ConsoleWriter &operator<<(fint i) final
             {
                 _writer << i;
                 return (*this);
             }
 
-            inline ConsoleWriter &operator<<(int64 i)
+            inline ConsoleWriter &operator<<(int64 i) final
             {
                 _writer << i;
                 return (*this);
             }
 
-            inline ConsoleWriter &operator<<(float f)
+            inline ConsoleWriter &operator<<(float f) final
             {
                 _writer << f;
                 return (*this);
             }
 
-            inline ConsoleWriter &operator<<(double d)
+            inline ConsoleWriter &operator<<(double d) final
             {
                 _writer << d;
                 return (*this);
             }
 
-            inline ConsoleWriter &operator<<(bool b)
+            inline ConsoleWriter &operator<<(bool b) final
             {
                 _writer << b;
                 return (*this);
             }
 
-            inline ConsoleWriter &operator<<(const bpf::String &str)
+            inline ConsoleWriter &operator<<(const bpf::String &str) final
             {
                 _writer << str;
                 return (*this);
             }
 
-            inline ConsoleWriter &operator<<(const char *str)
+            inline ConsoleWriter &operator<<(const char *str) final
             {
                 _writer << str;
                 return (*this);

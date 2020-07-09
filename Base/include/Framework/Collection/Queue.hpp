@@ -48,7 +48,7 @@ namespace bpf
              * Constructs an empty Queue
              * @param maxsize maximum size of queue (0 = infinity/unlimited)
              */
-            explicit Queue(const fsize maxsize = 0);
+            explicit Queue(fsize maxsize = 0);
 
             /**
              * Constructs a Queue from an existing initializer list
@@ -71,7 +71,7 @@ namespace bpf
             /**
              * Move constructor
              */
-            inline Queue(Queue<T> &&other)
+            inline Queue(Queue<T> &&other) noexcept
                 : _maxSize(other._maxSize)
                 , _headPtr(other._headPtr)
                 , _tailPtr(other._tailPtr)
@@ -88,6 +88,8 @@ namespace bpf
              */
             inline Queue<T> &operator=(const Queue<T> &other)
             {
+                if (this == &other)
+                    return (*this);
                 _maxSize = other._maxSize;
                 _headPtr = other._headPtr;
                 _tailPtr = other._tailPtr;
@@ -99,7 +101,7 @@ namespace bpf
             /**
              * Move assignment operator
              */
-            inline Queue<T> &operator=(Queue<T> &&other)
+            inline Queue<T> &operator=(Queue<T> &&other) noexcept
             {
                 _maxSize = other._maxSize;
                 _headPtr = other._headPtr;
@@ -170,6 +172,6 @@ namespace bpf
             }
         };
     }
-};
+}
 
 #include "Framework/Collection/Queue.impl.hpp"

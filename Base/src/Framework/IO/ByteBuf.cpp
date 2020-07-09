@@ -42,7 +42,7 @@ ByteBuf::ByteBuf(const fsize size)
 {
 }
 
-ByteBuf::ByteBuf(ByteBuf &&other)
+ByteBuf::ByteBuf(ByteBuf &&other) noexcept
     : _buf(other._buf)
     , _cursor(other._cursor)
     , _size(other._size)
@@ -65,6 +65,8 @@ ByteBuf::ByteBuf(const ByteBuf &other)
 
 ByteBuf &ByteBuf::operator=(const ByteBuf &other)
 {
+    if (this == &other)
+        return (*this);
     if (_buf != Null)
         Memory::Free(_buf);
     _size = other._size;
@@ -75,7 +77,7 @@ ByteBuf &ByteBuf::operator=(const ByteBuf &other)
     return (*this);
 }
 
-ByteBuf &ByteBuf::operator=(ByteBuf &&other)
+ByteBuf &ByteBuf::operator=(ByteBuf &&other) noexcept
 {
     if (_buf != Null)
         Memory::Free(_buf);

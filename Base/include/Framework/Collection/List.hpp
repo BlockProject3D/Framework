@@ -194,14 +194,14 @@ namespace bpf
             /**
              * Move constructor
              */
-            List<T>(List<T> &&other);
+            List<T>(List<T> &&other) noexcept;
 
             ~List<T>();
 
             /**
              * Move assignment operator
              */
-            List<T> &operator=(List<T> &&other);
+            List<T> &operator=(List<T> &&other) noexcept;
 
             /**
              * Copy assignment operator
@@ -254,7 +254,7 @@ namespace bpf
              * @throw IndexException if id is out of bounds
              * @return immutable item at index id
              */
-            const T &operator[](const fsize id) const;
+            const T &operator[](fsize id) const;
 
             /**
              * Returns an element non-const mode
@@ -262,7 +262,7 @@ namespace bpf
              * @throw IndexException if id is out of bounds
              * @return mutable item at index id
              */
-            T &operator[](const fsize id);
+            T &operator[](fsize id);
 
             /**
              * Create a new list from concatenation of two lists
@@ -298,7 +298,7 @@ namespace bpf
              * Removes an item at an arbitary position in the list
              * @param pos item position
              */
-            void RemoveAt(const fsize pos);
+            void RemoveAt(fsize pos);
 
             /**
              * Removes an item at an arbitary position in the list
@@ -319,14 +319,14 @@ namespace bpf
              * @tparam Comparator the comparision operator to use for comparing values
              */
             template <template <typename> class Comparator = ops::Equal>
-            void Remove(const T &elem, const bool all = true);
+            void Remove(const T &elem, bool all = true);
 
             /**
              * Locate an item by index inside this list
              * @param pos the index of the item to search for
              * @return iterator to the found item or end() if none
              */
-            Iterator FindByKey(const fsize pos);
+            Iterator FindByKey(fsize pos);
 
             /**
              * Locate an item by performing per-element check
@@ -362,7 +362,7 @@ namespace bpf
              * @tparam Comparator comparision operator
              */
             template <template <typename> class Comparator = ops::Less>
-            void Sort(const bool stable = false);
+            void Sort(bool stable = false);
 
             /**
              * Returns the first element in this List
@@ -463,6 +463,6 @@ namespace bpf
             }
         };
     }
-};
+}
 
 #include "Framework/Collection/List.impl.hpp"

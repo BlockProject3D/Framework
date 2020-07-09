@@ -47,7 +47,7 @@ namespace bpf
             String SerializeObjectPretty(const Json::Object &json);
             String SerializeArray(const Json::Array &json);
             String SerializeArrayPretty(const Json::Array &json);
-            String Indent();
+            String Indent() const;
 
         public:
             /**

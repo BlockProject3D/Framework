@@ -26,7 +26,6 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <cassert>
 #include <iostream>
 #include <gtest/gtest.h>
 #include <Framework/Math/MathUtils.hpp>
@@ -34,10 +33,10 @@
 
 TEST(Math, Epislon)
 {
-    EXPECT_EQ(bpf::math::__internal_math::GetEpsilon<float>(), bpf::math::Mathf::Epsilon);
-    EXPECT_EQ(bpf::math::__internal_math::GetEpsilon<double>(), bpf::math::Mathd::Epsilon);
-    EXPECT_EQ(bpf::math::__internal_math::GetEpsilon<long double>(), bpf::math::Mathld::Epsilon);
-    EXPECT_EQ(bpf::math::__internal_math::GetEpsilon<int>(), bpf::math::Math<int>::Epsilon);
+    EXPECT_EQ(bpf::math::_bpf_internal_math::GetEpsilon<float>(), bpf::math::Mathf::Epsilon);
+    EXPECT_EQ(bpf::math::_bpf_internal_math::GetEpsilon<double>(), bpf::math::Mathd::Epsilon);
+    EXPECT_EQ(bpf::math::_bpf_internal_math::GetEpsilon<long double>(), bpf::math::Mathld::Epsilon);
+    EXPECT_EQ(bpf::math::_bpf_internal_math::GetEpsilon<int>(), bpf::math::Math<int>::Epsilon);
     EXPECT_EQ(bpf::math::Math<int>::Epsilon, 0);
 }
 

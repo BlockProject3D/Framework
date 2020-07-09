@@ -38,7 +38,7 @@ namespace bpf
         /**
          * Low-level fixed size buffer that can store raw bytes
          */
-        class BPF_API ByteBuf : public IInputStream, public IOutputStream
+        class BPF_API ByteBuf final : public IInputStream, public IOutputStream
         {
         private:
             uint8 *_buf;
@@ -52,19 +52,19 @@ namespace bpf
              * WARNING: ByteBuf does not automatically set bytes to 0
              * @param size the maximum size in bytes of the buffer
              */
-            explicit ByteBuf(const fsize size);
+            explicit ByteBuf(fsize size);
 
             /**
              * Move constructor
              */
-            ByteBuf(ByteBuf &&other);
+            ByteBuf(ByteBuf &&other) noexcept;
 
             /**
              * Copy constructor
              */
             ByteBuf(const ByteBuf &other);
 
-            ~ByteBuf();
+            ~ByteBuf() final;
 
             /**
              * Copy assignment operator
@@ -74,7 +74,7 @@ namespace bpf
             /**
              * Move assignment operator
              */
-            ByteBuf &operator=(ByteBuf &&other);
+            ByteBuf &operator=(ByteBuf &&other) noexcept;
 
             /**
              * Clears this buffer by resetting all bytes inside to the value 0
@@ -92,9 +92,9 @@ namespace bpf
              */
             void Shift(fsize count);
 
-            fsize Write(const void *buf, fsize bufsize);
+            fsize Write(const void *buf, fsize bufsize) final;
 
-            fsize Read(void *buf, fsize bufsize);
+            fsize Read(void *buf, fsize bufsize) final;
 
             /**
              * Returns a raw pointer to the beginning of this buffer

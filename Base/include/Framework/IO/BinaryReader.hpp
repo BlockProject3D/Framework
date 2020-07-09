@@ -50,7 +50,7 @@ namespace bpf
 
             uint8 ReadByte();
             bool ReadByte2(uint8 &out);
-            void ReadSubBuf(void *out, const fsize size);
+            void ReadSubBuf(void *out, fsize size);
 
         public:
             /**
@@ -83,76 +83,76 @@ namespace bpf
              * @param bufsize the size of the receiving buffer
              * @return fsize number of bytes read
              */
-            fsize Read(void *buf, fsize bufsize);
+            fsize Read(void *buf, fsize bufsize) final;
 
-            inline IDataInputStream &operator>>(uint8 &u)
+            inline IDataInputStream &operator>>(uint8 &u) final
             {
                 u = ReadByte();
                 return (*this);
             }
 
-            inline IDataInputStream &operator>>(uint16 &u)
+            inline IDataInputStream &operator>>(uint16 &u) final
             {
                 ReadSubBuf(&u, 2);
                 return (*this);
             }
 
-            inline IDataInputStream &operator>>(uint32 &u)
+            inline IDataInputStream &operator>>(uint32 &u) final
             {
                 ReadSubBuf(&u, 4);
                 return (*this);
             }
 
-            inline IDataInputStream &operator>>(uint64 &u)
+            inline IDataInputStream &operator>>(uint64 &u) final
             {
                 ReadSubBuf(&u, 8);
                 return (*this);
             }
 
-            inline IDataInputStream &operator>>(int8 &i)
+            inline IDataInputStream &operator>>(int8 &i) final
             {
                 i = (int8)ReadByte();
                 return (*this);
             }
 
-            inline IDataInputStream &operator>>(int16 &i)
+            inline IDataInputStream &operator>>(int16 &i) final
             {
                 ReadSubBuf(&i, 2);
                 return (*this);
             }
 
-            inline IDataInputStream &operator>>(fint &i)
+            inline IDataInputStream &operator>>(fint &i) final
             {
                 ReadSubBuf(&i, 4);
                 return (*this);
             }
 
-            inline IDataInputStream &operator>>(int64 &i)
+            inline IDataInputStream &operator>>(int64 &i) final
             {
                 ReadSubBuf(&i, 8);
                 return (*this);
             }
 
-            inline IDataInputStream &operator>>(float &f)
+            inline IDataInputStream &operator>>(float &f) final
             {
                 ReadSubBuf(&f, 4);
                 return (*this);
             }
 
-            inline IDataInputStream &operator>>(double &d)
+            inline IDataInputStream &operator>>(double &d) final
             {
                 ReadSubBuf(&d, 8);
                 return (*this);
             }
 
-            inline IDataInputStream &operator>>(bool &b)
+            inline IDataInputStream &operator>>(bool &b) final
             {
                 uint8 u = ReadByte();
-                b = (u == 1 ? true : false);
+                b = (u == 1);
                 return (*this);
             }
 
-            IDataInputStream &operator>>(bpf::String &str);
+            IDataInputStream &operator>>(bpf::String &str) final;
         };
     }
 }

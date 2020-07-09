@@ -46,7 +46,7 @@ namespace bpf
              * Constructs an empty Stack
              * @param maxsize maximum size of stack (0 = infinity/unlimited)
              */
-            explicit Stack(const fsize maxsize = 0);
+            explicit Stack(fsize maxsize = 0);
 
             /**
              * Constructs a Stack from an existing initializer list
@@ -66,7 +66,7 @@ namespace bpf
             /**
              * Move constructor
              */
-            inline Stack(Stack<T> &&other)
+            inline Stack(Stack<T> &&other) noexcept
                 : _maxSize(other._maxSize)
                 , _data(std::move(other._data))
             {
@@ -77,6 +77,8 @@ namespace bpf
              */
             inline Stack<T> &operator=(const Stack<T> &other)
             {
+                if (this == &other)
+                    return (*this);
                 _maxSize = other._maxSize;
                 _data = other._data;
                 return (*this);
@@ -85,7 +87,7 @@ namespace bpf
             /**
              * Move assignment operator
              */
-            inline Stack<T> &operator=(Stack<T> &&other)
+            inline Stack<T> &operator=(Stack<T> &&other) noexcept
             {
                 _maxSize = other._maxSize;
                 _data = std::move(other._data);
@@ -148,6 +150,6 @@ namespace bpf
             }
         };
     }
-};
+}
 
 #include "Framework/Collection/Stack.impl.hpp"

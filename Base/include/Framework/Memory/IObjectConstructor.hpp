@@ -28,7 +28,7 @@
 
 #pragma once
 #include "Framework/String.hpp"
-#include "Framework/Memory/Memory.hpp"
+#include "Framework/Memory/Utility.hpp"
 
 namespace bpf
 {
@@ -58,11 +58,11 @@ namespace bpf
 
             inline UniquePtr<Parent> MakeUnique(Args &&... args) const
             {
-                return (bpf::MakeUnique<Class>(std::forward<Args>(args)...));
+                return (bpf::memory::MakeUnique<Class>(std::forward<Args>(args)...));
             }
             inline SharedPtr<Parent> MakeShared(Args &&... args) const
             {
-                return (bpf::MakeShared<Class>(std::forward<Args>(args)...));
+                return (bpf::memory::MakeShared<Class>(std::forward<Args>(args)...));
             }
         };
     }

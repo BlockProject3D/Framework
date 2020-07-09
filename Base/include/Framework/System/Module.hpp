@@ -56,7 +56,7 @@ namespace bpf
             }
             ~Module();
 
-            inline Module(Module &&other)
+            inline Module(Module &&other) noexcept
                 : _path(std::move(other._path))
                 , _handle(other._handle)
             {
@@ -65,7 +65,7 @@ namespace bpf
 
             Module(const Module &other) = delete;
 
-            Module &operator=(Module &&other);
+            Module &operator=(Module &&other) noexcept;
 
             Module &operator=(const Module &other) = delete;
 

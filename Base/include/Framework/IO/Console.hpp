@@ -69,20 +69,20 @@ namespace bpf
              * @param str the text to write
              * @param type which stream to write to (ERROR/OUTPUT)
              */
-            static void WriteLine(const String &str, const EConsoleStream type = EConsoleStream::OUTPUT) noexcept;
+            static void WriteLine(const String &str, EConsoleStream type = EConsoleStream::OUTPUT) noexcept;
 
             /**
              * Sets the text style for the next write operations
              * @param style the new text style
              * @param type which stream to set the style (ERROR/OUTPUT)
              */
-            static void SetTextStyle(const TextStyle &style, const EConsoleStream type = EConsoleStream::OUTPUT) noexcept;
+            static void SetTextStyle(const TextStyle &style, EConsoleStream type = EConsoleStream::OUTPUT) noexcept;
 
             /**
              * Resets the text style to the default for a given stream
              * @param type which stream to set the style (ERROR/OUTPUT)
              */
-            static void ResetTextStyle(const EConsoleStream type = EConsoleStream::OUTPUT) noexcept;
+            static void ResetTextStyle(EConsoleStream type = EConsoleStream::OUTPUT) noexcept;
 
             /**
              * Sets the console title
@@ -95,7 +95,7 @@ namespace bpf
              * @param type type of console to check
              * @return true if the given console type is redirected, false otherwise
              */
-            static bool IsRedirected(const EConsoleStream type = EConsoleStream::OUTPUT) noexcept;
+            static bool IsRedirected(EConsoleStream type = EConsoleStream::OUTPUT) noexcept;
         };
     }
 }

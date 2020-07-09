@@ -62,7 +62,7 @@ namespace bpf
                 return (_size);
             }
 
-            const char *Type() const noexcept
+            const char *Type() const noexcept final
             {
                 return ("StackOverflow");
             }
@@ -79,7 +79,7 @@ namespace bpf
             {
             }
 
-            const char *Type() const noexcept
+            const char *Type() const noexcept final
             {
                 return ("StackUnderflow");
             }

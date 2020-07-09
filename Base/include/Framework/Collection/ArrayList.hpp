@@ -48,7 +48,7 @@ namespace bpf
             template <template <typename> class Comparator>
             void QuickSort(fsize start, fsize end);
             template <template <typename> class Comparator>
-            void Merge(const Array<T> &a, Array<T> &c, const fsize start, const fsize mid, const fsize end);
+            void Merge(const Array<T> &a, Array<T> &c, fsize start, fsize mid, fsize end);
             template <template <typename> class Comparator>
             void MergeSort();
 
@@ -90,7 +90,7 @@ namespace bpf
             /**
              * Move constructor
              */
-            inline ArrayList(ArrayList<T> &&other)
+            inline ArrayList(ArrayList<T> &&other) noexcept
                 : _curid(other._curid)
                 , _arr(std::move(other._arr))
             {
@@ -102,6 +102,8 @@ namespace bpf
              */
             inline ArrayList<T> &operator=(const ArrayList<T> &other)
             {
+                if (this == &other)
+                    return (*this);
                 _curid = other._curid;
                 _arr = other._arr;
                 return (*this);
@@ -110,7 +112,7 @@ namespace bpf
             /**
              * Move assignment operator
              */
-            inline ArrayList<T> &operator=(ArrayList<T> &&other)
+            inline ArrayList<T> &operator=(ArrayList<T> &&other) noexcept
             {
                 _curid = other._curid;
                 _arr = std::move(other._arr);
@@ -272,14 +274,14 @@ namespace bpf
              * @param pos insert position
              * @param elem element to insert
              */
-            void Insert(const fsize pos, const T &elem);
+            void Insert(fsize pos, const T &elem);
 
             /**
              * Inserts an item at an arbitary position in the list
              * @param pos insert position
              * @param elem element to insert
              */
-            void Insert(const fsize pos, T &&elem);
+            void Insert(fsize pos, T &&elem);
 
             /**
              * Inserts an item at an arbitary position in the list
@@ -299,7 +301,7 @@ namespace bpf
              * Removes an item at an arbitary position in the list
              * @param pos item position
              */
-            void RemoveAt(const fsize pos);
+            void RemoveAt(fsize pos);
 
             /**
              * Removes an item at an arbitary position in the list
@@ -326,14 +328,14 @@ namespace bpf
              * @tparam Comparator the comparision operator to use for comparing values
              */
             template <template <typename> class Comparator = ops::Equal>
-            void Remove(const T &elem, const bool all = true);
+            void Remove(const T &elem, bool all = true);
 
             /**
              * Locate an item by index inside this list
              * @param pos the index of the item to search for
              * @return iterator to the found item or end() if none
              */
-            Iterator FindByKey(const fsize pos);
+            Iterator FindByKey(fsize pos);
 
             /**
              * Locate an item by performing per-element check
@@ -395,7 +397,7 @@ namespace bpf
              * @tparam Comparator comparision operator
              */
             template <template <typename> class Comparator = ops::Less>
-            void Sort(const bool stable = false);
+            void Sort(bool stable = false);
 
             /**
              * Returns an iterator to the begining of the collection

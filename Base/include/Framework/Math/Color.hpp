@@ -116,7 +116,7 @@ namespace bpf
              * Constructs a Color from a packed rgb int
              * @param rgb the packed rgb integer
              */
-            explicit Color(const fint rgb); //TODO : Implement
+            explicit Color(fint rgb); // TODO : Implement
 
             /**
              * Pack this color into a single integer
@@ -143,7 +143,7 @@ namespace bpf
              * @param other the color to compare with
              * @return true if the two colors are equal, false otherwise
              */
-            inline bool operator==(const Color &other)
+            inline bool operator==(const Color &other) const
             {
                 return (R == other.R && G == other.G && B == other.B && A == other.A);
             }
@@ -153,7 +153,7 @@ namespace bpf
              * @param other the color to compare with
              * @return false if the two colors are equal, true otherwise
              */
-            inline bool operator!=(const Color &other)
+            inline bool operator!=(const Color &other) const
             {
                 return (!(R == other.R && G == other.G && B == other.B && A == other.A));
             }
@@ -164,7 +164,7 @@ namespace bpf
              */
             inline Vector3f Normalize() const noexcept
             {
-                return (Vector3f(R / 255.0f, G / 255.0f, B / 255.0f));
+                return (Vector3f((float)R / 255.0f, (float)G / 255.0f, (float)B / 255.0f));
             }
 
             /**
@@ -173,7 +173,7 @@ namespace bpf
              */
             inline Vector4f NormalizeAlpha() const noexcept
             {
-                return (Vector4f(R / 255.0f, G / 255.0f, B / 255.0f, A / 255.0f));
+                return (Vector4f((float)R / 255.0f, (float)G / 255.0f, (float)B / 255.0f, (float)A / 255.0f));
             }
 
             /**

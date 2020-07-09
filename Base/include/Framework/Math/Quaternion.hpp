@@ -77,7 +77,7 @@ namespace bpf
              * Constructs a quaternion from axis angle
              * WARNING : Angle is expressed in radians
              */
-            Quaternion(const Vector<T, 3> &axis, const T ang);
+            Quaternion(const Vector<T, 3> &axis, T ang);
 
             /**
              * Rotates the given vector by this quaternion
@@ -157,7 +157,7 @@ namespace bpf
             /**
              * Linear Interpolation between two quaternions
              */
-            static Quaternion<T> Lerp(const Quaternion<T> &q, const Quaternion<T> &q1, const T t);
+            static Quaternion<T> Lerp(const Quaternion<T> &q, const Quaternion<T> &q1, T t);
 
             /**
              * Spherical linear interpolation between two quaternions
@@ -165,7 +165,7 @@ namespace bpf
              * Never could figure why it did this
              * TODO : Figure out why Slerp does not work as intended, and fix it
              */
-            static Quaternion<T> Slerp(const Quaternion<T> &q, const Quaternion<T> &q1, const T t);
+            static Quaternion<T> Slerp(const Quaternion<T> &q, const Quaternion<T> &q1, T t);
 
             static Quaternion<T> LookAt(const Vector3<T> &dir, const Vector3<T> &forward = Vector3<T>::Forward,
                                         const Vector3<T> &up = Vector3<T>::Up);

@@ -103,7 +103,7 @@ namespace bpf
 
             ~SharedPtr();
 
-            SharedPtr<T> &operator=(SharedPtr<T> &&other);
+            SharedPtr<T> &operator=(SharedPtr<T> &&other) noexcept;
 
             SharedPtr<T> &operator=(const SharedPtr<T> &other);
 

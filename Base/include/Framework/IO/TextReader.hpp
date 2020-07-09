@@ -48,7 +48,7 @@ namespace bpf
             ECharacterEncoding _encoder;
 
             bool ReadByte2(uint8 &out);
-            bool ReadSubBuf(void *out, const fsize size);
+            bool ReadSubBuf(void *out, fsize size);
             bool CheckIsSeparator(uint8 byte);
 
         public:
@@ -83,7 +83,7 @@ namespace bpf
              * @param bufsize the size of the receiving buffer
              * @return fsize number of bytes read
              */
-            fsize Read(void *buf, fsize bufsize);
+            fsize Read(void *buf, fsize bufsize) final;
 
             /**
              * Reads a line of text
@@ -105,29 +105,29 @@ namespace bpf
              */
             String ReadAll();
 
-            IDataInputStream &operator>>(uint8 &u);
+            IDataInputStream &operator>>(uint8 &u) final;
 
-            IDataInputStream &operator>>(uint16 &u);
+            IDataInputStream &operator>>(uint16 &u) final;
 
-            IDataInputStream &operator>>(uint32 &u);
+            IDataInputStream &operator>>(uint32 &u) final;
 
-            IDataInputStream &operator>>(uint64 &u);
+            IDataInputStream &operator>>(uint64 &u) final;
 
-            IDataInputStream &operator>>(int8 &i);
+            IDataInputStream &operator>>(int8 &i) final;
 
-            IDataInputStream &operator>>(int16 &i);
+            IDataInputStream &operator>>(int16 &i) final;
 
-            IDataInputStream &operator>>(fint &i);
+            IDataInputStream &operator>>(fint &i) final;
 
-            IDataInputStream &operator>>(int64 &i);
+            IDataInputStream &operator>>(int64 &i) final;
 
-            IDataInputStream &operator>>(float &f);
+            IDataInputStream &operator>>(float &f) final;
 
-            IDataInputStream &operator>>(double &d);
+            IDataInputStream &operator>>(double &d) final;
 
-            IDataInputStream &operator>>(bool &b);
+            IDataInputStream &operator>>(bool &b) final;
 
-            IDataInputStream &operator>>(bpf::String &str);
+            IDataInputStream &operator>>(bpf::String &str) final;
         };
     }
 }

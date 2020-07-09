@@ -84,6 +84,6 @@ namespace bpf
 
         using Viewportf = Viewport<float>;
     }
-};
+}
 
 #include "Framework/Math/Viewport.impl.hpp"

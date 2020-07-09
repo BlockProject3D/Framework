@@ -54,7 +54,7 @@ namespace bpf
                 MatrixBuilder &ShearX(const Vector3<T> &shear) noexcept;
                 MatrixBuilder &ShearY(const Vector3<T> &shear) noexcept;
                 MatrixBuilder &ShearZ(const Vector3<T> &shear) noexcept;
-                MatrixBuilder &Rotate(const Vector3<T> &axis, const T angle) noexcept;
+                MatrixBuilder &Rotate(const Vector3<T> &axis, T angle) noexcept;
                 inline MatrixBuilder &Rotate(const Quaternion<T> &quat) noexcept
                 {
                     _matrix = _matrix * quat.ToMatrix();

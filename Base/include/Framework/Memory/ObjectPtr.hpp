@@ -64,7 +64,7 @@ namespace bpf
                     RawPtr->AddRef((void **)&RawPtr);
             }
 
-            inline ObjectPtr(ObjectPtr<T> &&other)
+            inline ObjectPtr(ObjectPtr<T> &&other) noexcept
                 : RawPtr(other.RawPtr)
             {
                 if (RawPtr != Null)
@@ -123,6 +123,8 @@ namespace bpf
 
             ObjectPtr<T> &operator=(const ObjectPtr<T> &other)
             {
+                if (this == &other)
+                    return (*this);
                 if (RawPtr != Null)
                     RawPtr->RemoveRef((void **)&RawPtr);
                 RawPtr = other.RawPtr;
@@ -131,7 +133,7 @@ namespace bpf
                 return (*this);
             }
 
-            ObjectPtr<T> &operator=(ObjectPtr<T> &&other)
+            ObjectPtr<T> &operator=(ObjectPtr<T> &&other) noexcept
             {
                 if (RawPtr != Null)
                     RawPtr->RemoveRef((void **)&RawPtr);

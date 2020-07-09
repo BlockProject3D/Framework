@@ -66,7 +66,7 @@ namespace bpf
             {
             }
 
-            inline Vector(Vector &&other)
+            inline Vector(Vector &&other) noexcept
                 : X(std::move(other.X))
                 , Y(std::move(other.Y))
             {
@@ -77,9 +77,9 @@ namespace bpf
                 return (2);
             }
 
-            T &operator()(const fsize l);
+            T &operator()(fsize l);
 
-            const T &operator()(const fsize l) const;
+            const T &operator()(fsize l) const;
 
             inline const T *operator*() const noexcept
             {
@@ -93,12 +93,14 @@ namespace bpf
 
             inline Vector &operator=(const Vector &other)
             {
+                if (this == &other)
+                    return (*this);
                 X = other.X;
                 Y = other.Y;
                 return (*this);
             }
 
-            inline Vector &operator=(Vector &&other)
+            inline Vector &operator=(Vector &&other) noexcept
             {
                 X = std::move(other.X);
                 Y = std::move(other.Y);

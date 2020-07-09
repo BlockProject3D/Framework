@@ -27,7 +27,6 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Framework/IO/ConsoleReader.hpp"
-#include "Framework/IO/Console.hpp"
 #include "Framework/IO/IOException.hpp"
 #include "OSPrivate.hpp"
 #ifdef WINDOWS

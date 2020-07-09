@@ -160,7 +160,7 @@ namespace bpf
             /**
              * Move constructor
              */
-            Map(Map &&other);
+            Map(Map &&other) noexcept;
 
             /**
              * Constructs a HashMap from an existing initializer list
@@ -221,7 +221,7 @@ namespace bpf
              * @tparam Comparator the comparision operator to use for comparing values
              */
             template <template <typename> class Comparator = ops::Equal>
-            void Remove(const V &value, const bool all = true);
+            void Remove(const V &value, bool all = true);
 
             /**
              * Compare Map by performing a per-element check
@@ -299,7 +299,7 @@ namespace bpf
             /**
              * Move assignment operator
              */
-            Map &operator=(Map &&other);
+            Map &operator=(Map &&other) noexcept;
 
             /**
              * Create a new Map from concatenation of two maps
@@ -321,7 +321,7 @@ namespace bpf
              */
             inline bool HasKey(const K &key) const
             {
-                return (FindNode(key) == Null ? false : true);
+                return (FindNode(key) != Null);
             }
 
             /**
