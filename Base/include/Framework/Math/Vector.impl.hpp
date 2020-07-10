@@ -462,7 +462,7 @@ namespace bpf
         bool Vector<T>::operator==(const Vector &other) const
         {
             if (_l != other._l)
-                throw IncompatibleMatrixSizeException((fisize)_l, (fisize)other._l);
+                return (false);
             for (fsize i = 0; i != _l; ++i)
             {
                 T diff = Math<T>::Abs(_arr[i] - other(i));
