@@ -35,29 +35,63 @@ namespace bpf
 {
     namespace math
     {
+        /**
+         * Utility to represent a 2D polygon
+         * @tparam T the number type
+         */
         template <typename T>
         class BP_TPL_API Polygon2
         {
         public:
+            /**
+             * Polygon vertices
+             */
             collection::ArrayList<Vector2<T>> Vertices;
 
+            /**
+             * Constructs a polygon from a set of vertices
+             * @param verts the vertices to copy from
+             */
             explicit inline Polygon2(const collection::ArrayList<Vector2<T>> &verts)
                 : Vertices(verts)
             {
             }
 
+            /**
+             * Constructs a polygon from a set of vertices
+             * @param verts the vertices to move from
+             */
             explicit inline Polygon2(collection::ArrayList<Vector2<T>> &&verts)
                 : Vertices(std::move(verts))
             {
             }
 
+            /**
+             * Apply a 2D transform to each vertex sequentially
+             * @param transform the transform to apply
+             */
             inline void Transform(const Transform2<T> &transform)
             {
                 Transform(transform.ToMatrix());
             }
 
+            /**
+             * Computes the barycenter of this polygon
+             * @return 2D vector
+             */
             Vector2<T> GetBarycenter() const noexcept;
+
+            /**
+             * Apply a matrix to each vertex sequentially
+             * @param matrix the matrix to apply
+             */
             void Transform(const Matrix3<T> &matrix);
+
+            /**
+             * Computes a triangulation of this polygon.
+             * WARNING: May not work properly on non-convex polygons
+             * @return ArrayList of 2D polygons
+             */
             collection::ArrayList<Polygon2> Triangulate() const noexcept;
         };
 
