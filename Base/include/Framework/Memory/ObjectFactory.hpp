@@ -41,7 +41,7 @@ namespace bpf
          * @tparam Args the arguments to the constructor
          */
         template <class /* ? extends */ T, typename ...Args>
-        class BPF_API ObjectFactory
+        class BP_TPL_API ObjectFactory
         {
         private:
             collection::HashMap<String, ObjectConstructor<T, Args...> *> Registry;

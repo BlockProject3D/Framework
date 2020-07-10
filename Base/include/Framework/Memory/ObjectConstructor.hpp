@@ -41,7 +41,7 @@ namespace bpf
          * @tparam Args arguments to the constructor
          */
         template <class C, class /* C extends */ T, typename... Args>
-        class BPF_API ObjectConstructor
+        class BP_TPL_API ObjectConstructor
         {
         public:
             inline UniquePtr<T> MakeUnique(Args &&... args) const
