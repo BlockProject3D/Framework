@@ -34,28 +34,81 @@ namespace bpf
 {
     namespace math
     {
+        /**
+         * Random number generator utility
+         */
         class BPF_API Random
         {
         private:
             static fint IntBounds(fint min, fint max);
 
         public:
+            /**
+             * Constructs a random with a default seed
+             */
             Random();
+
+            /**
+             * Constructs a random from a custom seed
+             * @param seed random seed to use
+             */
             explicit Random(long seed);
+
+            /**
+             * Generate a new random integer
+             * @param max maximum value
+             * @return new 32 bit integer
+             */
             fint NextInt(fint max = bpf::Int::MaxValue);
+
+            /**
+             * Generate a new random integer
+             * @param min minimum value
+             * @param max maximum value
+             * @return new 32 bit integer
+             */
             fint NextInt(fint min, fint max);
+
+            /**
+             * Generate a new random integer
+             * @param max maximum value
+             * @return new 8 bit integer
+             */
             uint8 NextByte(uint8 max = bpf::UInt8::MaxValue);
+
+            /**
+             * Generate a new random integer
+             * @param min minimum value
+             * @param max maximum value
+             * @return new 8 bit integer
+             */
             uint8 NextByte(uint8 min, uint8 max);
+
+            /**
+             * Generate a new random integer
+             * @param max maximum value
+             * @return new 16 bit integer
+             */
             uint16 NextShort(uint16 max = bpf::UInt16::MaxValue);
+
+            /**
+             * Generate a new random integer
+             * @param min minimum value
+             * @param max maximum value
+             * @return new 16 bit integer
+             */
             uint16 NextShort(uint16 min, uint16 max);
 
             /**
-             * Returns random float between 0 and 1
+             * Generate a new random float
+             * @param min minimum value
+             * @return random float between 0 and 1 added with min
              */
             float NextFloat(float min = 0);
 
             /**
-             * Returns random double between 0 and 1
+             * Generate a new random double
+             * @return random double between 0 and 1
              */
             double NextDouble();
         };
