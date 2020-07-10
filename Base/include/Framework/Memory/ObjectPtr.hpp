@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -27,6 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/Memory/ClassCastException.hpp"
 #include "Framework/Memory/Object.hpp"
 
 namespace bpf
@@ -34,9 +35,9 @@ namespace bpf
     namespace memory
     {
         /**
-         * The object smart pointer, allows you to automatically reset all instances of FObjectPtr when a given underlying instance is destroyed
-         * This class only works with types extending the FObject class
-         * @tparam T the type of the underlying instance
+         * The object smart pointer, allows you to automatically reset all instances of ObjectPtr when a given
+         * underlying instance is destroyed This class only works with types extending the Object class
+         * @tparam T the type of the underlying instance (must extend bpf::memory::Object)
          */
         template <class T /* extends Object */>
         class BP_TPL_API ObjectPtr
@@ -108,7 +109,7 @@ namespace bpf
 
             inline T *operator*() const
             {
-                return (RawPtr);
+                return (*RawPtr);
             }
 
             ObjectPtr<T> &operator=(T *other)
@@ -145,6 +146,24 @@ namespace bpf
                     other.RawPtr = Null;
                 }
                 return (*this);
+            }
+
+            template <typename T1>
+            inline ObjectPtr<T1> Cast() const
+            {
+#ifdef BUILD_DEBUG
+                if (RawPtr == Null)
+                    return (Null);
+                else
+                {
+                    auto ptr = dynamic_cast<T1 *>(RawPtr);
+                    if (ptr == Null)
+                        throw ClassCastException(String("Cannot cast from ") + TypeName<T>() + " to " + TypeName<T1>());
+                    return (ObjectPtr<T1>(ptr));
+                }
+#else
+                return (ObjectPtr<T1>(static_cast<T1 *>(RawPtr)));
+#endif
             }
         };
     }

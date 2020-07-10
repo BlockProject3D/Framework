@@ -65,6 +65,7 @@ set(SOURCES
     src/System/Process.cpp
     src/Json/Json.cpp
     src/Json/JsonWriter.cpp
+    src/Memory/ObjectConstructor.cpp
     src/BaseConvert.cpp
     src/Compression.cpp
     src/Tuple.cpp

@@ -78,7 +78,7 @@ set(SOURCES
     ./include/Framework/Memory/WeakPtr.impl.hpp
     ./include/Framework/Memory/Object.hpp
     ./include/Framework/Memory/ObjectFactory.hpp
-    ./include/Framework/Memory/IObjectConstructor.hpp
+        include/Framework/Memory/ObjectConstructor.hpp
     ./include/Framework/Memory/ObjectPtr.hpp
     ./include/Framework/Network/Network.hpp
     ./include/Framework/System/Module.hpp

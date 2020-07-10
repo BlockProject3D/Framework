@@ -26,36 +26,46 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
+#include <Framework/Memory/ObjectConstructor.hpp>
+#include <gtest/gtest.h>
 
-namespace bpf
+class MyClass
 {
-    /**
-     * Returns the cross-platform type name of a given type
-     * @tparam T the type to search the name of
-     * @return low-level null-terminated c-string
-     */
-    template <typename T>
-    inline const char *TypeName() noexcept
+public:
+    int Val;
+
+    MyClass(int a)
+        : Val(a)
     {
-        return ("Unknown");
     }
+
+    MyClass()
+        : Val(0)
+    {
+    }
+
+    BP_USE_CONSTRUCTOR(MyClass, MyClass);
+};
+
+BP_MAP_CONSTRUCTOR(MyClass, MyClass, int)
+BP_MAP_CONSTRUCTOR(MyClass, MyClass)
+
+TEST(ObjectConstructor, Basic)
+{
+    EXPECT_NE(MyClass::GetConstructor(), Null);
+    EXPECT_NE(MyClass::GetConstructor<int>(), Null);
 }
 
-/**
- * Defines the type name for a given type
- * @param T the type to define the cross platform type name for
- */
-#define BP_DEFINE_TYPENAME(T)                                                                                          \
-    namespace bpf                                                                                                      \
-    {                                                                                                                  \
-        template <>                                                                                                    \
-        inline const char *TypeName<T>() noexcept                                                                      \
-        {                                                                                                              \
-            return (#T);                                                                                               \
-        }                                                                                                              \
-    }
+TEST(ObjectConstructor, Instantiate_1)
+{
+    auto ptr = MyClass::GetConstructor()->MakeUnique();
+    EXPECT_EQ(ptr->Val, 0);
+    EXPECT_EQ((*ptr).Val, 0);
+}
 
-BP_DEFINE_TYPENAME(int)
-BP_DEFINE_TYPENAME(float)
-BP_DEFINE_TYPENAME(double)
+TEST(ObjectConstructor, Instantiate_2)
+{
+    auto ptr = MyClass::GetConstructor<int>()->MakeUnique(42);
+    EXPECT_EQ(ptr->Val, 42);
+    EXPECT_EQ((*ptr).Val, 42);
+}

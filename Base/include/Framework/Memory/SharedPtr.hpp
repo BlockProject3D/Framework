@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -27,15 +27,15 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Memory/MemUtils.hpp"
 #include "Framework/Memory/ClassCastException.hpp"
+#include "Framework/Memory/MemUtils.hpp"
 #include "Framework/TypeInfo.hpp"
 
 namespace bpf
 {
     namespace memory
     {
-        template<typename T>
+        template <typename T>
         class BP_TPL_API WeakPtr;
 
         template <typename T>
@@ -52,7 +52,7 @@ namespace bpf
                 , RawPtr(raw)
             {
                 if (Count != Null)
-                    ++ *Count;
+                    ++*Count;
             }
 
         public:
@@ -89,7 +89,7 @@ namespace bpf
                 , RawPtr(other.RawPtr)
             {
                 if (Count != Null)
-                    ++ *Count;
+                    ++*Count;
             }
 
             inline SharedPtr(const SharedPtr<T> &other) noexcept
@@ -98,7 +98,7 @@ namespace bpf
                 , RawPtr(other.RawPtr)
             {
                 if (Count != Null)
-                    ++ *Count;
+                    ++*Count;
             }
 
             ~SharedPtr();
