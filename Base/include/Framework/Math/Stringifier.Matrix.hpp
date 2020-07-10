@@ -32,6 +32,12 @@
 
 namespace bpf
 {
+    /**
+     * Provides string representation to all static matrix types
+     * @tparam T type of number
+     * @tparam N number of rows
+     * @tparam M number of columns
+     */
     template <typename T, fsize N, fsize M>
     class String::Stringifier<math::Matrix<T, N, M>>
     {
@@ -55,6 +61,10 @@ namespace bpf
         }
     };
 
+    /**
+     * Provides string representation to all dynamic matrix types
+     * @tparam T type of number
+     */
     template <typename T>
     class String::Stringifier<math::Matrix<T>>
     {

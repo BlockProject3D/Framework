@@ -32,6 +32,10 @@
 
 namespace bpf
 {
+    /**
+     * Provides string representation to all quaternion types
+     * @tparam T type of number
+     */
     template <typename T>
     class String::Stringifier<math::Quaternion<T>>
     {

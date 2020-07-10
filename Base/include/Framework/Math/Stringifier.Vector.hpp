@@ -32,6 +32,11 @@
 
 namespace bpf
 {
+    /**
+     * Provides string representation to all vector types; also works for dynamic vector types
+     * @tparam T type of number
+     * @tparam I vector dimension
+     */
     template <typename T, fsize I>
     class String::Stringifier<math::Vector<T, I>>
     {
