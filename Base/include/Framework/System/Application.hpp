@@ -69,14 +69,11 @@ namespace bpf
             {
             }
 
-            /**
-             * Virtual destructor
-             */
             virtual ~Application() {}
 
             /**
-             * Allocate a console for this application if it does not already have a console.
-             * Only usefull when the system do not create a console
+             * Allocates a console for this application if it does not already have one.
+             * Only useful when the system do not create a console
              * @param rows number of rows in the console window
              * @param columns number of columns in the console window
              */
@@ -95,6 +92,10 @@ namespace bpf
              */
             virtual bool SetWorkingDirectory(const io::File &file) = 0;
 
+            /**
+             * Disables operating system level dialogs shown when an application crashes.
+             * Useful when building command line applications
+             */
             virtual void DisableErrorDialogs() noexcept = 0;
         };
     }
