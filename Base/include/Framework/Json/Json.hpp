@@ -135,9 +135,9 @@ namespace bpf
                  * @param name the property name
                  * @param json the value to insert
                  */
-                inline void Add(const String &name, Json &&data)
+                inline void Add(const String &name, Json &&json)
                 {
-                    Properties.Add(name, std::move(data));
+                    Properties.Add(name, std::move(json));
                 }
 
                 /**
