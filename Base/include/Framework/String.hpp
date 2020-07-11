@@ -512,8 +512,8 @@ namespace bpf
         String Sub(fisize begin) const;
 
         /**
-         * Formats a string using a set of parameters and a format
-         * Builds a string using the following formating syntax : '[]' for no format and [&lt;num chars
+         * Formats a string using a set of parameters and a format.
+         * Builds a string using the following formating syntax : '[]' for no format or [&lt;num chars
          * padding&gt;,&lt;allignment (left / right)&gt;,&lt;characters to serve as padding&gt;]
          * @tparam Args parameter types to format
          * @param format the format string
@@ -528,8 +528,8 @@ namespace bpf
         }
 
         /**
-         * Formats a string using a set of parameters and a format
-         * Builds a string using the following formating syntax : '[]' for no format and [&lt;num chars
+         * Formats a string using a set of parameters and a format.
+         * Builds a string using the following formating syntax : '[]' for no format or [&lt;num chars
          * padding&gt;,&lt;allignment (left / right)&gt;,&lt;characters to serve as padding&gt;]
          * @tparam Args parameter types to format
          * @tparam T current type
