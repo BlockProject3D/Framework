@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -27,13 +27,13 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include <type_traits>
-#include <cstdlib>
-#include "Framework/Types.hpp"
-#include "Framework/TypeInfo.hpp"
+#include "Framework/Api.hpp"
 #include "Framework/Collection/Array.hpp"
 #include "Framework/IndexException.hpp"
-#include "Framework/Api.hpp"
+#include "Framework/TypeInfo.hpp"
+#include "Framework/Types.hpp"
+#include <cstdlib>
+#include <type_traits>
 
 namespace bpf
 {
@@ -44,14 +44,15 @@ namespace bpf
         fsize StrLen;
         fsize UnicodeLen;
 
-        static void CopyString(const char *src, char *dest, fsize len) ;
-        static fsize CalcUnicodeLen(const char *str, fsize len) ;
+        static void CopyString(const char *src, char *dest, fsize len);
+        static fsize CalcUnicodeLen(const char *str, fsize len);
         fsize CalcStartFromUnicode(fsize start) const;
         static uint8 CalcCharIncrement(char c);
-        static void MakeSized(String &str, fsize len) ;
+        static void MakeSized(String &str, fsize len);
         static fint InternalToInt(const String &str);
 
-        //* '[]' for no format and [(.precision,)(<num chars padding>,<allignment (left / right)>,<characters to serve as padding>)]
+        //* '[]' for no format and [(.precision,)(<num chars padding>,<allignment (left / right)>,<characters to serve
+        // as padding>)]
         template <typename T>
         static String FormatSingle(const collection::Array<String> &tokens, T &&t)
         {
@@ -85,8 +86,8 @@ namespace bpf
             }
             return (data);
         }
-    public:
 
+    public:
         /**
          * Provides string serializing function to a type
          * @tparam T the type to provide string conversion function to
@@ -95,7 +96,6 @@ namespace bpf
         class Stringifier
         {
         public:
-
             /**
              * Converts the given value to it's string representation
              * @param obj the value to convert
@@ -104,7 +104,7 @@ namespace bpf
              */
             inline static String Stringify(const T &obj, const fsize prec = 0)
             {
-                (void)prec; //Required due to MSVC not able to understand the meaning of javadoc style comments
+                (void)prec; // Required due to MSVC not able to understand the meaning of javadoc style comments
                 return (obj);
             }
         };
@@ -299,14 +299,14 @@ namespace bpf
 
         /**
          * Converts this string to an array of UTF32 codes
-         * @return array of UTF32 codes 
+         * @return array of UTF32 codes
          */
         collection::Array<fchar> ToUTF32() const;
 
         /**
          * Converts this string to an array of UTF16 codes
          * @throw EvalException in case the the current string contains non-UTF16 encodable characters
-         * @return array of UTF16 codes 
+         * @return array of UTF16 codes
          */
         collection::Array<fchar16> ToUTF16() const;
 
@@ -426,7 +426,8 @@ namespace bpf
         /**
          * Splits this string using a delimiter
          * @param c the seperator character
-         * @param ignore character to identify escape sequences (all characters between two of this ignore char will be interpreted as a single token)
+         * @param ignore character to identify escape sequences (all characters between two of this ignore char will be
+         * interpreted as a single token)
          * @return array of tokens
          */
         collection::Array<String> ExplodeIgnore(char c, char ignore) const;
@@ -441,7 +442,8 @@ namespace bpf
         /**
          * Splits this string using a delimiter
          * @param str the separator string
-         * @param ignore string to identify escape sequences (all characters between two of this ignore string will be interpreted as a single token)
+         * @param ignore string to identify escape sequences (all characters between two of this ignore string will be
+         * interpreted as a single token)
          * @return array of tokens
          */
         collection::Array<String> ExplodeIgnore(const String &str, const String &ignore) const;
@@ -511,14 +513,15 @@ namespace bpf
 
         /**
          * Formats a string using a set of parameters and a format
-         * Builds a string using the following formating syntax : '[]' for no format and [<num chars padding>,<allignment (left / right)>,<characters to serve as padding>]
+         * Builds a string using the following formating syntax : '[]' for no format and [&lt;num chars
+         * padding&gt;,&lt;allignment (left / right)&gt;,&lt;characters to serve as padding&gt;]
          * @tparam Args parameter types to format
          * @param format the format string
          * @param ... the actual parameters to format
          * @return new formatted string
          */
-        //TODO: Add support for center alignment
-        template <typename ...Args>
+        // TODO: Add support for center alignment
+        template <typename... Args>
         inline static String Format(const String &format, Args &&...)
         {
             return (format);
@@ -526,13 +529,16 @@ namespace bpf
 
         /**
          * Formats a string using a set of parameters and a format
-         * Builds a string using the following formating syntax : '[]' for no format and [<num chars padding>,<allignment (left / right)>,<characters to serve as padding>]
+         * Builds a string using the following formating syntax : '[]' for no format and [&lt;num chars
+         * padding&gt;,&lt;allignment (left / right)&gt;,&lt;characters to serve as padding&gt;]
          * @tparam Args parameter types to format
+         * @tparam T current type
+         * @param t current value
          * @param format the format string
          * @param args the actual parameters to format
          * @return new formatted string
          */
-        template <typename T, typename ...Args>
+        template <typename T, typename... Args>
         static String Format(const String &format, T &&t, Args &&... args)
         {
             String res;
@@ -556,7 +562,8 @@ namespace bpf
         }
 
         /**
-         * Converts any object to it's string representation by calling the appropriate Stringifier or the built-in ValueOf if it is a scalar
+         * Converts any object to it's string representation by calling the appropriate Stringifier or the built-in
+         * ValueOf if it is a scalar
          * @param val value to convert to a string
          * @param prec precision for numeric types (0 means max precision)
          * @return string representation of val
@@ -705,6 +712,8 @@ namespace bpf
         /**
          * Empty string constant
          */
-        BP_DEPRECATED("To check for empty string use String.IsEmpty, to create an empty string use litteral \"\". This constant will be removed in a future version.") static const String Empty;
+        BP_DEPRECATED("To check for empty string use String.IsEmpty, to create an empty string use litteral \"\". This "
+                      "constant will be removed in a future version.")
+        static const String Empty;
     };
 }

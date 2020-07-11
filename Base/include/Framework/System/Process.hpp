@@ -79,7 +79,7 @@ namespace bpf
 
                 /**
                  * Sets the application to run as a separate process
-                 * @param appName the application path or name string (this overload does automatically check the PATH
+                 * @param name the application path or name string (this overload does automatically check the PATH
                  * using this Builder's environment)
                  * @throw io::IOException when the application could not be found
                  * @return Builder reference

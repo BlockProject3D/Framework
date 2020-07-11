@@ -76,7 +76,7 @@ namespace bpf
 
                 /**
                  * Constructs an Object from an existing initializer list
-                 * @param entries the initial list of key-value pairs to add to this new Object
+                 * @param lst the initial list of key-value pairs to add to this new Object
                  */
                 explicit Object(const std::initializer_list<std::pair<String, Json>> &lst);
 
@@ -122,8 +122,8 @@ namespace bpf
 
                 /**
                  * Adds a new property in this object, replaces if the property already exists
-                 * @param key the property name
-                 * @param value the value to insert
+                 * @param name the property name
+                 * @param json the value to insert
                  */
                 inline void Add(const String &name, const Json &json)
                 {
@@ -132,8 +132,8 @@ namespace bpf
 
                 /**
                  * Adds a new property in this object, replaces if the property already exists
-                 * @param key the property name
-                 * @param value the value to insert
+                 * @param name the property name
+                 * @param json the value to insert
                  */
                 inline void Add(const String &name, Json &&data)
                 {
@@ -218,7 +218,7 @@ namespace bpf
 
                 /**
                  * Constructs an Array from an existing initializer list
-                 * @param entries the initial list of items to add to this new Array
+                 * @param vals the initial list of items to add to this new Array
                  */
                 explicit Array(const std::initializer_list<Json> &vals);
 
@@ -251,7 +251,7 @@ namespace bpf
 
                 /**
                  * Adds a new item at the end of the array
-                 * @param json the new value to append
+                 * @param data the new value to append
                  */
                 inline void Add(Json &&data)
                 {
@@ -466,7 +466,7 @@ namespace bpf
 
             /**
              * Constructs a Json array value
-             * @param val the array to store
+             * @param arr the array to store
              */
             inline Json(const Array &arr)
                 : _type(EType::ARRAY)
@@ -480,7 +480,7 @@ namespace bpf
 
             /**
              * Constructs a Json array value
-             * @param val the array to store
+             * @param arr the array to store
              */
             inline Json(Array &&arr)
                 : _type(EType::ARRAY)

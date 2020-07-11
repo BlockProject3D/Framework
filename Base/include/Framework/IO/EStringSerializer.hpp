@@ -38,17 +38,17 @@ namespace bpf
         enum class EStringSerializer
         {
             /**
-             * Serialize string as <set of characters><32 bits 4 bytes unsigned>
+             * Serialize string as &lt;set of characters&gt;&lt;32 bits 4 bytes unsigned&gt;
              */
             VARCHAR_32,
 
             /**
-             * Serialize string as <set of characters><16 bits 2 bytes unsigned>
+             * Serialize string as &lt;set of characters&gt;&lt;16 bits 2 bytes unsigned&gt;
              */
             VARCHAR_16,
 
             /**
-             * Serialize string as <set of characters><8 bits 1 bytes unsigned>
+             * Serialize string as &lt;set of characters&gt;&lt;8 bits 1 bytes unsigned&gt;
              */
             VARCHAR_8,
 

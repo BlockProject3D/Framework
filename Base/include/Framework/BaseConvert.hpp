@@ -47,7 +47,7 @@ namespace bpf
     public:
         /**
          * Constructs an instance of BaseConvert
-         * @pram base the set of characters to use for the base
+         * @param base the set of characters to use for the base
          */
         inline explicit BaseConvert(String base)
             : _base(std::move(base))

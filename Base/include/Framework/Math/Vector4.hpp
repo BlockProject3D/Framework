@@ -153,7 +153,6 @@ namespace bpf
             /**
              * Obtains the value of a cell for modification
              * @param l the row number
-             * @param c the column number
              * @throw IndexException if out of bounds
              * @return mutable cell value
              */
@@ -162,7 +161,6 @@ namespace bpf
             /**
              * Obtains the value of a cell for reading
              * @param l the row number
-             * @param c the column number
              * @throw IndexException if out of bounds
              * @return immutable cell value
              */
