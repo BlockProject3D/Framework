@@ -46,11 +46,18 @@ namespace bpf
             T *RawPtr;
 
         public:
+            /**
+             * Constructs a null ObjectPtr
+             */
             inline ObjectPtr()
                 : RawPtr(Null)
             {
             }
 
+            /**
+             * Constructs an ObjectPtr from a raw pointer
+             * @param raw pointer to wrap
+             */
             inline ObjectPtr(T *raw)
                 : RawPtr(raw)
             {
@@ -58,6 +65,20 @@ namespace bpf
                     RawPtr->AddRef((void **)&RawPtr);
             }
 
+            /**
+             * Copy constructor
+             */
+            template <typename T1>
+            inline ObjectPtr(const ObjectPtr<T1> &other) noexcept
+                : RawPtr(other.RawPtr)
+            {
+                if (RawPtr != Null)
+                    RawPtr->AddRef((void **)&RawPtr);
+            }
+
+            /**
+             * Copy constructor
+             */
             inline ObjectPtr(const ObjectPtr<T> &other)
                 : RawPtr(other.RawPtr)
             {
@@ -65,6 +86,9 @@ namespace bpf
                     RawPtr->AddRef((void **)&RawPtr);
             }
 
+            /**
+             * Move constructor
+             */
             inline ObjectPtr(ObjectPtr<T> &&other) noexcept
                 : RawPtr(other.RawPtr)
             {
@@ -82,36 +106,102 @@ namespace bpf
                     RawPtr->RemoveRef((void **)&RawPtr);
             }
 
+            /**
+             * Compare ObjectPtr
+             * @param other operand
+             * @return true if this equal other, false otherwise
+             */
             inline bool operator==(T *other) const
             {
                 return (RawPtr == other);
             }
 
+            /**
+             * Compare ObjectPtr
+             * @param other operand
+             * @return false if this equal other, true otherwise
+             */
             inline bool operator!=(T *other) const
             {
                 return (RawPtr != other);
             }
 
+            /**
+             * Compare ObjectPtr
+             * @param other operand
+             * @return true if this equal other, false otherwise
+             */
             inline bool operator==(const ObjectPtr<T> &other) const
             {
                 return (RawPtr == other.RawPtr);
             }
 
+            /**
+             * Compare ObjectPtr
+             * @param other operand
+             * @return false if this equal other, true otherwise
+             */
             inline bool operator!=(const ObjectPtr<T> &other) const
             {
                 return (RawPtr != other.RawPtr);
             }
 
+            /**
+             * Compare ObjectPtr
+             * @tparam T1 type to compare with
+             * @param other operand
+             * @return true if this equal other, false otherwise
+             */
+            template <typename T1>
+            inline bool operator==(const ObjectPtr<T1> &other) const noexcept
+            {
+                return (RawPtr == other.RawPtr);
+            }
+
+            /**
+             * Compare ObjectPtr
+             * @tparam T1 type to compare with
+             * @param other operand
+             * @return false if this equal other, true otherwise
+             */
+            template <typename T1>
+            inline bool operator!=(const ObjectPtr<T1> &other) const noexcept
+            {
+                return (RawPtr != other.RawPtr);
+            }
+
+            /**
+             * Access the wrapped object
+             * @return pointer to T
+             */
             inline T *operator->() const
             {
                 return (RawPtr);
             }
 
-            inline T *operator*() const
+            /**
+             * Access the wrapped object
+             * @return reference to T
+             */
+            inline T &operator*() const
             {
                 return (*RawPtr);
             }
 
+            /**
+             * Returns the raw pointer
+             * @return low-level raw pointer
+             */
+            inline T *Raw() const noexcept
+            {
+                return (RawPtr);
+            }
+
+            /**
+             * Assigns this smart pointer to a raw pointer
+             * @param other raw pointer
+             * @return reference to this
+             */
             ObjectPtr<T> &operator=(T *other)
             {
                 if (RawPtr != Null)
@@ -122,6 +212,9 @@ namespace bpf
                 return (*this);
             }
 
+            /**
+             * Copy assignment operator
+             */
             ObjectPtr<T> &operator=(const ObjectPtr<T> &other)
             {
                 if (this == &other)
@@ -134,6 +227,9 @@ namespace bpf
                 return (*this);
             }
 
+            /**
+             * Move assignment operator
+             */
             ObjectPtr<T> &operator=(ObjectPtr<T> &&other) noexcept
             {
                 if (RawPtr != Null)
@@ -148,6 +244,12 @@ namespace bpf
                 return (*this);
             }
 
+            /**
+             * Quick casting function
+             * @tparam T1 the type to cast to
+             * @throw ClassCastException in debug only if the class cannot be casted
+             * @return new casted ObjectPtr
+             */
             template <typename T1>
             inline ObjectPtr<T1> Cast() const
             {
