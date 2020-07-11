@@ -286,7 +286,7 @@ namespace bpf
             /**
              * Returns an element non-const mode
              * @param key the key of the element
-             * @throw IndexException if key is not in this map
+             * @throw IndexException if key is not in this map and cannot be created
              * @return mutable item
              */
             V &operator[](const K &key);
