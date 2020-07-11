@@ -35,6 +35,10 @@ namespace bpf
 {
     namespace memory
     {
+        /**
+         * Weak smart pointer
+         * @tparam T the type of the underlying instance
+         */
         template <typename T>
         class BP_TPL_API WeakPtr
         {
@@ -51,6 +55,10 @@ namespace bpf
             }
 
         public:
+            /**
+             * Constructs a WeakPtr from a SharedPtr
+             * @param other shared ptr to build from
+             */
             inline WeakPtr(const SharedPtr<T> &other) noexcept
                 : Count(other.Count), WCount(other.WCount), RawPtr(other.RawPtr)
             {
@@ -58,6 +66,9 @@ namespace bpf
                     ++ *WCount;
             }
 
+            /**
+             * Copy constructor
+             */
             inline WeakPtr(const WeakPtr<T> &other) noexcept
                 : Count(other.Count), WCount(other.WCount), RawPtr(other.RawPtr)
             {
@@ -67,8 +78,18 @@ namespace bpf
 
             ~WeakPtr();
 
+            /**
+             * Obtains a shared pointer from this weak pointer
+             * @return new SharedPtr
+             */
             SharedPtr<T> Lock() noexcept;
 
+            /**
+             * Quick casting function
+             * @tparam T1 the type to cast to
+             * @throw ClassCastException in debug only if the class cannot be casted
+             * @return new casted WeakPtr
+             */
             template <typename T1>
             inline WeakPtr<T1> Cast() const
             {
