@@ -33,6 +33,9 @@ namespace bpf
 {
     namespace memory
     {
+        /**
+         * Exception thrown when memory could not be allocated
+         */
         class BPF_API MemoryException final : public Exception
         {
         public:

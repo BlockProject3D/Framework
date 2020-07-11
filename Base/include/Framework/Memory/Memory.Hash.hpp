@@ -33,6 +33,9 @@
 
 namespace bpf
 {
+    /**
+     * Provides hashing method for UniquePtr
+     */
     template <typename T>
     class Hash<memory::UniquePtr<T>>
     {
@@ -43,6 +46,9 @@ namespace bpf
         }
     };
 
+    /**
+     * Provides hashing method for SharedPtr
+     */
     template <typename T>
     class Hash<memory::SharedPtr<T>>
     {
