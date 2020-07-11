@@ -44,10 +44,23 @@ namespace bpf
         class BP_TPL_API ObjectConstructor
         {
         public:
+            /**
+             * Constructs a new unique pointer to the parent object type
+             * @param args arguments to the constructor
+             * @throw MemoryException in case allocation is impossible
+             * @return new allocated object wrapped in a UniquePtr
+             */
             inline UniquePtr<T> MakeUnique(Args &&... args) const
             {
                 return (bpf::memory::MakeUnique<C>(std::forward<Args>(args)...));
             }
+
+            /**
+             * Constructs a new shared pointer to the parent object type
+             * @param args arguments to the constructor
+             * @throw MemoryException in case allocation is impossible
+             * @return new allocated object wrapped in a SharedPtr
+             */
             inline SharedPtr<T> MakeShared(Args &&... args) const
             {
                 return (bpf::memory::MakeShared<C>(std::forward<Args>(args)...));

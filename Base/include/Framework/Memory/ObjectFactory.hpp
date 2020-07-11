@@ -62,6 +62,7 @@ namespace bpf
              * Instantiates a new class from this factory
              * @param name the name of the class
              * @param args the arguments to the constructor
+             * @throw MemoryException in case allocation is impossible
              * @return new unique pointer, null if class cannot be found
              */
             inline UniquePtr<T> MakeUnique(const String &name, Args &&... args)
@@ -75,6 +76,7 @@ namespace bpf
              * Instantiates a new class from this factory
              * @param name the name of the class
              * @param args the arguments to the constructor
+             * @throw MemoryException in case allocation is impossible
              * @return new shared pointer, null if class cannot be found
              */
             inline SharedPtr<T> MakeShared(const String &name, Args &&... args)
