@@ -160,21 +160,71 @@ namespace bpf
             DateTime operator-(const TimeSpan &other) const;
 
             /**
-             *
-             * @param other
-             * @return
+             * Compare DateTime
+             * @param other operand
+             * @return true if other is greater than this, false otherwise
              */
             bool operator>(const DateTime &other) const;
+
+            /**
+             * Compare DateTime
+             * @param other operand
+             * @return true if other is less than this, false otherwise
+             */
             bool operator<(const DateTime &other) const;
+
+            /**
+             * Compare DateTime
+             * @param other operand
+             * @return true if other is equal to this, false otherwise
+             */
             bool operator==(const DateTime &other) const;
+
+            /**
+             * Compare DateTime
+             * @param other operand
+             * @return true if other is not equal to this, false otherwise
+             */
             bool operator!=(const DateTime &other) const;
+
+            /**
+             * Converts this DateTime to a UTC time
+             * @return new DateTime
+             */
             DateTime ToUTCTime() const;
+
+            /**
+             * Converts this DateTime to a system localized time
+             * @return new DateTime
+             */
             DateTime ToLocalTime() const;
 
+            /**
+             * Gets the current system time as UTC time
+             * @return new DateTime
+             */
             static DateTime UTCNow();
+
+            /**
+             * Gets the current local system time
+             * @return new DateTime
+             */
             static DateTime Now();
 
+            /**
+             * Parse a DateTime from a string
+             * @param str the string to parse
+             * @throw ParseException when the string cannot be converted to a DateTime
+             * @return new DateTime
+             */
             static DateTime Parse(const String &str);
+
+            /**
+             * Parse a DateTime from a string
+             * @param str the string to parse
+             * @param date DateTime parsed from string
+             * @return true if successfull, false otherwise
+             */
             static bool TryParse(const String &str, DateTime &date);
         };
     }
