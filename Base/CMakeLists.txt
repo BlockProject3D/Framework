@@ -78,15 +78,16 @@ set(SOURCES
     ./include/Framework/Memory/WeakPtr.impl.hpp
     ./include/Framework/Memory/Object.hpp
     ./include/Framework/Memory/ObjectFactory.hpp
-        include/Framework/Memory/ObjectConstructor.hpp
+    ./include/Framework/Memory/ObjectConstructor.hpp
     ./include/Framework/Memory/ObjectPtr.hpp
     ./include/Framework/Network/Network.hpp
     ./include/Framework/System/Module.hpp
     ./include/Framework/System/ModuleException.hpp
     ./include/Framework/System/OSException.hpp
-    ./include/Framework/System/ModuleManager.hpp
-    ./include/Framework/System/ModuleManager.impl.hpp
-    ./include/Framework/System/Platform.hpp
+    ./include/Framework/System/PluginLoader.hpp
+    ./include/Framework/System/PluginLoader.impl.hpp
+    ./include/Framework/System/Plugin.hpp
+        ./include/Framework/System/Platform.hpp
     ./include/Framework/System/TypeExpander.hpp
     ./include/Framework/System/DateTime.hpp
     ./include/Framework/System/TimeSpan.hpp
