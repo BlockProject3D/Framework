@@ -33,6 +33,9 @@ namespace bpf
 {
     namespace system
     {
+        /**
+         * Exception thrown when a generic system error occurs
+         */
         class BPF_API OSException final : public RuntimeException
         {
         public:
