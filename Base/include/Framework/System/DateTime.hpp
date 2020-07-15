@@ -162,28 +162,48 @@ namespace bpf
             /**
              * Compare DateTime
              * @param other operand
-             * @return true if other is greater than this, false otherwise
+             * @return true if this is greater than other, false otherwise
              */
             bool operator>(const DateTime &other) const;
 
             /**
              * Compare DateTime
              * @param other operand
-             * @return true if other is less than this, false otherwise
+             * @return true if this is less than other, false otherwise
              */
             bool operator<(const DateTime &other) const;
 
             /**
              * Compare DateTime
              * @param other operand
-             * @return true if other is equal to this, false otherwise
+             * @return true if this is less than or equal to other, false otherwise
+             */
+            inline bool operator<=(const DateTime &other) const noexcept
+            {
+                return (*this < other || *this == other);
+            }
+
+            /**
+             * Compare DateTime
+             * @param other operand
+             * @return true if this is greater than or equal to other, false otherwise
+             */
+            inline bool operator>=(const DateTime &other) const noexcept
+            {
+                return (*this > other || *this == other);
+            }
+
+            /**
+             * Compare DateTime
+             * @param other operand
+             * @return true if this is equal to other, false otherwise
              */
             bool operator==(const DateTime &other) const;
 
             /**
              * Compare DateTime
              * @param other operand
-             * @return true if other is not equal to this, false otherwise
+             * @return true if this is not equal to other, false otherwise
              */
             bool operator!=(const DateTime &other) const;
 
