@@ -34,11 +34,26 @@ namespace bpf
 {
     namespace system
     {
+        /**
+         * Represents a plugin or a module that is completely managed at runtime
+         * @tparam T plugin base class/interface
+         */
         template <typename T>
         struct BP_TPL_API Plugin
         {
+            /**
+             * Name of the plugin
+             */
             String Name;
+
+            /**
+             * Module to represent a cross-platform instance of the dynamic library
+             */
             class Module Module;
+
+            /**
+             * Interface of the plugin
+             */
             memory::UniquePtr<T> Interface;
         };
     }
