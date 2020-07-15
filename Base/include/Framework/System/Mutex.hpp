@@ -32,6 +32,9 @@ namespace bpf
 {
     namespace system
     {
+        /**
+         * Helper to represent a cross-platform Mutex
+         */
         class BPF_API Mutex
         {
         private:
