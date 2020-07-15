@@ -33,6 +33,9 @@ namespace bpf
 {
     namespace system
     {
+        /**
+         * Represents a module or dynamically loaded library
+         */
         class BPF_API Module
         {
         private:
@@ -46,9 +49,13 @@ namespace bpf
             /**
              * Opens a module binary at a specified path, file extension omitted.
              * @param path the path to the binary module without file extension
-             * @throws ModuleException
+             * @throw ModuleException in case of system error
              */
             explicit Module(const bpf::String &path);
+
+            /**
+             * Constructs an empty module
+             */
             inline Module() noexcept
                 : _path("")
                 , _handle(Null)
@@ -56,6 +63,9 @@ namespace bpf
             }
             ~Module();
 
+            /**
+             * Move constructor
+             */
             inline Module(Module &&other) noexcept
                 : _path(std::move(other._path))
                 , _handle(other._handle)
@@ -63,21 +73,32 @@ namespace bpf
                 other._handle = Null;
             }
 
+            /**
+             * Deleted copy constructor
+             */
             Module(const Module &other) = delete;
 
+            /**
+             * Move assignment operator
+             */
             Module &operator=(Module &&other) noexcept;
 
+            /**
+             * Deleted copy assignment operator
+             */
             Module &operator=(const Module &other) = delete;
 
             /**
              * Loads a symbol from the module
              * @param name the symbol name
-             * @throws ModuleException
+             * @throw ModuleException in case of system error
+             * @return pointer to loaded symbol
              */
             void *LoadSymbol(const bpf::String &name);
 
             /**
              * Returns the path to this module
+             * @return high-level string
              */
             inline const bpf::String &Path() const noexcept
             {
