@@ -87,7 +87,7 @@ set(SOURCES
     ./include/Framework/System/PluginLoader.hpp
     ./include/Framework/System/PluginLoader.impl.hpp
     ./include/Framework/System/Plugin.hpp
-        ./include/Framework/System/Platform.hpp
+    ./include/Framework/System/Platform.hpp
     ./include/Framework/System/TypeExpander.hpp
     ./include/Framework/System/DateTime.hpp
     ./include/Framework/System/TimeSpan.hpp
