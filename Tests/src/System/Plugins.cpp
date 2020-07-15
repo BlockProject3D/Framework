@@ -26,20 +26,11 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-#include "Framework/System/Module.hpp"
-#include "Framework/Memory/UniquePtr.hpp"
+#include <gtest/gtest.h>
+#include <Framework/System/PluginLoader.hpp>
 
-namespace bpf
+TEST(PluginLoader, Basic)
 {
-    namespace system
-    {
-        template <typename T>
-        struct BP_TPL_API Plugin
-        {
-            String Name;
-            class Module Module;
-            memory::UniquePtr<T> Interface;
-        };
-    }
+    bpf::system::PluginLoader loader(bpf::io::File("."));
+    EXPECT_THROW(loader.Load<int>("Test"), bpf::system::ModuleException);
 }
