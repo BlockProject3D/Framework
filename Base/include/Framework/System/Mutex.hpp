@@ -41,10 +41,21 @@ namespace bpf
             void *_handle;
 
         public:
+            /**
+             * Constructs a mutex
+             */
             Mutex();
+
             ~Mutex();
+
+            /**
+             * Move constructor
+             */
             Mutex(Mutex &&other) noexcept;
 
+            /**
+             * Move assignment operator
+             */
             Mutex &operator=(Mutex &&other) noexcept;
 
             /**
