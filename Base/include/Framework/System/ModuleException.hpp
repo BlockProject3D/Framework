@@ -33,6 +33,9 @@ namespace bpf
 {
     namespace system
     {
+        /**
+         * Exception thrown when a module or symbol (in a module) fails to load
+         */
         class BPF_API ModuleException final : public RuntimeException
         {
         public:
