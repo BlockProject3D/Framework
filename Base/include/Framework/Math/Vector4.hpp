@@ -459,7 +459,7 @@ namespace bpf
             /**
              * Compare two vectors
              * @param other vector to compare with
-             * @return true if this is less or equal than other, false otherwise
+             * @return true if this is less than or equal to, false otherwise
              */
             inline bool operator<=(const Vector &other) const
             {
@@ -469,7 +469,7 @@ namespace bpf
             /**
              * Compare two vectors
              * @param other vector to compare with
-             * @return true if this is greater or equal than other, false otherwise
+             * @return true if this is greater than or equal to other, false otherwise
              */
             inline bool operator>=(const Vector &other) const
             {

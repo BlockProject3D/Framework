@@ -280,14 +280,14 @@ namespace bpf
             /**
              * Compare two vectors
              * @param other vector to compare with
-             * @return true if this is less or equal than other, false otherwise
+             * @return true if this is less than or equal to other, false otherwise
              */
             bool operator<=(const Vector &other) const;
 
             /**
              * Compare two vectors
              * @param other vector to compare with
-             * @return true if this is greater or equal than other, false otherwise
+             * @return true if this is greater than or equal to other, false otherwise
              */
             bool operator>=(const Vector &other) const;
 
@@ -637,7 +637,7 @@ namespace bpf
              * Compare two vectors
              * @param other vector to compare with
              * @throw IncompatibleMatrixSizeException if the two vector dimensions do not match
-             * @return true if this is less or equal than other, false otherwise
+             * @return true if this is less than or equal to, false otherwise
              */
             bool operator<=(const Vector &other) const;
 
@@ -645,7 +645,7 @@ namespace bpf
              * Compare two vectors
              * @param other vector to compare with
              * @throw IncompatibleMatrixSizeException if the two vector dimensions do not match
-             * @return true if this is greater or equal than other, false otherwise
+             * @return true if this is greater than or equal to other, false otherwise
              */
             bool operator>=(const Vector &other) const;
 
