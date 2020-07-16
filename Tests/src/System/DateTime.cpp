@@ -62,6 +62,8 @@ TEST(DateTime, Compare)
     bpf::system::DateTime dt1 = dt + bpf::system::TimeSpan(3600) + bpf::system::TimeSpan(60);
     EXPECT_TRUE(dt < dt1);
     EXPECT_TRUE(dt1 > dt);
+    EXPECT_TRUE(dt <= dt1);
+    EXPECT_TRUE(dt1 >= dt);
     EXPECT_TRUE(dt == dt);
     EXPECT_TRUE(dt1 == dt1);
     EXPECT_TRUE(dt == dt);

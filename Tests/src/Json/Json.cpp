@@ -50,6 +50,8 @@ TEST(Json, API_1)
         }
     };
 
+    auto obj1 = &obj;
+    obj = *obj1;
     EXPECT_EQ(obj["Test"], 0.0);
     EXPECT_FALSE(obj["Test"] == true);
     EXPECT_FALSE(obj["Test"] == "test");

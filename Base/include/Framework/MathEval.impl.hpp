@@ -30,7 +30,7 @@
 
 namespace bpf
 {
-    namespace __internal_evale
+    namespace _bpf_internal_evale
     {
         enum EEvalExprOperator
         {
@@ -279,19 +279,19 @@ namespace bpf
     {
         const char *ptr = *str;
         T res = 0;
-        __internal_evale::EEvalExprCode code = __internal_evale::Operation(&ptr, res, false);
+        _bpf_internal_evale::EEvalExprCode code = _bpf_internal_evale::Operation(&ptr, res, false);
 
         switch (code)
         {
-        case __internal_evale::EVAL_EXPR_DIVIDE_ZERO:
+        case _bpf_internal_evale::EVAL_EXPR_DIVIDE_ZERO:
             throw EvalException("Division by zero");
-        case __internal_evale::EVAL_EXPR_INVALID_NUMBER:
+        case _bpf_internal_evale::EVAL_EXPR_INVALID_NUMBER:
             throw EvalException("Number expected");
-        case __internal_evale::EVAL_EXPR_MODULO_ZERO:
+        case _bpf_internal_evale::EVAL_EXPR_MODULO_ZERO:
             throw EvalException("Modulo by zero");
-        case __internal_evale::EVAL_EXPR_SYNTHAX_INCORRECT:
+        case _bpf_internal_evale::EVAL_EXPR_SYNTHAX_INCORRECT:
             throw EvalException("Syntax error");
-        case __internal_evale::EVAL_EXPR_PARENTHESIS:
+        case _bpf_internal_evale::EVAL_EXPR_PARENTHESIS:
             throw EvalException("Missing parenthesis");
         default:
             return (res);
@@ -301,6 +301,6 @@ namespace bpf
     template <typename T>
     T MathEval<T>::EvalNbr(const char *expr, char **endptr)
     {
-        return (__internal_evale::EvalNbr<T>(expr, endptr));
+        return (_bpf_internal_evale::EvalNbr<T>(expr, endptr));
     }
 }

@@ -26,7 +26,6 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <cassert>
 #include <iostream>
 #include <gtest/gtest.h>
 #include <Framework/IO/ByteBuf.hpp>
@@ -74,6 +73,11 @@ TEST(ByteBuf, Copy)
     EXPECT_EQ(buf1.Size(), 128U);
     EXPECT_EQ(buf.Size(), 128U);
     buf = buf1;
+    EXPECT_EQ(buf1.Size(), 128U);
+    EXPECT_EQ(buf.Size(), 128U);
+
+    auto buf2 = &buf;
+    buf = *buf2;
     EXPECT_EQ(buf1.Size(), 128U);
     EXPECT_EQ(buf.Size(), 128U);
 }
