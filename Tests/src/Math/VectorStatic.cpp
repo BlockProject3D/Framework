@@ -44,6 +44,10 @@ TEST(VectorStatic, Create_1)
     EXPECT_EQ(v.X, 0);
     EXPECT_EQ(v.Y, 0);
 
+    v = { 0, 0, 0 };
+    EXPECT_EQ(v.X, 0);
+    EXPECT_EQ(v.Y, 0);
+
     v = bpf::math::Vector2f(0);
     EXPECT_EQ(v.X, 0);
     EXPECT_EQ(v.Y, 0);
@@ -201,6 +205,11 @@ TEST(VectorStatic, Create_2)
     EXPECT_EQ(v.Z, 0);
 
     v = { 0, 0, 0 };
+    EXPECT_EQ(v.X, 0);
+    EXPECT_EQ(v.Y, 0);
+    EXPECT_EQ(v.Z, 0);
+
+    v = { 0, 0, 0, 0 };
     EXPECT_EQ(v.X, 0);
     EXPECT_EQ(v.Y, 0);
     EXPECT_EQ(v.Z, 0);
@@ -390,6 +399,12 @@ TEST(VectorStatic, Create_3)
     EXPECT_EQ(v.Z, 0);
     EXPECT_EQ(v.W, 0);
 
+    v = { 0, 0, 0, 0, 0 };
+    EXPECT_EQ(v.X, 0);
+    EXPECT_EQ(v.Y, 0);
+    EXPECT_EQ(v.Z, 0);
+    EXPECT_EQ(v.W, 0);
+
     v = bpf::math::Vector4f(0);
     EXPECT_EQ(v.X, 0);
     EXPECT_EQ(v.Y, 0);
@@ -563,6 +578,13 @@ TEST(VectorStatic, CopyMove_3)
 TEST(VectorStatic, Create_4)
 {
     Vector5f v = { 0, 0, 0, 0, 0 };
+    EXPECT_EQ(v(0), 0);
+    EXPECT_EQ(v(1), 0);
+    EXPECT_EQ(v(2), 0);
+    EXPECT_EQ(v(3), 0);
+    EXPECT_EQ(v(4), 0);
+
+    v = { 0, 0, 0, 0, 0, 0 };
     EXPECT_EQ(v(0), 0);
     EXPECT_EQ(v(1), 0);
     EXPECT_EQ(v(2), 0);
