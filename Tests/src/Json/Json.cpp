@@ -50,8 +50,6 @@ TEST(Json, API_1)
         }
     };
 
-    auto obj1 = &obj;
-    obj = *obj1;
     EXPECT_EQ(obj["Test"], 0.0);
     EXPECT_FALSE(obj["Test"] == true);
     EXPECT_FALSE(obj["Test"] == "test");
@@ -216,6 +214,8 @@ TEST(Json, API_6)
     J::Array myArr = J::Array{ 1.0, true };
     J val = myObj;
     J val1 = myArr;
+    auto obj1 = &val;
+    val = *obj1;
     const J &valConst = val;
     const J &val1Const = val1;
 

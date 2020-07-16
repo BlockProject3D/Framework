@@ -179,6 +179,8 @@ TEST(HashMap, Copy)
     EXPECT_EQ(lst[0], 0);
     EXPECT_EQ(lst[1], 3);
     EXPECT_EQ(lst[2], 7);
+    auto cc = &copy;
+    copy = *cc;
     EXPECT_EQ(copy[0], 0);
     EXPECT_EQ(copy[1], 3);
     EXPECT_EQ(copy[2], 7);
