@@ -34,7 +34,7 @@ class MyClass
 public:
     int Val;
 
-    MyClass(int a)
+    explicit MyClass(int a)
         : Val(a)
     {
     }
