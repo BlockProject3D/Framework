@@ -28,24 +28,25 @@
 
 #include <Framework/System/OSException.hpp>
 #include <Framework/System/Thread.hpp>
-#include <cassert>
+#include <Framework/Memory/Utility.hpp>
 #include <gtest/gtest.h>
 #include <iostream>
 
-class MyThread : public bpf::system::Thread
+class MyThread final : public bpf::system::IThreadRunnable
 {
 public:
+    bpf::system::Thread _thread;
     bool except;
     bpf::uint32 _value;
     explicit MyThread(bool except)
-        : bpf::system::Thread("MyThread")
+        : _thread("MyThread", *this)
         , except(except)
         , _value(0) // Yeah will work better when initialized...
     {
     }
-    void Run()
+    void Run() final
     {
-        while (IsRunning())
+        while (_thread.IsRunning())
         {
             ++_value;
             bpf::system::Thread::Sleep(250);
@@ -55,59 +56,57 @@ public:
     }
 };
 
-TEST(Thread, Basic)
+TEST(Thread, Basic_1)
 {
     MyThread thread(false);
 
-    EXPECT_STREQ(*thread.GetName(), "MyThread");
-    EXPECT_EQ(thread.GetState(), bpf::system::Thread::PENDING);
-    thread.Kill(); // Should just silently return as the thread is not yet running
-    thread.Start();
-    thread.Start(); // Should just silently return as the thread already runs
-    EXPECT_EQ(thread.GetState(), bpf::system::Thread::RUNNING);
+    EXPECT_STREQ(*thread._thread.GetName(), "MyThread");
+    EXPECT_EQ(thread._thread.GetState(), bpf::system::Thread::PENDING);
+    thread._thread.Kill(); // Should just silently return as the thread is not yet running
+    thread._thread.Start();
+    thread._thread.Start(); // Should just silently return as the thread already runs
+    EXPECT_EQ(thread._thread.GetState(), bpf::system::Thread::RUNNING);
     bpf::system::Thread::Sleep(500);
-    thread.Kill();
-    EXPECT_EQ(thread.GetState(), bpf::system::Thread::EXITING);
-    thread.Join();
-    EXPECT_EQ(thread.GetState(), bpf::system::Thread::FINISHED);
+    thread._thread.Kill();
+    EXPECT_EQ(thread._thread.GetState(), bpf::system::Thread::EXITING);
+    thread._thread.Join();
+    EXPECT_EQ(thread._thread.GetState(), bpf::system::Thread::FINISHED);
     EXPECT_LE(thread._value - (bpf::uint32)2, (bpf::uint32)1);
 }
 
-TEST(Thread, Move_1)
+TEST(Thread, Basic_2)
 {
     MyThread thread(false);
 
-    EXPECT_STREQ(*thread.GetName(), "MyThread");
-    EXPECT_EQ(thread.GetState(), bpf::system::Thread::PENDING);
-    thread.Start();
-    EXPECT_EQ(thread.GetState(), bpf::system::Thread::RUNNING);
-    EXPECT_THROW(MyThread th(std::move(thread)), bpf::system::OSException);
+    EXPECT_STREQ(*thread._thread.GetName(), "MyThread");
+    EXPECT_EQ(thread._thread.GetState(), bpf::system::Thread::PENDING);
+    thread._thread.Start();
+    EXPECT_EQ(thread._thread.GetState(), bpf::system::Thread::RUNNING);
     bpf::system::Thread::Sleep(500);
-    thread.Kill();
-    EXPECT_EQ(thread.GetState(), bpf::system::Thread::EXITING);
-    thread.Join();
-    EXPECT_EQ(thread.GetState(), bpf::system::Thread::FINISHED);
+    thread._thread.Kill();
+    EXPECT_EQ(thread._thread.GetState(), bpf::system::Thread::EXITING);
+    thread._thread.Join();
+    EXPECT_EQ(thread._thread.GetState(), bpf::system::Thread::FINISHED);
     EXPECT_LE(thread._value - (bpf::uint32)2, (bpf::uint32)1);
 }
 
-TEST(Thread, Move_2)
+TEST(Thread, Move)
 {
-    MyThread thread(false);
+    bpf::memory::UniquePtr<MyThread> thread(bpf::memory::MakeUnique<MyThread>(false));
 
-    EXPECT_STREQ(*thread.GetName(), "MyThread");
-    EXPECT_EQ(thread.GetState(), bpf::system::Thread::PENDING);
-    MyThread th = std::move(thread);
-    th.Start();
-    EXPECT_THROW(thread = std::move(th), bpf::system::OSException);
-    EXPECT_EQ(th.GetState(), bpf::system::Thread::RUNNING);
+    EXPECT_STREQ(*thread->_thread.GetName(), "MyThread");
+    EXPECT_EQ(thread->_thread.GetState(), bpf::system::Thread::PENDING);
+    auto th = std::move(thread);
+    th->_thread.Start();
+    EXPECT_EQ(th->_thread.GetState(), bpf::system::Thread::RUNNING);
     bpf::system::Thread::Sleep(500);
-    th.Kill();
-    EXPECT_TRUE((th.GetState() == bpf::system::Thread::EXITING) ||
-                (th.GetState() == bpf::system::Thread::FINISHED)); // It is possible that the thread had time to check
-                                                                   // it's new state before we could check
-    th.Join();
-    EXPECT_EQ(th.GetState(), bpf::system::Thread::FINISHED);
-    EXPECT_LE(th._value - (bpf::uint32)2, (bpf::uint32)1);
+    th->_thread.Kill();
+    EXPECT_TRUE((th->_thread.GetState() == bpf::system::Thread::EXITING) ||
+                (th->_thread.GetState() == bpf::system::Thread::FINISHED)); // It is possible that the thread had time to
+                                                                           // check it's new state before we could check
+    th->_thread.Join();
+    EXPECT_EQ(th->_thread.GetState(), bpf::system::Thread::FINISHED);
+    EXPECT_LE(th->_value - (bpf::uint32)2, (bpf::uint32)1);
     thread = std::move(th);
 }
 
@@ -115,12 +114,12 @@ TEST(Thread, KillForce)
 {
     MyThread thread(false);
 
-    EXPECT_EQ(thread.GetState(), bpf::system::Thread::PENDING);
-    thread.Start();
-    EXPECT_EQ(thread.GetState(), bpf::system::Thread::RUNNING);
+    EXPECT_EQ(thread._thread.GetState(), bpf::system::Thread::PENDING);
+    thread._thread.Start();
+    EXPECT_EQ(thread._thread.GetState(), bpf::system::Thread::RUNNING);
     bpf::system::Thread::Sleep(500);
-    thread.Kill(true);
-    EXPECT_EQ(thread.GetState(),
+    thread._thread.Kill(true);
+    EXPECT_EQ(thread._thread.GetState(),
               bpf::system::Thread::STOPPED); // As we just force killed the thread it should be marked STOPPED
 }
 
@@ -128,40 +127,42 @@ TEST(Thread, Exception)
 {
     MyThread thread(true);
 
-    EXPECT_EQ(thread.GetState(), bpf::system::Thread::PENDING);
-    thread.Start();
-    EXPECT_EQ(thread.GetState(), bpf::system::Thread::RUNNING);
+    EXPECT_EQ(thread._thread.GetState(), bpf::system::Thread::PENDING);
+    thread._thread.Start();
+    EXPECT_EQ(thread._thread.GetState(), bpf::system::Thread::RUNNING);
     bpf::system::Thread::Sleep(500);
-    thread.Join();
-    EXPECT_EQ(thread.GetState(), bpf::system::Thread::STOPPED); // As the thread crashed (throw) it should be marked as
-                                                                // STOPPED instead of FINISHED
+    thread._thread.Join();
+    EXPECT_EQ(thread._thread.GetState(), bpf::system::Thread::STOPPED); // As the thread crashed (throw) it should be
+                                                                        // marked as STOPPED instead of FINISHED
 }
 
 TEST(Thread, RunTwice)
 {
     MyThread thread(false);
 
-    EXPECT_STREQ(*thread.GetName(), "MyThread");
-    EXPECT_EQ(thread.GetState(), bpf::system::Thread::PENDING);
-    thread.Start();
-    EXPECT_EQ(thread.GetState(), bpf::system::Thread::RUNNING);
+    EXPECT_STREQ(*thread._thread.GetName(), "MyThread");
+    EXPECT_EQ(thread._thread.GetState(), bpf::system::Thread::PENDING);
+    thread._thread.Start();
+    EXPECT_EQ(thread._thread.GetState(), bpf::system::Thread::RUNNING);
     bpf::system::Thread::Sleep(500);
-    thread.Kill();
-    EXPECT_TRUE((thread.GetState() == bpf::system::Thread::EXITING) ||
-                (thread.GetState() == bpf::system::Thread::FINISHED)); // It is possible that the thread had time to
+    thread._thread.Kill();
+    EXPECT_TRUE(
+        (thread._thread.GetState() == bpf::system::Thread::EXITING) ||
+        (thread._thread.GetState() == bpf::system::Thread::FINISHED)); // It is possible that the thread had time to
                                                                        // check it's new state before we could check
-    thread.Join();
-    EXPECT_EQ(thread.GetState(), bpf::system::Thread::FINISHED);
+    thread._thread.Join();
+    EXPECT_EQ(thread._thread.GetState(), bpf::system::Thread::FINISHED);
     EXPECT_LE(thread._value - (bpf::uint32)2, (bpf::uint32)1);
-    thread.Start();
-    EXPECT_EQ(thread.GetState(), bpf::system::Thread::RUNNING);
+    thread._thread.Start();
+    EXPECT_EQ(thread._thread.GetState(), bpf::system::Thread::RUNNING);
     bpf::system::Thread::Sleep(500);
-    thread.Kill();
-    EXPECT_TRUE((thread.GetState() == bpf::system::Thread::EXITING) ||
-                (thread.GetState() == bpf::system::Thread::FINISHED)); // It is possible that the thread had time to check
-                                                                   // it's new state before we could check
-    thread.Join();
-    EXPECT_EQ(thread.GetState(), bpf::system::Thread::FINISHED);
+    thread._thread.Kill();
+    EXPECT_TRUE(
+        (thread._thread.GetState() == bpf::system::Thread::EXITING) ||
+        (thread._thread.GetState() == bpf::system::Thread::FINISHED)); // It is possible that the thread had time to
+                                                                       // check it's new state before we could check
+    thread._thread.Join();
+    EXPECT_EQ(thread._thread.GetState(), bpf::system::Thread::FINISHED);
     EXPECT_LE(thread._value - (bpf::uint32)4,
               (bpf::uint32)2); // GitHub Actions so inaccurate in times even worse than Travis
 }

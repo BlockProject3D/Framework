@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -27,71 +27,23 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/System/IThreadRunnable.hpp"
-#include "Framework/String.hpp"
 
 namespace bpf
 {
     namespace system
     {
-        class BPF_API Thread
+        /**
+         * Represents the function to run in a Framework thread
+         */
+        class BPF_API IThreadRunnable
         {
         public:
-            enum EState
+
+            virtual ~IThreadRunnable()
             {
-                PENDING,
-                RUNNING,
-                EXITING,
-                STOPPED,
-                FINISHED
-            };
-
-        private:
-            EState _state;
-            IThreadRunnable &_runnable;
-            String _name;
-            void *_handle;
-
-        public:
-            Thread(const String &name, IThreadRunnable &runnable);
-            ~Thread();
-
-            /**
-             * Construct a thread by move semantics
-             * Never move a running thread
-             */
-            Thread(Thread &&other) noexcept;
-
-            /**
-             * Assigns this thread by move semantics
-             * Never move a running thread
-             */
-            Thread &operator=(Thread &&other) noexcept;
-
-            void Start();
-            void Kill(bool force = false);
-            void Join();
-
-            inline EState GetState() const noexcept
-            {
-                return (_state);
             }
 
-            inline bool IsRunning() const noexcept
-            {
-                return (_state == RUNNING);
-            }
-
-            inline const String &GetName() const noexcept
-            {
-                return (_name);
-            }
-
-            void Run();
-
-            static void Sleep(uint32 milliseconds);
-
-            friend void _bpf_internal_state(Thread &ptr, EState state);
+            virtual void Run() = 0;
         };
     }
 }

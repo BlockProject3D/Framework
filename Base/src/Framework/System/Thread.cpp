@@ -28,7 +28,6 @@
 
 #include "Framework/System/Thread.hpp"
 #include "Framework/Exception.hpp"
-#include "Framework/System/OSException.hpp"
 #include <iostream>
 
 #include <cstdlib>
@@ -96,20 +95,20 @@ void *ThreadRoutine(void *ptr)
 }
 #endif
 
-Thread::Thread(const String &name)
+Thread::Thread(const String &name, IThreadRunnable &runnable)
     : _state(PENDING)
-    , _handle(Null)
+    , _runnable(runnable)
     , _name(name)
+    , _handle(Null)
 {
 }
 
-Thread::Thread(Thread &&other)
+Thread::Thread(Thread &&other) noexcept
     : _state(other._state)
-    , _handle(other._handle)
+    , _runnable(other._runnable)
     , _name(std::move(other._name))
+    , _handle(other._handle)
 {
-    if (_state == RUNNING || _state == EXITING)
-        throw OSException("Cannot move a running thread");
     other._handle = Null;
 }
 
@@ -121,10 +120,8 @@ Thread::~Thread()
 #endif
 }
 
-Thread &Thread::operator=(Thread &&other)
+Thread &Thread::operator=(Thread &&other) noexcept
 {
-    if (_state == RUNNING || _state == EXITING || other._state == RUNNING || other._state == EXITING)
-        throw OSException("Cannot move a running thread");
     Join();
 #ifndef WINDOWS
     free(_handle);
@@ -161,6 +158,11 @@ void Thread::Join()
     free(_handle);
 #endif
     _handle = Null;
+}
+
+void Thread::Run()
+{
+    _runnable.Run();
 }
 
 void Thread::Kill(const bool force)

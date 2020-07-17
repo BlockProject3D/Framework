@@ -92,6 +92,7 @@ set(SOURCES
     ./include/Framework/System/DateTime.hpp
     ./include/Framework/System/TimeSpan.hpp
     ./include/Framework/System/Timer.hpp
+    ./include/Framework/System/IThreadRunnable.hpp
     ./include/Framework/System/Thread.hpp
     ./include/Framework/System/Mutex.hpp
     ./include/Framework/System/ThreadManager.hpp
