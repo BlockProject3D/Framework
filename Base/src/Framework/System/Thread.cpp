@@ -28,6 +28,8 @@
 
 #include "Framework/System/Thread.hpp"
 #include "Framework/Exception.hpp"
+#include "Framework/System/OSException.hpp"
+#include "Framework/Memory/Memory.hpp"
 #include <iostream>
 
 #include <cstdlib>
@@ -140,10 +142,15 @@ void Thread::Start()
     _bpf_internal_state(*this, RUNNING);
 #ifdef WINDOWS
     _handle = CreateThread(Null, 0, &ThreadRoutine, this, 0, Null);
+    if (_handle == Null)
+        throw OSException("Failed to create thread");
 #else
     _handle = malloc(sizeof(ThreadType));
-    pthread_create(reinterpret_cast<ThreadType *>(_handle), Null,
-                   &ThreadRoutine, this);
+    if (_handle == Null)
+        throw memory::MemoryException();
+    if (pthread_create(reinterpret_cast<ThreadType *>(_handle), Null,
+                   &ThreadRoutine, this) != 0)
+        throw OSException("Failed to create thread");
 #endif
 }
 
