@@ -38,11 +38,13 @@ namespace bpf
         class BPF_API IThreadRunnable
         {
         public:
-
             virtual ~IThreadRunnable()
             {
             }
 
+            /**
+             * Function that will run in a thread
+             */
             virtual void Run() = 0;
         };
     }

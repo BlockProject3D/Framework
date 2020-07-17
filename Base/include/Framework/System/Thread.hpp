@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -27,22 +27,47 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/System/IThreadRunnable.hpp"
 #include "Framework/String.hpp"
+#include "Framework/System/IThreadRunnable.hpp"
 
 namespace bpf
 {
     namespace system
     {
+        /**
+         * Utility class to represent a cross platform thread
+         */
         class BPF_API Thread
         {
         public:
+            /**
+             * Enumeration for thread state
+             */
             enum EState
             {
+                /**
+                 * The thread is pending start
+                 */
                 PENDING,
+
+                /**
+                 * The thread is running
+                 */
                 RUNNING,
+
+                /**
+                 * The thread is marked for shut down
+                 */
                 EXITING,
+
+                /**
+                 * The thread has terminated unexpectedly
+                 */
                 STOPPED,
+
+                /**
+                 * The thread has finished
+                 */
                 FINISHED
             };
 
@@ -53,42 +78,78 @@ namespace bpf
             void *_handle;
 
         public:
+            /**
+             * Constructs a Thread
+             * @param name the thread name
+             * @param runnable the thread function
+             */
             Thread(const String &name, IThreadRunnable &runnable);
+
             ~Thread();
 
             /**
-             * Construct a thread by move semantics
-             * Never move a running thread
+             * Move constructor
              */
             Thread(Thread &&other) noexcept;
 
             /**
-             * Assigns this thread by move semantics
-             * Never move a running thread
+             * Move assignment operator
              */
             Thread &operator=(Thread &&other) noexcept;
 
+            /**
+             * Starts the thread
+             */
             void Start();
+
+            /**
+             * Kills the thread
+             * @param force if true a hard kill will be performed and memory may leak, otherwise the thread is marked
+             * for shut down
+             */
             void Kill(bool force = false);
+
+            /**
+             * Joins the thread with the current thread
+             */
             void Join();
 
+            /**
+             * Returns the state
+             * @return copy of the current thread state
+             */
             inline EState GetState() const noexcept
             {
                 return (_state);
             }
 
+            /**
+             * Checks whether this thread is still running
+             * @return true if this thread is running, false otherwise
+             */
             inline bool IsRunning() const noexcept
             {
                 return (_state == RUNNING);
             }
 
+            /**
+             * Returns the thread name
+             * @return high-level string
+             */
             inline const String &GetName() const noexcept
             {
                 return (_name);
             }
 
+            /**
+             * Direct call to the thread runnable.
+             */
             void Run();
 
+            /**
+             * Yields the current thread for a certain amount of time
+             * @param milliseconds number of milliseconds to wait
+             */
             static void Sleep(uint32 milliseconds);
 
             friend void _bpf_internal_state(Thread &ptr, EState state);
