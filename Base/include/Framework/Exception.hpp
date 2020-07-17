@@ -38,7 +38,7 @@ namespace bpf
     private:
     public:
         virtual ~Exception(){};
-        Exception() noexcept {};
+        Exception() {};
 
         /**
          * Returns exception type
