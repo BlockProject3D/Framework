@@ -60,5 +60,7 @@ namespace bpf
         Dynamic &operator=(T &&other);
         template <typename T>
         operator T &();
+        template <typename T>
+        operator const T &() const;
     };
 }
