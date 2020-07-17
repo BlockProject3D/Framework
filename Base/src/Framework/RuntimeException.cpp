@@ -37,6 +37,7 @@ RuntimeException::RuntimeException(const String &type, const String &message)
     , _message(memory::MemUtils::New<String>(message))
     , _refs(reinterpret_cast<int *>(memory::Memory::Malloc(sizeof(int))))
 {
+    *_refs = 0;
 }
 
 RuntimeException::~RuntimeException()
