@@ -33,24 +33,36 @@ namespace bpf
 {
     namespace json
     {
+        /**
+         * Exception thrown by the Json Lexer or Parser when it is unable to process a given line of text
+         */
         class BPF_API JsonParseException final : public ParseException
         {
         private:
             fsize _line;
 
         public:
+            /**
+             * Constructs a JsonParseException
+             * @param line the line number
+             * @param msg the error message
+             */
             explicit inline JsonParseException(const fsize line, const String &msg)
                 : ParseException("Json", msg)
                 , _line(line)
             {
             }
 
+            /**
+             * Returns the line number
+             * @return the line number as integer
+             */
             inline fsize Line() const noexcept
             {
                 return (_line);
             }
 
-            void Print() const;
+            void Print() const final;
         };
     }
 }

@@ -5,3 +5,5 @@ build_unix
 /build_linux
 /build-linux
 .vscode
+/cmake-build-debug/
+.idea

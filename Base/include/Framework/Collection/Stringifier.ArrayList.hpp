@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -27,11 +27,15 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/String.hpp"
 #include "Framework/Collection/ArrayList.hpp"
+#include "Framework/String.hpp"
 
 namespace bpf
 {
+    /**
+     * Provides string representation to all ArrayList types
+     * @tparam T the type of item to store
+     */
     template <typename T>
     class String::Stringifier<collection::ArrayList<T>>
     {

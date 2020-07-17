@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -29,28 +29,66 @@
 #pragma once
 
 #include "Framework/EvalException.hpp"
+#include "Framework/IndexException.hpp"
 #include "Framework/String.hpp"
 
 namespace bpf
 {
-	template <typename T>
-	class BP_TPL_API MathEval
-	{
-	private:
-		static T EvalNbr(const char* expr, char** endptr);
-	public:
-		T Evaluate(const String &str);
+    /**
+     * Utility to evaluate simple math expressions
+     * @tparam T the type to evaluate to
+     */
+    template <typename T>
+    class BP_TPL_API MathEval
+    {
+    private:
+        static T EvalNbr(const char *expr, char **endptr);
 
-		inline T EvalNbr(const String& str, fsize& endpos)
-		{
-			const char *data = *str;
-			char *ptr;
-			T num = EvalNbr(data, &ptr);
+    public:
+        /**
+         * Evaluates a math expression string
+         * @param str the expression string
+         * @throw EvalException when there is a math error
+         * @return evaluated number
+         */
+        T Evaluate(const String &str);
 
-			endpos = (fsize)(ptr - data);
-			return (num);
-		}
-	};
+        /**
+         * Parses a number at the start of a string and return how many characters were read
+         * @param str the string containing the number
+         * @param endpos output position in str where the last character could be found
+         * @return parsed number
+         */
+        inline T EvalNbr(const String &str, fsize &endpos)
+        {
+            const char *data = *str;
+            char *ptr;
+            T num = EvalNbr(data, &ptr);
+
+            endpos = (fsize)(ptr - data);
+            return (num);
+        }
+
+        /**
+         * Parses a number at a given position in a string and return how many characters were read
+         * @param str the string containing the number
+         * @param startpos the start position in the string
+         * @param endpos output position in str where the last character could be found
+         * @throw IndexException when startpos is out of the string bounds
+         * @return parsed number
+         */
+        inline T EvalNbr(const String &str, const fsize startpos, fsize &endpos)
+        {
+            if (startpos >= (fsize)str.Size())
+                throw IndexException(startpos);
+            const char *data = *str + startpos;
+            char *ptr;
+            T num = EvalNbr(data, &ptr);
+
+            endpos = (fsize)(ptr - data) + startpos;
+            return (num);
+        }
+    };
 }
 
 #include "Framework/MathEval.impl.hpp"

@@ -62,8 +62,11 @@ TEST(String, Copy)
     bpf::String str = " é è à ù € This is a test !";
 
     bpf::String ss = str;
+    bpf::String *ss1 = &ss;
+    ss = *ss1;
     for (int i = 0; i < 100; ++i)
         ss = str;
+    EXPECT_STREQ(*ss, " é è à ù € This is a test !");
 }
 
 TEST(String, From_TypeName)

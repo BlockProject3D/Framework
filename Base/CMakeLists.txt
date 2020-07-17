@@ -7,7 +7,7 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/../Version.cmake")
 set(SOURCES
     ./include/Framework/IO/File.hpp
     ./include/Framework/IO/EStringSerializer.hpp
-    ./include/Framework/IO/EStringEncoder.hpp
+    ./include/Framework/IO/ECharacterEncoding.hpp
     ./include/Framework/IO/FileStream.hpp
     ./include/Framework/IO/MemoryMapper.hpp
     ./include/Framework/IO/IOException.hpp
@@ -60,7 +60,7 @@ set(SOURCES
     ./include/Framework/Math/NonInvertibleMatrixException.hpp
     ./include/Framework/Math/Color.hpp
     ./include/Framework/Log/Logger.hpp
-    ./include/Framework/Log/ILogHandler.hpp
+    ./include/Framework/Log/ILogAdapter.hpp
     ./include/Framework/Log/ELogLevel.hpp
     ./include/Framework/Log/DefaultLogger.hpp
     ./include/Framework/Log/FileLogger.hpp
@@ -78,14 +78,15 @@ set(SOURCES
     ./include/Framework/Memory/WeakPtr.impl.hpp
     ./include/Framework/Memory/Object.hpp
     ./include/Framework/Memory/ObjectFactory.hpp
-    ./include/Framework/Memory/IObjectConstructor.hpp
+    ./include/Framework/Memory/ObjectConstructor.hpp
     ./include/Framework/Memory/ObjectPtr.hpp
     ./include/Framework/Network/Network.hpp
     ./include/Framework/System/Module.hpp
     ./include/Framework/System/ModuleException.hpp
     ./include/Framework/System/OSException.hpp
-    ./include/Framework/System/ModuleManager.hpp
-    ./include/Framework/System/ModuleManager.impl.hpp
+    ./include/Framework/System/PluginLoader.hpp
+    ./include/Framework/System/PluginLoader.impl.hpp
+    ./include/Framework/System/Plugin.hpp
     ./include/Framework/System/Platform.hpp
     ./include/Framework/System/TypeExpander.hpp
     ./include/Framework/System/DateTime.hpp

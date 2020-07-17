@@ -33,6 +33,9 @@
 
 namespace bpf
 {
+    /**
+     * Provides hashing method for Name
+     */
     template <>
     class Hash<Name>
     {
@@ -43,6 +46,9 @@ namespace bpf
         }
     };
 
+    /**
+     * Provides hashing method for high-level string
+     */
     template <>
     class Hash<String>
     {

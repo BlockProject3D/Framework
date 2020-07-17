@@ -99,7 +99,7 @@ FileStream::~FileStream()
 #endif
 }
 
-void FileStream::SeekOffset(int64 offset)
+void FileStream::SeekOffset(int64 offset) const
 {
     if (_mode & FILE_MODE_APPEND)
         throw IOException("Cannot Seek in append mode");
@@ -116,7 +116,7 @@ void FileStream::SeekOffset(int64 offset)
 #endif
 }
 
-void FileStream::Seek(uint64 pos)
+void FileStream::Seek(uint64 pos) const
 {
     if (_mode & FILE_MODE_APPEND)
         throw IOException("Cannot Seek in append mode");

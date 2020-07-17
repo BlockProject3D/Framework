@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -33,7 +33,10 @@ namespace bpf
 {
     namespace io
     {
-        class BPF_API ConsoleReader : public IDataInputStream
+        /**
+         * High-level console deserializer
+         */
+        class BPF_API ConsoleReader final : public IDataInputStream
         {
         private:
 #ifdef WINDOWS
@@ -45,8 +48,16 @@ namespace bpf
             TextReader _reader;
 
         public:
+            /**
+             * Constructs a ConsoleReader
+             */
             ConsoleReader();
 
+            /**
+             * Sets the possible characters to find that marks the end of a token.
+             * We assume the separators can only be ASCII characters
+             * @param str a string where each characters represents a character to seach for the end of a token
+             */
             inline void SetTokenSeparators(const char *str)
             {
                 _reader.SetTokenSeparators(str);
@@ -56,86 +67,100 @@ namespace bpf
              * This function performs a low level read from standard input
              * On Windows it fills buf with UTF-16 code points
              * On Linux it fills buf with UTF-8 bytes (last UTF-8 code might be cut)
+             * @param buf the buffer to receive the characters
+             * @param bufsize size in bytes of the buffer
+             * @throw IOException in case of system error
+             * @return fsize number of bytes read
              */
-            fsize Read(void *buf, fsize bufsize);
+            fsize Read(void *buf, fsize bufsize) final;
 
+            /**
+             * Reads a line of text
+             * @param out the output text without the line separator character
+             * @return true if anything was read, false otherwise
+             */
             inline bool ReadLine(String &out)
             {
                 return (_reader.ReadLine(out));
             }
 
+            /**
+             * Reads a single token
+             * @param out the output token text
+             * @return true if anything was read, false otherwise
+             */
             inline bool Read(String &out)
             {
                 return (_reader.Read(out));
             }
 
-            inline IDataInputStream &operator>>(uint8 &u)
+            inline IDataInputStream &operator>>(uint8 &u) final
             {
                 _reader >> u;
                 return (*this);
             }
 
-            inline IDataInputStream &operator>>(uint16 &u)
+            inline IDataInputStream &operator>>(uint16 &u) final
             {
                 _reader >> u;
                 return (*this);
             }
 
-            inline IDataInputStream &operator>>(uint32 &u)
+            inline IDataInputStream &operator>>(uint32 &u) final
             {
                 _reader >> u;
                 return (*this);
             }
 
-            inline IDataInputStream &operator>>(uint64 &u)
+            inline IDataInputStream &operator>>(uint64 &u) final
             {
                 _reader >> u;
                 return (*this);
             }
 
-            inline IDataInputStream &operator>>(int8 &i)
+            inline IDataInputStream &operator>>(int8 &i) final
             {
                 _reader >> i;
                 return (*this);
             }
 
-            inline IDataInputStream &operator>>(int16 &i)
+            inline IDataInputStream &operator>>(int16 &i) final
             {
                 _reader >> i;
                 return (*this);
             }
 
-            inline IDataInputStream &operator>>(fint &i)
+            inline IDataInputStream &operator>>(fint &i) final
             {
                 _reader >> i;
                 return (*this);
             }
 
-            inline IDataInputStream &operator>>(int64 &i)
+            inline IDataInputStream &operator>>(int64 &i) final
             {
                 _reader >> i;
                 return (*this);
             }
 
-            inline IDataInputStream &operator>>(float &f)
+            inline IDataInputStream &operator>>(float &f) final
             {
                 _reader >> f;
                 return (*this);
             }
 
-            inline IDataInputStream &operator>>(double &d)
+            inline IDataInputStream &operator>>(double &d) final
             {
                 _reader >> d;
                 return (*this);
             }
 
-            inline IDataInputStream &operator>>(bool &b)
+            inline IDataInputStream &operator>>(bool &b) final
             {
                 _reader >> b;
                 return (*this);
             }
 
-            inline IDataInputStream &operator>>(bpf::String &str)
+            inline IDataInputStream &operator>>(bpf::String &str) final
             {
                 _reader >> str;
                 return (*this);

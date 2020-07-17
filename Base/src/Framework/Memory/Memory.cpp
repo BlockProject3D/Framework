@@ -26,7 +26,7 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <stdlib.h>
+#include <cstdlib>
 #include "Framework/Memory/Memory.hpp"
 
 using namespace bpf::memory;
@@ -60,7 +60,7 @@ void *Memory::Malloc(fsize size)
     ++Allocs;
     CurUsedMem += size;
     MemMutex.Unlock();
-    Metadata *meta = static_cast<Metadata *>(data);
+    auto *meta = static_cast<Metadata *>(data);
     meta->MemSize = size;
     return (static_cast<char *>(data) + sizeof(Metadata));
 #else
@@ -68,7 +68,7 @@ void *Memory::Malloc(fsize size)
 #endif
 }
 
-void Memory::Free(void *addr)
+void Memory::Free(void *addr) noexcept
 {
 #ifdef BUILD_DEBUG
     if (addr == Null)
@@ -101,7 +101,7 @@ void *Memory::Realloc(void *addr, fsize newsize)
     }
     if (data == Null)
         throw MemoryException();
-    Metadata *meta = static_cast<Metadata *>(data);
+    auto *meta = static_cast<Metadata *>(data);
     meta->MemSize = newsize;
     MemMutex.Lock();
     CurUsedMem += newsize;

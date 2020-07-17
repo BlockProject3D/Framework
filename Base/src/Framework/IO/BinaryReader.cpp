@@ -72,7 +72,7 @@ bool BinaryReader::ReadByte2(uint8 &out)
 
 void BinaryReader::ReadSubBuf(void *out, const fsize size)
 {
-    uint8 *res = reinterpret_cast<uint8 *>(out);
+    auto *res = reinterpret_cast<uint8 *>(out);
 
     for (fsize i = 0; i != size; ++i)
         res[i] = ReadByte();
@@ -105,7 +105,7 @@ IDataInputStream &BinaryReader::operator>>(bpf::String &str)
             str += (char)ReadByte();
         break;
     case EStringSerializer::CSTYLE:
-        uint8 b = 0;
+        uint8 b;
         while ((b = ReadByte()) != 0)
             str += (char)b;
         break;
@@ -118,7 +118,7 @@ fsize BinaryReader::Read(void *buf, fsize bufsize)
     if (_buffered)
     {
         fsize read = 0;
-        uint8 *data = reinterpret_cast<uint8 *>(buf);
+        auto *data = reinterpret_cast<uint8 *>(buf);
         for (fsize i = 0; i != bufsize; ++i)
         {
             if (ReadByte2(data[i]))

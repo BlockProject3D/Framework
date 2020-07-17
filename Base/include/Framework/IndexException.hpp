@@ -32,28 +32,39 @@
 
 namespace bpf
 {
+    /**
+     * Exception thrown when indexing a collection out of bounds
+     */
     class BPF_API IndexException final : public Exception
     {
     private:
         fisize ID;
 
     public:
+        /**
+         * Constructs an IndexException
+         * @param id the index that is out of bounds
+         */
         explicit inline IndexException(const fisize id) noexcept
             : Exception()
             , ID(id)
         {
         }
 
+        /**
+         * Returns the out of bounds index
+         * @return collection index/position
+         */
         fisize Id() const noexcept
         {
             return (ID);
         }
 
-        const char *Type() const noexcept
+        const char *Type() const noexcept final
         {
             return ("Index");
         }
 
-        void Print() const;
+        void Print() const final;
     };
 }

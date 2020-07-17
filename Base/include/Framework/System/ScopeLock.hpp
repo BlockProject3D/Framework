@@ -33,12 +33,19 @@ namespace bpf
 {
     namespace system
     {
+        /**
+         * Helper to represent a scope based lock using the Framework mutex (see Mutex)
+         */
         class ScopeLock
         {
         private:
             const Mutex &_mutex;
 
         public:
+            /**
+             * Constructs a scope lock
+             * @param mutex Reference to a mutex to use for the lock
+             */
             explicit inline ScopeLock(const Mutex &mutex)
                 : _mutex(mutex)
             {

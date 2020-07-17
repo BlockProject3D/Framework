@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -27,17 +27,21 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Memory/MemUtils.hpp"
 #include "Framework/Memory/ClassCastException.hpp"
+#include "Framework/Memory/MemUtils.hpp"
 #include "Framework/TypeInfo.hpp"
 
 namespace bpf
 {
     namespace memory
     {
-        template<typename T>
+        template <typename T>
         class BP_TPL_API WeakPtr;
 
+        /**
+         * Shared smart pointer
+         * @tparam T the type of the underlying instance
+         */
         template <typename T>
         class BP_TPL_API SharedPtr
         {
@@ -52,10 +56,13 @@ namespace bpf
                 , RawPtr(raw)
             {
                 if (Count != Null)
-                    ++ *Count;
+                    ++*Count;
             }
 
         public:
+            /**
+             * Constructs a null SharedPtr
+             */
             inline SharedPtr() noexcept
                 : Count(Null)
                 , WCount(Null)
@@ -63,6 +70,10 @@ namespace bpf
             {
             }
 
+            /**
+             * Constructs a SharedPtr from a raw pointer
+             * @param raw pointer to wrap
+             */
             inline SharedPtr(T *raw)
                 : Count(static_cast<fint *>(Memory::Malloc(sizeof(int))))
                 , WCount(static_cast<fint *>(Memory::Malloc(sizeof(int))))
@@ -72,6 +83,9 @@ namespace bpf
                 *WCount = 0;
             }
 
+            /**
+             * Move constructor
+             */
             inline SharedPtr(SharedPtr<T> &&other) noexcept
                 : Count(other.Count)
                 , WCount(other.WCount)
@@ -82,6 +96,9 @@ namespace bpf
                 other.RawPtr = Null;
             }
 
+            /**
+             * Copy constructor
+             */
             template <typename T1>
             inline SharedPtr(const SharedPtr<T1> &other) noexcept
                 : Count(other.Count)
@@ -89,60 +106,110 @@ namespace bpf
                 , RawPtr(other.RawPtr)
             {
                 if (Count != Null)
-                    ++ *Count;
+                    ++*Count;
             }
 
+            /**
+             * Copy constructor
+             */
             inline SharedPtr(const SharedPtr<T> &other) noexcept
                 : Count(other.Count)
                 , WCount(other.WCount)
                 , RawPtr(other.RawPtr)
             {
                 if (Count != Null)
-                    ++ *Count;
+                    ++*Count;
             }
 
             ~SharedPtr();
 
-            SharedPtr<T> &operator=(SharedPtr<T> &&other);
+            /**
+             * Move assignment operator
+             */
+            SharedPtr<T> &operator=(SharedPtr<T> &&other) noexcept;
 
+            /**
+             * Copy assignment operator
+             */
             SharedPtr<T> &operator=(const SharedPtr<T> &other);
 
+            /**
+             * Access the wrapped object
+             * @return reference to T
+             */
             inline T &operator*() const noexcept
             {
                 return (*RawPtr);
             }
 
+            /**
+             * Access the wrapped object
+             * @return pointer to T
+             */
             inline T *operator->() const noexcept
             {
                 return (RawPtr);
             }
 
+            /**
+             * Returns the raw pointer
+             * @return low-level raw pointer
+             */
             inline T *Raw() const noexcept
             {
                 return (RawPtr);
             }
 
+            /**
+             * Compare SharedPtr
+             * @param other operand
+             * @return true if this equal other, false otherwise
+             */
             inline bool operator==(const T *other) const noexcept
             {
                 return (RawPtr == other);
             }
 
+            /**
+             * Compare SharedPtr
+             * @param other operand
+             * @return false if this equal other, true otherwise
+             */
             inline bool operator!=(const T *other) const noexcept
             {
                 return (RawPtr != other);
             }
 
+            /**
+             * Compare SharedPtr
+             * @tparam T1 type to compare with
+             * @param other operand
+             * @return true if this equal other, false otherwise
+             */
             template <typename T1>
             inline bool operator==(const SharedPtr<T1> &other) const noexcept
             {
                 return (RawPtr == other.RawPtr);
             }
+
+            /**
+             * Compare SharedPtr
+             * @tparam T1 type to compare with
+             * @param other operand
+             * @return false if this equal other, true otherwise
+             */
             template <typename T1>
             inline bool operator!=(const SharedPtr<T1> &other) const noexcept
             {
                 return (RawPtr != other.RawPtr);
             }
 
+            /**
+             * Quick casting function
+             * @tparam T1 the type to cast to
+             * @throw ClassCastException in debug only if the class cannot be casted
+             * @return new casted SharedPtr
+             */
             template <typename T1>
             inline SharedPtr<T1> Cast() const
             {
@@ -165,12 +232,7 @@ namespace bpf
 
             template <typename T1>
             friend class SharedPtr;
-
-            static const SharedPtr<T> NullPtr;
         };
-
-        template <typename T>
-        const SharedPtr<T> SharedPtr<T>::NullPtr = SharedPtr<T>(Null);
     }
 }
 

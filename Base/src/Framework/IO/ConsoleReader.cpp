@@ -27,7 +27,6 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Framework/IO/ConsoleReader.hpp"
-#include "Framework/IO/Console.hpp"
 #include "Framework/IO/IOException.hpp"
 #include "OSPrivate.hpp"
 #ifdef WINDOWS
@@ -43,10 +42,10 @@ ConsoleReader::ConsoleReader()
 #ifdef WINDOWS
     : _handle(GetStdHandle(STD_INPUT_HANDLE))
     , _file(GetFileType(reinterpret_cast<HANDLE>(_handle)) != FILE_TYPE_CHAR ? true : false)
-    , _reader(*this, _file ? EStringEncoder::UTF8 : EStringEncoder::UTF16)
+    , _reader(*this, _file ? ECharacterEncoding::UTF8 : ECharacterEncoding::UTF16)
 #else
     : _handle(0)
-    , _reader(*this, EStringEncoder::UTF8)
+    , _reader(*this, ECharacterEncoding::UTF8)
 #endif
 {
 }

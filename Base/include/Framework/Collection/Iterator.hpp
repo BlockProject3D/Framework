@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -34,8 +34,8 @@ namespace bpf
     {
         /**
          * Abstract iterator
-         * @tparam C the target container for this Iterator
-         * @tparam T the target iterated object
+         * @tparam C the target collection type for this Iterator
+         * @tparam T the target iterated object type
          */
         template <typename C, typename T>
         class BP_TPL_API IIterator
@@ -71,10 +71,15 @@ namespace bpf
             }
         };
 
+        /**
+         * Utility function used to walk a iterable collection in reverse order using the C++ 11 range for loop syntax
+         * @tparam C the collection type
+         * @param container the actual collection to iterate in reverse order
+         */
         template <typename C>
         BP_TPL_API ReverseAdapter<C> Reverse(const C &container)
         {
             return (ReverseAdapter<C>(container));
         }
     }
-};
+}

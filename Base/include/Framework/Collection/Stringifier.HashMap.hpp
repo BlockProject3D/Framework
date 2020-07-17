@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -27,11 +27,17 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/String.hpp"
 #include "Framework/Collection/HashMap.hpp"
+#include "Framework/String.hpp"
 
 namespace bpf
 {
+    /**
+     * Provides string representation to all HashMap types
+     * @tparam K the key type
+     * @tparam V the value type
+     * @tparam HashOp the hash operator
+     */
     template <typename K, typename V, typename HashOp>
     class String::Stringifier<collection::HashMap<K, V, HashOp>>
     {

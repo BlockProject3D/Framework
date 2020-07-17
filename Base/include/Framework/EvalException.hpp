@@ -31,6 +31,9 @@
 
 namespace bpf
 {
+    /**
+     * Represents an evaluation exception, currently used for MathEval and String UTF evaluation functions
+     */
     class BPF_API EvalException : public RuntimeException
     {
     public:
@@ -38,6 +41,5 @@ namespace bpf
             : RuntimeException("Eval", msg)
         {
         }
-        //void Log(Framework::FLogger &logger) const;
     };
 }

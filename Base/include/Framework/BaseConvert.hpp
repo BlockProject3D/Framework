@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -33,17 +33,41 @@
 
 namespace bpf
 {
-	template <typename T>
-	class BP_TPL_API BaseConvert
-	{
-	private:
-		String _base;
-	public:
-		inline explicit BaseConvert(const String &base) : _base(base) {}
+    /**
+     * Utility class to convert numbers in bases different from decimal
+     * WARNING: This class does not work on decimal types
+     * @tparam T the type of number
+     */
+    template <typename T>
+    class BP_TPL_API BaseConvert
+    {
+    private:
+        String _base;
 
-		T FromString(const String &nbr);
-		String ToString(T nbr);
-	};
+    public:
+        /**
+         * Constructs an instance of BaseConvert
+         * @param base the set of characters to use for the base
+         */
+        inline explicit BaseConvert(String base)
+            : _base(std::move(base))
+        {
+        }
+
+        /**
+         * Converts a number string to an actual number type
+         * @param nbr the number string
+         * @return the converted number
+         */
+        T FromString(const String &nbr);
+
+        /**
+         * Converts a number type to a number string
+         * @param nbr the number to convert to a string
+         * @return the number as a string in the target base
+         */
+        String ToString(T nbr);
+    };
 }
 
 #include "Framework/BaseConvert.impl.hpp"

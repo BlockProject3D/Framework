@@ -61,9 +61,9 @@ TEST(File, WeirdCases)
 #ifdef LINUX //I have no idea which folder is not readable under windows by default
 TEST(File, HasAccess)
 {
-    EXPECT_FALSE(bpf::io::File("/root").HasAccess(bpf::io::FILE_ACCESS_READ));
-    EXPECT_FALSE(bpf::io::File("/root").HasAccess(bpf::io::FILE_ACCESS_WRITE));
-    EXPECT_FALSE(bpf::io::File("/root").HasAccess(bpf::io::FILE_ACCESS_READ | bpf::io::FILE_ACCESS_WRITE));
+    EXPECT_FALSE(bpf::io::File("/root").HasAccess(bpf::io::FILE_MODE_READ));
+    EXPECT_FALSE(bpf::io::File("/root").HasAccess(bpf::io::FILE_MODE_WRITE));
+    EXPECT_FALSE(bpf::io::File("/root").HasAccess(bpf::io::FILE_MODE_READ | bpf::io::FILE_MODE_WRITE));
 }
 
 TEST(File, Perm_Err)
@@ -86,7 +86,7 @@ TEST(File, Basics)
     EXPECT_FALSE(f.CreateDir());
     EXPECT_TRUE(f.Exists());
     EXPECT_TRUE(f.IsDirectory());
-    EXPECT_TRUE(f.HasAccess(bpf::io::FILE_ACCESS_READ | bpf::io::FILE_ACCESS_WRITE));
+    EXPECT_TRUE(f.HasAccess(bpf::io::FILE_MODE_READ | bpf::io::FILE_MODE_WRITE));
     EXPECT_TRUE(f.Delete());
     EXPECT_FALSE(f.Exists());
     EXPECT_FALSE(f.IsDirectory());

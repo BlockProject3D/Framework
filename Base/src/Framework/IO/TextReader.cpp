@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -38,9 +38,7 @@ bool TextReader::ReadByte2(uint8 &out)
 
     if (!_buffered)
     {
-        if (_stream.Read(&out, 1) == 1)
-            return (true);
-        return (false);
+        return (_stream.Read(&out, 1) == 1);
     }
     if (_buf.GetCursor() + 1 > _buf.GetWrittenBytes())
     {
@@ -58,7 +56,7 @@ bool TextReader::ReadByte2(uint8 &out)
 
 bool TextReader::ReadSubBuf(void *out, const fsize size)
 {
-    uint8 *res = reinterpret_cast<uint8 *>(out);
+    auto *res = reinterpret_cast<uint8 *>(out);
 
     for (fsize i = 0; i != size; ++i)
     {
@@ -87,7 +85,7 @@ bool TextReader::Read(String &out)
     {
         switch (_encoder)
         {
-        case EStringEncoder::UTF8:
+        case ECharacterEncoding::UTF8:
         {
             if (CheckIsSeparator(byte))
             {
@@ -98,7 +96,7 @@ bool TextReader::Read(String &out)
                 out.AddSingleByte((char)byte);
             break;
         }
-        case EStringEncoder::UTF16:
+        case ECharacterEncoding::UTF16:
         {
             uint8 bytes[4];
             if (!ReadByte2(bytes[1]))
@@ -116,7 +114,7 @@ bool TextReader::Read(String &out)
                 out += str;
             break;
         }
-        case EStringEncoder::UTF32:
+        case ECharacterEncoding::UTF32:
         {
             uint8 bytes[8];
             if (!ReadSubBuf(bytes + 1, 3))
@@ -138,7 +136,7 @@ bool TextReader::Read(String &out)
         }
         }
     }
-    return (out.Size() > 0 ? true : false);
+    return (out.Size() > 0);
 }
 
 bool TextReader::ReadLine(String &out)
@@ -165,7 +163,7 @@ fsize TextReader::Read(void *buf, fsize bufsize)
     if (_buffered)
     {
         fsize read = 0;
-        uint8 *data = reinterpret_cast<uint8 *>(buf);
+        auto *data = reinterpret_cast<uint8 *>(buf);
         for (fsize i = 0; i != bufsize; ++i)
         {
             if (ReadByte2(data[i]))
@@ -282,7 +280,7 @@ IDataInputStream &TextReader::operator>>(bool &b)
     if (!Read(token))
         b = false;
     else
-        b = token == "TRUE" ? true : false;
+        b = token == "TRUE";
     return (*this);
 }
 

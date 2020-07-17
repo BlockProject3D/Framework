@@ -32,6 +32,9 @@
 
 namespace bpf
 {
+    /**
+     * Provides string representation to DateTime type
+     */
     template <>
     class String::Stringifier<system::DateTime>
     {

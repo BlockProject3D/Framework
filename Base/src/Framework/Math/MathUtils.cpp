@@ -27,8 +27,6 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Framework/Math/MathUtils.hpp"
-#include <stdlib.h>
-#include <time.h>
 #ifndef BUILD_DEBUG
     #include <cstring>
 #endif

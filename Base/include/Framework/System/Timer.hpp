@@ -36,6 +36,9 @@ namespace bpf
 {
     namespace system
     {
+        /**
+         * Represents a cross-platform high-precision fast timer
+         */
         class BPF_API Timer
         {
         private:
@@ -48,10 +51,14 @@ namespace bpf
 #endif
 
         public:
+            /**
+             * Constructs a timer
+             */
             Timer();
 
             /**
              * Returns the time in seconds since last call to Reset
+             * @return number
              */
             double Reset();
         };

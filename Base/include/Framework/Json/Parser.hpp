@@ -34,6 +34,9 @@ namespace bpf
 {
     namespace json
     {
+        /**
+         * A simple Json Parser
+         */
         class BPF_API Parser
         {
         private:
@@ -50,6 +53,10 @@ namespace bpf
             void CheckComa();
             Json CheckJson();
         public:
+            /**
+             * Constructs a Parser
+             * @param lexer the lexer instance to extract tokens from
+             */
             explicit inline Parser(Lexer &&lexer)
                 : _tokens(lexer.ReadTokens())
                 , _line(1)
@@ -57,6 +64,11 @@ namespace bpf
             {
             }
 
+            /**
+             * Parses all tokens into a Json value and returns it
+             * @throw JsonParseException when the parser could not interpret a token sequence
+             * @return new Json value from all parsed tokens
+             */
             Json Parse();
         };
     }

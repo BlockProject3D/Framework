@@ -50,13 +50,13 @@ namespace bpf
         public:
             WindowsApp(void *hinstance, bool hasConsole);
 
-            void CreateConsole(const fint rows, const fint columns);
+            void CreateConsole(fint rows, fint columns) final;
 
             collection::Array<String> GetArguments();
 
-            io::File GetWorkingDirectory() const;
-            bool SetWorkingDirectory(const io::File &file);
-            void DisableErrorDialogs() noexcept;
+            io::File GetWorkingDirectory() const final;
+            bool SetWorkingDirectory(const io::File &file) final;
+            void DisableErrorDialogs() noexcept final;
         };
     }
 };

@@ -33,6 +33,9 @@ namespace bpf
 {
     namespace compression
     {
+        /**
+         * Represents data de-compression using ZLib
+         */
         class BPF_COMPRESSION_API ZInflater
         {
         private:
@@ -41,16 +44,45 @@ namespace bpf
             bool _end;
 
         public:
+            /**
+             * Constructs a ZInflater
+             */
             ZInflater();
+
             ~ZInflater();
 
+            /**
+             * Sets the input buffer
+             * @param deflated buffer of data to de-compress
+             */
             void SetInput(const io::ByteBuf &deflated);
+
+            /**
+             * Sets the input buffer
+             * @param deflated buffer of data to de-compress
+             */
             void SetInput(io::ByteBuf &&deflated);
 
+            /**
+             * Returns the Adler32 checksum value of the compressed data
+             * @return 32 bits unsigned
+             */
             uint32 GetAdler32() const;
 
+            /**
+             * Inflates a part of the input buffer into the given output buffer
+             * @param out output buffer
+             * @return unsigned number of bytes written to output buffer
+             */
             fsize Inflate(io::ByteBuf &out);
-            fsize Inflate(void *out, const fsize size);
+
+            /**
+             * Deflates a part of the input buffer into the given output buffer
+             * @param out output buffer
+             * @param size the size of the output buffer
+             * @return unsigned number of bytes written to output buffer
+             */
+            fsize Inflate(void *out, fsize size);
         };
     }
 }

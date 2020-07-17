@@ -44,7 +44,7 @@ constexpr int PIPE_READ = 0;
     #include <set>
 #elif LINUX
     #include <fcntl.h>
-    #include <string.h>
+    #include <cstring>
     #include <unistd.h>
     #include <wait.h>
 #else
@@ -83,7 +83,7 @@ Process::Builder::Builder(const Application &app)
 
 Process::Builder &Process::Builder::SetApplication(const String &name)
 {
-    auto str = name;
+    auto str = name; //NOLINT (Copy is required thanks WinAPI)
 #ifdef WINDOWS
     if (str.Contains('/') || str.Contains('\\'))
 #else
@@ -203,7 +203,7 @@ void Process::Builder::ProcessWorker(int fdStdOut[2], int fdStdErr[2], int fdStd
     char **envp = reinterpret_cast<char **>(malloc(sizeof(char **) * (_envp.Size() + 1)));
     fsize i = 0;
 
-    if (argv == NULL || envp == NULL)
+    if (argv == Null || envp == Null)
         goto mallocerr;
     for (int fd = 0; fd != 256; ++fd)
     {
@@ -213,7 +213,7 @@ void Process::Builder::ProcessWorker(int fdStdOut[2], int fdStdErr[2], int fdStd
     }
     if (fcntl(commonfd[PIPE_WRITE], F_SETFD, FD_CLOEXEC) != 0)
     {
-        BP_IGNORE(write(commonfd[PIPE_WRITE], "fcntl failure", 14));
+        BP_IGNORE(write(commonfd[PIPE_WRITE], "fcntl failure", 14))
         close(commonfd[PIPE_WRITE]);
         exit(1);
     }
@@ -223,34 +223,34 @@ void Process::Builder::ProcessWorker(int fdStdOut[2], int fdStdErr[2], int fdStd
         goto redirecterr;
     if (_redirectStdIn && dup2(fdStdIn[PIPE_READ], 0) == -1)
         goto redirecterr;
-    BP_IGNORE(chdir(*_workDir.PlatformPath()));
+    BP_IGNORE(chdir(*_workDir.PlatformPath()))
     for (auto &a : _argv)
     {
         argv[i] = reinterpret_cast<char *>(malloc(a.Size() + 1));
-        if (argv[i] == NULL)
+        if (argv[i] == Null)
             goto mallocerr;
         memcpy(argv[i], *a, a.Size() + 1); // Copy with additional '\0'
         ++i;
     }
-    argv[i] = NULL;
+    argv[i] = Null;
     i = 0;
     for (auto &kv : _envp)
     {
         envp[i] = reinterpret_cast<char *>(malloc(kv.Key.Size() + kv.Value.Size() + 2));
-        if (envp[i] == NULL)
+        if (envp[i] == Null)
             goto mallocerr;
         memcpy(envp[i], *kv.Key, kv.Key.Size());
         envp[i][kv.Key.Size()] = '=';
         memcpy(envp[i] + kv.Key.Size() + 1, *kv.Value, kv.Value.Size() + 1);
         ++i;
     }
-    envp[i] = NULL;
+    envp[i] = Null;
     #ifdef COVERAGE
     __gcov_flush();
     #endif
     if (execve(*_appExe, argv, envp) == -1)
     {
-        BP_IGNORE(write(commonfd[PIPE_WRITE], "execve failure", 15));
+        BP_IGNORE(write(commonfd[PIPE_WRITE], "execve failure", 15))
         close(commonfd[PIPE_WRITE]);
     #ifdef COVERAGE
         __gcov_flush();
@@ -258,14 +258,14 @@ void Process::Builder::ProcessWorker(int fdStdOut[2], int fdStdErr[2], int fdStd
         exit(1);
     }
 redirecterr:
-    BP_IGNORE(write(commonfd[PIPE_WRITE], "Could not create one or more redirection(s)", 44));
+    BP_IGNORE(write(commonfd[PIPE_WRITE], "Could not create one or more redirection(s)", 44))
     close(commonfd[PIPE_WRITE]);
     #ifdef COVERAGE
     __gcov_flush();
     #endif
     exit(1);
 mallocerr:
-    BP_IGNORE(write(commonfd[PIPE_WRITE], "malloc failure", 15));
+    BP_IGNORE(write(commonfd[PIPE_WRITE], "malloc failure", 15))
     close(commonfd[PIPE_WRITE]);
     #ifdef COVERAGE
     __gcov_flush();
@@ -450,7 +450,7 @@ Process::PipeStream::~PipeStream()
         CloseHandle(_pipeHandles[1]);
 }
 
-Process::PipeStream::PipeStream(PipeStream &&other)
+Process::PipeStream::PipeStream(PipeStream &&other) noexcept
 {
     _pipeHandles[0] = other._pipeHandles[0];
     _pipeHandles[1] = other._pipeHandles[1];
@@ -458,7 +458,7 @@ Process::PipeStream::PipeStream(PipeStream &&other)
     other._pipeHandles[1] = NULL;
 }
 
-Process::PipeStream &Process::PipeStream::operator=(PipeStream &&other)
+Process::PipeStream &Process::PipeStream::operator=(PipeStream &&other) noexcept
 {
     if (_pipeHandles[0] != NULL)
         CloseHandle(_pipeHandles[0]);
@@ -471,7 +471,7 @@ Process::PipeStream &Process::PipeStream::operator=(PipeStream &&other)
     return (*this);
 }
 #else
-Process::PipeStream::PipeStream(int pipefd[2])
+Process::PipeStream::PipeStream(const int pipefd[2])
 {
     _pipfd[0] = pipefd[0];
     _pipfd[1] = pipefd[1];
@@ -485,7 +485,7 @@ Process::PipeStream::~PipeStream()
         close(_pipfd[1]);
 }
 
-Process::PipeStream::PipeStream(PipeStream &&other)
+Process::PipeStream::PipeStream(PipeStream &&other) noexcept
 {
     _pipfd[0] = other._pipfd[0];
     _pipfd[1] = other._pipfd[1];
@@ -493,7 +493,7 @@ Process::PipeStream::PipeStream(PipeStream &&other)
     other._pipfd[1] = -1;
 }
 
-Process::PipeStream &Process::PipeStream::operator=(PipeStream &&other)
+Process::PipeStream &Process::PipeStream::operator=(PipeStream &&other) noexcept
 {
     if (_pipfd[0] != -1)
         close(_pipfd[0]);
@@ -547,11 +547,15 @@ void Process::PipeStream::Close()
         CloseHandle(_pipeHandles[0]); //TODO: double close is not handled by winmotherfucker
     if (_pipeHandles[1] != NULL)
         CloseHandle(_pipeHandles[1]);
+    _pipeHandles[0] = NULL;
+    _pipeHandles[1] = NULL;
 #else
     if (_pipfd[0] != -1)
         close(_pipfd[0]);
     if (_pipfd[1] != -1)
         close(_pipfd[1]);
+    _pipfd[0] = -1;
+    _pipfd[1] = -1;
 #endif
 }
 
@@ -572,7 +576,7 @@ Process::Process(void *pinfo, void *fdStdIn[2], void *fdStdOut[2], void *fdStdEr
     _tHandle = pInfo->hThread;
 }
 
-Process::Process(Process &&other)
+Process::Process(Process &&other) noexcept
     : _lastExitCode(other._lastExitCode)
     , _crashed(other._crashed)
     , _running(other._running)
@@ -589,7 +593,7 @@ Process::Process(Process &&other)
     other._tHandle = NULL;
 }
 
-Process &Process::operator=(Process &&other)
+Process &Process::operator=(Process &&other) noexcept
 {
     if (_pHandle != NULL && _tHandle != NULL)
     {
@@ -628,7 +632,7 @@ Process::Process(int pid, int fdStdIn[2], int fdStdOut[2], int fdStdErr[2])
 {
 }
 
-Process::Process(Process &&other)
+Process::Process(Process &&other) noexcept
     : _lastExitCode(other._lastExitCode)
     , _crashed(other._crashed)
     , _running(other._running)
@@ -643,7 +647,7 @@ Process::Process(Process &&other)
     other._pid = -1;
 }
 
-Process &Process::operator=(Process &&other)
+Process &Process::operator=(Process &&other) noexcept
 {
     if (_pid != -1 && _running)
         kill(_pid, SIGKILL);

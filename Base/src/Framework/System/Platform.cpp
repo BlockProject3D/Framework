@@ -26,7 +26,6 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <stdlib.h>
 #ifdef WINDOWS
     #include <Windows.h>
     #include <intrin.h>
@@ -37,7 +36,6 @@
 #else
     #include <sys/sysinfo.h>
     #include <sys/utsname.h>
-    #include <time.h>
 #endif
 #ifndef WINDOWS
     #include <unistd.h>
@@ -249,8 +247,8 @@ RAM Platform::GetRAMInfo()
 #else
     auto pages = sysconf(_SC_PHYS_PAGES);
     auto page_size = sysconf(_SC_PAGE_SIZE);
-    rami.MaxPhysical = static_cast<uint64>(pages * page_size);
-    rami.MaxVirtual = static_cast<uint64>(pages * page_size);
+    rami.MaxPhysical = pages * page_size;
+    rami.MaxVirtual = pages * page_size;
 #endif
     return (rami);
 }
@@ -266,7 +264,7 @@ EPlatformEndianess Platform::GetEndianess()
 
 void Platform::ReverseBuffer(void *buf, const fsize size)
 {
-    uint8 *out = reinterpret_cast<uint8 *>(buf);
+    auto *out = reinterpret_cast<uint8 *>(buf);
     fsize i = 0;
     fsize j = size - 1;
     uint8 temp;
@@ -282,7 +280,7 @@ void Platform::ReverseBuffer(void *buf, const fsize size)
 
 void Platform::ReverseBuffer(void *buf, const fsize size, const fsize groupsize)
 {
-    uint8 *out = reinterpret_cast<uint8 *>(buf);
+    auto *out = reinterpret_cast<uint8 *>(buf);
     fsize i = 0;
     fsize j = size - groupsize;
     uint8 temp;

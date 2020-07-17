@@ -33,11 +33,14 @@ namespace bpf
 {
     namespace memory
     {
+        /**
+         * Exception thrown when memory could not be allocated
+         */
         class BPF_API MemoryException final : public Exception
         {
         public:
             inline MemoryException() {}
-            inline const char *Type() const noexcept override
+            inline const char *Type() const noexcept final
             {
                 return ("Memory");
             }

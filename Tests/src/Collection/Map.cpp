@@ -205,6 +205,10 @@ TEST(Map, Copy)
     EXPECT_EQ(copy[0], 0);
     EXPECT_EQ(copy[1], 3);
     EXPECT_EQ(copy[2], 7);
+    copy = lst;
+    EXPECT_EQ(copy[0], 0);
+    EXPECT_EQ(copy[1], 3);
+    EXPECT_EQ(copy[2], 7);
 }
 
 TEST(Map, Move)

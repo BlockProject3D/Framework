@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -30,12 +30,15 @@
 
 namespace bpf
 {
+    /**
+     * Low-level exception
+     */
     class BPF_API Exception
     {
     private:
     public:
-        virtual ~Exception() {}
-        Exception() noexcept {}
+        virtual ~Exception(){};
+        Exception() noexcept {};
 
         /**
          * Returns exception type
@@ -50,4 +53,4 @@ namespace bpf
          */
         virtual void Print() const;
     };
-};
+}

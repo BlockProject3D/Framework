@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -26,7 +26,6 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <climits>
 #include <cstring>
 #include <iostream>
 #ifdef WINDOWS
@@ -34,9 +33,8 @@
     #define PATH_MAX MAX_PATH
 #else
     #include <dirent.h>
-    #include <stdlib.h>
+    #include <cstdlib>
     #include <sys/stat.h>
-    #include <sys/types.h>
     #include <unistd.h>
 #endif
 #include "./OSPrivate.hpp"
@@ -109,24 +107,22 @@ bool File::HasAccess(const int type) const
 {
 #ifdef WINDOWS
     int acs = 0;
-    if (type & FILE_ACCESS_READ && type & FILE_ACCESS_WRITE)
+    if (type & FILE_MODE_READ && type & FILE_MODE_WRITE)
         acs = 06;
-    else if (type & FILE_ACCESS_READ)
+    else if (type & FILE_MODE_READ)
         acs = 04;
-    else if (type & FILE_ACCESS_WRITE)
+    else if (type & FILE_MODE_WRITE)
         acs = 02;
     if (_waccess(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), acs) != 0)
         return (false);
     return (true);
 #else
     int md = F_OK;
-    if (type & FILE_ACCESS_READ)
+    if (type & FILE_MODE_READ)
         md |= R_OK;
-    if (type & FILE_ACCESS_WRITE)
+    if (type & FILE_MODE_WRITE)
         md |= W_OK;
-    if (access(*FullPath, md) != 0)
-        return (false);
-    return (true);
+    return (access(*FullPath, md) == 0);
 #endif
 }
 
@@ -137,7 +133,8 @@ File File::GetAbsolutePath() const
 #ifdef WINDOWS
     WCHAR buf[PATH_MAX];
     std::memset(buf, 0, PATH_MAX);
-    GetFullPathNameW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), PATH_MAX, buf, Null);
+    if (GetFullPathNameW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), PATH_MAX, buf, Null) == 0)
+        throw IOException(String("Could not read absolute path: ") + OSPrivate::ObtainLastErrorString());
     str = String::FromUTF16(reinterpret_cast<const bpf::fchar16 *>(buf));
 #else
     char buf[PATH_MAX];
@@ -151,10 +148,12 @@ File File::GetAbsolutePath() const
 
 File File::GetParent() const
 {
+    if (FullPath.LastIndexOf('/') == -1)
+        return (File());
     return (File(FullPath.Sub(0, FullPath.LastIndexOf('/'))));
 }
 
-bool File::CopyTo(const File &dst, bool overwrite)
+bool File::CopyTo(const File &dst, bool overwrite) //NOLINT (False-positive / not yet implemented)
 {
 #ifdef WINDOWS
     BOOL val = CopyFileW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), reinterpret_cast<LPCWSTR>(*dst.FullPath.ToUTF16()), !overwrite);
@@ -184,7 +183,7 @@ bool File::MoveTo(const File &dst)
     return (val == TRUE ? true : false);
 #else
     int val = rename(*FullPath, *dst.FullPath);
-    return (val == 0 ? true : false);
+    return (val == 0);
 #endif
 }
 
@@ -192,13 +191,9 @@ bool File::Exists() const
 {
 #ifdef WINDOWS
     DWORD attr = GetFileAttributesW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()));
-    if (attr == INVALID_FILE_ATTRIBUTES)
-        return (false);
-    return (true);
+    return (attr != INVALID_FILE_ATTRIBUTES);
 #else
-    if (access(*FullPath, F_OK) != -1)
-        return (true);
-    return (false);
+    return (access(*FullPath, F_OK) != -1);
 #endif
 }
 

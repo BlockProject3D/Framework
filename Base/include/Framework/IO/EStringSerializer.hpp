@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -32,11 +32,29 @@ namespace bpf
 {
     namespace io
     {
+        /**
+         * Enumeration for string serializing functions
+         */
         enum class EStringSerializer
         {
+            /**
+             * Serialize string as &lt;set of characters&gt;&lt;32 bits 4 bytes unsigned&gt;
+             */
             VARCHAR_32,
+
+            /**
+             * Serialize string as &lt;set of characters&gt;&lt;16 bits 2 bytes unsigned&gt;
+             */
             VARCHAR_16,
+
+            /**
+             * Serialize string as &lt;set of characters&gt;&lt;8 bits 1 bytes unsigned&gt;
+             */
             VARCHAR_8,
+
+            /**
+             * Serialize string as low-level null-terminated c-like string
+             */
             CSTYLE
         };
     }

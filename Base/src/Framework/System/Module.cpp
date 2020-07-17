@@ -52,7 +52,7 @@ Module::Module(const bpf::String &path)
 #endif
 }
 
-Module &Module::operator=(Module &&other)
+Module &Module::operator=(Module &&other) noexcept
 {
 #ifdef WINDOWS
     if (_handle != NULL)

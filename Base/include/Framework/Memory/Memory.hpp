@@ -40,6 +40,9 @@ namespace bpf
 {
     namespace memory
     {
+        /**
+         * Low-level memory allocator
+         */
         class BPF_API Memory
         {
 #ifdef BUILD_DEBUG
@@ -49,15 +52,46 @@ namespace bpf
             static system::Mutex MemMutex;
 #endif
         public:
+            /**
+             * Allocate memory.
+             * WARNING: Never mix allocators
+             * @param size number of bytes
+             * @throw MemoryException in case allocation is impossible
+             * @return pointer to allocated memory
+             */
             static void *Malloc(fsize size);
-            static void Free(void *addr);
+
+            /**
+             * Free allocated memory.
+             * WARNING: Never mix allocators
+             * @param addr pointer to allocated memory
+             */
+            static void Free(void *addr) noexcept;
+
+            /**
+             * Resize an already allocated memory.
+             * WARNING: Never mix allocators
+             * @param addr pointer to allocated memory
+             * @param newsize new size to apply
+             * @throw MemoryException in case re-allocation is impossible
+             * @return either addr pointer or pointer to a newly allocated memory
+             */
             static void *Realloc(void *addr, fsize newsize);
 
 #ifdef BUILD_DEBUG
+            /**
+             * Returns the number of allocations performed currently (DEBUG only)
+             * @return unsigned
+             */
             inline static fsize GetAllocCount() noexcept
             {
                 return (Allocs);
             }
+
+            /**
+             * Returns the current amount of memory consumed (DEBUG only)
+             * @return unsigned
+             */
             inline static fsize GetUsedMem() noexcept
             {
                 return (CurUsedMem);
@@ -65,4 +99,4 @@ namespace bpf
 #endif
         };
     }
-};
+}

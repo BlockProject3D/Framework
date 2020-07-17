@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -27,68 +27,34 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/IO/File.hpp"
 #include "Framework/System/Module.hpp"
-#include "Framework/Collection/HashMap.hpp"
-#include "Framework/Memory/Utility.hpp"
-#include "Framework/Name.hpp"
+#include "Framework/Memory/UniquePtr.hpp"
 
 namespace bpf
 {
     namespace system
     {
-        template <typename BaseClass>
-        class BP_TPL_API ModuleManager
+        /**
+         * Represents a plugin or a module that is completely managed at runtime
+         * @tparam T plugin base class/interface
+         */
+        template <typename T>
+        struct BP_TPL_API Plugin
         {
-        private:
-            typedef BaseClass *(*ModuleLinkFunc)();
-            typedef fint(*ModuleDescribeFunc)();
-
-            struct Entry
-            {
-                memory::UniquePtr<BaseClass> Interface;
-                Module Handle;
-            };
-
-            io::File _modulePath;
-            collection::HashMap<Name, Entry> _map;
-
-        public:
-            explicit inline ModuleManager(const io::File &modulePath)
-                : _modulePath(modulePath)
-            {
-            }
-
-            ~ModuleManager();
-
-            ModuleManager(const ModuleManager &other) = delete;
-            ModuleManager &operator=(const ModuleManager &other) = delete;
+            /**
+             * Name of the plugin
+             */
+            String Name;
 
             /**
-             * Loads the given module name
-             * @throws ModuleException
+             * Module to represent a cross-platform instance of the dynamic library
              */
-            void LoadModule(const String &virtualName, const String &fileName);
+            class Module Module;
 
             /**
-             * Unloads the given module name
+             * Interface of the plugin
              */
-            void UnloadModule(const Name &virtualName);
-
-            inline bool HasModule(const Name &virtualName) const noexcept
-            {
-                return (_map.HasKey(virtualName));
-            }
-
-            inline const memory::UniquePtr<BaseClass> &GetModule(const Name &virtualName) const noexcept
-            {
-                if (!HasModule(virtualName))
-                    return (memory::UniquePtr<BaseClass>::NullPtr);
-                else
-                    return (_map[virtualName].Interface);
-            }
+            memory::UniquePtr<T> Interface;
         };
     }
-};
-
-#include "Framework/System/ModuleManager.impl.hpp"
+}

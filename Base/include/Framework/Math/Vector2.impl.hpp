@@ -47,6 +47,8 @@ namespace bpf
                 case 1:
                     Y = elem;
                     break;
+                default:
+                    break;
                 }
                 ++i;
             }

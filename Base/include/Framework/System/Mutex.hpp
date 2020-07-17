@@ -32,17 +32,31 @@ namespace bpf
 {
     namespace system
     {
+        /**
+         * Helper to represent a cross-platform Mutex
+         */
         class BPF_API Mutex
         {
         private:
             void *_handle;
 
         public:
+            /**
+             * Constructs a mutex
+             */
             Mutex();
-            ~Mutex();
-            Mutex(Mutex &&other);
 
-            Mutex &operator=(Mutex &&other);
+            ~Mutex();
+
+            /**
+             * Move constructor
+             */
+            Mutex(Mutex &&other) noexcept;
+
+            /**
+             * Move assignment operator
+             */
+            Mutex &operator=(Mutex &&other) noexcept;
 
             /**
              * Locks this mutex

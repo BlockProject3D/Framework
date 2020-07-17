@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -33,10 +33,22 @@ namespace bpf
 {
     namespace io
     {
+        /**
+         * Represents an arbitary stream with write capacity
+         */
         class BPF_API IOutputStream
         {
         public:
             virtual ~IOutputStream() {}
+
+            /**
+             * Writes bytes to this stream
+             * WARNING: When possible the implementation should not buffer
+             * @param buf the buffer with the bytes to write
+             * @param bufsize the size of the buffer
+             * @throw IOException in case of system error
+             * @return number of bytes written
+             */
             virtual fsize Write(const void *buf, fsize bufsize) = 0;
         };
     }

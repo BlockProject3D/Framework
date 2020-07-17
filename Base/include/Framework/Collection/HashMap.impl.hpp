@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -150,6 +150,8 @@ namespace bpf
         template <typename K, typename V, typename HashOp>
         HashMap<K, V, HashOp> &HashMap<K, V, HashOp>::operator=(const HashMap &other)
         {
+            if (this == &other)
+                return (*this);
             memory::MemUtils::DeleteArray(_data, CurSize);
             _data = memory::MemUtils::NewArray<Node>(HASH_MAP_INIT_BUF_SIZE);
             _data[0].State = ENTRY_STATE_NON_EXISTANT;
@@ -179,7 +181,7 @@ namespace bpf
         }
 
         template <typename K, typename V, typename HashOp>
-        HashMap<K, V, HashOp>::HashMap(HashMap &&other)
+        HashMap<K, V, HashOp>::HashMap(HashMap &&other) noexcept
             : _data(other._data)
             , CurSize(other.CurSize)
             , ElemCount(other.ElemCount)
@@ -190,7 +192,7 @@ namespace bpf
         }
 
         template <typename K, typename V, typename HashOp>
-        HashMap<K, V, HashOp> &HashMap<K, V, HashOp>::operator=(HashMap &&other)
+        HashMap<K, V, HashOp> &HashMap<K, V, HashOp>::operator=(HashMap &&other) noexcept
         {
             memory::MemUtils::DeleteArray(_data, CurSize);
             _data = other._data;
@@ -218,7 +220,7 @@ namespace bpf
                 _data = memory::MemUtils::NewArray<Node>(CurSize);
                 for (fsize i = 0; i < CurSize; ++i)
                     _data[i].State = ENTRY_STATE_NON_EXISTANT;
-                for (fsize i = 0; i < CurSize >> 1; ++i)
+                for (fsize i = 0; i<CurSize>> 1; ++i)
                 {
                     if (olddata[i].State == ENTRY_STATE_OCCUPIED)
                     {
@@ -254,8 +256,7 @@ namespace bpf
             for (fsize i = 0; i < CurSize; ++i)
             {
                 fsize index = (hkey + ((i * i + i) / 2)) % CurSize;
-                if (_data[index].State == ENTRY_STATE_NON_EXISTANT
-                    || _data[index].State == ENTRY_STATE_INSTANCE_DELETE)
+                if (_data[index].State == ENTRY_STATE_NON_EXISTANT || _data[index].State == ENTRY_STATE_INSTANCE_DELETE)
                 {
                     _data[index].Hash = hkey;
                     _data[index].State = ENTRY_STATE_OCCUPIED;
@@ -340,9 +341,7 @@ namespace bpf
         template <typename K, typename V, typename HashOp>
         void HashMap<K, V, HashOp>::Swap(const Iterator &a, const Iterator &b)
         {
-            if (a.CurID >= CurSize || b.CurID >= CurSize
-                || _data[a.CurID].State != ENTRY_STATE_OCCUPIED
-                || _data[b.CurID].State != ENTRY_STATE_OCCUPIED)
+            if (a.CurID >= CurSize || b.CurID >= CurSize || _data[a.CurID].State != ENTRY_STATE_OCCUPIED || _data[b.CurID].State != ENTRY_STATE_OCCUPIED)
                 return;
             auto v = std::move(this->operator[](a->Key));
             this->operator[](a->Key) = std::move(this->operator[](b->Key));

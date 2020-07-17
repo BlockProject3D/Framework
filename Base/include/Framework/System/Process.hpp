@@ -60,9 +60,9 @@ namespace bpf
 #ifdef WINDOWS
                 void CleanupHandles(void *fdStdOut[2], void *fdStdErr[2], void *fdStdIn[2]);
 #else
-                void CleanupHandles(int fdStdOut[2], int fdStdErr[2], int fdStdIn[2], int commonfd[2]);
+                static void CleanupHandles(int fdStdOut[2], int fdStdErr[2], int fdStdIn[2], int commonfd[2]);
                 void ProcessWorker(int fdStdOut[2], int fdStdErr[2], int fdStdIn[2], int commonfd[2]);
-                Process ProcessMaster(int pid, int fdStdOut[2], int fdStdErr[2], int fdStdIn[2], int commonfd[2]);
+                static Process ProcessMaster(int pid, int fdStdOut[2], int fdStdErr[2], int fdStdIn[2], int commonfd[2]);
 #endif
 
             public:
@@ -79,7 +79,7 @@ namespace bpf
 
                 /**
                  * Sets the application to run as a separate process
-                 * @param appName the application path or name string (this overload does automatically check the PATH
+                 * @param name the application path or name string (this overload does automatically check the PATH
                  * using this Builder's environment)
                  * @throw io::IOException when the application could not be found
                  * @return Builder reference
@@ -189,12 +189,12 @@ namespace bpf
                 ~PipeStream();
 #else
                 int _pipfd[2];
-                PipeStream(int pipefd[2]);
-                ~PipeStream();
+                PipeStream(const int pipefd[2]);
+                ~PipeStream() final;
 #endif
 
-                PipeStream(PipeStream &&other);
-                PipeStream &operator=(PipeStream &&other);
+                PipeStream(PipeStream &&other) noexcept;
+                PipeStream &operator=(PipeStream &&other) noexcept;
 
             public:
                 /**
@@ -214,7 +214,7 @@ namespace bpf
                  * @throw IOException in case of system error
                  * @return number of bytes read
                  */
-                fsize Read(void *buf, fsize bufsize);
+                fsize Read(void *buf, fsize bufsize) final;
 
                 /**
                  * Writes bytes to this stream, no buffering is performed
@@ -223,7 +223,7 @@ namespace bpf
                  * @throw IOException in case of system error
                  * @return number of bytes written
                  */
-                fsize Write(const void *buf, fsize bufsize);
+                fsize Write(const void *buf, fsize bufsize) final;
 
                 /**
                  * Closes the pipe
@@ -260,7 +260,7 @@ namespace bpf
             /**
              * Move constructor
              */
-            Process(Process &&other);
+            Process(Process &&other) noexcept;
 
             /**
              * Force compiler to NEVER ever copy that class
@@ -275,7 +275,7 @@ namespace bpf
             /**
              * Move assignment operator
              */
-            Process &operator=(Process &&other);
+            Process &operator=(Process &&other) noexcept;
 
             /**
              * Destructor, the process gets automatically killed if this is reached

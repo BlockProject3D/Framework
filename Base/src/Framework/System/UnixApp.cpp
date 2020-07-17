@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Framework/System/UnixApp.hpp"
-#include <limits.h>
+#include <climits>
 #include <unistd.h>
 
 #ifndef LINUX
@@ -106,7 +106,7 @@ Paths UnixApp::SetupPaths()
     }
 #endif
     File tmp = _env.HasKey("TMPDIR") ? File(_env["TMPDIR"]) : File("/tmp");
-    if (root.HasAccess(FILE_ACCESS_READ | FILE_ACCESS_WRITE))
+    if (root.HasAccess(FILE_MODE_READ | FILE_MODE_WRITE))
         return (Paths(root, root, home, tmp));
     else
         return (Paths(root, home + File(_fileName).Name(), home, tmp));
@@ -123,7 +123,5 @@ File UnixApp::GetWorkingDirectory() const
 
 bool UnixApp::SetWorkingDirectory(const File &file)
 {
-    if (chdir(*file.PlatformPath()) == -1)
-        return (false);
-    return (true);
+    return (chdir(*file.PlatformPath()) != -1);
 }

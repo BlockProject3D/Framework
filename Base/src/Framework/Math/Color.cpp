@@ -66,7 +66,7 @@ Color Color::operator*(const Color &other) const
                   static_cast<uint8>(newb * 255)));
 }
 
-fint Color::GetCode() const noexcept
+fint Color::Pack() const noexcept
 {
     fint res = 0;
 

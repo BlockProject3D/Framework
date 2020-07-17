@@ -27,16 +27,19 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Log/ILogHandler.hpp"
+#include "Framework/Log/ILogAdapter.hpp"
 
 namespace bpf
 {
     namespace log
     {
-        class BPF_API DefaultLogger final : public ILogHandler
+        /**
+         * A simple standard-output and standard-error log adapter
+         */
+        class BPF_API DefaultLogger final : public ILogAdapter
         {
         public:
-            void LogMessage(ELogLevel level, const String &category, const String &msg);
+            void LogMessage(ELogLevel level, const String &category, const String &msg) final;
         };
     }
 }

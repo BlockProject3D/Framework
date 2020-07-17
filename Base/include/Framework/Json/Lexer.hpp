@@ -34,6 +34,9 @@ namespace bpf
 {
     namespace json
     {
+        /**
+         * A simple Json Lexer
+         */
         class BPF_API Lexer
         {
         public:
@@ -64,17 +67,37 @@ namespace bpf
             collection::Queue<Token> _tokens;
 
             bool CheckString(const String &token);
-            bool CheckNumber(const String &token, const fchar next);
-            bool CheckBasic(const String &token, const fchar next);
-            String ReProcessString(const String &str);
-            fchar ProcessUnicode(const String &str, fisize &pos);
-            fchar ProcessStandard(const String &str, fisize &pos);
+            bool CheckNumber(const String &token, fchar next);
+            bool CheckBasic(const String &token, fchar next);
+            static String ReProcessString(const String &str);
+            static fchar ProcessUnicode(const String &str, fisize &pos);
+            static fchar ProcessStandard(const String &str, fisize &pos);
 
         public:
-            Lexer(const bool enableComments = false, const bool ignoreNulls = false);
+            /**
+             * Constructs a Lexer
+             * @param enableComments true if this Lexer should accept comments, false otherwise
+             * @param ignoreNulls true if null values should be omitted, false otherwise
+             */
+            Lexer(bool enableComments = false, bool ignoreNulls = false);
+
+            /**
+             * Loads a string a processes it
+             * @param input the input string to load and process
+             * @throw JsonParseException when the lexer could not identify a token in the input string
+             */
             void LoadString(const String &input);
 
+            /**
+             * Extract all tokens from this Lexer, this function also purges the token cache and resets this Lexer's state
+             * @return All extracted tokens
+             */
             collection::Queue<Token> ReadTokens();
+
+            /**
+             * Check if this Lexer/Parser should ommit null values
+             * @return true if null values should be omitted, false otherwise
+             */
             inline bool IgnoreNulls() const noexcept
             {
                 return (_ignoreNulls);

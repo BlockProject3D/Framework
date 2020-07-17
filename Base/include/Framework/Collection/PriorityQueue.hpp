@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -28,13 +28,19 @@
 
 #pragma once
 #include "Framework/Collection/Array.hpp"
-#include "Framework/Types.hpp"
 #include "Framework/Collection/Utility.hpp"
+#include "Framework/Types.hpp"
 
 namespace bpf
 {
     namespace collection
     {
+        /**
+         * Priority queue implemented using min/max heap
+         * @tparam K the key type
+         * @tparam V the value type
+         * @tparam HeapFunc heap comparision operator usually set to either MaxHeap or MinHeap
+         */
         template <typename K, typename V, template <typename> class HeapFunc = MaxHeap>
         class BP_TPL_API PriorityQueue
         {
@@ -56,10 +62,23 @@ namespace bpf
 
             void BubbleUp(fsize i);
             void SinkDown(fsize i);
+
         public:
-            explicit PriorityQueue(const fsize maxsize = 0);
+            /**
+             * Constructs an empty PriorityQueue
+             * @param maxsize maximum size of queue (0 = infinity/unlimited)
+             */
+            explicit PriorityQueue(fsize maxsize = 0);
+
+            /**
+             * Constructs a PriorityQueue from an existing initializer list
+             * @param lst the initial list of items to push to this new queue
+             */
             PriorityQueue(const std::initializer_list<Entry> &lst);
 
+            /**
+             * Copy constructor
+             */
             inline PriorityQueue(const PriorityQueue<K, V, HeapFunc> &other)
                 : _maxSize(other._maxSize)
                 , _tailPtr(other._tailPtr)
@@ -69,7 +88,10 @@ namespace bpf
             {
             }
 
-            inline PriorityQueue(PriorityQueue<K, V, HeapFunc> &&other)
+            /**
+             * Move constructor
+             */
+            inline PriorityQueue(PriorityQueue<K, V, HeapFunc> &&other) noexcept
                 : _maxSize(other._maxSize)
                 , _tailPtr(other._tailPtr)
                 , _count(other._count)
@@ -80,8 +102,13 @@ namespace bpf
                 other._count = 0;
             }
 
+            /**
+             * Copy assignment operator
+             */
             inline PriorityQueue<K, V, HeapFunc> &operator=(const PriorityQueue<K, V, HeapFunc> &other)
             {
+                if (this == &other)
+                    return (*this);
                 _maxSize = other._maxSize;
                 _tailPtr = other._tailPtr;
                 _count = other._count;
@@ -90,7 +117,10 @@ namespace bpf
                 return (*this);
             }
 
-            inline PriorityQueue<K, V, HeapFunc> &operator=(PriorityQueue<K, V, HeapFunc> &&other)
+            /**
+             * Move assignment operator
+             */
+            inline PriorityQueue<K, V, HeapFunc> &operator=(PriorityQueue<K, V, HeapFunc> &&other) noexcept
             {
                 _maxSize = other._maxSize;
                 _tailPtr = other._tailPtr;
@@ -102,25 +132,36 @@ namespace bpf
                 return (*this);
             }
 
+            /**
+             * Clears this queue
+             */
             void Clear();
 
             /**
              * Pushes an element on the queue
+             * @param key the key for that element
+             * @param value the value for that element
              */
             void Push(const K &key, const V &value);
 
             /**
              * Pushes an element on the queue
+             * @param key the key for that element
+             * @param value the value for that element
              */
             void Push(const K &key, V &&value);
 
             /**
              * Extracts the top of the queue
+             * @throw IndexException if the queue is empty
+             * @return the extracted/removed item
              */
             V Pop();
 
             /**
              * Returns the top of the queue
+             * @throw IndexException if the queue is empty
+             * @return mutable item
              */
             inline V &Top()
             {
@@ -131,6 +172,8 @@ namespace bpf
 
             /**
              * Returns the top of the queue
+             * @throw IndexException if the queue is empty
+             * @return immutable item
              */
             inline const V &Top() const
             {
@@ -139,12 +182,16 @@ namespace bpf
                 return (_dataV[1]);
             }
 
+            /**
+             * Returns the number of items in this queue
+             * @return number of items as unsigned
+             */
             inline fsize Size() const
             {
                 return (_count);
             }
         };
     }
-};
+}
 
 #include "Framework/Collection/PriorityQueue.impl.hpp"

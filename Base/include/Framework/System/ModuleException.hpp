@@ -33,7 +33,10 @@ namespace bpf
 {
     namespace system
     {
-        class BPF_API ModuleException : public RuntimeException
+        /**
+         * Exception thrown when a module or symbol (in a module) fails to load
+         */
+        class BPF_API ModuleException final : public RuntimeException
         {
         public:
             explicit inline ModuleException(const String &msg) noexcept

@@ -50,7 +50,7 @@ namespace bpf
         }
 
         template <typename T>
-        SharedPtr<T> &SharedPtr<T>::operator=(SharedPtr<T> &&other)
+        SharedPtr<T> &SharedPtr<T>::operator=(SharedPtr<T> &&other) noexcept
         {
             if (Count != Null)
             {
@@ -77,6 +77,8 @@ namespace bpf
         template <typename T>
         SharedPtr<T> &SharedPtr<T>::operator=(const SharedPtr<T> &other)
         {
+            if (this == &other)
+                return (*this);
             if (Count != Null)
             {
                 -- *Count;

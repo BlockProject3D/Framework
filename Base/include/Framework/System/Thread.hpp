@@ -67,7 +67,7 @@ namespace bpf
             Thread &operator=(Thread &&other);
 
             void Start();
-            void Kill(const bool force = false);
+            void Kill(bool force = false);
             void Join();
 
             inline EState GetState() const noexcept
@@ -87,9 +87,9 @@ namespace bpf
 
             virtual void Run() = 0;
 
-            static void Sleep(const uint32 milliseconds);
+            static void Sleep(uint32 milliseconds);
 
-            friend void __internalstate(Thread &ptr, EState state);
+            friend void _bpf_internal_state(Thread &ptr, EState state);
         };
     }
 }

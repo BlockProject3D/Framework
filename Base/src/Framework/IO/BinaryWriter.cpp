@@ -49,7 +49,7 @@ void BinaryWriter::WriteByte(uint8 byte)
 
 void BinaryWriter::WriteSubBuf(void *out, const fsize size)
 {
-    uint8 *res = reinterpret_cast<uint8 *>(out);
+    auto *res = reinterpret_cast<uint8 *>(out);
 
     if (system::Platform::GetEndianess() != _targetorder)
         system::Platform::ReverseBuffer(res, size);
@@ -123,7 +123,7 @@ fsize BinaryWriter::Write(const void *buf, fsize bufsize)
 {
     if (_buffered)
     {
-        const uint8 *data = reinterpret_cast<const uint8 *>(buf);
+        auto *data = reinterpret_cast<const uint8 *>(buf);
         for (fsize i = 0; i != bufsize; ++i)
             WriteByte(data[i]);
         return (bufsize);

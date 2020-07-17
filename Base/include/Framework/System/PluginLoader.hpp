@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -27,56 +27,57 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/String.hpp"
-#include "Framework/Memory/Memory.hpp"
+#include "Framework/IO/File.hpp"
+#include "Framework/System/Plugin.hpp"
 
 namespace bpf
 {
-    namespace memory
+    namespace system
     {
         /**
-         * Constructor abstraction
-         * @tparam T the type of parent to generate
-         * @tparam Args the arguments to pass to the constructor
+         * Utility class to allow easy loading of plugins
          */
-        template <class /* ? extends */ T, typename ...Args>
-        class BPF_API IObjectConstructor
+        class BP_TPL_API PluginLoader
         {
+        private:
+            io::File _modulePath;
+
+            template <class BaseClass>
+            using ModuleLinkFunc = BaseClass *(*)();
+            using ModuleDescribeFunc = fint(*)();
+
         public:
-            virtual ~IObjectConstructor() {}
-
-            virtual const String &GetName() const noexcept = 0;
-            virtual UniquePtr<T> MakeUnique(Args &&... args) const = 0;
-            virtual SharedPtr<T> MakeShared(Args &&... args) const = 0;
-        };
-
-        template <class Class, class Parent, typename ...Args>
-        class BPF_API SimpleObjectConstructor : public IObjectConstructor<Parent, Args...>
-        {
-        public:
-            virtual const String &GetName() const noexcept = 0;
-
-            inline UniquePtr<Parent> MakeUnique(Args &&... args) const
+            /**
+             * Constructs a PluginLoader
+             * @param modulePath the path to the folder in which all plugins are located
+             */
+            explicit inline PluginLoader(const io::File &modulePath)
+                : _modulePath(modulePath)
             {
-                return (bpf::MakeUnique<Class>(std::forward<Args>(args)...));
             }
-            inline SharedPtr<Parent> MakeShared(Args &&... args) const
-            {
-                return (bpf::MakeShared<Class>(std::forward<Args>(args)...));
-            }
+
+            /**
+             * Load a plugin with a file name; virtual name is deduced from file name
+             * @tparam BaseClass the interface class type
+             * @param fileName the file name without extension, prefixed with modulePath
+             * @throw ModuleException in case of system error or plugin incompatibility
+             * @return new plugin
+             */
+            template <class BaseClass>
+            Plugin<BaseClass> Load(const String &fileName);
+
+            /**
+             * Load a plugin with a file name
+             * @tparam BaseClass the interface class type
+             * @param fileName the file name without extension, prefixed with modulePath
+             * @param virtualName the module name
+             * @throw ModuleException in case of system error or plugin incompatibility
+             * @return new plugin
+             */
+            template <class BaseClass>
+            Plugin<BaseClass> Load(const String &virtualName, const String &fileName);
         };
     }
 }
 
-#define MAP_CONSTRUCTOR(Name, Parent, Class, ...) \
-    class Name final : public bpf::SimpleObjectConstructor<Class, Parent, ##__VA_ARGS__> \
-    { \
-    private: \
-        bpf::String _name; \
-    public:\
-        Name() : _name(#Class"::"#Name) {} \
-        const bpf::String &GetName() const noexcept \
-        { \
-            return (_name); \
-        } \
-    }; \
+#include "Framework/System/PluginLoader.impl.hpp"

@@ -32,12 +32,12 @@ using namespace bpf::memory;
 using namespace bpf::log;
 using namespace bpf;
 
-Logger::Logger(const String &name)
-    : _name(name)
+Logger::Logger(String name)
+    : _name(std::move(name))
 {
 }
 
-void Logger::AddHandler(UniquePtr<ILogHandler> &&ptr)
+void Logger::AddHandler(UniquePtr<ILogAdapter> &&ptr)
 {
     _handlers.Add(std::move(ptr));
 }

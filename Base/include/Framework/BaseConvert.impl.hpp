@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -30,34 +30,34 @@
 
 namespace bpf
 {
-	template <typename T>
-	T BaseConvert<T>::FromString(const String &nbr)
-	{
-		T res = 0;
-		T cb = 1;
+    template <typename T>
+    T BaseConvert<T>::FromString(const String &nbr)
+    {
+        T res = 0;
+        T cb = 1;
 
-		for (fisize i = nbr.Len() - 1; i >= 0; --i)
-		{
-			if (!_base.Contains(nbr[i]))
-				throw ParseException("Invalid string");
-			res += (T)(_base.IndexOf(nbr[i])) * cb;
-			cb *= (T)_base.Len();
-		}
-		return (res);
-	}
+        for (fisize i = nbr.Len() - 1; i >= 0; --i)
+        {
+            if (!_base.Contains(nbr[i]))
+                throw ParseException("Invalid string");
+            res += (T)(_base.IndexOf(nbr[i])) * cb;
+            cb *= (T)_base.Len();
+        }
+        return (res);
+    }
 
-	template <typename T>
-	String BaseConvert<T>::ToString(T nbr)
-	{
-		String res = "";
+    template <typename T>
+    String BaseConvert<T>::ToString(T nbr)
+    {
+        String res = "";
 
-		if (nbr == 0)
-			return ("0");
-		while (nbr > 0)
-		{
-			res += _base[nbr % _base.Len()];
-			nbr /= (T)_base.Len();
-		}
-		return (res.Reverse());
-	}
+        if (nbr == 0)
+            return ("0");
+        while (nbr > 0)
+        {
+            res += _base[nbr % _base.Len()];
+            nbr /= (T)_base.Len();
+        }
+        return (res.Reverse());
+    }
 }

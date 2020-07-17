@@ -30,7 +30,7 @@
     #include <Windows.h>
 #else
     #include <cstring>
-    #include <errno.h>
+    #include <cerrno>
 #endif
 #include "OSPrivate.hpp"
 

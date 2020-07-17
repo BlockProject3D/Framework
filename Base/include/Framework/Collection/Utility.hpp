@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -32,8 +32,15 @@ namespace bpf
 {
     namespace collection
     {
+        /**
+         * Usefull operators used by various collection types
+         */
         namespace ops
         {
+            /**
+             * Default less than operator
+             * @tparam T the type of value to compare
+             */
             template <typename T>
             class Less
             {
@@ -44,6 +51,10 @@ namespace bpf
                 }
             };
 
+            /**
+             * Default greater than operator
+             * @tparam T the type of value to compare
+             */
             template <typename T>
             class Greater
             {
@@ -54,6 +65,10 @@ namespace bpf
                 }
             };
 
+            /**
+             * Default less-or-equal operator
+             * @tparam T the type of value to compare
+             */
             template <typename T>
             class LessOrEqual
             {
@@ -64,6 +79,10 @@ namespace bpf
                 }
             };
 
+            /**
+             * Default greater-or-equal operator
+             * @tparam T the type of value to compare
+             */
             template <typename T>
             class GreaterOrEqual
             {
@@ -74,6 +93,10 @@ namespace bpf
                 }
             };
 
+            /**
+             * Default equal operator
+             * @tparam T the type of value to compare
+             */
             template <typename T>
             class Equal
             {
@@ -85,8 +108,17 @@ namespace bpf
             };
         }
 
+        /**
+         * Default minimizing operator for PriorityQueue
+         * @tparam T the type of value to compare
+         */
         template <typename T>
         using MinHeap = ops::LessOrEqual<T>;
+
+        /**
+         * Default maximizing operator for PriorityQueue
+         * @tparam T the type of value to compare
+         */
         template <typename T>
         using MaxHeap = ops::GreaterOrEqual<T>;
     }

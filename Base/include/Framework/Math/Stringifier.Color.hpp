@@ -32,6 +32,9 @@
 
 namespace bpf
 {
+    /**
+     * Provides string representation to Color type
+     */
     template <>
     class String::Stringifier<math::Color>
     {

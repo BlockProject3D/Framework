@@ -34,31 +34,43 @@ namespace bpf
 {
     namespace collection
     {
+        /**
+         * Exception thrown when stack size is exceeded
+         */
         class BPF_API StackOverflowException final : public Exception
         {
         private:
             fisize _size;
 
         public:
+            /**
+             * Constructs a StackOverflowException
+             * @param size the size that was exceeded 
+             */
             explicit inline StackOverflowException(const fisize size) noexcept
                 : Exception()
                 , _size(size)
             {
             }
 
+            /**
+             * Returns the maximum size of that stack that was exceeded
+             * @return fisize maximum size of the stack as unsigned
+             */
             fisize Size() const noexcept
             {
                 return (_size);
             }
 
-            const char *Type() const noexcept
+            const char *Type() const noexcept final
             {
                 return ("StackOverflow");
             }
-
-            //void Log(Framework::FLogger &logger) const;
         };
 
+        /**
+         * Exception thrown when trying to Pop an empty stack
+         */
         class BPF_API StackUnderflowException final : public Exception
         {
         public:
@@ -67,12 +79,10 @@ namespace bpf
             {
             }
 
-            const char *Type() const noexcept
+            const char *Type() const noexcept final
             {
                 return ("StackUnderflow");
             }
-
-            //void Log(Framework::FLogger &logger) const;
         };
     }
 }

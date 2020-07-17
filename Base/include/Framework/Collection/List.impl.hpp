@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -42,7 +42,7 @@ namespace bpf
         }
 
         template <typename T>
-        inline List<T>::List(List<T> &&other)
+        inline List<T>::List(List<T> &&other) noexcept
             : _first(other._first)
             , _last(other._last)
             , _count(other._count)
@@ -79,7 +79,7 @@ namespace bpf
         }
 
         template <typename T>
-        List<T> &List<T>::operator=(List<T> &&other)
+        List<T> &List<T>::operator=(List<T> &&other) noexcept
         {
             Clear();
             _first = other._first;
@@ -94,6 +94,8 @@ namespace bpf
         template <typename T>
         List<T> &List<T>::operator=(const List<T> &other)
         {
+            if (this == &other)
+                return (*this);
             Clear();
             for (auto &elem : other)
                 Add(elem);
@@ -560,7 +562,7 @@ namespace bpf
         }
 
         template <typename T>
-        typename List<T>::Iterator List<T>::Find(const std::function<bool(const fsize pos, const T & val)> &comparator)
+        typename List<T>::Iterator List<T>::Find(const std::function<bool(const fsize pos, const T &val)> &comparator)
         {
             Node *cur = _first;
             fsize pos = 0;

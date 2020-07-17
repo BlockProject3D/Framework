@@ -33,6 +33,9 @@ namespace bpf
 {
     namespace memory
     {
+        /**
+         * Exception thrown when a class could not be converted to different class
+         */
         class BPF_API ClassCastException : public RuntimeException
         {
         public:

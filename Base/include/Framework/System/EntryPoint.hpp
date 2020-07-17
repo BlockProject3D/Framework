@@ -28,6 +28,9 @@
 
 #pragma once
 
+/**
+ * Generates the declaration for the high-level Main function
+ */
 #define BP_DECLARE_HIGH_MAIN int Main(bpf::system::Application &app, const bpf::collection::Array<bpf::String> &args)
 
 #ifdef WINDOWS
@@ -35,6 +38,10 @@
     #include <Windows.h>
 
     #ifdef CONSOLE
+
+        /**
+         * Generates a low-level that will just redirect code execution to the high-level main
+         */
         #define BP_SETUP_ENTRY_POINT() \
         BP_DECLARE_HIGH_MAIN; \
         int main() \
@@ -43,6 +50,10 @@
             return (Main(app, app.GetArguments())); \
         }
     #else
+
+        /**
+         * Generates a low-level that will just redirect code execution to the high-level main
+         */
         #define BP_SETUP_ENTRY_POINT() \
         BP_DECLARE_HIGH_MAIN; \
         int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) \
@@ -54,6 +65,9 @@
 #else
     #include "Framework/System/UnixApp.hpp"
 
+    /**
+     * Generates a low-level that will just redirect code execution to the high-level main
+     */
     #define BP_SETUP_ENTRY_POINT() \
     BP_DECLARE_HIGH_MAIN; \
     int main(int argc, char **argv, char **env) \

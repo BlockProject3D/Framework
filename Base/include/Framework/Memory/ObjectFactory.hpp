@@ -27,9 +27,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/Collection/HashMap.hpp"
+#include "Framework/Memory/ObjectConstructor.hpp"
 #include "Framework/String.hpp"
-#include "Framework/Memory/IObjectConstructor.hpp"
-#include "Framework/Collection/Map.hpp"
 
 namespace bpf
 {
@@ -37,24 +37,34 @@ namespace bpf
     {
         /**
          * Factory, creates object instances from object constructor names
-         * @tparam T the type of parent to generate
+         * @tparam T the type of base class
          * @tparam Args the arguments to the constructor
          */
         template <class /* ? extends */ T, typename ...Args>
-        class BPF_API ObjectFactory
+        class BP_TPL_API ObjectFactory
         {
         private:
-            collection::Map<String, IObjectConstructor<T, Args...> *> Registry;
+            collection::HashMap<String, ObjectConstructor<T, Args...> *> Registry;
 
         public:
-            template <class ObjConstructor>
+            /**
+             * Registers a new class with this factory
+             * @tparam C the class type to register (must have a BP_DEFINE_TYPENAME linked)
+             */
+            template <class C>
             inline void AddClass()
             {
-                IObjectConstructor<T, Args...> *raw = Memory::New<ObjConstructor>(); // TODO : Update when Map will accept UniquePtr as a value
-                //WARNING : MemLeak to fix here
-                Registry[raw->GetName()] = raw;
+                ObjectConstructor<T, Args...> *raw = typename C::template GetConstructor<Args...>();
+                Registry[TypeName<C>()] = raw;
             }
 
+            /**
+             * Instantiates a new class from this factory
+             * @param name the name of the class
+             * @param args the arguments to the constructor
+             * @throw MemoryException in case allocation is impossible
+             * @return new unique pointer, null if class cannot be found
+             */
             inline UniquePtr<T> MakeUnique(const String &name, Args &&... args)
             {
                 if (!Registry.HasKey(name))
@@ -62,6 +72,13 @@ namespace bpf
                 return (Registry[name]->MakeUnique(std::forward<Args>(args)...));
             }
 
+            /**
+             * Instantiates a new class from this factory
+             * @param name the name of the class
+             * @param args the arguments to the constructor
+             * @throw MemoryException in case allocation is impossible
+             * @return new shared pointer, null if class cannot be found
+             */
             inline SharedPtr<T> MakeShared(const String &name, Args &&... args)
             {
                 if (!Registry.HasKey(name))

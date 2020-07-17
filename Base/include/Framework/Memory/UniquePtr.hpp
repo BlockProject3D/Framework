@@ -35,6 +35,10 @@ namespace bpf
 {
     namespace memory
     {
+        /**
+         * Unique smart pointer
+         * @tparam T the type of the underlying instance
+         */
         template <typename T>
         class BP_TPL_API UniquePtr
         {
@@ -42,22 +46,35 @@ namespace bpf
             T *RawPtr;
 
         public:
+            /**
+             * Constructs a null UniquePtr
+             */
             inline UniquePtr() noexcept
                 : RawPtr(Null)
             {
             }
 
+            /**
+             * Constructs an UniquePtr from a raw pointer
+             * @param raw pointer to wrap
+             */
             inline UniquePtr(T *raw) noexcept
                 : RawPtr(raw)
             {
             }
 
+            /**
+             * Move constructor
+             */
             inline UniquePtr(UniquePtr<T> &&other) noexcept
                 : RawPtr(other.RawPtr)
             {
                 other.RawPtr = Null;
             }
 
+            /**
+             * Move constructor
+             */
             template <typename T1>
             inline UniquePtr(UniquePtr<T1> &&other) noexcept
                 : RawPtr(other.RawPtr)
@@ -70,39 +87,76 @@ namespace bpf
                 MemUtils::Delete(RawPtr);
             }
 
-            UniquePtr<T> &operator=(UniquePtr<T> &&other);
+            /**
+             * Move assignment operator
+             */
+            UniquePtr<T> &operator=(UniquePtr<T> &&other) noexcept;
 
+            /**
+             * Access the wrapped object
+             * @return reference to T
+             */
             inline T &operator*() const noexcept
             {
                 return (*RawPtr);
             }
 
+            /**
+             * Access the wrapped object
+             * @return pointer to T
+             */
             inline T *operator->() const noexcept
             {
                 return (RawPtr);
             }
 
+            /**
+             * Returns the raw pointer
+             * @return low-level raw pointer
+             */
             inline T *Raw() const noexcept
             {
                 return (RawPtr);
             }
 
+            /**
+             * Compare UniquePtr
+             * @param other operand
+             * @return true if this equal other, false otherwise
+             */
             inline bool operator==(const T *other) const noexcept
             {
                 return (RawPtr == other);
             }
 
+            /**
+             * Compare UniquePtr
+             * @param other operand
+             * @return false if this equal other, true otherwise
+             */
             inline bool operator!=(const T *other) const noexcept
             {
                 return (RawPtr != other);
             }
 
+            /**
+             * Compare UniquePtr
+             * @tparam T1 type to compare with
+             * @param other operand
+             * @return true if this equal other, false otherwise
+             */
             template <typename T1>
             inline bool operator==(const UniquePtr<T1> &other) const noexcept
             {
                 return (RawPtr == other.RawPtr);
             }
 
+            /**
+             * Compare UniquePtr
+             * @tparam T1 type to compare with
+             * @param other operand
+             * @return false if this equal other, true otherwise
+             */
             template <typename T1>
             inline bool operator!=(const UniquePtr<T1> &other) const noexcept
             {
@@ -110,8 +164,11 @@ namespace bpf
             }
 
             /**
-             * Return a new UniquePtr containing casted pointer from T to T1,
-             * WARNING: old UniquePtr will be reset to Null
+             * Quick casting function
+             * WARNING: ownership is transferred to the new UniquePtr
+             * @tparam T1 the type to cast to
+             * @throw ClassCastException in debug only if the class cannot be casted
+             * @return new casted UniquePtr
              */
             template <typename T1>
             inline UniquePtr<T1> Cast()
@@ -136,12 +193,7 @@ namespace bpf
 
             template <typename T1>
             friend class UniquePtr;
-
-            static const UniquePtr<T> NullPtr;
         };
-
-        template <typename T>
-        const UniquePtr<T> UniquePtr<T>::NullPtr = UniquePtr<T>(Null);
     }
 }
 

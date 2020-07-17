@@ -34,6 +34,9 @@ namespace bpf
 {
     namespace math
     {
+        /**
+         * Exception thrown when operating on two matrices and/or vectors of incompatible size
+         */
         class BPF_API IncompatibleMatrixSizeException final : public Exception
         {
         private:
@@ -41,17 +44,30 @@ namespace bpf
             fisize _sizeb;
 
         public:
+            /**
+             * Constructs an IncompatibleMatrixSizeException
+             * @param sizea the incompatible size of the first operand
+             * @param sizeb the incompatible size of the second operand
+             */
             inline IncompatibleMatrixSizeException(fisize sizea, fisize sizeb) noexcept
                 : _sizea(sizea)
                 , _sizeb(sizeb)
             {
             }
 
+            /**
+             * Returns the incompatible size of the first operand
+             * @return unsigned
+             */
             inline fsize SizeA() const noexcept
             {
                 return (_sizea);
             }
 
+            /**
+             * Returns the incompatible size of the first operand
+             * @return unsigned
+             */
             inline fsize SizeB() const noexcept
             {
                 return (_sizeb);
@@ -62,7 +78,7 @@ namespace bpf
                 return ("IncompatibleMatrixSize");
             }
 
-            void Print() const;
+            void Print() const final;
         };
     }
 }

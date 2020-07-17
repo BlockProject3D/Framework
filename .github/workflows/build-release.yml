@@ -11,6 +11,12 @@ jobs:
   setup-release:
     runs-on: ubuntu-latest
     steps:
+    - name: Trigger automatic documentation
+      uses: peter-evans/repository-dispatch@v1
+      with:
+        token: ${{ secrets.DOC_ACCESS_TOKEN }}
+        repository: BlockProject3D/BlockProject3D.github.io
+        event-type: useless
     - uses: 1466587594/get-current-time@v1
       id: current-time
       with:

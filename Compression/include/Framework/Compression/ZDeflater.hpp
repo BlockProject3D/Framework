@@ -33,13 +33,30 @@ namespace bpf
 {
     namespace compression
     {
+        /**
+         * Enumeration for level of compression
+         */
         enum class ECompressionLevel
         {
+            /**
+             * Low compression
+             */
             LOW,
+
+            /**
+             * High compression
+             */
             HIGH,
+
+            /**
+             * Default compression
+             */
             DEFAULT
         };
 
+        /**
+         * Represents data compression using ZLib
+         */
         class BPF_COMPRESSION_API ZDeflater
         {
         private:
@@ -47,16 +64,46 @@ namespace bpf
             io::ByteBuf _input;
 
         public:
-            explicit ZDeflater(const ECompressionLevel level = ECompressionLevel::DEFAULT);
+            /**
+             * Constructs a ZDeflater
+             * @param level the compression level
+             */
+            explicit ZDeflater(ECompressionLevel level = ECompressionLevel::DEFAULT);
+
             ~ZDeflater();
 
+            /**
+             * Sets the input buffer
+             * @param inflated buffer of data to compress
+             */
             void SetInput(const io::ByteBuf &inflated);
+
+            /**
+             * Sets the input buffer
+             * @param inflated buffer of data to compress
+             */
             void SetInput(io::ByteBuf &&inflated);
 
+            /**
+             * Returns the Adler32 checksum value of the compressed data
+             * @return 32 bits unsigned
+             */
             uint32 GetAdler32() const;
 
+            /**
+             * Deflates a part of the input buffer into the given output buffer
+             * @param out output buffer
+             * @return unsigned number of bytes written to output buffer
+             */
             fsize Deflate(io::ByteBuf &out);
-            fsize Deflate(void *out, const fsize size);
+
+            /**
+             * Deflates a part of the input buffer into the given output buffer
+             * @param out output buffer
+             * @param size the size of the output buffer
+             * @return unsigned number of bytes written to output buffer
+             */
+            fsize Deflate(void *out, fsize size);
         };
     }
 }

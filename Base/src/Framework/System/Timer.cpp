@@ -29,7 +29,7 @@
 #ifdef WINDOWS
     #include <Windows.h>
 #else
-    #include <time.h> 
+    #include <ctime>
     #include <sys/time.h>   
     #include <sys/resource.h> 
 #endif

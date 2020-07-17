@@ -46,6 +46,8 @@ Json::Object::Object(const std::initializer_list<std::pair<String, Json>> &lst)
 
 Json &Json::operator=(const Json &other)
 {
+    if (this == &other)
+        return (*this);
     _type = other._type;
     _number = other._number;
     _bool = other._bool;
@@ -55,7 +57,7 @@ Json &Json::operator=(const Json &other)
     return (*this);
 }
 
-Json &Json::operator=(Json &&other)
+Json &Json::operator=(Json &&other) noexcept
 {
     _type = other._type;
     _number = other._number;

@@ -31,12 +31,12 @@
 #include "Framework/System/OSException.hpp"
 #include <iostream>
 
-#include <stdlib.h>
+#include <cstdlib>
 #ifdef WINDOWS
     #include <Windows.h>
 #else
     #include <pthread.h>
-    #include <time.h>
+    #include <ctime>
 using ThreadType = pthread_t;
 #endif
 
@@ -55,7 +55,7 @@ namespace bpf
 {
     namespace system
     {
-        void __internalstate(Thread &ptr, Thread::EState state)
+        void _bpf_internal_state(Thread &ptr, Thread::EState state)
         {
             ptr._state = state;
         }
@@ -69,12 +69,12 @@ DWORD WINAPI ThreadRoutine(void *ptr)
     try
     {
         thread->Run();
-        __internalstate(*thread, Thread::FINISHED);
+        _bpf_internal_state(*thread, Thread::FINISHED);
     }
     catch (const bpf::Exception &)
     {
         //TODO: print ex
-        __internalstate(*thread, Thread::STOPPED);
+        _bpf_internal_state(*thread, Thread::STOPPED);
     }
     return (0);
 }
@@ -85,12 +85,12 @@ void *ThreadRoutine(void *ptr)
     try
     {
         thread->Run();
-        __internalstate(*thread, Thread::FINISHED);
+        _bpf_internal_state(*thread, Thread::FINISHED);
     }
     catch (const bpf::Exception &)
     {
         //TODO: print ex
-        __internalstate(*thread, Thread::STOPPED);
+        _bpf_internal_state(*thread, Thread::STOPPED);
     }
     return (Null);
 }
@@ -140,7 +140,7 @@ void Thread::Start()
 {
     if (_handle != Null)
         return;
-    __internalstate(*this, RUNNING);
+    _bpf_internal_state(*this, RUNNING);
 #ifdef WINDOWS
     _handle = CreateThread(Null, 0, &ThreadRoutine, this, 0, Null);
 #else
@@ -168,7 +168,7 @@ void Thread::Kill(const bool force)
     if (_handle == Null)
         return;
     if (!force)
-        __internalstate(*this, EXITING);
+        _bpf_internal_state(*this, EXITING);
     else
     {
 #ifdef WINDOWS
@@ -176,7 +176,7 @@ void Thread::Kill(const bool force)
 #else
         pthread_cancel(*reinterpret_cast<ThreadType *>(_handle));
 #endif
-        __internalstate(*this, STOPPED);
+        _bpf_internal_state(*this, STOPPED);
     }
 }
 
@@ -188,6 +188,6 @@ void Thread::Sleep(const uint32 milliseconds)
     struct timespec ts;
     ts.tv_sec = milliseconds / 1000;
     ts.tv_nsec = (milliseconds % 1000) * 1000000;
-    nanosleep(&ts, NULL);
+    nanosleep(&ts, Null);
 #endif
 }

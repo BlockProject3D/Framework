@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -28,6 +28,9 @@
 
 #pragma once
 
+/**
+ * Shortcut to C++ nullptr
+ */
 #define Null nullptr
 
 // Check windows
@@ -47,31 +50,90 @@
 
 namespace bpf
 {
+    /**
+     * 32 bits unsigned integer
+     */
     using uint32 = unsigned int;
+
+    /**
+     * 8 bits unsigned integer
+     */
     using uint8 = unsigned char;
+
+    /**
+     * 32 bits signed integer
+     */
     using int32 = int;
+
+    /**
+     * 64 bits signed integer
+     */
     using int64 = long long signed int;
+
+    /**
+     * 64 bits unsigned integer
+     */
     using uint64 = long long unsigned int;
+
+    /**
+     * 8 bits signed integer
+     */
     using int8 = signed char;
+
+    /**
+     * 16 bits signed integer
+     */
     using int16 = signed short;
+
+    /**
+     * 16 bits unsigned integer
+     */
     using uint16 = unsigned short;
 
+    /**
+     * UTF32 character type
+     */
     using fchar = uint32;
+
+    /**
+     * UTF16 character type
+     */
     using fchar16 = uint16;
 
     /**
-     * Custom int type guarenteed to be ALWAYS 32bits no matter the platform
+     * Custom int type guarenteed to be ALWAYS 32bits no matter the platform/architecture combination
      */
     using fint = int32;
 
 #ifdef PLATFORM_64
+    /**
+     * Unsigned type variant of the size of a register on the current system
+     */
     using uintptr = uint64;
+
+    /**
+     * Signed type variant of the size of a register on the current system
+     */
     using intptr = int64;
 #else
+    /**
+     * Unsigned type variant of the size of a register on the current system
+     */
     using uintptr = uint32;
+
+    /**
+     * Signed type variant of the size of a register on the current system
+     */
     using intptr = int32;
 #endif
 
+    /**
+     * Unsigned type variant used for collections and hash values
+     */
     using fsize = uintptr;
-	using fisize = intptr;
+
+    /**
+     * Signed type variant used for certain collections
+     */
+    using fisize = intptr;
 }

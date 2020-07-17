@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -35,7 +35,10 @@ namespace bpf
 {
     namespace io
     {
-        class BPF_API ConsoleWriter : public IDataOutputStream
+        /**
+         * High-level console serializer
+         */
+        class BPF_API ConsoleWriter final : public IDataOutputStream
         {
         private:
 #ifdef WINDOWS
@@ -45,16 +48,21 @@ namespace bpf
             int _handle;
 #endif
             TextWriter _writer;
+            EConsoleStream _stream;
 #ifdef WINDOWS
             void *GetHandle(const EConsoleStream type);
 #else
-            int GetHandle(const EConsoleStream type);
+            static int GetHandle(EConsoleStream type);
 #endif
 
         public:
-            explicit ConsoleWriter(const EConsoleStream type = EConsoleStream::OUTPUT);
+            /**
+             * Constructs a ConsoleWrite
+             * @param type which stream to write to (ERROR/OUTPUT)
+             */
+            explicit ConsoleWriter(EConsoleStream type = EConsoleStream::OUTPUT);
 
-            inline void Flush()
+            inline void Flush() final
             {
                 _writer.Flush();
             }
@@ -63,113 +71,137 @@ namespace bpf
              * This function performs a low level write to console
              * On Windows it expects bufsize to be a multiple of 2 and expects buf to contain UTF-16 code points
              * On Linux it expects buf to contain UTF-8 bytes (last UTF-8 code can be cut)
+             * @param buf buffer to write to console
+             * @param bufsize the size in bytes of the buffer
+             * @throw IOException in case of system error
+             * @return number of bytes written
              */
-            fsize Write(const void *buf, fsize bufsize);
+            fsize Write(const void *buf, fsize bufsize) final;
 
+            /**
+             * Writes a line of text
+             * @param str text to write
+             */
             inline void WriteLine(const String &str)
             {
                 _writer.WriteLine(str);
             }
 
+            /**
+             * Writes a string (without appending newline character)
+             * @param str string to write
+             */
             void Write(const String &str)
             {
                 _writer.Write(str);
             }
 
+            /**
+             * Writes a platform dependent newline character
+             */
             inline void NewLine()
             {
                 _writer.NewLine();
             }
 
-            inline ConsoleWriter &operator<<(uint8 u)
+            inline ConsoleWriter &operator<<(uint8 u) final
             {
                 _writer << u;
                 return (*this);
             }
 
-            inline ConsoleWriter &operator<<(uint16 u)
+            inline ConsoleWriter &operator<<(uint16 u) final
             {
                 _writer << u;
                 return (*this);
             }
 
-            inline ConsoleWriter &operator<<(uint32 u)
+            inline ConsoleWriter &operator<<(uint32 u) final
             {
                 _writer << u;
                 return (*this);
             }
 
-            inline ConsoleWriter &operator<<(uint64 u)
+            inline ConsoleWriter &operator<<(uint64 u) final
             {
                 _writer << u;
                 return (*this);
             }
 
-            inline ConsoleWriter &operator<<(int8 i)
+            inline ConsoleWriter &operator<<(int8 i) final
             {
                 _writer << i;
                 return (*this);
             }
 
-            inline ConsoleWriter &operator<<(int16 i)
+            inline ConsoleWriter &operator<<(int16 i) final
             {
                 _writer << i;
                 return (*this);
             }
 
-            inline ConsoleWriter &operator<<(fint i)
+            inline ConsoleWriter &operator<<(fint i) final
             {
                 _writer << i;
                 return (*this);
             }
 
-            inline ConsoleWriter &operator<<(int64 i)
+            inline ConsoleWriter &operator<<(int64 i) final
             {
                 _writer << i;
                 return (*this);
             }
 
-            inline ConsoleWriter &operator<<(float f)
+            inline ConsoleWriter &operator<<(float f) final
             {
                 _writer << f;
                 return (*this);
             }
 
-            inline ConsoleWriter &operator<<(double d)
+            inline ConsoleWriter &operator<<(double d) final
             {
                 _writer << d;
                 return (*this);
             }
 
-            inline ConsoleWriter &operator<<(bool b)
+            inline ConsoleWriter &operator<<(bool b) final
             {
                 _writer << b;
                 return (*this);
             }
 
-            inline ConsoleWriter &operator<<(const bpf::String &str)
+            inline ConsoleWriter &operator<<(const bpf::String &str) final
             {
                 _writer << str;
                 return (*this);
             }
 
-            inline ConsoleWriter &operator<<(const char *str)
+            inline ConsoleWriter &operator<<(const char *str) final
             {
                 _writer << str;
                 return (*this);
             }
 
+            /**
+             * Sets the text style for the subsequent write operations
+             * @param style the new text style
+             * @return ConsoleWriter& 
+             */
             inline ConsoleWriter &operator<<(const Console::TextStyle &style)
             {
                 Flush();
-                Console::SetTextStyle(style);
+                Console::SetTextStyle(style, _stream);
                 return (*this);
             }
 
+            /**
+             * Resets all previous text styles
+             * @return ConsoleWriter& 
+             */
             inline ConsoleWriter &operator<<(const Console::ClearTextStyle &)
             {
                 Flush();
-                Console::ResetTextStyle();
+                Console::ResetTextStyle(_stream);
                 return (*this);
             }
         };

@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -57,8 +57,7 @@ namespace bpf
             fsize right = i * 2 + 1;
             fsize k = i;
 
-            while (left < _tailPtr + 1 && right < _tailPtr + 1
-                && (HeapFunc<K>::Eval(_dataK[left], _dataK[i]) || HeapFunc<K>::Eval(_dataK[right], _dataK[i])))
+            while (left < _tailPtr + 1 && right < _tailPtr + 1 && (HeapFunc<K>::Eval(_dataK[left], _dataK[i]) || HeapFunc<K>::Eval(_dataK[right], _dataK[i])))
             {
                 if (HeapFunc<K>::Eval(_dataK[left], _dataK[right]))
                     k = left;

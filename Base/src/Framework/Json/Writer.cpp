@@ -57,7 +57,7 @@ String Writer::SerializeArray(const Json::Array &json)
     return (res);
 }
 
-String Writer::Indent()
+String Writer::Indent() const
 {
     String res;
 
@@ -103,11 +103,11 @@ String Writer::Serialize(const Json &json)
     case Json::OBJECT:
         return (_pretty ? SerializeObjectPretty(json) : SerializeObject(json));
     case Json::NUMBER:
-        return (String::ValueOf(json.AsNumber()));
+        return (String::ValueOf(json.ToNumber()));
     case Json::BOOLEAN:
         return (json == true ? "true" : "false");
     case Json::STRING:
-        return (String('"') + json.AsString() + '"');
+        return (String('"') + json.ToString() + '"');
     case Json::NONE:
         return ("null");
     }

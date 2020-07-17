@@ -26,7 +26,7 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <stdlib.h>
+#include <cstdlib>
 #ifdef WINDOWS
     #include <Windows.h>
     using MutexType = CRITICAL_SECTION;
@@ -63,13 +63,13 @@ Mutex::~Mutex()
     free(_handle);
 }
 
-Mutex::Mutex(Mutex &&other)
+Mutex::Mutex(Mutex &&other) noexcept
     : _handle(other._handle)
 {
     other._handle = Null;
 }
 
-Mutex &Mutex::operator=(Mutex &&other)
+Mutex &Mutex::operator=(Mutex &&other) noexcept
 {
 #ifdef WINDOWS
     DeleteCriticalSection(reinterpret_cast<MutexType *>(_handle));

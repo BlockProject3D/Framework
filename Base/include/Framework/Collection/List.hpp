@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -27,19 +27,19 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include <functional>
-#include "Framework/Types.hpp"
 #include "Framework/Collection/Iterator.hpp"
-#include "Framework/IndexException.hpp"
 #include "Framework/Collection/Utility.hpp"
+#include "Framework/IndexException.hpp"
+#include "Framework/Types.hpp"
+#include <functional>
 
 namespace bpf
 {
     namespace collection
     {
         /**
-         * A simple double chained linked list
-         * @tparam T the type of element in that list
+         * A simple double linked list
+         * @tparam T the type of element to store
          */
         template <typename T>
         class BP_TPL_API List
@@ -53,11 +53,15 @@ namespace bpf
                 T Data;
 
                 explicit Node(const T &data)
-                    : Next(Null), Prev(Null), Data(data)
+                    : Next(Null)
+                    , Prev(Null)
+                    , Data(data)
                 {
                 }
                 explicit Node(T &&data)
-                    : Next(Null), Prev(Null), Data(std::move(data))
+                    : Next(Null)
+                    , Prev(Null)
+                    , Data(std::move(data))
                 {
                 }
             };
@@ -66,7 +70,7 @@ namespace bpf
             class BP_TPL_API Iterator final : public IIterator<typename List<T>::Iterator, T>
             {
             private:
-                Node * _cur;
+                Node *_cur;
                 Node *_reset;
 
             public:
@@ -112,7 +116,7 @@ namespace bpf
             class BP_TPL_API ReverseIterator final : public IIterator<typename List<T>::ReverseIterator, T>
             {
             private:
-                Node * _cur;
+                Node *_cur;
                 Node *_reset;
 
             public:
@@ -152,6 +156,7 @@ namespace bpf
                     return (_cur != it._cur);
                 }
             };
+
         private:
             Node *_first;
             Node *_last;
@@ -168,58 +173,143 @@ namespace bpf
             void RemoveNode(Node *toRM);
             void Swap(Node *a, Node *b);
             Node *GetNode(fsize id) const;
+
         public:
+            /**
+             * Constructs an empty List
+             */
             List<T>();
+
+            /**
+             * Constructs a List from an existing initializer list
+             * @param lst the initial list of items to add to this new List
+             */
             List<T>(const std::initializer_list<T> &lst);
+
+            /**
+             * Copy constructor
+             */
             List<T>(const List<T> &other);
-            List<T>(List<T> &&other);
+
+            /**
+             * Move constructor
+             */
+            List<T>(List<T> &&other) noexcept;
+
             ~List<T>();
 
-            List<T> &operator=(List<T> &&other);
+            /**
+             * Move assignment operator
+             */
+            List<T> &operator=(List<T> &&other) noexcept;
+
+            /**
+             * Copy assignment operator
+             */
             List<T> &operator=(const List<T> &other);
 
             /**
-             * Adds an element at the end of the list
-             * @param elem element to add
+             * Adds an item at the end of this list
+             * @param elem the element to add
              */
             void Add(const T &elem);
+
+            /**
+             * Adds an item at the end of this list
+             * @param elem the element to add
+             */
             void Add(T &&elem);
 
             /**
-             * Inserts an element at a given position
+             * Inserts an item at an arbitary position in the list
+             * @param pos insert position
              * @param elem element to insert
-             * @param pos position
              */
             void Insert(fsize pos, const T &elem);
+
+            /**
+             * Inserts an item at an arbitary position in the list
+             * @param pos insert position
+             * @param elem element to insert
+             */
             void Insert(fsize pos, T &&elem);
+
+            /**
+             * Inserts an item at an arbitary position in the list
+             * @param pos insert position
+             * @param elem element to insert
+             */
             void Insert(const Iterator &pos, const T &elem);
+
+            /**
+             * Inserts an item at an arbitary position in the list
+             * @param pos insert position
+             * @param elem element to insert
+             */
             void Insert(const Iterator &pos, T &&elem);
 
             /**
-             * Returns an element
-             * @param id index of the element
-             * @throws IndexException if the position is outside the bounds of the list
+             * Returns an element const mode
+             * @param id the index of the element, in case of out of bounds, throws
+             * @throw IndexException if id is out of bounds
+             * @return immutable item at index id
              */
-            const T &operator[](const fsize id) const;
-            T &operator[](const fsize id);
+            const T &operator[](fsize id) const;
 
+            /**
+             * Returns an element non-const mode
+             * @param id the index of the element, in case of out of bounds, throws
+             * @throw IndexException if id is out of bounds
+             * @return mutable item at index id
+             */
+            T &operator[](fsize id);
+
+            /**
+             * Create a new list from concatenation of two lists
+             * @param other list to concatenate with
+             * @return new list
+             */
             List<T> operator+(const List<T> &other) const;
 
+            /**
+             * Appends the content of a list at the end of this list
+             * @param other list to append
+             */
             void operator+=(const List<T> &other);
 
+            /**
+             * Compare List by performing a per-element check
+             * @param other List to compare with
+             * @return true if the two lists are equal, false otherwise
+             */
             bool operator==(const List<T> &other);
 
+            /**
+             * Compare List by performing a per-element check
+             * @param other ArrayList to compare with
+             * @return false if the two lists are equal, true otherwise
+             */
             inline bool operator!=(const List<T> &other)
             {
                 return (!operator==(other));
             }
 
             /**
-             * Removes an element at specified position in the list
-             * @param pos the position of the element
+             * Removes an item at an arbitary position in the list
+             * @param pos item position
              */
-            void RemoveAt(const fsize pos);
+            void RemoveAt(fsize pos);
+
+            /**
+             * Removes an item at an arbitary position in the list
+             * @param pos item position
+             */
             void RemoveAt(Iterator &pos);
+
+            /**
+             * Removes an item at an arbitary position in the list
+             * @param pos item position
+             */
             void RemoveAt(Iterator &&pos);
 
             /**
@@ -229,22 +319,56 @@ namespace bpf
              * @tparam Comparator the comparision operator to use for comparing values
              */
             template <template <typename> class Comparator = ops::Equal>
-            void Remove(const T &elem, const bool all = true);
+            void Remove(const T &elem, bool all = true);
 
-            Iterator FindByKey(const fsize pos);
+            /**
+             * Locate an item by index inside this list
+             * @param pos the index of the item to search for
+             * @return iterator to the found item or end() if none
+             */
+            Iterator FindByKey(fsize pos);
 
+            /**
+             * Locate an item by performing per-element check
+             * @tparam Comparator comparision operator to use
+             * @param val the value to search for
+             * @return iterator to the found item or end() if none
+             */
             template <template <typename> class Comparator = ops::Equal>
             Iterator FindByValue(const T &val);
 
-            Iterator Find(const std::function<bool(const fsize pos, const T & val)> &comparator);
+            /**
+             * Locate an item by performing per-element check
+             * @param comparator the comparision function to use
+             * @return iterator to the found item or end() if none
+             */
+            Iterator Find(const std::function<bool(const fsize pos, const T &val)> &comparator);
 
+            /**
+             * Swap two elements by iterator in the List
+             * @param a first element
+             * @param b second element
+             */
             void Swap(const Iterator &a, const Iterator &b);
 
+            /**
+             * Removes the last item in this list
+             */
             void RemoveLast();
 
+            /**
+             * Sorts this collection in place
+             * @param stable if true this function will apply a Merge-Sort algorithm, otherwise this function uses the Quick-Sort algorithm
+             * @tparam Comparator comparision operator
+             */
             template <template <typename> class Comparator = ops::Less>
-            void Sort(const bool stable = false);
+            void Sort(bool stable = false);
 
+            /**
+             * Returns the first element in this List
+             * @throw IndexException if none
+             * @return mutable item
+             */
             inline T &First()
             {
                 if (_first == Null)
@@ -252,6 +376,11 @@ namespace bpf
                 return (_first->Data);
             }
 
+            /**
+             * Returns the last element in this List
+             * @throw IndexException if none
+             * @return mutable item
+             */
             inline T &Last()
             {
                 if (_last == Null)
@@ -259,6 +388,11 @@ namespace bpf
                 return (_last->Data);
             }
 
+            /**
+             * Returns the first element in this List
+             * @throw IndexException if none
+             * @return immutable item
+             */
             inline const T &First() const
             {
                 if (_first == Null)
@@ -266,6 +400,11 @@ namespace bpf
                 return (_first->Data);
             }
 
+            /**
+             * Returns the last element in this List
+             * @throw IndexException if none
+             * @return immutable item
+             */
             inline const T &Last() const
             {
                 if (_last == Null)
@@ -273,15 +412,23 @@ namespace bpf
                 return (_last->Data);
             }
 
+            /**
+             * Returns the number of items in this list
+             * @return number of items as unsigned
+             */
             inline fsize Size() const noexcept
             {
                 return (_count);
             }
 
+            /**
+             * Clears the content of this List
+             */
             void Clear();
 
             /**
-             * Returns an iterator to the begining of the list
+             * Returns an iterator to the begining of the collection
+             * @return new iterator
              */
             inline Iterator begin() const
             {
@@ -289,7 +436,8 @@ namespace bpf
             }
 
             /**
-             * Returns an iterator to the end of the list
+             * Returns an iterator to the end of the collection
+             * @return new iterator
              */
             inline Iterator end() const
             {
@@ -297,7 +445,8 @@ namespace bpf
             }
 
             /**
-             * Returns a reverse iterator to the begining of the list
+             * Returns a reverse iterator to the begining of the collection
+             * @return new iterator
              */
             inline ReverseIterator rbegin() const
             {
@@ -305,7 +454,8 @@ namespace bpf
             }
 
             /**
-             * Returns a reverse iterator to the end of the list
+             * Returns a reverse iterator to the end of the collection
+             * @return new iterator
              */
             inline ReverseIterator rend() const
             {
@@ -313,6 +463,6 @@ namespace bpf
             }
         };
     }
-};
+}
 
 #include "Framework/Collection/List.impl.hpp"

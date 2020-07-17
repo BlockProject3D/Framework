@@ -33,9 +33,16 @@ namespace bpf
 {
     namespace json
     {
+        /**
+         * Exception thrown when json trying to convert a json value to an incompatible type
+         */
         class BPF_API JsonException final : public RuntimeException
         {
         public:
+            /**
+             * Constructs a JsonException from a message
+             * @param msg the error message
+             */
             explicit inline JsonException(const String &msg)
                 : RuntimeException("Json", msg)
             {

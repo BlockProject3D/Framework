@@ -122,7 +122,7 @@ TEST(VectorDynamic, Operators)
     EXPECT_EQ(-identity, Vectorf(5, -2));
     EXPECT_FALSE(Vectorf::Identity(5) == Vectorf::Zero(5));
     EXPECT_NE(Vectorf::Identity(5), Vectorf::Zero(5));
-    EXPECT_THROW((void)(identity == Vectorf(4)), bpf::math::IncompatibleMatrixSizeException);
+    EXPECT_FALSE(identity == Vectorf(4));
 }
 
 TEST(VectorDynamic, Comparision)

@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -188,7 +188,7 @@ namespace bpf
         }
 
         template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
-        Map<K, V, Greater, Less>::Map(Map &&other)
+        Map<K, V, Greater, Less>::Map(Map &&other) noexcept
             : _root(other._root)
             , _count(other._count)
         {
@@ -216,7 +216,7 @@ namespace bpf
         {
             if (_root == Null)
                 return;
-            Stack<Node *> stack = { _root };
+            Stack<Node *> stack = {_root};
 
             while (stack.Size() > 0)
             {
@@ -235,6 +235,8 @@ namespace bpf
         template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
         Map<K, V, Greater, Less> &Map<K, V, Greater, Less>::operator=(const Map &other)
         {
+            if (this == &other)
+                return (*this);
             Clear();
             for (auto &entry : other)
                 Add(entry.Key, entry.Value);
@@ -242,7 +244,7 @@ namespace bpf
         }
 
         template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
-        Map<K, V, Greater, Less> &Map<K, V, Greater, Less>::operator=(Map &&other)
+        Map<K, V, Greater, Less> &Map<K, V, Greater, Less>::operator=(Map &&other) noexcept
         {
             Clear();
             _root = other._root;
@@ -686,7 +688,7 @@ namespace bpf
         }
 
         template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
-        typename Map<K, V, Greater, Less>::Iterator Map<K, V, Greater, Less>::Find(const std::function<int(const Node & node)> &comparator)
+        typename Map<K, V, Greater, Less>::Iterator Map<K, V, Greater, Less>::Find(const std::function<int(const Node &node)> &comparator)
         {
             Node *nd = _root;
 
