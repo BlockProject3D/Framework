@@ -137,6 +137,7 @@ set(SOURCES
     ./include/Framework/BinUtils.hpp
     ./include/Framework/Types.hpp
     ./include/Framework/Tuple.hpp
+    ./include/Framework/Dynamic.hpp
     ./include/Framework/TypeInfo.hpp
     ./include/Framework/Delegate.hpp
     ./include/Framework/Hash.hpp
