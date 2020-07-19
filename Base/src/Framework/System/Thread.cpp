@@ -154,7 +154,7 @@ void Thread::Start()
 #endif
 }
 
-void Thread::Join()
+void Thread::Join() noexcept
 {
     if (_handle == Null)
         return;

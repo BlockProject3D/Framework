@@ -96,7 +96,7 @@ set(SOURCES
     ./include/Framework/System/IThreadRunnable.hpp
     ./include/Framework/System/Thread.hpp
     ./include/Framework/System/Mutex.hpp
-    ./include/Framework/System/ThreadManager.hpp
+        include/Framework/System/ThreadPool.hpp
     ./include/Framework/System/ModuleInterface.hpp
     ./include/Framework/System/Application.hpp
     ./include/Framework/System/ScopeLock.hpp
@@ -190,7 +190,7 @@ set(SOURCES
     ./src/Framework/System/Thread.cpp
     ./src/Framework/System/Timer.cpp
     ./src/Framework/System/Mutex.cpp
-    ./src/Framework/System/ThreadManager.cpp
+        src/Framework/System/ThreadPool.cpp
     ./src/Framework/Json/Json.cpp
     ./src/Framework/Json/Lexer.cpp
     ./src/Framework/Json/Parser.cpp

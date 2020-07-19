@@ -112,7 +112,7 @@ namespace bpf
             /**
              * Joins the thread with the current thread
              */
-            void Join();
+            void Join() noexcept;
 
             /**
              * Returns the state
