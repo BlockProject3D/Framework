@@ -138,7 +138,7 @@ namespace bpf
         template <typename T>
         inline Dynamic(const T &other, typename std::enable_if<!std::is_same<T, Dynamic>::value>::type * = 0)
         {
-            if (std::is_null_pointer<T>::value)
+            if (std::is_same<std::nullptr_t, typename std::remove_cv<T>::type>::value)
                 _storage = Null;
             else
                 _storage = memory::MemUtils::New<DynamicStorage<T>>(other);
@@ -152,7 +152,7 @@ namespace bpf
         template <typename T>
         inline Dynamic(T &&other, typename std::enable_if<!std::is_same<T, Dynamic &>::value>::type * = 0)
         {
-            if (std::is_null_pointer<T>::value)
+            if (std::is_same<std::nullptr_t, typename std::remove_cv<T>::type>::value)
                 _storage = Null;
             else
                 _storage = memory::MemUtils::New<DynamicStorage<T>>(std::forward<T>(other));
@@ -188,7 +188,7 @@ namespace bpf
         template <typename T>
         inline Dynamic &operator=(const T &other)
         {
-            if (std::is_null_pointer<T>::value)
+            if (std::is_same<std::nullptr_t, typename std::remove_cv<T>::type>::value)
             {
                 memory::MemUtils::Delete(_storage);
                 _storage = Null;
@@ -208,7 +208,7 @@ namespace bpf
         template <typename T>
         inline typename std::enable_if<!std::is_same<T, Dynamic &>::value, Dynamic &>::type operator=(T &&other)
         {
-            if (std::is_null_pointer<T>::value)
+            if (std::is_same<std::nullptr_t, typename std::remove_cv<T>::type>::value)
             {
                 memory::MemUtils::Delete(_storage);
                 _storage = Null;
