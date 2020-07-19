@@ -27,10 +27,10 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include <utility>
-#include "Framework/TypeInfo.hpp"
-#include "Framework/Memory/MemUtils.hpp"
 #include "Framework/Memory/ClassCastException.hpp"
+#include "Framework/Memory/MemUtils.hpp"
+#include "Framework/TypeInfo.hpp"
+#include <utility>
 
 namespace bpf
 {
@@ -50,7 +50,9 @@ namespace bpf
                 , DataPtr(dptr)
             {
             }
-            virtual ~Storage() {}
+            virtual ~Storage()
+            {
+            }
             virtual Storage *Clone() = 0;
             virtual const char *GetTypeName() const noexcept = 0;
         };
@@ -61,13 +63,11 @@ namespace bpf
         private:
             T _data;
             const char *_tname;
-
             template <typename Q = T>
             inline typename std::enable_if<std::is_copy_constructible<Q>::value, Storage *>::type Useless()
             {
                 return (memory::MemUtils::New<DynamicStorage<T>>(_data));
             }
-
             template <typename Q = T>
             inline typename std::enable_if<!std::is_copy_constructible<Q>::value, Storage *>::type Useless()
             {
@@ -81,19 +81,16 @@ namespace bpf
                 , _tname(TypeName<T>())
             {
             }
-
             inline const char *GetTypeName() const noexcept final
             {
                 return (_tname);
             }
-
             explicit inline DynamicStorage(T &&other)
                 : Storage(TypeIndex<T>(), &_data)
                 , _data(std::move(other))
                 , _tname(TypeName<T>())
             {
             }
-
             inline Storage *Clone() final
             {
                 return (Useless());
@@ -108,24 +105,38 @@ namespace bpf
         }
 
     public:
+        /**
+         * Constructs a Null dynamic
+         */
         inline Dynamic()
             : _storage(Null)
         {
         }
 
+        /**
+         * Copy constructor
+         */
         inline Dynamic(const Dynamic &other)
             : _storage(other._storage == Null ? Null : other._storage->Clone())
         {
         }
 
+        /**
+         * Move constructor
+         */
         inline Dynamic(Dynamic &&other) noexcept
             : _storage(other._storage)
         {
             other._storage = Null;
         }
 
+        /**
+         * Constructs a dynamic from an existing value
+         * @tparam T the type of value to store
+         * @param other the value to store
+         */
         template <typename T>
-        inline Dynamic(const T &other, typename std::enable_if<!std::is_same<T, Dynamic>::value>::type* = 0)
+        inline Dynamic(const T &other, typename std::enable_if<!std::is_same<T, Dynamic>::value>::type * = 0)
         {
             if (std::is_null_pointer<T>::value)
                 _storage = Null;
@@ -133,8 +144,13 @@ namespace bpf
                 _storage = memory::MemUtils::New<DynamicStorage<T>>(other);
         }
 
+        /**
+         * Constructs a dynamic from an existing value
+         * @tparam T the type of value to store
+         * @param other the value to store
+         */
         template <typename T>
-        inline Dynamic(T &&other, typename std::enable_if<!std::is_same<T, Dynamic&>::value>::type* = 0)
+        inline Dynamic(T &&other, typename std::enable_if<!std::is_same<T, Dynamic &>::value>::type * = 0)
         {
             if (std::is_null_pointer<T>::value)
                 _storage = Null;
@@ -142,35 +158,33 @@ namespace bpf
                 _storage = memory::MemUtils::New<DynamicStorage<T>>(std::forward<T>(other));
         }
 
-        inline ~Dynamic()
-        {
-            memory::MemUtils::Delete(_storage);
-        }
+        ~Dynamic();
 
+        /**
+         * Returns the type identifier of the stored value
+         * @return unsigned
+         */
         inline fsize TypeId() const noexcept
         {
             return (_storage == Null ? 0 : _storage->TypeId);
         }
 
-        inline Dynamic &operator=(const Dynamic &other)
-        {
-            if (this == &other)
-                return (*this);
-            memory::MemUtils::Delete(_storage);
-            _storage = other._storage == Null ? Null : other._storage->Clone();
-            return (*this);
-        }
+        /**
+         * Copy assignment operator
+         */
+        Dynamic &operator=(const Dynamic &other);
 
-        inline Dynamic &operator=(Dynamic &&other) noexcept
-        {
-            if (this == &other)
-                return (*this);
-            memory::MemUtils::Delete(_storage);
-            _storage = other._storage;
-            other._storage = Null;
-            return (*this);
-        }
+        /**
+         * Move assignment operator
+         */
+        Dynamic &operator=(Dynamic &&other) noexcept;
 
+        /**
+         * Assigns this dynamic to a different value
+         * @tparam T the type of value to store
+         * @param other the value to store
+         * @return reference to this for chaining
+         */
         template <typename T>
         inline Dynamic &operator=(const T &other)
         {
@@ -185,8 +199,14 @@ namespace bpf
             return (*this);
         }
 
+        /**
+         * Assigns this dynamic to a different value
+         * @tparam T the type of value to store
+         * @param other the value to store
+         * @return reference to this for chaining
+         */
         template <typename T>
-        inline Dynamic &operator=(T &&other)
+        inline typename std::enable_if<!std::is_same<T, Dynamic &>::value, Dynamic &>::type operator=(T &&other)
         {
             if (std::is_null_pointer<T>::value)
             {
@@ -199,33 +219,57 @@ namespace bpf
             return (*this);
         }
 
+        /**
+         * Compare with a pointer. Only useful for Null checking
+         * @param other operand
+         * @return true if _storage equals other, false otherwise
+         */
         inline bool operator==(void *other) const noexcept
         {
             return (_storage == other);
         }
 
+        /**
+         * Compare with a pointer. Only useful for Null checking
+         * @param other operand
+         * @return true if _storage doesn't equal other, false otherwise
+         */
         inline bool operator!=(void *other) const noexcept
         {
             return (_storage != other);
         }
 
+        /**
+         * Converts this Dynamic to any explicit type
+         * @tparam T type to convert to
+         * @throw ClassCastException if type mismatch
+         * @return mutable reference to T
+         */
         template <typename T>
         inline operator T &()
         {
             if (_storage == Null)
                 throw memory::ClassCastException("Cannot cast null object");
             if (TypeIndex<T>() != TypeId())
-                throw memory::ClassCastException(String("Cannot cast from ") + _storage->GetTypeName() + " to " + TypeName<T>());
+                throw memory::ClassCastException(String("Cannot cast from ") + _storage->GetTypeName() + " to " +
+                                                 TypeName<T>());
             return (*reinterpret_cast<T *>(_storage->DataPtr));
         }
 
+        /**
+         * Converts this Dynamic to any explicit type
+         * @tparam T type to convert to
+         * @throw ClassCastException if type mismatch
+         * @return immutable reference to T
+         */
         template <typename T>
         inline operator const T &() const
         {
             if (_storage == Null)
                 throw memory::ClassCastException("Cannot cast null object");
             if (TypeIndex<T>() != TypeId())
-                throw memory::ClassCastException(String("Cannot cast from ") + _storage->GetTypeName() + " to " + TypeName<T>());
+                throw memory::ClassCastException(String("Cannot cast from ") + _storage->GetTypeName() + " to " +
+                                                 TypeName<T>());
             return (*reinterpret_cast<T *>(_storage->DataPtr));
         }
     };

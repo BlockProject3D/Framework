@@ -69,6 +69,8 @@ TEST(Dynamic, Copy)
     EXPECT_EQ((int)copy, -42);
     copy = 42;
     EXPECT_EQ((int)copy, 42);
+    dyn = copy;
+    EXPECT_EQ((int)dyn, 42);
 }
 
 TEST(Dynamic, Move_1)

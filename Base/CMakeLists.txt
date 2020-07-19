@@ -59,6 +59,7 @@ set(SOURCES
     ./include/Framework/Math/NonSquareMatrixException.hpp
     ./include/Framework/Math/NonInvertibleMatrixException.hpp
     ./include/Framework/Math/Color.hpp
+    ./include/Framework/Math/Random.hpp
     ./include/Framework/Log/Logger.hpp
     ./include/Framework/Log/ILogAdapter.hpp
     ./include/Framework/Log/ELogLevel.hpp
@@ -137,13 +138,11 @@ set(SOURCES
     ./include/Framework/BinUtils.hpp
     ./include/Framework/Types.hpp
     ./include/Framework/Tuple.hpp
-    ./include/Framework/Dynamic.hpp
     ./include/Framework/TypeInfo.hpp
     ./include/Framework/Delegate.hpp
     ./include/Framework/Hash.hpp
     ./include/Framework/Hash.Base.hpp
     ./include/Framework/Profiler.hpp
-    ./include/Framework/Math/Random.hpp
     ./include/Framework/Exception.hpp
     ./include/Framework/RuntimeException.hpp
     ./include/Framework/IndexException.hpp
@@ -156,6 +155,7 @@ set(SOURCES
     ./include/Framework/BaseConvert.impl.hpp
     ./include/Framework/Scalar.hpp
     ./include/Framework/ParseException.hpp
+    ./include/Framework/Dynamic.hpp
     ./src/Framework/IO/File.cpp
     ./src/Framework/IO/OSPrivate.hpp
     ./src/Framework/IO/OSPrivate.cpp
@@ -203,6 +203,7 @@ set(SOURCES
     ./src/Framework/String.cpp
     ./src/Framework/Name.cpp
     ./src/Framework/Scalar.cpp
+    ./src/Framework/Dynamic.cpp
 )
 
 if (PLATFORM STREQUAL "Windows")
