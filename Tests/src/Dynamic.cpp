@@ -130,3 +130,15 @@ TEST(Dynamic, NonCopy)
     auto copy = mv;
     EXPECT_EQ(copy, Null);
 }
+
+TEST(Dynamic, Compare)
+{
+    bpf::Dynamic i = 42;
+    bpf::Dynamic i1 = 42;
+    bpf::Dynamic f = 42.42f;
+
+    EXPECT_NE(i, f);
+    EXPECT_EQ(i, i1);
+    EXPECT_EQ(i, 42);
+    EXPECT_EQ(f, 42.42f);
+}
