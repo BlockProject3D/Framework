@@ -51,3 +51,17 @@ Dynamic &Dynamic::operator=(Dynamic &&other) noexcept
     other._storage = Null;
     return (*this);
 }
+
+bool Dynamic::operator==(const Dynamic &other) const
+{
+    if (_storage == Null || other._storage == Null)
+        return (_storage == other._storage);
+    return (_storage->Equals(other._storage));
+}
+
+bool Dynamic::operator!=(const Dynamic &other) const
+{
+    if (_storage == Null || other._storage == Null)
+        return (_storage != other._storage);
+    return (!_storage->Equals(other._storage));
+}

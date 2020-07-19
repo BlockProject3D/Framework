@@ -55,6 +55,7 @@ namespace bpf
             }
             virtual Storage *Clone() = 0;
             virtual const char *GetTypeName() const noexcept = 0;
+            virtual bool Equals(Storage *other) const = 0;
         };
 
         template <typename T>
@@ -94,6 +95,12 @@ namespace bpf
             inline Storage *Clone() final
             {
                 return (Useless());
+            }
+            inline bool Equals(Storage *other) const final
+            {
+                if (TypeId != other->TypeId)
+                    return (false);
+                return (_data == static_cast<DynamicStorage<T> *>(other)->_data);
             }
         };
 
@@ -220,24 +227,18 @@ namespace bpf
         }
 
         /**
-         * Compare with a pointer. Only useful for Null checking
+         * Compare Dynamic
          * @param other operand
-         * @return true if _storage equals other, false otherwise
+         * @return true if this equals other, false otherwise
          */
-        inline bool operator==(void *other) const noexcept
-        {
-            return (_storage == other);
-        }
+        bool operator==(const Dynamic &other) const;
 
         /**
-         * Compare with a pointer. Only useful for Null checking
+         * Compare Dynamic
          * @param other operand
-         * @return true if _storage doesn't equal other, false otherwise
+         * @return true if this doesn't equal other, false otherwise
          */
-        inline bool operator!=(void *other) const noexcept
-        {
-            return (_storage != other);
-        }
+        bool operator!=(const Dynamic &other) const;
 
         /**
          * Converts this Dynamic to any explicit type
@@ -246,7 +247,7 @@ namespace bpf
          * @return mutable reference to T
          */
         template <typename T>
-        inline operator T &()
+        explicit inline operator T &()
         {
             if (_storage == Null)
                 throw memory::ClassCastException("Cannot cast null object");
@@ -263,7 +264,7 @@ namespace bpf
          * @return immutable reference to T
          */
         template <typename T>
-        inline operator const T &() const
+        explicit inline operator const T &() const
         {
             if (_storage == Null)
                 throw memory::ClassCastException("Cannot cast null object");

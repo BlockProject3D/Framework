@@ -111,7 +111,7 @@ TEST(Dynamic, Move_2)
 TEST(Dynamic, ComplexType)
 {
     bpf::Dynamic dyn = bpf::String("My String");
-    bpf::String str = dyn;
+    auto str = (bpf::String)dyn;
 
     EXPECT_STREQ(*str, "My String");
     dyn = Null;
@@ -125,7 +125,7 @@ TEST(Dynamic, NonCopy)
 
     EXPECT_NE(mv, Null);
     EXPECT_EQ(mem, Null); //NOLINT
-    bpf::memory::UniquePtr<int> &ptr = mv;
+    auto &ptr = (bpf::memory::UniquePtr<int> &)mv;
     EXPECT_EQ(*ptr, 42);
     auto copy = mv;
     EXPECT_EQ(copy, Null);
