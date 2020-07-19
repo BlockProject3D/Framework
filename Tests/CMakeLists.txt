@@ -70,6 +70,7 @@ set(SOURCES
     src/BaseConvert.cpp
     src/Compression.cpp
     src/Tuple.cpp
+    src/Dynamic.cpp
     src/Name.cpp
     src/String.cpp
     src/MathEval.cpp

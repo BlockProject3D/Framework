@@ -56,15 +56,28 @@ namespace bpf
         };
 
         template <typename T>
-        class DynamicStorage final : public Storage, T
+        class DynamicStorage final : public Storage
         {
         private:
+            T _data;
             const char *_tname;
+
+            template <typename Q = T>
+            inline typename std::enable_if<std::is_copy_constructible<Q>::value, Storage *>::type Useless()
+            {
+                return (memory::MemUtils::New<DynamicStorage<T>>(_data));
+            }
+
+            template <typename Q = T>
+            inline typename std::enable_if<!std::is_copy_constructible<Q>::value, Storage *>::type Useless()
+            {
+                return (Null);
+            }
 
         public:
             explicit inline DynamicStorage(const T &other)
-                : Storage(TypeIndex<T>(), static_cast<T *>(this))
-                , T(other)
+                : Storage(TypeIndex<T>(), &_data)
+                , _data(other)
                 , _tname(TypeName<T>())
             {
             }
@@ -75,15 +88,15 @@ namespace bpf
             }
 
             explicit inline DynamicStorage(T &&other)
-                : Storage(TypeIndex<T>(), static_cast<T *>(this))
-                , T(std::move(other))
+                : Storage(TypeIndex<T>(), &_data)
+                , _data(std::move(other))
                 , _tname(TypeName<T>())
             {
             }
 
             inline Storage *Clone() final
             {
-                return (memory::MemUtils::New<T>(*this));
+                return (Useless());
             }
         };
 
@@ -101,7 +114,7 @@ namespace bpf
         }
 
         inline Dynamic(const Dynamic &other)
-            : _storage(other._storage->Clone())
+            : _storage(other._storage == Null ? Null : other._storage->Clone())
         {
         }
 
@@ -113,14 +126,20 @@ namespace bpf
 
         template <typename T>
         inline Dynamic(const T &other, typename std::enable_if<!std::is_same<T, Dynamic>::value>::type* = 0)
-            : _storage(memory::MemUtils::New<DynamicStorage<T>>(other))
         {
+            if (std::is_null_pointer<T>::value)
+                _storage = Null;
+            else
+                _storage = memory::MemUtils::New<DynamicStorage<T>>(other);
         }
 
         template <typename T>
-        inline Dynamic(T &&other, typename std::enable_if<!std::is_same<T, Dynamic>::value>::type* = 0)
-            : _storage(memory::MemUtils::New<DynamicStorage<T>>(std::forward<T>(other)))
+        inline Dynamic(T &&other, typename std::enable_if<!std::is_same<T, Dynamic&>::value>::type* = 0)
         {
+            if (std::is_null_pointer<T>::value)
+                _storage = Null;
+            else
+                _storage = memory::MemUtils::New<DynamicStorage<T>>(std::forward<T>(other));
         }
 
         inline ~Dynamic()
@@ -155,8 +174,12 @@ namespace bpf
         template <typename T>
         inline Dynamic &operator=(const T &other)
         {
-            if (this == &other)
+            if (std::is_null_pointer<T>::value)
+            {
+                memory::MemUtils::Delete(_storage);
+                _storage = Null;
                 return (*this);
+            }
             memory::MemUtils::Delete(_storage);
             _storage = memory::MemUtils::New<DynamicStorage<T>>(other);
             return (*this);
@@ -165,11 +188,25 @@ namespace bpf
         template <typename T>
         inline Dynamic &operator=(T &&other)
         {
-            if (this == &other)
+            if (std::is_null_pointer<T>::value)
+            {
+                memory::MemUtils::Delete(_storage);
+                _storage = Null;
                 return (*this);
+            }
             memory::MemUtils::Delete(_storage);
             _storage = memory::MemUtils::New<DynamicStorage<T>>(std::forward<T>(other));
             return (*this);
+        }
+
+        inline bool operator==(void *other) const noexcept
+        {
+            return (_storage == other);
+        }
+
+        inline bool operator!=(void *other) const noexcept
+        {
+            return (_storage != other);
         }
 
         template <typename T>
