@@ -36,6 +36,7 @@
 #endif
 #include "Framework/Memory/Memory.hpp"
 #include "Framework/System/Mutex.hpp"
+#include "Framework/System/OSException.hpp"
 
 using namespace bpf::memory;
 using namespace bpf::system;
@@ -49,12 +50,15 @@ Mutex::Mutex()
 #ifdef WINDOWS
     InitializeCriticalSection(reinterpret_cast<MutexType *>(_handle));
 #else
-    pthread_mutex_init(reinterpret_cast<MutexType *>(_handle), Null);
+    if (pthread_mutex_init(reinterpret_cast<MutexType *>(_handle), Null) != 0)
+        throw OSException("Could not create mutex");
 #endif
 }
 
 Mutex::~Mutex()
 {
+    if (_handle == Null)
+        return;
 #ifdef WINDOWS
     DeleteCriticalSection(reinterpret_cast<MutexType *>(_handle));
 #else
@@ -87,7 +91,8 @@ void Mutex::Lock() const
 #ifdef WINDOWS
     EnterCriticalSection(reinterpret_cast<MutexType *>(_handle));
 #else
-    pthread_mutex_lock(reinterpret_cast<MutexType *>(_handle));
+    if (pthread_mutex_lock(reinterpret_cast<MutexType *>(_handle)) != 0)
+        throw OSException("Could not lock mutex");
 #endif
 }
 
@@ -96,6 +101,7 @@ void Mutex::Unlock() const
 #ifdef WINDOWS
     LeaveCriticalSection(reinterpret_cast<MutexType *>(_handle));
 #else
-    pthread_mutex_unlock(reinterpret_cast<MutexType *>(_handle));
+    if (pthread_mutex_unlock(reinterpret_cast<MutexType *>(_handle)) != 0)
+        throw OSException("Could not unlock mutex");
 #endif
 }
