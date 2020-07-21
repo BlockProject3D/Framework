@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -28,20 +28,20 @@
 
 #include "Framework/System/Thread.hpp"
 #include "Framework/Exception.hpp"
-#include "Framework/System/OSException.hpp"
 #include "Framework/Memory/Memory.hpp"
+#include "Framework/System/OSException.hpp"
 #include <iostream>
 
 #include <cstdlib>
 #ifdef WINDOWS
     #include <Windows.h>
 #else
-    #include <pthread.h>
     #include <ctime>
+    #include <pthread.h>
 using ThreadType = pthread_t;
 #endif
 
-//Attempt at re-implementing what Google is apparently unable to implement
+// Attempt at re-implementing what Google is apparently unable to implement
 #ifdef ANDROID
 int pthread_cancel(pthread_t h)
 {
@@ -60,6 +60,10 @@ namespace bpf
         {
             ptr._state = state;
         }
+        bool _bpf_internal_special(Thread &ptr)
+        {
+            return (ptr._special);
+        }
     }
 }
 
@@ -69,12 +73,14 @@ DWORD WINAPI ThreadRoutine(void *ptr)
     auto thread = reinterpret_cast<bpf::system::Thread *>(ptr);
     try
     {
-        thread->Run();
+        //Hack in order to prevent a C++ defect: virtual methods are incorrectly called from destructors
+        if (!_bpf_internal_special(*thread))
+            thread->Run();
         _bpf_internal_state(*thread, Thread::FINISHED);
     }
     catch (const bpf::Exception &)
     {
-        //TODO: print ex
+        // TODO: print ex
         _bpf_internal_state(*thread, Thread::STOPPED);
     }
     return (0);
@@ -85,45 +91,47 @@ void *ThreadRoutine(void *ptr)
     auto thread = reinterpret_cast<bpf::system::Thread *>(ptr);
     try
     {
-        thread->Run();
+        //Hack in order to prevent a C++ defect: virtual methods are incorrectly called from destructors
+        if (!_bpf_internal_special(*thread))
+            thread->Run();
         _bpf_internal_state(*thread, Thread::FINISHED);
     }
     catch (const bpf::Exception &)
     {
-        //TODO: print ex
+        // TODO: print ex
         _bpf_internal_state(*thread, Thread::STOPPED);
     }
     return (Null);
 }
 #endif
 
-Thread::Thread(const String &name, IThreadRunnable &runnable)
+Thread::Thread(const String &name)
     : _state(PENDING)
-    , _runnable(runnable)
     , _name(name)
     , _handle(Null)
+    , _special(false)
 {
 }
 
 Thread::Thread(Thread &&other) noexcept
-    : _state(other._state)
-    , _runnable(other._runnable)
-    , _name(std::move(other._name))
-    , _handle(other._handle)
 {
+    other.Join();
+    _state = other._state;
+    _name = std::move(other._name);
+    _handle = other._handle;
+    _special = false;
     other._handle = Null;
 }
 
 Thread::~Thread()
 {
-    Join();
-#ifndef WINDOWS
-    free(_handle);
-#endif
+    _special = true; //Trigger the special flag that prevents the Thread from calling any virtual function while destructing
+    Join(); //Join the thread will essentially cause the C++ virtual function to be broken
 }
 
 Thread &Thread::operator=(Thread &&other) noexcept
 {
+    other.Join();
     Join();
 #ifndef WINDOWS
     free(_handle);
@@ -131,14 +139,17 @@ Thread &Thread::operator=(Thread &&other) noexcept
     _state = other._state;
     _handle = other._handle;
     _name = std::move(other._name);
+    _special = false;
     other._handle = Null;
     return (*this);
 }
 
 void Thread::Start()
 {
-    if (_handle != Null)
+    if (_state == RUNNING)
         return;
+    if (_handle != Null)
+        Join();
     _bpf_internal_state(*this, RUNNING);
 #ifdef WINDOWS
     _handle = CreateThread(Null, 0, &ThreadRoutine, this, 0, Null);
@@ -148,8 +159,7 @@ void Thread::Start()
     _handle = malloc(sizeof(ThreadType));
     if (_handle == Null)
         throw memory::MemoryException();
-    if (pthread_create(reinterpret_cast<ThreadType *>(_handle), Null,
-                   &ThreadRoutine, this) != 0)
+    if (pthread_create(reinterpret_cast<ThreadType *>(_handle), Null, &ThreadRoutine, this) != 0)
         throw OSException("Failed to create thread");
 #endif
 }
@@ -165,11 +175,6 @@ void Thread::Join() noexcept
     free(_handle);
 #endif
     _handle = Null;
-}
-
-void Thread::Run()
-{
-    _runnable.Run();
 }
 
 void Thread::Kill(const bool force)

@@ -28,7 +28,6 @@
 
 #pragma once
 #include "Framework/String.hpp"
-#include "Framework/System/IThreadRunnable.hpp"
 
 namespace bpf
 {
@@ -73,19 +72,18 @@ namespace bpf
 
         private:
             EState _state;
-            IThreadRunnable &_runnable;
             String _name;
             void *_handle;
+            bool _special;
 
         public:
             /**
              * Constructs a Thread
              * @param name the thread name
-             * @param runnable the thread function
              */
-            Thread(const String &name, IThreadRunnable &runnable);
+            Thread(const String &name);
 
-            ~Thread();
+            virtual ~Thread();
 
             /**
              * Move constructor
@@ -142,9 +140,9 @@ namespace bpf
             }
 
             /**
-             * Direct call to the thread runnable.
+             * The actual threaded function
              */
-            void Run();
+            virtual void Run() = 0;
 
             /**
              * Yields the current thread for a certain amount of time
@@ -153,6 +151,7 @@ namespace bpf
             static void Sleep(uint32 milliseconds);
 
             friend void _bpf_internal_state(Thread &ptr, EState state);
+            friend bool _bpf_internal_special(Thread &ptr);
         };
     }
 }
