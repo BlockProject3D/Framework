@@ -53,13 +53,13 @@ namespace bpf
                 Dynamic Output;
             };
 
+            fsize _tasks;
             fsize _tcount;
-            memory::UniquePtr<IThreadRunnable> _threadRuntime;
             Mutex _inputMutex;
             collection::Queue<Task> _sharedInputQueue;
             Mutex _outputMutex;
             collection::Queue<Task> _sharedOutputQueue;
-            Thread *_threads; // Raw pointer cause Thread does not have a default constructor
+            ThreadRuntime *_threads; // Raw pointer cause Thread does not have a default constructor
 
         public:
             /**
@@ -94,7 +94,7 @@ namespace bpf
              */
             inline bool IsIdle() const
             {
-                return (_sharedInputQueue.Size() == 0 && _sharedOutputQueue.Size() == 0);
+                return (_tasks == 0);
             }
 
             /**

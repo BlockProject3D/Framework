@@ -49,7 +49,52 @@ TEST(ThreadPool, Basic)
     EXPECT_TRUE(pool.IsIdle());
 }
 
-TEST(ThreadPool, Run)
+TEST(ThreadPool, Run_1)
+{
+    auto pool = bpf::system::ThreadPool();
+    bpf::fsize res;
+    pool.Run(
+        [] {
+          bpf::fsize i = 1;
+          while (i < 4)
+              i *= 2;
+          return (i);
+        },
+        [&res](bpf::Dynamic &dyn) { res = (bpf::fsize)dyn; });
+    while (!pool.IsIdle())
+        pool.Poll();
+    EXPECT_EQ(res, 4);
+}
+
+TEST(ThreadPool, Run_2)
+{
+    auto pool = bpf::system::ThreadPool();
+    bpf::fsize res;
+    pool.Run(
+        [] {
+            bpf::fsize i = 1;
+            while (i < 4)
+                i *= 2;
+            return (i);
+        },
+        [&res](bpf::Dynamic &dyn) { res = (bpf::fsize)dyn; });
+    while (!pool.IsIdle())
+        pool.Poll();
+    EXPECT_EQ(res, 4);
+    pool.Run(
+        [] {
+          bpf::fsize i = 1;
+          while (i < 4)
+              i *= 2;
+          return (i);
+        },
+        [&res](bpf::Dynamic &dyn) { res = (bpf::fsize)dyn; });
+    while (!pool.IsIdle())
+        pool.Poll();
+    EXPECT_EQ(res, 4);
+}
+
+TEST(ThreadPool, Run_3)
 {
     auto pool = bpf::system::ThreadPool(2, "Test");
     bpf::fsize res;
@@ -67,4 +112,38 @@ TEST(ThreadPool, Run)
     while (!pool.IsIdle())
         pool.Poll();
     EXPECT_EQ(res, 16384);
+}
+
+TEST(ThreadPool, Run_4)
+{
+    auto pool = bpf::system::ThreadPool(2, "Test");
+    bpf::fsize res;
+    for (bpf::fsize i = 0; i != 6; ++i)
+    {
+        pool.Run(
+            [] {
+              bpf::fsize i = 1;
+              while (i < 16384)
+                  i *= 2;
+              return (i);
+            },
+            [&res](bpf::Dynamic &dyn) { res = (bpf::fsize)dyn; });
+    }
+    while (!pool.IsIdle())
+        pool.Poll();
+    EXPECT_EQ(res, 16384);
+    for (bpf::fsize i = 0; i != 6; ++i)
+    {
+        pool.Run(
+            [] {
+              bpf::fsize i = 1;
+              while (i < 16384)
+                  i *= 2;
+              return (i);
+            },
+            [&res](bpf::Dynamic &dyn) { res = (bpf::fsize)dyn; });
+    }
+    /*while (!pool.IsIdle())
+        pool.Poll();
+    EXPECT_EQ(res, 16384);*/
 }
