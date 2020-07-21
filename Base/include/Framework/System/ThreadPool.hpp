@@ -29,9 +29,9 @@
 #pragma once
 #include "Framework/Collection/Queue.hpp"
 #include "Framework/Dynamic.hpp"
+#include "Framework/Memory/UniquePtr.hpp"
 #include "Framework/System/Mutex.hpp"
 #include "Framework/System/Thread.hpp"
-#include "Framework/Memory/UniquePtr.hpp"
 #include <functional>
 
 class ThreadRuntime;
@@ -59,7 +59,7 @@ namespace bpf
             collection::Queue<Task> _sharedInputQueue;
             Mutex _outputMutex;
             collection::Queue<Task> _sharedOutputQueue;
-            Thread *_threads; //Raw pointer cause Thread does not have a default constructor
+            Thread *_threads; // Raw pointer cause Thread does not have a default constructor
 
         public:
             /**
@@ -67,7 +67,7 @@ namespace bpf
              * @param tcount maximum number of threads
              * @param name the name of the ThreadPool
              */
-            ThreadPool(fsize tcount = 2, const String &name = "");
+            explicit ThreadPool(fsize tcount = 2, const String &name = "");
 
             /**
              * Move constructor
