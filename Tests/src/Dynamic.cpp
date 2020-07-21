@@ -62,6 +62,8 @@ TEST(Dynamic, Copy)
 {
     bpf::Dynamic dyn = 42;
 
+    auto copy1 = &dyn;
+    dyn = *copy1;
     EXPECT_EQ((int)dyn, 42);
     dyn = -42;
     EXPECT_EQ((int)dyn, -42);

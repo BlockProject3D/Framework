@@ -106,11 +106,6 @@ namespace bpf
 
         Storage *_storage;
 
-        explicit inline Dynamic(Storage *storage)
-            : _storage(storage)
-        {
-        }
-
     public:
         /**
          * Constructs a Null dynamic
