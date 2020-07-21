@@ -64,6 +64,7 @@ set(SOURCES
     src/System/Thread.cpp
     src/System/Process.cpp
     src/System/Plugins.cpp
+    src/System/ThreadPool.cpp
     src/Json/Json.cpp
     src/Json/JsonWriter.cpp
     src/Memory/ObjectConstructor.cpp
