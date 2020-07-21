@@ -45,11 +45,13 @@ TEST(ThreadPool, Basic)
     EXPECT_TRUE(pool.IsIdle());
     auto mv = std::move(pool);
     EXPECT_TRUE(mv.IsIdle());
+    pool = std::move(mv);
+    EXPECT_TRUE(pool.IsIdle());
 }
 
 TEST(ThreadPool, Run)
 {
-    auto pool = bpf::system::ThreadPool();
+    auto pool = bpf::system::ThreadPool(2, "Test");
     bpf::fsize res;
     for (bpf::fsize i = 0; i != 6; ++i)
     {
