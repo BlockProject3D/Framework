@@ -75,12 +75,15 @@ Mutex::Mutex(Mutex &&other) noexcept
 
 Mutex &Mutex::operator=(Mutex &&other) noexcept
 {
+    if (_handle != Null)
+    {
 #ifdef WINDOWS
-    DeleteCriticalSection(reinterpret_cast<MutexType *>(_handle));
+        DeleteCriticalSection(reinterpret_cast<MutexType *>(_handle));
 #else
-    pthread_mutex_destroy(reinterpret_cast<MutexType *>(_handle));
+        pthread_mutex_destroy(reinterpret_cast<MutexType *>(_handle));
 #endif
-    free(_handle);
+        free(_handle);
+    }
     _handle = other._handle;
     other._handle = Null;
     return (*this);
