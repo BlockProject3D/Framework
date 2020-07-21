@@ -34,6 +34,8 @@
 #include "Framework/Memory/UniquePtr.hpp"
 #include <functional>
 
+class ThreadRuntime;
+
 namespace bpf
 {
     namespace system
@@ -63,8 +65,9 @@ namespace bpf
             /**
              * Constructs a ThreadPool
              * @param tcount maximum number of threads
+             * @param name the name of the ThreadPool
              */
-            ThreadPool(fsize tcount = 2);
+            ThreadPool(fsize tcount = 2, const String &name = "");
 
             /**
              * Move constructor
@@ -100,7 +103,7 @@ namespace bpf
              */
             void Poll();
 
-            friend class ThreadRuntime;
+            friend class ::ThreadRuntime;
         };
     }
 }

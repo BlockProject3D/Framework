@@ -37,30 +37,53 @@ using namespace bpf;
 class ThreadRuntime final : public IThreadRunnable
 {
 private:
-    ThreadPool &_pool;
+    ThreadPool *_pool;
 
 public:
-    ThreadRuntime(ThreadPool &pool)
+    ThreadRuntime(ThreadPool *pool)
         : _pool(pool)
     {
     }
 
+    void ReLink(ThreadPool *newpool)
+    {
+        _pool = newpool;
+    }
+
     void Run() final
     {
-
+        while (_pool->_sharedInputQueue.Size() > 0)
+        {
+            ThreadPool::Task task;
+            {
+                auto lock = ScopeLock(_pool->_inputMutex);
+                task = _pool->_sharedInputQueue.Pop();
+            }
+            task.Output = task.Processing();
+            {
+                auto lock = ScopeLock(_pool->_outputMutex);
+                _pool->_sharedOutputQueue.Push(std::move(task));
+            }
+        }
     }
 };
 
-ThreadPool::ThreadPool(const fsize tcount)
+ThreadPool::ThreadPool(const fsize tcount, const String &name)
     : _tcount(tcount)
-    , _threadRuntime(MakeUnique<ThreadRuntime>(*this))
+    , _threadRuntime(MakeUnique<ThreadRuntime>(this))
 {
-    _threads = MemUtils::NewArray<Thread>(_tcount, "ThreadPool", *_threadRuntime);
+    if (name.IsEmpty())
+    {
+        auto rname = String("Pool_") + String::ValueOf(this);
+        _threads = MemUtils::NewArray<Thread>(_tcount, rname, *_threadRuntime);
+    }
+    else
+        _threads = MemUtils::NewArray<Thread>(_tcount, name, *_threadRuntime);
 }
 
 ThreadPool::ThreadPool(ThreadPool &&other) noexcept
     : _tcount(other._tcount)
-    , _threadRuntime(MakeUnique<ThreadRuntime>(*this))
+    , _threadRuntime(std::move(other._threadRuntime))
     , _inputMutex(std::move(other._inputMutex))
     , _sharedInputQueue(std::move(other._sharedInputQueue))
     , _outputMutex(std::move(other._outputMutex))
@@ -69,7 +92,9 @@ ThreadPool::ThreadPool(ThreadPool &&other) noexcept
 {
     other._threads = Null;
     other._tcount = 0;
-    other._threadRuntime = Null;
+    for (fsize i = 0; i != _tcount; ++i)
+        _threads[i].Join();
+    static_cast<ThreadRuntime *>(_threadRuntime.Raw())->ReLink(this);
 }
 
 ThreadPool::~ThreadPool()
@@ -81,7 +106,7 @@ ThreadPool &ThreadPool::operator=(ThreadPool &&other) noexcept
 {
     MemUtils::DeleteArray(_threads, _tcount);
     _tcount = other._tcount;
-    _threadRuntime = MakeUnique<ThreadRuntime>(*this);
+    _threadRuntime = std::move(other._threadRuntime);
     _inputMutex = std::move(other._inputMutex);
     _sharedInputQueue = std::move(other._sharedInputQueue);
     _outputMutex = std::move(other._outputMutex);
@@ -89,22 +114,44 @@ ThreadPool &ThreadPool::operator=(ThreadPool &&other) noexcept
     _threads = other._threads;
     other._threads = Null;
     other._tcount = 0;
-    other._threadRuntime = Null;
+    for (fsize i = 0; i != _tcount; ++i)
+        _threads[i].Join();
+    static_cast<ThreadRuntime *>(_threadRuntime.Raw())->ReLink(this);
     return (*this);
 }
 
 void ThreadPool::Run(std::function<Dynamic()> processing, std::function<void(Dynamic &)> callback)
 {
+    fsize count;
     Task t;
     t.Callback = std::move(callback);
     t.Processing = std::move(processing);
     {
         auto lock = ScopeLock(_inputMutex);
         _sharedInputQueue.Push(std::move(t));
+        count = _sharedInputQueue.Size();
+    }
+    for (fsize i = 0; i != _tcount; ++i)
+    {
+        if (count == 0)
+            break;
+        if (!_threads[i].IsRunning())
+        {
+            _threads[i].Start();
+            --count;
+        }
     }
 }
 
 void ThreadPool::Poll()
 {
-
+    while (_sharedOutputQueue.Size() > 0)
+    {
+        Task task;
+        {
+            auto lock = ScopeLock(_outputMutex);
+            task = _sharedOutputQueue.Pop();
+        }
+        task.Callback(task.Output);
+    }
 }
