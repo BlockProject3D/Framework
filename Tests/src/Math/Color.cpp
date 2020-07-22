@@ -32,11 +32,33 @@
 TEST(Color, Basic)
 {
     auto c = bpf::math::Color(255, 1, 6);
+    auto c1 = bpf::math::Color();
+    auto c2 = bpf::math::Color(c, 128);
+    auto c3 = bpf::math::Color((bpf::uint8)1);
 
     EXPECT_EQ(c.R, 255);
     EXPECT_EQ(c.G, 1);
     EXPECT_EQ(c.B, 6);
     EXPECT_EQ(c.A, 255);
+    EXPECT_EQ(c1, bpf::math::Color::Black);
+    EXPECT_NE(c1, bpf::math::Color::Red);
+    EXPECT_NE(c1, bpf::math::Color::White);
+    EXPECT_EQ(c2.R, 255);
+    EXPECT_EQ(c2.G, 1);
+    EXPECT_EQ(c2.B, 6);
+    EXPECT_EQ(c2.A, 128);
+    EXPECT_EQ(c3.R, 1);
+    EXPECT_EQ(c3.G, 1);
+    EXPECT_EQ(c3.B, 1);
+    EXPECT_EQ(c3.A, 255);
+}
+
+TEST(Color, Normalize)
+{
+    auto c = bpf::math::Color(255, 128, 128);
+
+    EXPECT_EQ(c.Normalize(), bpf::math::Vector3f(1.0f, 0.501961f, 0.501961f));
+    EXPECT_EQ(c.NormalizeAlpha(), bpf::math::Vector4f(1.0f, 0.501961f, 0.501961f, 1.0f));
 }
 
 TEST(Color, Packed)
