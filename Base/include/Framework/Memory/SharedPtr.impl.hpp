@@ -35,7 +35,7 @@ namespace bpf
         template <typename T>
         SharedPtr<T>::~SharedPtr()
         {
-            if (Count == Null)
+            if (Count == nullptr)
                 return;
             -- *Count;
             if (*Count <= 0)
@@ -52,7 +52,7 @@ namespace bpf
         template <typename T>
         SharedPtr<T> &SharedPtr<T>::operator=(SharedPtr<T> &&other) noexcept
         {
-            if (Count != Null)
+            if (Count != nullptr)
             {
                 -- *Count;
                 if (*Count <= 0)
@@ -68,9 +68,9 @@ namespace bpf
             Count = other.Count;
             WCount = other.WCount;
             RawPtr = other.RawPtr;
-            other.Count = Null;
-            other.WCount = Null;
-            other.RawPtr = Null;
+            other.Count = nullptr;
+            other.WCount = nullptr;
+            other.RawPtr = nullptr;
             return (*this);
         }
 
@@ -79,7 +79,7 @@ namespace bpf
         {
             if (this == &other)
                 return (*this);
-            if (Count != Null)
+            if (Count != nullptr)
             {
                 -- *Count;
                 if (*Count <= 0)
@@ -95,7 +95,7 @@ namespace bpf
             Count = other.Count;
             WCount = other.WCount;
             RawPtr = other.RawPtr;
-            if (Count != Null)
+            if (Count != nullptr)
                 ++ *Count;
             return (*this);
         }

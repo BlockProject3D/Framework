@@ -26,7 +26,6 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <cassert>
 #include <iostream>
 #include <gtest/gtest.h>
 #include <Framework/Json/Writer.hpp>
@@ -38,7 +37,7 @@ TEST(JsonWriter, Basic)
     J::Object obj{
         {"Test", 0.0},
         {"Test1", true},
-        {"Test2", Null},
+        {"Test2", nullptr},
         {"TestArray", J::Array {"A", "B", "TrouDuCul"}},
         {"TestObject", J::Object
             {
@@ -66,7 +65,7 @@ TEST(JsonWriter, Basic_IgnoreNulls)
     J::Object obj{
         {"Test", 0.0},
         {"Test1", true},
-        {"Test2", Null},
+        {"Test2", nullptr},
         {"TestArray", J::Array {"A", "B", "TrouDuCul"}},
         {"TestObject", J::Object
             {
@@ -93,7 +92,7 @@ TEST(JsonWriter, Pretty)
     J::Object obj{
         {"Test", 0.0},
         {"Test1", true},
-        {"Test2", Null},
+        {"Test2", nullptr},
         {"TestArray", J::Array {"A", "B", "TrouDuCul"}},
         {"TestObject", J::Object
             {

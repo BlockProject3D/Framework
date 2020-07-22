@@ -58,7 +58,7 @@ namespace bpf
              */
             inline Module() noexcept
                 : _path("")
-                , _handle(Null)
+                , _handle(nullptr)
             {
             }
             ~Module();
@@ -70,7 +70,7 @@ namespace bpf
                 : _path(std::move(other._path))
                 , _handle(other._handle)
             {
-                other._handle = Null;
+                other._handle = nullptr;
             }
 
             /**

@@ -45,19 +45,19 @@ using namespace bpf;
 Mutex::Mutex()
     : _handle(malloc(sizeof(MutexType)))
 {
-    if (_handle == Null)
+    if (_handle == nullptr)
         throw MemoryException();
 #ifdef WINDOWS
     InitializeCriticalSection(reinterpret_cast<MutexType *>(_handle));
 #else
-    if (pthread_mutex_init(reinterpret_cast<MutexType *>(_handle), Null) != 0)
+    if (pthread_mutex_init(reinterpret_cast<MutexType *>(_handle), nullptr) != 0)
         throw OSException("Could not create mutex");
 #endif
 }
 
 Mutex::~Mutex()
 {
-    if (_handle == Null)
+    if (_handle == nullptr)
         return;
 #ifdef WINDOWS
     DeleteCriticalSection(reinterpret_cast<MutexType *>(_handle));
@@ -70,12 +70,12 @@ Mutex::~Mutex()
 Mutex::Mutex(Mutex &&other) noexcept
     : _handle(other._handle)
 {
-    other._handle = Null;
+    other._handle = nullptr;
 }
 
 Mutex &Mutex::operator=(Mutex &&other) noexcept
 {
-    if (_handle != Null)
+    if (_handle != nullptr)
     {
 #ifdef WINDOWS
         DeleteCriticalSection(reinterpret_cast<MutexType *>(_handle));
@@ -85,7 +85,7 @@ Mutex &Mutex::operator=(Mutex &&other) noexcept
         free(_handle);
     }
     _handle = other._handle;
-    other._handle = Null;
+    other._handle = nullptr;
     return (*this);
 }
 

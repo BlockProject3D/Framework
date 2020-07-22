@@ -50,7 +50,7 @@ Random::Random(const long seed)
 
 Random::Random()
 {
-    srand((unsigned int)time(Null));
+    srand((unsigned int)time(nullptr));
 }
 
 fint Random::NextInt(const fint max)

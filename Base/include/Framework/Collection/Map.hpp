@@ -321,7 +321,7 @@ namespace bpf
              */
             inline bool HasKey(const K &key) const
             {
-                return (FindNode(key) != Null);
+                return (FindNode(key) != nullptr);
             }
 
             /**
@@ -348,7 +348,7 @@ namespace bpf
              */
             inline Iterator end() const
             {
-                return (Iterator(_root, Null));
+                return (Iterator(_root, nullptr));
             }
 
             /**
@@ -366,7 +366,7 @@ namespace bpf
              */
             inline ReverseIterator rend() const
             {
-                return (ReverseIterator(_root, Null));
+                return (ReverseIterator(_root, nullptr));
             }
         };
     }

@@ -52,8 +52,8 @@ Json &Json::operator=(const Json &other)
     _number = other._number;
     _bool = other._bool;
     _string = other._string;
-    _array = other._array != Null ? MakeUnique<Array>(*other._array) : Null;
-    _object = other._object != Null ? MakeUnique<Object>(*other._object) : Null;
+    _array = other._array != nullptr ? MakeUnique<Array>(*other._array) : nullptr;
+    _object = other._object != nullptr ? MakeUnique<Object>(*other._object) : nullptr;
     return (*this);
 }
 

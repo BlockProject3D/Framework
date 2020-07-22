@@ -31,7 +31,7 @@
 /**
  * Shortcut to C++ nullptr
  */
-#define Null nullptr
+//#define Null nullptr
 
 // Check windows
 #ifdef WINDOWS

@@ -133,13 +133,13 @@ File File::GetAbsolutePath() const
 #ifdef WINDOWS
     WCHAR buf[PATH_MAX];
     std::memset(buf, 0, PATH_MAX);
-    if (GetFullPathNameW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), PATH_MAX, buf, Null) == 0)
+    if (GetFullPathNameW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), PATH_MAX, buf, nullptr) == 0)
         throw IOException(String("Could not read absolute path: ") + OSPrivate::ObtainLastErrorString());
     str = String::FromUTF16(reinterpret_cast<const bpf::fchar16 *>(buf));
 #else
     char buf[PATH_MAX];
     std::memset(buf, 0, PATH_MAX);
-    if (realpath(*FullPath, buf) == Null)
+    if (realpath(*FullPath, buf) == nullptr)
         throw IOException(String("Could not read absolute path: ") + OSPrivate::ObtainLastErrorString());
     str = String(buf);
 #endif
@@ -319,7 +319,7 @@ List<File> File::ListFiles()
     if (d)
     {
         struct dirent *dir;
-        while ((dir = readdir(d)) != Null)
+        while ((dir = readdir(d)) != nullptr)
             flns.Add(File(FullPath + "/" + String(dir->d_name)));
     }
     closedir(d);
@@ -332,7 +332,7 @@ bool File::CreateDir()
     if (Exists())
         return (false);
 #ifdef WINDOWS
-    return (CreateDirectoryW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), Null) == TRUE);
+    return (CreateDirectoryW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), nullptr) == TRUE);
 #else
     return (mkdir(*FullPath, 0755) == 0);
 #endif

@@ -73,8 +73,8 @@ HashMap<String, String> WindowsApp::SetupEnvironment()
                 if (key.IsEmpty())
                     continue;
                 auto value = str.Sub(str.IndexOf('=') + 1);
-                if (*value == Null)
-                    value = ""; // Attempt to fix Travis bug of having NULL vars...
+                if (*value == nullptr)
+                    value = ""; // Attempt to fix Travis bug of having null vars...
                 env.Add(key, value);
             }
         }

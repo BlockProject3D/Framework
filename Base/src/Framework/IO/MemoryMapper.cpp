@@ -44,9 +44,9 @@ using namespace bpf;
 
 MemoryMapper::MemoryMapper(const File &file, fint mode)
     : _file(file)
-    , _mem(Null)
+    , _mem(nullptr)
     , _mode(mode)
-    , _memoff(Null)
+    , _memoff(nullptr)
 {
 #ifdef WINDOWS
     DWORD md = 0;
@@ -70,11 +70,11 @@ MemoryMapper::MemoryMapper(const File &file, fint mode)
         md2 = PAGE_READWRITE;
     else
         md2 = PAGE_READONLY;
-    _handle = CreateFileW(reinterpret_cast<LPCWSTR>(*file.PlatformPath().ToUTF16()), md, FILE_SHARE_READ, Null, md1, FILE_ATTRIBUTE_NORMAL, Null);
+    _handle = CreateFileW(reinterpret_cast<LPCWSTR>(*file.PlatformPath().ToUTF16()), md, FILE_SHARE_READ, nullptr, md1, FILE_ATTRIBUTE_NORMAL, nullptr);
     if (_handle == INVALID_HANDLE_VALUE)
         throw IOException(String("Could not open file '") + file.PlatformPath() + "' : " + OSPrivate::ObtainLastErrorString());
-    _mapper = CreateFileMappingW(_handle, Null, md2, 0, 0, Null);
-    if (_mapper == Null)
+    _mapper = CreateFileMappingW(_handle, nullptr, md2, 0, 0, nullptr);
+    if (_mapper == nullptr)
     {
         CloseHandle(_handle);
         throw IOException(String("Could not create mapper for file '") + file.PlatformPath() + "' : " + OSPrivate::ObtainLastErrorString());
@@ -98,12 +98,12 @@ MemoryMapper::MemoryMapper(const File &file, fint mode)
 MemoryMapper::~MemoryMapper()
 {
 #ifdef WINDOWS
-    if (_mem != Null)
+    if (_mem != nullptr)
         UnmapViewOfFile(_mem);
     CloseHandle(_mapper);
     CloseHandle(_handle);
 #else
-    if (_mem != Null)
+    if (_mem != nullptr)
         munmap(_mem, _size);
     close(_handle);
 #endif
@@ -125,8 +125,8 @@ void MemoryMapper::Map(uint64 pos, fsize size)
     GetSystemInfo(&inf);
     DWORD psize = inf.dwAllocationGranularity;
     uint64 nearestpsize = (pos / psize) * psize;
-    _memoff = Null;
-    if (_mem != Null)
+    _memoff = nullptr;
+    if (_mem != nullptr)
         UnmapViewOfFile(_mem);
     DWORD md = 0;
     if (_mode & FILE_MODE_WRITE)
@@ -140,7 +140,7 @@ void MemoryMapper::Map(uint64 pos, fsize size)
     offsetLow = up._parts[0];
     offsetHeigh = up._parts[1];
     _mem = MapViewOfFile(_mapper, md, offsetHeigh, offsetLow, size);
-    if (_mem == Null)
+    if (_mem == nullptr)
         throw IOException(String("Could not map file '") + _file.PlatformPath() + "' : " + OSPrivate::ObtainLastErrorString());
     uint8 *addr = reinterpret_cast<uint8 *>(_mem);
     addr += pos - nearestpsize;
@@ -148,15 +148,15 @@ void MemoryMapper::Map(uint64 pos, fsize size)
 #else
     long psize = sysconf(_SC_PAGE_SIZE);
     uint64 nearestpsize = (pos / psize) * psize;
-    _memoff = Null;
-    if (_mem != Null)
+    _memoff = nullptr;
+    if (_mem != nullptr)
         munmap(_mem, _size);
     int md = 0;
     if (_mode & FILE_MODE_WRITE)
         md |= PROT_WRITE;
     if (_mode & FILE_MODE_READ)
         md |= PROT_READ;
-    _mem = mmap(Null, size, md, MAP_SHARED, _handle, nearestpsize);
+    _mem = mmap(nullptr, size, md, MAP_SHARED, _handle, nearestpsize);
     _size = size;
     if (_mem == MAP_FAILED)
         throw IOException(String("Could not map file '") + _file.PlatformPath() + "' : " + OSPrivate::ObtainLastErrorString());

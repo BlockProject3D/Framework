@@ -46,7 +46,7 @@
         BP_DECLARE_HIGH_MAIN; \
         int main() \
         { \
-            bpf::system::WindowsApp app(reinterpret_cast<void *>(GetModuleHandle(Null)), true); \
+            bpf::system::WindowsApp app(reinterpret_cast<void *>(GetModuleHandle(nullptr)), true); \
             return (Main(app, app.GetArguments())); \
         }
     #else

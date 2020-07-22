@@ -156,17 +156,17 @@ void Process::Builder::CleanupHandles(void *fdStdOut[2], void *fdStdErr[2], void
 {
     for (int i = 0; i != 2; ++i)
     {
-        if (fdStdOut[i] != NULL)
+        if (fdStdOut[i] != nullptr)
             CloseHandle(fdStdOut[i]);
     }
     for (int i = 0; i != 2; ++i)
     {
-        if (fdStdErr[i] != NULL)
+        if (fdStdErr[i] != nullptr)
             CloseHandle(fdStdErr[i]);
     }
     for (int i = 0; i != 2; ++i)
     {
-        if (fdStdIn[i] != NULL)
+        if (fdStdIn[i] != nullptr)
             CloseHandle(fdStdIn[i]);
     }
 }
@@ -203,7 +203,7 @@ void Process::Builder::ProcessWorker(int fdStdOut[2], int fdStdErr[2], int fdStd
     char **envp = reinterpret_cast<char **>(malloc(sizeof(char **) * (_envp.Size() + 1)));
     fsize i = 0;
 
-    if (argv == Null || envp == Null)
+    if (argv == nullptr || envp == nullptr)
         goto mallocerr;
     for (int fd = 0; fd != 256; ++fd)
     {
@@ -227,24 +227,24 @@ void Process::Builder::ProcessWorker(int fdStdOut[2], int fdStdErr[2], int fdStd
     for (auto &a : _argv)
     {
         argv[i] = reinterpret_cast<char *>(malloc(a.Size() + 1));
-        if (argv[i] == Null)
+        if (argv[i] == nullptr)
             goto mallocerr;
         memcpy(argv[i], *a, a.Size() + 1); // Copy with additional '\0'
         ++i;
     }
-    argv[i] = Null;
+    argv[i] = nullptr;
     i = 0;
     for (auto &kv : _envp)
     {
         envp[i] = reinterpret_cast<char *>(malloc(kv.Key.Size() + kv.Value.Size() + 2));
-        if (envp[i] == Null)
+        if (envp[i] == nullptr)
             goto mallocerr;
         memcpy(envp[i], *kv.Key, kv.Key.Size());
         envp[i][kv.Key.Size()] = '=';
         memcpy(envp[i] + kv.Key.Size() + 1, *kv.Value, kv.Value.Size() + 1);
         ++i;
     }
-    envp[i] = Null;
+    envp[i] = nullptr;
     #ifdef COVERAGE
     __gcov_flush();
     #endif
@@ -303,12 +303,12 @@ Process Process::Builder::Build()
         _argv[i + 1] = std::move(var[i]);
     for (auto &a : _argv)
     {
-        if (*a == Null)
+        if (*a == nullptr)
             throw OSException("Detected an attempt to crash memcpy");
     }
     for (auto &kv : _envp)
     {
-        if (*kv.Key == Null || *kv.Value == Null)
+        if (*kv.Key == nullptr || *kv.Value == nullptr)
             throw OSException("Detected an attempt to crash memcpy");
     }
 #ifdef WINDOWS
@@ -322,10 +322,10 @@ Process Process::Builder::Build()
     SECURITY_ATTRIBUTES sa;
     sa.nLength = sizeof(SECURITY_ATTRIBUTES);
     sa.bInheritHandle = TRUE;
-    sa.lpSecurityDescriptor = NULL;
-    HANDLE fdStdOut[2] = {NULL, NULL};
-    HANDLE fdStdIn[2] = {NULL, NULL};
-    HANDLE fdStdErr[2] = {NULL, NULL};
+    sa.lpSecurityDescriptor = nullptr;
+    HANDLE fdStdOut[2] = {nullptr, nullptr};
+    HANDLE fdStdIn[2] = {nullptr, nullptr};
+    HANDLE fdStdErr[2] = {nullptr, nullptr};
     if (_redirectStdOut && (!CreatePipe(&fdStdOut[PIPE_READ], &fdStdOut[PIPE_WRITE], &sa, 0) ||
                             !SetHandleInformation(fdStdOut[PIPE_READ], HANDLE_FLAG_INHERIT, 0)))
         throw OSException("Could not create standard output redirection");
@@ -373,27 +373,27 @@ Process Process::Builder::Build()
     if (_redirectStdOut)
         stInfo.hStdOutput = fdStdOut[PIPE_WRITE];
     PROCESS_INFORMATION pInfo;
-    if (!CreateProcessW(reinterpret_cast<LPCWSTR>(*appName), reinterpret_cast<LPWSTR>(*u16CmdLine), NULL, NULL, TRUE,
+    if (!CreateProcessW(reinterpret_cast<LPCWSTR>(*appName), reinterpret_cast<LPWSTR>(*u16CmdLine), nullptr, nullptr, TRUE,
                         CREATE_UNICODE_ENVIRONMENT | NORMAL_PRIORITY_CLASS, reinterpret_cast<LPVOID>(*envBlockArr),
                         reinterpret_cast<LPCWSTR>(*curDir), &stInfo, &pInfo))
     {
         CleanupHandles(fdStdOut, fdStdErr, fdStdIn);
         throw OSException(String("Could not create process: ") + OSPrivate::ObtainLastErrorString());
     }
-    if (fdStdOut[PIPE_WRITE] != NULL)
+    if (fdStdOut[PIPE_WRITE] != nullptr)
     {
         CloseHandle(fdStdOut[PIPE_WRITE]);
-        fdStdOut[PIPE_WRITE] = NULL;
+        fdStdOut[PIPE_WRITE] = nullptr;
     }
-    if (fdStdErr[PIPE_WRITE] != NULL)
+    if (fdStdErr[PIPE_WRITE] != nullptr)
     {
         CloseHandle(fdStdErr[PIPE_WRITE]);
-        fdStdErr[PIPE_WRITE] = NULL;
+        fdStdErr[PIPE_WRITE] = nullptr;
     }
-    if (fdStdIn[PIPE_READ] != NULL)
+    if (fdStdIn[PIPE_READ] != nullptr)
     {
         CloseHandle(fdStdIn[PIPE_READ]);
-        fdStdIn[PIPE_READ] = NULL;
+        fdStdIn[PIPE_READ] = nullptr;
     }
     return (Process(&pInfo, fdStdIn, fdStdOut, fdStdErr));
 #else
@@ -444,9 +444,9 @@ Process::PipeStream::PipeStream(void *pipefd[2])
 
 Process::PipeStream::~PipeStream()
 {
-    if (_pipeHandles[0] != NULL)
+    if (_pipeHandles[0] != nullptr)
         CloseHandle(_pipeHandles[0]);
-    if (_pipeHandles[1] != NULL)
+    if (_pipeHandles[1] != nullptr)
         CloseHandle(_pipeHandles[1]);
 }
 
@@ -454,20 +454,20 @@ Process::PipeStream::PipeStream(PipeStream &&other) noexcept
 {
     _pipeHandles[0] = other._pipeHandles[0];
     _pipeHandles[1] = other._pipeHandles[1];
-    other._pipeHandles[0] = NULL;
-    other._pipeHandles[1] = NULL;
+    other._pipeHandles[0] = nullptr;
+    other._pipeHandles[1] = nullptr;
 }
 
 Process::PipeStream &Process::PipeStream::operator=(PipeStream &&other) noexcept
 {
-    if (_pipeHandles[0] != NULL)
+    if (_pipeHandles[0] != nullptr)
         CloseHandle(_pipeHandles[0]);
-    if (_pipeHandles[1] != NULL)
+    if (_pipeHandles[1] != nullptr)
         CloseHandle(_pipeHandles[1]);
     _pipeHandles[0] = other._pipeHandles[0];
     _pipeHandles[1] = other._pipeHandles[1];
-    other._pipeHandles[0] = NULL;
-    other._pipeHandles[1] = NULL;
+    other._pipeHandles[0] = nullptr;
+    other._pipeHandles[1] = nullptr;
     return (*this);
 }
 #else
@@ -511,7 +511,7 @@ fsize Process::PipeStream::Read(void *buf, fsize bufsize)
 {
 #ifdef WINDOWS
     DWORD read;
-    if (!ReadFile(_pipeHandles[PIPE_READ], buf, (DWORD)bufsize, &read, NULL))
+    if (!ReadFile(_pipeHandles[PIPE_READ], buf, (DWORD)bufsize, &read, nullptr))
         return (0); // ReadFile is broken in this case: instead of just returning 0 bytes when empty instead it errors
     return ((fsize)read);
 #else
@@ -529,7 +529,7 @@ fsize Process::PipeStream::Write(const void *buf, fsize bufsize)
         return (0);
 #ifdef WINDOWS
     DWORD written;
-    if (!WriteFile(_pipeHandles[PIPE_WRITE], buf, (DWORD)bufsize, &written, NULL))
+    if (!WriteFile(_pipeHandles[PIPE_WRITE], buf, (DWORD)bufsize, &written, nullptr))
         throw IOException("Cannot write to pipe");
     return ((fsize)written);
 #else
@@ -543,12 +543,12 @@ fsize Process::PipeStream::Write(const void *buf, fsize bufsize)
 void Process::PipeStream::Close()
 {
 #ifdef WINDOWS
-    if (_pipeHandles[0] != NULL)
+    if (_pipeHandles[0] != nullptr)
         CloseHandle(_pipeHandles[0]); //TODO: double close is not handled by winmotherfucker
-    if (_pipeHandles[1] != NULL)
+    if (_pipeHandles[1] != nullptr)
         CloseHandle(_pipeHandles[1]);
-    _pipeHandles[0] = NULL;
-    _pipeHandles[1] = NULL;
+    _pipeHandles[0] = nullptr;
+    _pipeHandles[1] = nullptr;
 #else
     if (_pipfd[0] != -1)
         close(_pipfd[0]);
@@ -564,9 +564,9 @@ Process::Process(void *pinfo, void *fdStdIn[2], void *fdStdOut[2], void *fdStdEr
     : _lastExitCode(0)
     , _crashed(false)
     , _running(true)
-    , _redirectStdIn(fdStdIn[PIPE_WRITE] != NULL)
-    , _redirectStdOut(fdStdOut[PIPE_READ] != NULL)
-    , _redirectStdErr(fdStdErr[PIPE_READ] != NULL)
+    , _redirectStdIn(fdStdIn[PIPE_WRITE] != nullptr)
+    , _redirectStdOut(fdStdOut[PIPE_READ] != nullptr)
+    , _redirectStdErr(fdStdErr[PIPE_READ] != nullptr)
     , _stdIn(fdStdIn)
     , _stdOut(fdStdOut)
     , _stdErr(fdStdErr)
@@ -589,13 +589,13 @@ Process::Process(Process &&other) noexcept
     , _pHandle(other._pHandle)
     , _tHandle(other._tHandle)
 {
-    other._pHandle = NULL;
-    other._tHandle = NULL;
+    other._pHandle = nullptr;
+    other._tHandle = nullptr;
 }
 
 Process &Process::operator=(Process &&other) noexcept
 {
-    if (_pHandle != NULL && _tHandle != NULL)
+    if (_pHandle != nullptr && _tHandle != nullptr)
     {
         if (_running)
             TerminateProcess(_pHandle, 1);
@@ -613,8 +613,8 @@ Process &Process::operator=(Process &&other) noexcept
     _stdErr = std::move(other._stdErr);
     _pHandle = other._pHandle;
     _tHandle = other._tHandle;
-    other._pHandle = NULL;
-    other._tHandle = NULL;
+    other._pHandle = nullptr;
+    other._tHandle = nullptr;
     return (*this);
 }
 #else
@@ -669,7 +669,7 @@ Process &Process::operator=(Process &&other) noexcept
 Process::~Process()
 {
 #ifdef WINDOWS
-    if (_pHandle != NULL && _tHandle != NULL)
+    if (_pHandle != nullptr && _tHandle != nullptr)
     {
         if (_running)
             TerminateProcess(_pHandle, 1);
@@ -703,7 +703,7 @@ void Process::Wait()
 static std::set<DWORD> EnumerateWindowThreads(DWORD pid)
 {
     std::set<DWORD> threads;
-    for (HWND hwnd = GetTopWindow(NULL); hwnd; hwnd = GetNextWindow(hwnd, GW_HWNDNEXT))
+    for (HWND hwnd = GetTopWindow(nullptr); hwnd; hwnd = GetNextWindow(hwnd, GW_HWNDNEXT))
     {
         DWORD pidw;
         DWORD tid = GetWindowThreadProcessId(hwnd, &pidw);
@@ -724,11 +724,11 @@ void Process::Kill(bool force)
         DWORD pid = GetProcessId(_pHandle);
         if (AttachConsole(pid))
         {
-            SetConsoleCtrlHandler(NULL, true); // Disable Ctrl-C handling for our program
+            SetConsoleCtrlHandler(nullptr, true); // Disable Ctrl-C handling for our program
             GenerateConsoleCtrlEvent(CTRL_C_EVENT, 0);
             WaitForSingleObject(_pHandle, 1000);
             FreeConsole();
-            SetConsoleCtrlHandler(NULL, false); // Re-enable Ctrl-C handling
+            SetConsoleCtrlHandler(nullptr, false); // Re-enable Ctrl-C handling
         }
         else // Windows rejected attaching the console so we assume it's a window so we try to kill the windows
         {

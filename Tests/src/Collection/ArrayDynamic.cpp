@@ -204,7 +204,7 @@ TEST(ArrayDynamic, Move_2)
     EXPECT_EQ(mv[1], 3);
     EXPECT_EQ(mv[2], 6);
     EXPECT_EQ(arr.Size(), 0U);
-    EXPECT_EQ(arr.Release(), Null);
+    EXPECT_EQ(arr.Release(), nullptr);
 }
 
 TEST(ArrayDynamic, Iterator_1)

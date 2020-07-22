@@ -454,7 +454,7 @@ namespace bpf
                 : _arr(other._arr)
                 , _l(other._l)
             {
-                other._arr = Null;
+                other._arr = nullptr;
                 other._l = 0;
             }
 

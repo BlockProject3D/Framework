@@ -597,7 +597,7 @@ namespace bpf
              */
             inline T &First()
             {
-                if (_arr == Null || _size == 0)
+                if (_arr == nullptr || _size == 0)
                     throw IndexException(0);
                 return (_arr[0]);
             }
@@ -609,7 +609,7 @@ namespace bpf
              */
             inline T &Last()
             {
-                if (_arr == Null || _size == 0)
+                if (_arr == nullptr || _size == 0)
                     throw IndexException(0);
                 return (_arr[_size - 1]);
             }
@@ -621,7 +621,7 @@ namespace bpf
              */
             inline const T &First() const
             {
-                if (_arr == Null || _size == 0)
+                if (_arr == nullptr || _size == 0)
                     throw IndexException(0);
                 return (_arr[0]);
             }
@@ -633,7 +633,7 @@ namespace bpf
              */
             inline const T &Last() const
             {
-                if (_arr == Null || _size == 0)
+                if (_arr == nullptr || _size == 0)
                     throw IndexException(0);
                 return (_arr[_size - 1]);
             }
@@ -674,7 +674,7 @@ namespace bpf
             inline T *Release()
             {
                 T *tmp = _arr;
-                _arr = Null;
+                _arr = nullptr;
                 _size = 0;
                 return (tmp);
             }

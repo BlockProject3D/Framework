@@ -419,12 +419,12 @@ TEST(Map, ReadWrite_NonCopy)
 {
     Map<String, UniquePtr<int>> map;
 
-    map["test1"] = Null;
-    map["test2"] = Null;
-    map["test3"] = Null;
-    EXPECT_EQ(map["test1"], Null);
-    EXPECT_EQ(map["test2"], Null);
-    EXPECT_EQ(map["test3"], Null);
+    map["test1"] = nullptr;
+    map["test2"] = nullptr;
+    map["test3"] = nullptr;
+    EXPECT_EQ(map["test1"], nullptr);
+    EXPECT_EQ(map["test2"], nullptr);
+    EXPECT_EQ(map["test3"], nullptr);
     map["test1"] = MakeUnique<int>(0);
     map["test2"] = MakeUnique<int>(5);
     map["test3"] = MakeUnique<int>(9);
@@ -438,19 +438,19 @@ static void RunLeakCheckBody()
 {
     Map<String, UniquePtr<int>> map;
 
-    map["test1"] = Null;
-    map["test2"] = Null;
-    map["test3"] = Null;
-    EXPECT_EQ(map["test1"], Null);
-    EXPECT_EQ(map["test2"], Null);
-    EXPECT_EQ(map["test3"], Null);
+    map["test1"] = nullptr;
+    map["test2"] = nullptr;
+    map["test3"] = nullptr;
+    EXPECT_EQ(map["test1"], nullptr);
+    EXPECT_EQ(map["test2"], nullptr);
+    EXPECT_EQ(map["test3"], nullptr);
     map["test1"] = MakeUnique<int>(0);
     map["test2"] = MakeUnique<int>(5);
     map["test3"] = MakeUnique<int>(9);
     EXPECT_EQ(*map["test1"], 0);
     EXPECT_EQ(*map["test2"], 5);
     EXPECT_EQ(*map["test3"], 9);
-    map["test3"] = Null;
+    map["test3"] = nullptr;
 }
 
 TEST(Map, ReadWrite_LeakCheck)

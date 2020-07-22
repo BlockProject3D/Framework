@@ -224,8 +224,8 @@ const CPU &Platform::GetCPUInfo()
 #elif MAC
     fint ncores = 1;
     size_t sz = sizeof(fint);
-    if (sysctlbyname("hw.activecpu", &ncores, &sz, Null, 0))
-        sysctlbyname("hw.ncpu", &ncores, &sz, Null, 0);
+    if (sysctlbyname("hw.activecpu", &ncores, &sz, nullptr, 0))
+        sysctlbyname("hw.ncpu", &ncores, &sz, nullptr, 0);
     cpi.NumCores = ncores;
     cpi.Freq = 1; // Cannot reliably find CPU frequency
 #else
@@ -312,7 +312,7 @@ static BOOL __internal_IsUserAdmin()
     if (!AllocateAndInitializeSid(&NtAuthority, 2, SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS, 0, 0, 0, 0, 0,
                                   0, &AdministratorsGroup))
         return (FALSE);
-    if (!CheckTokenMembership(NULL, AdministratorsGroup, &b))
+    if (!CheckTokenMembership(nullptr, AdministratorsGroup, &b))
     {
         FreeSid(AdministratorsGroup);
         return (FALSE);
@@ -327,7 +327,7 @@ static BOOL __internal_IsUserAdmin()
 // Check if process is running with elevated privileges
 static BOOL __internal_GetProcessElevationType(TOKEN_ELEVATION_TYPE *elevationType)
 {
-    HANDLE token = NULL;
+    HANDLE token = nullptr;
     DWORD size = 0;
 
     *elevationType = TokenElevationTypeDefault;

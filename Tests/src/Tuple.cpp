@@ -193,7 +193,7 @@ TEST(Tuple, Move_NonCopy_Types)
     EXPECT_EQ(*tp.Get<1>(), -1);
 
     auto mv = std::move(tp);
-    EXPECT_EQ(tp.Get<0>(), Null); //NOLINT (Unit testing)
+    EXPECT_EQ(tp.Get<0>(), nullptr); //NOLINT (Unit testing)
     EXPECT_EQ(mv.Size(), 2U);
     EXPECT_EQ(*mv.Get<bpf::memory::UniquePtr<int>>(), 1);
     EXPECT_EQ(*mv.Get<0>(), 1);

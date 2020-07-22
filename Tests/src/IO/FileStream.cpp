@@ -57,12 +57,12 @@ TEST(FileStream, Open_ReadWrite)
 {
     bpf::io::File f("./doesnotexist.txt");
     bpf::io::FileStream stream(f, bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
-    EXPECT_THROW(stream.Read(Null, 0), bpf::io::IOException);
+    EXPECT_THROW(stream.Read(nullptr, 0), bpf::io::IOException);
     EXPECT_EQ(stream.Write("This is a test", 14), (bpf::fsize)14);
     stream.Close();
     stream.Close();
     bpf::io::FileStream stream1(f, bpf::io::FILE_MODE_READ);
-    EXPECT_THROW(stream1.Write(Null, 0), bpf::io::IOException);
+    EXPECT_THROW(stream1.Write(nullptr, 0), bpf::io::IOException);
     char buf[15];
     EXPECT_EQ(stream1.Read(buf, 14), (bpf::fsize)14);
     buf[14] = '\0';
@@ -103,12 +103,12 @@ TEST(FileStream, Unicode)
 {
     bpf::io::File f("./doesnotexist.txt");
     bpf::io::FileStream stream(f, bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
-    EXPECT_THROW(stream.Read(Null, 0), bpf::io::IOException);
+    EXPECT_THROW(stream.Read(nullptr, 0), bpf::io::IOException);
     EXPECT_EQ(stream.Write("This is a test你好", 21), (bpf::fsize)21);
     stream.Close();
     stream.Close();
     bpf::io::FileStream stream1(f, bpf::io::FILE_MODE_READ);
-    EXPECT_THROW(stream1.Write(Null, 0), bpf::io::IOException);
+    EXPECT_THROW(stream1.Write(nullptr, 0), bpf::io::IOException);
     char buf[22];
     EXPECT_EQ(stream1.Read(buf, 21), (bpf::fsize)21);
     buf[21] = '\0';
