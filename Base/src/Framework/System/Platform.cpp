@@ -51,8 +51,8 @@
 
 #endif
 
-#include "Framework/System/ModuleInterface.hpp"
 #include "Framework/System/Platform.hpp"
+#include "Framework/System/PluginInterface.hpp"
 #include "Framework/System/TypeExpander.hpp"
 
 using namespace bpf::system;
@@ -164,7 +164,7 @@ Env Platform::InitEnvInfo()
     ev.ShortName = "BPF";
     ev.Name = "BlockProject Framework";
     ev.Version = BP_VERSION_STRING;
-    ev.VersionInt = BP_MODULE_VERSION_INT;
+    ev.VersionInt = BP_PLUGIN_VERSION_INT;
     return (ev);
 }
 
