@@ -48,6 +48,7 @@ namespace bpf
         private:
             struct Task
             {
+                std::function<void()> Processing1;
                 std::function<Dynamic()> Processing;
                 std::function<void(Dynamic &)> Callback;
                 Dynamic Output;
@@ -82,11 +83,23 @@ namespace bpf
             ThreadPool &operator=(ThreadPool &&other) noexcept;
 
             /**
-             * Runs a task using this ThreadPool
+             * Runs a task using this ThreadPool.
+             * Passing captures by reference is undefined in the processing function.
+             * Passing captures by pointer is undefined in the processing function.
+             * To pass references or pointers in the callback make sure these captures will not fall out of scope before
+             * the callback function returns
              * @param processing the actual threaded function
              * @param callback function to call on completion on the thread Poll is called
              */
             void Run(std::function<Dynamic()> processing, std::function<void(Dynamic &)> callback);
+
+            /**
+             * Runs a task which does not produce any output
+             * Passing captures by reference is undefined in the processing function.
+             * Passing captures by pointer is undefined in the processing function.
+             * @param processing the actual threaded function
+             */
+            void Run(std::function<void()> processing);
 
             /**
              * Checks if this ThreadPool is idle: it has no tasks anymore
@@ -99,7 +112,9 @@ namespace bpf
 
             /**
              * Call this function (usually on the main thread) in order to update the status of each task and run
-             * callbacks when needed
+             * callbacks when needed.
+             * Calling this function from multiple threads is undefined behavior; always call this function from the
+             * same thread
              */
             void Poll();
 

@@ -28,6 +28,7 @@
 
 #include "Framework/System/ThreadPool.hpp"
 #include "Framework/System/ScopeLock.hpp"
+#include "Framework/System/OSException.hpp"
 
 using namespace bpf::system;
 using namespace bpf::memory;
@@ -59,10 +60,15 @@ public:
                 auto lock = ScopeLock(_pool->_inputMutex);
                 task = _pool->_sharedInputQueue.Pop();
             }
-            task.Output = task.Processing();
+            if (task.Processing1)
+                task.Processing1();
+            else
             {
-                auto lock = ScopeLock(_pool->_outputMutex);
-                _pool->_sharedOutputQueue.Push(std::move(task));
+                task.Output = task.Processing();
+                {
+                    auto lock = ScopeLock(_pool->_outputMutex);
+                    _pool->_sharedOutputQueue.Push(std::move(task));
+                }
             }
         }
     }
@@ -130,10 +136,29 @@ ThreadPool &ThreadPool::operator=(ThreadPool &&other) noexcept
 
 void ThreadPool::Run(std::function<Dynamic()> processing, std::function<void(Dynamic &)> callback)
 {
+    if (!processing || !callback)
+        throw OSException("Invalid argument in call to Run");
     ++_tasks;
     Task t;
     t.Callback = std::move(callback);
     t.Processing = std::move(processing);
+    {
+        auto lock = ScopeLock(_inputMutex);
+        _sharedInputQueue.Push(std::move(t));
+    }
+    for (fsize i = 0; i != _tcount; ++i)
+    {
+        if (!_threads[i].IsRunning())
+            _threads[i].Start();
+    }
+}
+
+void ThreadPool::Run(std::function<void()> processing)
+{
+    if (!processing)
+        throw OSException("Invalid argument in call to Run");
+    Task t;
+    t.Processing1 = std::move(processing);
     {
         auto lock = ScopeLock(_inputMutex);
         _sharedInputQueue.Push(std::move(t));

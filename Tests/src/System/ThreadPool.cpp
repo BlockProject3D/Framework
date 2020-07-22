@@ -27,6 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <Framework/System/ThreadPool.hpp>
+#include <Framework/System/OSException.hpp>
 #include <gtest/gtest.h>
 
 TEST(ThreadPool, Mutex)
@@ -47,6 +48,8 @@ TEST(ThreadPool, Basic)
     EXPECT_TRUE(mv.IsIdle());
     pool = std::move(mv);
     EXPECT_TRUE(pool.IsIdle());
+    EXPECT_THROW(pool.Run(Null), bpf::system::OSException);
+    EXPECT_THROW(pool.Run(Null, Null), bpf::system::OSException);
 }
 
 TEST(ThreadPool, Run_1)
@@ -115,6 +118,29 @@ TEST(ThreadPool, Run_3)
 }
 
 TEST(ThreadPool, Run_4)
+{
+    auto pool = bpf::system::ThreadPool(2, "Test");
+    bpf::fsize res;
+    pool.Run([] {
+        bpf::system::Thread::Sleep(16);
+    });
+    for (bpf::fsize i = 0; i != 6; ++i)
+    {
+        pool.Run(
+            [] {
+              bpf::fsize i = 1;
+              while (i < 16384)
+                  i *= 2;
+              return (i);
+            },
+            [&res](bpf::Dynamic &dyn) { res = (bpf::fsize)dyn; });
+    }
+    while (!pool.IsIdle())
+        pool.Poll();
+    EXPECT_EQ(res, 16384);
+}
+
+TEST(ThreadPool, Run_5)
 {
     auto pool = bpf::system::ThreadPool(2, "Test");
     bpf::fsize res;
