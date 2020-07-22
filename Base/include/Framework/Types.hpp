@@ -28,10 +28,19 @@
 
 #pragma once
 
-/**
- * Shortcut to C++ nullptr
- */
-//#define Null nullptr
+#ifdef BP_COMPAT_2_X
+    #if defined(__GNUC__) || defined(__clang__)
+        #warning Use of compatibility layer for Framework 2.X; compatibility layer only lasts single versions
+    #else
+        #pragma message "Use of compatibility layer for Framework 2.X; compatibility layer only lasts single versions"
+    #endif
+
+    /**
+     * Shortcut to C++ nullptr.
+     * Deprecated: Use nullptr directly
+     */
+    #define Null nullptr
+#endif
 
 // Check windows
 #ifdef WINDOWS
