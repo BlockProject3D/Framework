@@ -659,7 +659,10 @@ TEST(String, ValueOf)
 TEST(String, Safety)
 {
     bpf::String str = "this is a test";
-    EXPECT_THROW(str += str[-1], bpf::IndexException);
+    bpf::String str1 = "this is a test1";
+    EXPECT_EQ(str[-1], 't');
+    EXPECT_EQ(str1[-1], '1');
+    EXPECT_EQ(str1[-2], 't');
     EXPECT_THROW(str += str[9999], bpf::IndexException);
     EXPECT_THROW(str += str[15], bpf::IndexException);
 }
