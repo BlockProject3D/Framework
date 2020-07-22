@@ -59,3 +59,19 @@ TEST(Color, Pack)
     EXPECT_EQ(c.A, 255);
     EXPECT_EQ(c.Pack(), 0x99CCFF);
 }
+
+TEST(Color, Add)
+{
+    auto c = bpf::math::Color::Red + bpf::math::Color::Green;
+
+    EXPECT_EQ(c, bpf::math::Color::Yellow);
+}
+
+TEST(Color, Multiply)
+{
+    auto c = bpf::math::Color::Red * bpf::math::Color::White;
+    auto c1 = bpf::math::Color::Yellow * bpf::math::Color::Red;
+
+    EXPECT_EQ(c, bpf::math::Color::Red);
+    EXPECT_EQ(c1, bpf::math::Color::Red);
+}
