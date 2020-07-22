@@ -96,7 +96,7 @@ set(SOURCES
     ./include/Framework/System/Thread.hpp
     ./include/Framework/System/Mutex.hpp
     ./include/Framework/System/ThreadPool.hpp
-        include/Framework/System/PluginInterface.hpp
+    ./include/Framework/System/PluginInterface.hpp
     ./include/Framework/System/Application.hpp
     ./include/Framework/System/ScopeLock.hpp
     ./include/Framework/System/Paths.hpp
