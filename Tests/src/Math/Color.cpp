@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -26,62 +26,36 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Framework/Math/Color.hpp"
-#include "Framework/Math/Math.hpp"
+#include <gtest/gtest.h>
+#include <Framework/Math/Color.hpp>
 
-using namespace bpf::math;
-using namespace bpf;
-
-const Color Color::Red = Color(255, 0, 0);
-const Color Color::Green = Color(0, 255, 0);
-const Color Color::Blue = Color(0, 0, 255);
-const Color Color::White = Color(255, 255, 255);
-const Color Color::Black = Color(0, 0, 0);
-const Color Color::Yellow = Color(255, 255, 0);
-const Color Color::Cyan = Color(0, 255, 255);
-
-Color::Color(fint rgb)
+TEST(Color, Basic)
 {
-    B = rgb & 0xFF;
-    rgb = rgb >> 8;
-    G = rgb & 0xFF;
-    rgb = rgb >> 8;
-    R = rgb & 0xFF;
-    A = 255;
+    auto c = bpf::math::Color(255, 1, 6);
+
+    EXPECT_EQ(c.R, 255);
+    EXPECT_EQ(c.G, 1);
+    EXPECT_EQ(c.B, 6);
+    EXPECT_EQ(c.A, 255);
 }
 
-Color Color::operator+(const Color &other) const
+TEST(Color, Packed)
 {
-    uint8 newr = Math<uint8>::Clamp((uint8)(R + other.R), (uint8)0, (uint8)255);
-    uint8 newg = Math<uint8>::Clamp((uint8)(G + other.G), (uint8)0, (uint8)255);
-    uint8 newb = Math<uint8>::Clamp((uint8)(B + other.B), (uint8)0, (uint8)255);
-    
-    return (Color(newr, newg, newb));
+    auto c = bpf::math::Color(0x99CCFF);
+
+    EXPECT_EQ(c.R, 153);
+    EXPECT_EQ(c.G, 204);
+    EXPECT_EQ(c.B, 255);
+    EXPECT_EQ(c.A, 255);
 }
 
-Color Color::operator*(const Color &other) const
+TEST(Color, Pack)
 {
-    float r = (float)R / 255.0f;
-    float g = (float)G / 255.0f;
-    float b = (float)B / 255.0f;
-    float r1 = (float)other.R / 255.0f;
-    float g1 = (float)other.G / 255.0f;
-    float b1 = (float)other.B / 255.0f;
-    float newr = r * r1;
-    float newg = g * g1;
-    float newb = b * b1;
+    auto c = bpf::math::Color(153, 204, 255);
 
-    return (Color(static_cast<uint8>(newr * 255),
-                  static_cast<uint8>(newg * 255),
-                  static_cast<uint8>(newb * 255)));
-}
-
-fint Color::Pack() const noexcept
-{
-    fint res = 0;
-
-    res += R << 16;
-    res += G << 8;
-    res += B;
-    return (res);
+    EXPECT_EQ(c.R, 153);
+    EXPECT_EQ(c.G, 204);
+    EXPECT_EQ(c.B, 255);
+    EXPECT_EQ(c.A, 255);
+    EXPECT_EQ(c.Pack(), 0x99CCFF);
 }
