@@ -31,7 +31,7 @@
 
 using namespace bpf;
 
-void Exception::Print() const
+void Exception::Print() const noexcept
 {
     // Here we use std::cerr as it would be unsafe to allocate any new object
     // ==> The exception could be of type MemoryException

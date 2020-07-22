@@ -31,7 +31,7 @@
 
 using namespace bpf;
 
-void IndexException::Print() const
+void IndexException::Print() const noexcept
 {
     // Here we use std::cerr as it would be unsafe to allocate any new object
     // ==> We do not want to cause a MemoryException for simple exception types

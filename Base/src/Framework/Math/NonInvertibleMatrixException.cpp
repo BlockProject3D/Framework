@@ -31,7 +31,7 @@
 
 using namespace bpf::math;
 
-void NonInvertibleMatrixException::Print() const
+void NonInvertibleMatrixException::Print() const noexcept
 {
     std::cerr << "NonInvertibleMatrixException: Matrix is not invertible (Determinent is null)" << std::endl;
 }

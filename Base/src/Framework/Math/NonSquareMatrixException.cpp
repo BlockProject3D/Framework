@@ -31,7 +31,7 @@
 
 using namespace bpf::math;
 
-void NonSquareMatrixException::Print() const
+void NonSquareMatrixException::Print() const noexcept
 {
     std::cerr << "NonSquareMatrixException: Matrix is not a square matrix" << std::endl;
 }

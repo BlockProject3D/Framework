@@ -77,7 +77,7 @@ RuntimeException &RuntimeException::operator=(const RuntimeException &other) noe
     return (*this);
 }
 
-void RuntimeException::Print() const
+void RuntimeException::Print() const noexcept
 {
     std::cerr << Type() << " thrown: " << std::endl;
     std::cerr << *Message() << std::endl;

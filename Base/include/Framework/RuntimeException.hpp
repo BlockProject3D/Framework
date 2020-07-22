@@ -75,6 +75,6 @@ namespace bpf
             return (**_type);
         }
 
-        void Print() const override;
+        void Print() const noexcept override;
     };
 }

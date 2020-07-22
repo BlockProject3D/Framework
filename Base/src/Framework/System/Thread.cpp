@@ -78,9 +78,9 @@ DWORD WINAPI ThreadRoutine(void *ptr)
             thread->Run();
         _bpf_internal_state(*thread, Thread::FINISHED);
     }
-    catch (const bpf::Exception &)
+    catch (const bpf::Exception &ex)
     {
-        // TODO: print ex
+        ex.Print();
         _bpf_internal_state(*thread, Thread::STOPPED);
     }
     return (0);
@@ -96,9 +96,9 @@ void *ThreadRoutine(void *ptr)
             thread->Run();
         _bpf_internal_state(*thread, Thread::FINISHED);
     }
-    catch (const bpf::Exception &)
+    catch (const bpf::Exception &ex)
     {
-        // TODO: print ex
+        ex.Print();
         _bpf_internal_state(*thread, Thread::STOPPED);
     }
     return (Null);

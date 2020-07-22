@@ -65,6 +65,6 @@ namespace bpf
             return ("Index");
         }
 
-        void Print() const final;
+        void Print() const noexcept final;
     };
 }

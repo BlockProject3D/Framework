@@ -44,7 +44,7 @@ namespace bpf
                 return ("NonSquareMatrix");
             }
 
-            void Print() const final;
+            void Print() const noexcept final;
         };
     }
 }
