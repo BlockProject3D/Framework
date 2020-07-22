@@ -30,7 +30,10 @@ set(PLATFORM "Auto" CACHE STRING "Platform name")
 set(CMAKE_INSTALL_DIR "" CACHE STRING "Install directory")
 
 if (NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Debug)
+    set(CMAKE_BUILD_TYPE Debug CACHE STRING "You piece of shit mother fucking holly shit CMAKE, WILL YOU WORK AT THE END OF THE DAY!?!?!?!" FORCE)
+elseif (CMAKE_BUILD_TYPE STREQUAL DebugWithCoverage)
+    set(CMAKE_BUILD_TYPE Debug CACHE STRING "You piece of shit mother fucking holly shit CMAKE, WILL YOU WORK AT THE END OF THE DAY!?!?!?!" FORCE)
+    set(__BP_COVERAGE TRUE CACHE INTERNAL "You mother fucker CMAKE")
 endif (NOT CMAKE_BUILD_TYPE)
 
 if (PLATFORM STREQUAL "Auto")
@@ -82,7 +85,7 @@ function(bp_setup_target name mainincdir)
     target_include_directories(${name} PRIVATE ${mainincdir})
     set_target_properties(${name} PROPERTIES CXX_STANDARD 11)
     set_target_properties(${name} PROPERTIES CXX_STANDARD_REQUIRED TRUE)
-    if (CMAKE_BUILD_TYPE STREQUAL DebugWithCoverage)
+    if (__BP_COVERAGE STREQUAL TRUE)
         set_target_properties(${name} PROPERTIES CXX_EXTENSIONS TRUE)
         target_compile_definitions(${name} PRIVATE COVERAGE)
         target_compile_options(${name}
@@ -110,7 +113,7 @@ function(bp_setup_target name mainincdir)
             -Wno-unused
             -std=gnu++11)
         target_link_libraries(${name} PRIVATE gcov supc++)
-    endif (CMAKE_BUILD_TYPE STREQUAL DebugWithCoverage)
+    endif (__BP_COVERAGE STREQUAL TRUE)
     bp_target_created(${name})
     source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}"
                  PREFIX ""
