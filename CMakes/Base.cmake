@@ -29,6 +29,10 @@ set(BP_GENERATED_SOURCE_FILES "")
 set(PLATFORM "Auto" CACHE STRING "Platform name")
 set(CMAKE_INSTALL_DIR "" CACHE STRING "Install directory")
 
+if (NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Debug)
+endif (NOT CMAKE_BUILD_TYPE)
+
 if (PLATFORM STREQUAL "Auto")
     if (WIN32)
         set(PLATFORM "Windows")

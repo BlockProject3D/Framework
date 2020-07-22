@@ -20,7 +20,7 @@ jobs:
         - pip install conan --user
       script:
         - mkdir build && cd build
-        - cmake .. -CMAKE_BUILD_TYPE=DebugWithCoverage
+        - cmake .. -DCMAKE_BUILD_TYPE=DebugWithCoverage
         - cmake --build .
         - ./Debug/BPF.Tests
         - cat ../Tests.Console/InputFile | ./Debug/BPF.Tests.Console > testlog
