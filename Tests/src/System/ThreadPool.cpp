@@ -95,6 +95,7 @@ TEST(ThreadPool, Run_2)
     while (!pool.IsIdle())
         pool.Poll();
     EXPECT_EQ(res, 4);
+    pool.Poll();
 }
 
 TEST(ThreadPool, Run_3)

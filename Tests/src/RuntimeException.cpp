@@ -59,6 +59,9 @@ TEST(RuntimeException, Copy_2)
 {
     bpf::RuntimeException ex("Test", "Message");
     bpf::RuntimeException ex1("Test1", "Message1");
+
+    auto ex2 = &ex;
+    ex = *ex2;
     EXPECT_STREQ(ex.Type(), "TestException");
     EXPECT_STREQ(*ex.Message(), "Message");
     EXPECT_STREQ(ex1.Type(), "Test1Exception");
