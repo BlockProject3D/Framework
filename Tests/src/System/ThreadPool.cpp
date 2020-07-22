@@ -143,7 +143,7 @@ TEST(ThreadPool, Run_4)
             },
             [&res](bpf::Dynamic &dyn) { res = (bpf::fsize)dyn; });
     }
-    /*while (!pool.IsIdle())
+    while (!pool.IsIdle())
         pool.Poll();
-    EXPECT_EQ(res, 16384);*/
+    EXPECT_EQ(res, 16384);
 }
