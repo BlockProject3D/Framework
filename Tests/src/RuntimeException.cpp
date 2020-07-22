@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -26,59 +26,46 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Framework/RuntimeException.hpp"
-#include "Framework/Memory/MemUtils.hpp"
-#include <iostream>
+#include <gtest/gtest.h>
+#include <Framework/RuntimeException.hpp>
 
-using namespace bpf;
-
-RuntimeException::RuntimeException(const String &type, const String &message)
-    : _type(memory::MemUtils::New<String>(type + "Exception"))
-    , _message(memory::MemUtils::New<String>(message))
-    , _refs(reinterpret_cast<int *>(memory::Memory::Malloc(sizeof(int))))
+TEST(RuntimeException, Basic)
 {
-    *_refs = 1;
+    bpf::RuntimeException ex("Test", "Message");
+
+    EXPECT_STREQ(ex.Type(), "TestException");
+    EXPECT_STREQ(*ex.Message(), "Message");
 }
 
-RuntimeException::~RuntimeException()
+TEST(RuntimeException, Copy_1)
 {
-    *_refs -= 1;
-    if (*_refs <= 0)
-    {
-        memory::MemUtils::Delete(_type);
-        memory::MemUtils::Delete(_message);
-        memory::Memory::Free(_refs);
-    }
+    bpf::RuntimeException ex("Test", "Message");
+
+    EXPECT_STREQ(ex.Type(), "TestException");
+    EXPECT_STREQ(*ex.Message(), "Message");
+    auto ex1 = ex;
+    EXPECT_STREQ(ex.Type(), "TestException");
+    EXPECT_STREQ(*ex.Message(), "Message");
+    EXPECT_STREQ(ex1.Type(), "TestException");
+    EXPECT_STREQ(*ex1.Message(), "Message");
+    ex = ex1;
+    EXPECT_STREQ(ex.Type(), "TestException");
+    EXPECT_STREQ(*ex.Message(), "Message");
+    EXPECT_STREQ(ex1.Type(), "TestException");
+    EXPECT_STREQ(*ex1.Message(), "Message");
 }
 
-RuntimeException::RuntimeException(const RuntimeException &other) noexcept
-    : _type(other._type)
-    , _message(other._message)
-    , _refs(other._refs)
+TEST(RuntimeException, Copy_2)
 {
-    *_refs += 1;
-}
-
-RuntimeException &RuntimeException::operator=(const RuntimeException &other) noexcept
-{
-    if (this == &other)
-        return (*this);
-    *other._refs += 1;
-    *_refs -= 1;
-    if (*_refs <= 0)
-    {
-        memory::MemUtils::Delete(_type);
-        memory::MemUtils::Delete(_message);
-        memory::Memory::Free(_refs);
-    }
-    _type = other._type;
-    _message = other._message;
-    _refs = other._refs;
-    return (*this);
-}
-
-void RuntimeException::Print() const
-{
-    std::cerr << Type() << " thrown: " << std::endl;
-    std::cerr << *Message() << std::endl;
+    bpf::RuntimeException ex("Test", "Message");
+    bpf::RuntimeException ex1("Test1", "Message1");
+    EXPECT_STREQ(ex.Type(), "TestException");
+    EXPECT_STREQ(*ex.Message(), "Message");
+    EXPECT_STREQ(ex1.Type(), "Test1Exception");
+    EXPECT_STREQ(*ex1.Message(), "Message1");
+    ex = ex1;
+    EXPECT_STREQ(ex.Type(), "Test1Exception");
+    EXPECT_STREQ(*ex.Message(), "Message1");
+    EXPECT_STREQ(ex1.Type(), "Test1Exception");
+    EXPECT_STREQ(*ex1.Message(), "Message1");
 }

@@ -76,6 +76,7 @@ set(SOURCES
     src/String.cpp
     src/MathEval.cpp
     src/Scalar.cpp
+    src/RuntimeException.cpp
     src/main.cpp
     src/LowLevelMain.cpp
 )
