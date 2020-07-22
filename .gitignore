@@ -7,5 +7,5 @@ build_unix
 .vscode
 /cmake-build-debug/
 /cmake-build-release/
-/cmake-build-debug-coverage/
+/cmake-build-debugwithcoverage/
 .idea

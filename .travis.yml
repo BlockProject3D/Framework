@@ -4,7 +4,6 @@ jobs:
   include:
     - stage: debug-test
       os: windows
-      compiler: MSVC
       before_install:
         - choco install python3 --params "/InstallDir:C:\\Python"
         - export PATH="/c/Python:/c/Python/Scripts:$PATH"
@@ -21,7 +20,7 @@ jobs:
         - pip install conan --user
       script:
         - mkdir build && cd build
-        - cmake .. -DCOVERAGE=1
+        - cmake .. -CMAKE_BUILD_TYPE=DebugWithCoverage
         - cmake --build .
         - ./Debug/BPF.Tests
         - cat ../Tests.Console/InputFile | ./Debug/BPF.Tests.Console > testlog

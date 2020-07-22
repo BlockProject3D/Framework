@@ -68,9 +68,9 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake .. -DBUILD_TYPE=Debug -DINSTALL_DIR="../"
+        cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_DIR="../"
         cmake --build . --target install --config Debug
-        cmake .. -DBUILD_TYPE=Release -DINSTALL_DIR="../"
+        cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_DIR="../"
         cmake --build . --target install --config Release
     - name: Create Package
       run: |
