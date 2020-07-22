@@ -8,5 +8,4 @@ build_unix
 /cmake-build-debug/
 /cmake-build-release/
 /cmake-build-debug-coverage/
-/build-clang
 .idea
