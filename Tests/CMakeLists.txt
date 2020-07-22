@@ -64,16 +64,19 @@ set(SOURCES
     src/System/Thread.cpp
     src/System/Process.cpp
     src/System/Plugins.cpp
+    src/System/ThreadPool.cpp
     src/Json/Json.cpp
     src/Json/JsonWriter.cpp
     src/Memory/ObjectConstructor.cpp
     src/BaseConvert.cpp
     src/Compression.cpp
     src/Tuple.cpp
+    src/Dynamic.cpp
     src/Name.cpp
     src/String.cpp
     src/MathEval.cpp
     src/Scalar.cpp
+    src/RuntimeException.cpp
     src/main.cpp
     src/LowLevelMain.cpp
 )

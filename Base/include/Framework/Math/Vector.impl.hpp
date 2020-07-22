@@ -39,7 +39,11 @@ namespace bpf
             fsize i = 0;
 
             for (auto &elem : lst)
+            {
+                if (i >= I)
+                    break;
                 _arr[i++] = elem;
+            }
         }
 
         template <typename T, fsize I>

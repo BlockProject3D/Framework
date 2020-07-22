@@ -27,14 +27,54 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Framework/RuntimeException.hpp"
+#include "Framework/Memory/MemUtils.hpp"
 #include <iostream>
 
 using namespace bpf;
 
-RuntimeException::RuntimeException(const String &type, const String &message) noexcept
-    : _type(type + "Exception")
-    , _message(message)
+RuntimeException::RuntimeException(const String &type, const String &message)
+    : _type(memory::MemUtils::New<String>(type + "Exception"))
+    , _message(memory::MemUtils::New<String>(message))
+    , _refs(reinterpret_cast<int *>(memory::Memory::Malloc(sizeof(int))))
 {
+    *_refs = 1;
+}
+
+RuntimeException::~RuntimeException()
+{
+    *_refs -= 1;
+    if (*_refs <= 0)
+    {
+        memory::MemUtils::Delete(_type);
+        memory::MemUtils::Delete(_message);
+        memory::Memory::Free(_refs);
+    }
+}
+
+RuntimeException::RuntimeException(const RuntimeException &other) noexcept
+    : _type(other._type)
+    , _message(other._message)
+    , _refs(other._refs)
+{
+    *_refs += 1;
+}
+
+RuntimeException &RuntimeException::operator=(const RuntimeException &other) noexcept
+{
+    if (this == &other)
+        return (*this);
+    *other._refs += 1;
+    *_refs -= 1;
+    if (*_refs <= 0)
+    {
+        memory::MemUtils::Delete(_type);
+        memory::MemUtils::Delete(_message);
+        memory::Memory::Free(_refs);
+    }
+    _type = other._type;
+    _message = other._message;
+    _refs = other._refs;
+    return (*this);
 }
 
 void RuntimeException::Print() const

@@ -27,18 +27,32 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include <typeinfo>
+#include "Framework/Types.hpp"
 
 namespace bpf
 {
     /**
-     * Returns the cross-platform type name of a given type
+     * Returns the cross-platform type name of a given type.
+     * Defaults to implementation defined typeid
      * @tparam T the type to search the name of
      * @return low-level null-terminated c-string
      */
     template <typename T>
     inline const char *TypeName() noexcept
     {
-        return ("Unknown");
+        return (typeid(T).name());
+    }
+
+    /**
+     * Returns a type hash in order to compare two types
+     * @tparam T type to find hash for
+     * @return unsigned hash code
+     */
+    template <typename T>
+    inline fsize TypeIndex() noexcept
+    {
+        return (typeid(T).hash_code());
     }
 }
 

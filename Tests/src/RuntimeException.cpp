@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -26,3 +26,49 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include <gtest/gtest.h>
+#include <Framework/RuntimeException.hpp>
+
+TEST(RuntimeException, Basic)
+{
+    bpf::RuntimeException ex("Test", "Message");
+
+    EXPECT_STREQ(ex.Type(), "TestException");
+    EXPECT_STREQ(*ex.Message(), "Message");
+}
+
+TEST(RuntimeException, Copy_1)
+{
+    bpf::RuntimeException ex("Test", "Message");
+
+    EXPECT_STREQ(ex.Type(), "TestException");
+    EXPECT_STREQ(*ex.Message(), "Message");
+    auto ex1 = ex;
+    EXPECT_STREQ(ex.Type(), "TestException");
+    EXPECT_STREQ(*ex.Message(), "Message");
+    EXPECT_STREQ(ex1.Type(), "TestException");
+    EXPECT_STREQ(*ex1.Message(), "Message");
+    ex = ex1;
+    EXPECT_STREQ(ex.Type(), "TestException");
+    EXPECT_STREQ(*ex.Message(), "Message");
+    EXPECT_STREQ(ex1.Type(), "TestException");
+    EXPECT_STREQ(*ex1.Message(), "Message");
+}
+
+TEST(RuntimeException, Copy_2)
+{
+    bpf::RuntimeException ex("Test", "Message");
+    bpf::RuntimeException ex1("Test1", "Message1");
+
+    auto ex2 = &ex;
+    ex = *ex2;
+    EXPECT_STREQ(ex.Type(), "TestException");
+    EXPECT_STREQ(*ex.Message(), "Message");
+    EXPECT_STREQ(ex1.Type(), "Test1Exception");
+    EXPECT_STREQ(*ex1.Message(), "Message1");
+    ex = ex1;
+    EXPECT_STREQ(ex.Type(), "Test1Exception");
+    EXPECT_STREQ(*ex.Message(), "Message1");
+    EXPECT_STREQ(ex1.Type(), "Test1Exception");
+    EXPECT_STREQ(*ex1.Message(), "Message1");
+}

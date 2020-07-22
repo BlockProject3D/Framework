@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -26,15 +26,42 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
+#include "Framework/Dynamic.hpp"
 
-namespace bpf
+using namespace bpf;
+
+Dynamic::~Dynamic()
 {
-    namespace system
-    {
-        class BPF_API ThreadManager
-        {
-        
-        };
-    }
+    memory::MemUtils::Delete(_storage);
+}
+
+Dynamic &Dynamic::operator=(const Dynamic &other)
+{
+    if (this == &other)
+        return (*this);
+    memory::MemUtils::Delete(_storage);
+    _storage = other._storage == Null ? Null : other._storage->Clone();
+    return (*this);
+}
+
+Dynamic &Dynamic::operator=(Dynamic &&other) noexcept
+{
+    memory::MemUtils::Delete(_storage);
+    _storage = other._storage;
+    other._storage = Null;
+    return (*this);
+}
+
+bool Dynamic::operator==(const Dynamic &other) const
+{
+    if (_storage == Null || other._storage == Null)
+        return (_storage == other._storage);
+    return (_storage->Equals(other._storage));
+}
+
+bool Dynamic::operator!=(const Dynamic &other) const
+{
+    if (_storage == Null || other._storage == Null)
+        return (_storage != other._storage);
+    return (!_storage->Equals(other._storage));
 }

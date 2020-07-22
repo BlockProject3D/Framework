@@ -38,30 +38,41 @@ namespace bpf
     class BPF_API RuntimeException : public Exception
     {
     private:
-        String _type;
-        String _message;
+        String *_type;
+        String *_message;
+        int *_refs;
 
     public:
-        ~RuntimeException() override{};
+        ~RuntimeException() override;
 
         /**
          * Constructs a high-level exception
          * @param type exception type name suffixed with "Exception"
          * @param message exception message string
          */
-        RuntimeException(const String &type, const String &message) noexcept;
+        RuntimeException(const String &type, const String &message);
+
+        /**
+         * Copy constructor
+         */
+        RuntimeException(const RuntimeException &other) noexcept;
+
+        /**
+         * Copy assignment operator
+         */
+        RuntimeException &operator=(const RuntimeException &other) noexcept;
 
         /**
          * Returns the exception's message
          */
-        inline const String &Message() const
+        inline const String &Message() const noexcept
         {
-            return (_message);
+            return (*_message);
         }
 
         inline const char *Type() const noexcept override
         {
-            return (*_type);
+            return (**_type);
         }
 
         void Print() const override;

@@ -43,6 +43,8 @@ namespace bpf
         public:
             /**
              * Constructs a mutex
+             * @throw memory::MemoryException if out of memory
+             * @throw OSException in case of system error
              */
             Mutex();
 
@@ -60,11 +62,13 @@ namespace bpf
 
             /**
              * Locks this mutex
+             * @throw OSException in case of system error
              */
             void Lock() const;
 
             /**
              * Unlocks this mutex
+             * @throw OSException in case of system error
              */
             void Unlock() const;
         };
