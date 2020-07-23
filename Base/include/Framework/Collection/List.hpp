@@ -53,14 +53,14 @@ namespace bpf
                 T Data;
 
                 explicit Node(const T &data)
-                    : Next(Null)
-                    , Prev(Null)
+                    : Next(nullptr)
+                    , Prev(nullptr)
                     , Data(data)
                 {
                 }
                 explicit Node(T &&data)
-                    : Next(Null)
-                    , Prev(Null)
+                    : Next(nullptr)
+                    , Prev(nullptr)
                     , Data(std::move(data))
                 {
                 }
@@ -371,7 +371,7 @@ namespace bpf
              */
             inline T &First()
             {
-                if (_first == Null)
+                if (_first == nullptr)
                     throw IndexException(0);
                 return (_first->Data);
             }
@@ -383,7 +383,7 @@ namespace bpf
              */
             inline T &Last()
             {
-                if (_last == Null)
+                if (_last == nullptr)
                     throw IndexException(0);
                 return (_last->Data);
             }
@@ -395,7 +395,7 @@ namespace bpf
              */
             inline const T &First() const
             {
-                if (_first == Null)
+                if (_first == nullptr)
                     throw IndexException(0);
                 return (_first->Data);
             }
@@ -407,7 +407,7 @@ namespace bpf
              */
             inline const T &Last() const
             {
-                if (_last == Null)
+                if (_last == nullptr)
                     throw IndexException(0);
                 return (_last->Data);
             }
@@ -441,7 +441,7 @@ namespace bpf
              */
             inline Iterator end() const
             {
-                return (Iterator(Null, _last));
+                return (Iterator(nullptr, _last));
             }
 
             /**
@@ -459,7 +459,7 @@ namespace bpf
              */
             inline ReverseIterator rend() const
             {
-                return (ReverseIterator(Null, _first));
+                return (ReverseIterator(nullptr, _first));
             }
         };
     }

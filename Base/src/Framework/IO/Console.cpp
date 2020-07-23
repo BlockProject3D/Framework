@@ -53,12 +53,12 @@ void Console::WriteLine(const String &str, const EConsoleStream type) noexcept
         if (IsRedirected(EConsoleStream::ERROR))
         {
             auto s = str + "\r\n";
-            WriteFile(hdl, reinterpret_cast<const void *>(*s), (DWORD)s.Size(), NULL, NULL);
+            WriteFile(hdl, reinterpret_cast<const void *>(*s), (DWORD)s.Size(), nullptr, nullptr);
         }
         else
         {
             auto utf16 = (str + "\r\n").ToUTF16();
-            WriteConsoleW(hdl, reinterpret_cast<const void *>(*utf16), (DWORD)utf16.Size() - 1, NULL, NULL);
+            WriteConsoleW(hdl, reinterpret_cast<const void *>(*utf16), (DWORD)utf16.Size() - 1, nullptr, nullptr);
         }
 #else
         BP_IGNORE(write(2, *(str + "\n"), str.Size() + 1))
@@ -71,12 +71,12 @@ void Console::WriteLine(const String &str, const EConsoleStream type) noexcept
         if (IsRedirected())
         {
             auto s = str + "\r\n";
-            WriteFile(hdl, reinterpret_cast<const void *>(*s), (DWORD)s.Size(), NULL, NULL);
+            WriteFile(hdl, reinterpret_cast<const void *>(*s), (DWORD)s.Size(), nullptr, nullptr);
         }
         else
         {
             auto utf16 = (str + "\r\n").ToUTF16();
-            WriteConsoleW(hdl, reinterpret_cast<const void *>(*utf16), (DWORD)utf16.Size() - 1, NULL, NULL);
+            WriteConsoleW(hdl, reinterpret_cast<const void *>(*utf16), (DWORD)utf16.Size() - 1, nullptr, nullptr);
         }
 #else
         BP_IGNORE(write(1, *(str + "\n"), str.Size() + 1))

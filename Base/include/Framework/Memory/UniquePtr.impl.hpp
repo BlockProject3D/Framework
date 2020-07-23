@@ -35,10 +35,10 @@ namespace bpf
         template <typename T>
         UniquePtr<T> &UniquePtr<T>::operator=(UniquePtr<T> &&other) noexcept
         {
-            if (RawPtr != Null)
+            if (RawPtr != nullptr)
                 MemUtils::Delete(RawPtr);
             RawPtr = other.RawPtr;
-            other.RawPtr = Null;
+            other.RawPtr = nullptr;
             return (*this);
         }
     }

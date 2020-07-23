@@ -43,11 +43,11 @@ Module::Module(const bpf::String &path)
 {
 #ifdef WINDOWS
     _handle = LoadLibrary(*_path);
-    if (_handle == NULL)
+    if (_handle == nullptr)
         throw ModuleException(ObtainErrorString());
 #else
     _handle = dlopen(*_path, RTLD_NOW | RTLD_LOCAL);
-    if (_handle == Null)
+    if (_handle == nullptr)
         throw ModuleException(dlerror());
 #endif
 }
@@ -55,25 +55,25 @@ Module::Module(const bpf::String &path)
 Module &Module::operator=(Module &&other) noexcept
 {
 #ifdef WINDOWS
-    if (_handle != NULL)
+    if (_handle != nullptr)
         FreeLibrary((HMODULE)_handle);
 #else
-    if (_handle != Null)
+    if (_handle != nullptr)
         dlclose(_handle);
 #endif
     _handle = other._handle;
     _path = std::move(other._path);
-    other._handle = Null;
+    other._handle = nullptr;
     return (*this);
 }
 
 Module::~Module()
 {
 #ifdef WINDOWS
-    if (_handle != NULL)
+    if (_handle != nullptr)
         FreeLibrary((HMODULE)_handle);
 #else
-    if (_handle != Null)
+    if (_handle != nullptr)
         dlclose(_handle);
 #endif
 }
@@ -82,14 +82,14 @@ Module::~Module()
 String Module::ObtainErrorString()
 {
     String res = "Unknown";
-    LPTSTR errtxt = Null;
+    LPTSTR errtxt = nullptr;
 
     FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER
                   | FORMAT_MESSAGE_FROM_SYSTEM
                   | FORMAT_MESSAGE_IGNORE_INSERTS,
-                  Null, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                  reinterpret_cast<LPTSTR>(&errtxt), 0, Null);
-    if (errtxt != Null)
+                  nullptr, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                  reinterpret_cast<LPTSTR>(&errtxt), 0, nullptr);
+    if (errtxt != nullptr)
     {
         res = errtxt;
         LocalFree(errtxt);
@@ -102,12 +102,12 @@ void *Module::LoadSymbol(const bpf::String &name)
 {
 #ifdef WINDOWS
     void *res = (void *)GetProcAddress((HMODULE)_handle, *name);
-    if (res == Null)
+    if (res == nullptr)
         throw ModuleException(ObtainErrorString());
     return (res);
 #else
     void *res = dlsym(_handle, *name);
-    if (res == Null)
+    if (res == nullptr)
         throw ModuleException(dlerror());
     return (res);
 #endif

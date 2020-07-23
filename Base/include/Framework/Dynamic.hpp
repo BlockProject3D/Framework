@@ -72,7 +72,7 @@ namespace bpf
             template <typename Q = T>
             inline typename std::enable_if<!std::is_copy_constructible<Q>::value, Storage *>::type Useless()
             {
-                return (Null);
+                return (nullptr);
             }
 
         public:
@@ -108,10 +108,10 @@ namespace bpf
 
     public:
         /**
-         * Constructs a Null dynamic
+         * Constructs a null dynamic
          */
         inline Dynamic()
-            : _storage(Null)
+            : _storage(nullptr)
         {
         }
 
@@ -119,7 +119,7 @@ namespace bpf
          * Copy constructor
          */
         inline Dynamic(const Dynamic &other)
-            : _storage(other._storage == Null ? Null : other._storage->Clone())
+            : _storage(other._storage == nullptr ? nullptr : other._storage->Clone())
         {
         }
 
@@ -129,7 +129,7 @@ namespace bpf
         inline Dynamic(Dynamic &&other) noexcept
             : _storage(other._storage)
         {
-            other._storage = Null;
+            other._storage = nullptr;
         }
 
         /**
@@ -141,7 +141,7 @@ namespace bpf
         inline Dynamic(const T &other, typename std::enable_if<!std::is_same<T, Dynamic>::value>::type * = 0)
         {
             if (std::is_same<std::nullptr_t, typename std::remove_cv<T>::type>::value)
-                _storage = Null;
+                _storage = nullptr;
             else
                 _storage = memory::MemUtils::New<DynamicStorage<T>>(other);
         }
@@ -155,7 +155,7 @@ namespace bpf
         inline Dynamic(T &&other, typename std::enable_if<!std::is_same<T, Dynamic &>::value>::type * = 0)
         {
             if (std::is_same<std::nullptr_t, typename std::remove_cv<T>::type>::value)
-                _storage = Null;
+                _storage = nullptr;
             else
                 _storage = memory::MemUtils::New<DynamicStorage<T>>(std::forward<T>(other));
         }
@@ -168,7 +168,7 @@ namespace bpf
          */
         inline fsize TypeId() const noexcept
         {
-            return (_storage == Null ? 0 : _storage->TypeId);
+            return (_storage == nullptr ? 0 : _storage->TypeId);
         }
 
         /**
@@ -193,7 +193,7 @@ namespace bpf
             if (std::is_same<std::nullptr_t, typename std::remove_cv<T>::type>::value)
             {
                 memory::MemUtils::Delete(_storage);
-                _storage = Null;
+                _storage = nullptr;
                 return (*this);
             }
             memory::MemUtils::Delete(_storage);
@@ -213,7 +213,7 @@ namespace bpf
             if (std::is_same<std::nullptr_t, typename std::remove_cv<T>::type>::value)
             {
                 memory::MemUtils::Delete(_storage);
-                _storage = Null;
+                _storage = nullptr;
                 return (*this);
             }
             memory::MemUtils::Delete(_storage);
@@ -244,7 +244,7 @@ namespace bpf
         template <typename T>
         explicit inline operator T &()
         {
-            if (_storage == Null)
+            if (_storage == nullptr)
                 throw memory::ClassCastException("Cannot cast null object");
             if (TypeIndex<T>() != TypeId())
                 throw memory::ClassCastException(String("Cannot cast from ") + _storage->GetTypeName() + " to " +
@@ -261,7 +261,7 @@ namespace bpf
         template <typename T>
         explicit inline operator const T &() const
         {
-            if (_storage == Null)
+            if (_storage == nullptr)
                 throw memory::ClassCastException("Cannot cast null object");
             if (TypeIndex<T>() != TypeId())
                 throw memory::ClassCastException(String("Cannot cast from ") + _storage->GetTypeName() + " to " +

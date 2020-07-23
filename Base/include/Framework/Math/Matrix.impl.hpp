@@ -372,7 +372,7 @@ namespace bpf
             , _n(other._n)
             , _m(other._m)
         {
-            other._arr = Null;
+            other._arr = nullptr;
             other._n = 0;
             other._m = 0;
         }
@@ -388,7 +388,7 @@ namespace bpf
         {
             if (this == &other)
                 return (*this);
-            if (_arr != Null)
+            if (_arr != nullptr)
                 memory::MemUtils::DeleteArray(_arr, _n * _m);
             _n = other._n;
             _m = other._m;
@@ -401,12 +401,12 @@ namespace bpf
         template <typename T>
         Matrix<T> &Matrix<T>::operator=(Matrix<T> &&other) noexcept
         {
-            if (_arr != Null)
+            if (_arr != nullptr)
                 memory::MemUtils::DeleteArray(_arr, _n * _m);
             _n = other._n;
             _m = other._m;
             _arr = other._arr;
-            other._arr = Null;
+            other._arr = nullptr;
             other._n = 0;
             other._m = 0;
             return (*this);

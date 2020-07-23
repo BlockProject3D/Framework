@@ -39,7 +39,7 @@ TEST(String, Create)
 {
     bpf::String str = "This is a test !";
     bpf::String str1;
-    bpf::String str2 = Null;
+    bpf::String str2 = nullptr;
 }
 
 TEST(String, Empty)

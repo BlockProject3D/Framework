@@ -40,12 +40,12 @@ using namespace bpf;
 String OSPrivate::ObtainLastErrorString()
 {
     String res = "Unknown";
-    LPTSTR errtxt = Null;
+    LPTSTR errtxt = nullptr;
 
     FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                  Null, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                  reinterpret_cast<LPTSTR>(&errtxt), 0, Null);
-    if (errtxt != Null)
+                  nullptr, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                  reinterpret_cast<LPTSTR>(&errtxt), 0, nullptr);
+    if (errtxt != nullptr)
     {
         res = errtxt;
         LocalFree(errtxt);

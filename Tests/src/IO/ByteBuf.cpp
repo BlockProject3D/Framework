@@ -159,10 +159,10 @@ TEST(ByteBuf, ReadWrite_Test4)
     EXPECT_EQ(buf.GetCursor(), (bpf::fsize)0);
     EXPECT_EQ(buf.GetWrittenBytes(), (bpf::fsize)0);
     EXPECT_EQ(buf.Size(), (bpf::fsize)128);
-    EXPECT_EQ(buf.Write(Null, 0), (bpf::fsize)0);
+    EXPECT_EQ(buf.Write(nullptr, 0), (bpf::fsize)0);
     EXPECT_EQ(buf.GetCursor(), (bpf::fsize)0);
     EXPECT_EQ(buf.GetWrittenBytes(), (bpf::fsize)0);
-    EXPECT_EQ(buf.Read(Null, 0), (bpf::fsize)0);
+    EXPECT_EQ(buf.Read(nullptr, 0), (bpf::fsize)0);
     EXPECT_EQ(buf.GetCursor(), (bpf::fsize)0);
     EXPECT_EQ(buf.GetWrittenBytes(), (bpf::fsize)0);
 }

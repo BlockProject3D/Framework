@@ -63,7 +63,7 @@ namespace bpf
             template <typename T>
             inline static void Delete(T *obj) noexcept
             {
-                if (obj == Null)
+                if (obj == nullptr)
                     return;
                 obj->~T();
                 Memory::Free(obj);

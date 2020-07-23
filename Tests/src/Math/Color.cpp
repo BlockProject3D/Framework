@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -26,73 +26,74 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <cstdlib>
-#include <ctime>
-#include "Framework/Math/Random.hpp"
-#include "Framework/Math/Math.hpp"
+#include <gtest/gtest.h>
+#include <Framework/Math/Color.hpp>
 
-using namespace bpf::math;
-using namespace bpf;
-
-fint Random::IntBounds(const fint min, const fint max)
+TEST(Color, Basic)
 {
-    fint rd = rand() % max;
+    auto c = bpf::math::Color(255, 1, 6);
+    auto c1 = bpf::math::Color();
+    auto c2 = bpf::math::Color(c, 128);
+    auto c3 = bpf::math::Color((bpf::uint8)1);
 
-    while (rd < min || rd > max)
-        rd = rand() % max;
-    return (rd);
+    EXPECT_EQ(c.R, 255);
+    EXPECT_EQ(c.G, 1);
+    EXPECT_EQ(c.B, 6);
+    EXPECT_EQ(c.A, 255);
+    EXPECT_EQ(c1, bpf::math::Color::Black);
+    EXPECT_NE(c1, bpf::math::Color::Red);
+    EXPECT_NE(c1, bpf::math::Color::White);
+    EXPECT_EQ(c2.R, 255);
+    EXPECT_EQ(c2.G, 1);
+    EXPECT_EQ(c2.B, 6);
+    EXPECT_EQ(c2.A, 128);
+    EXPECT_EQ(c3.R, 1);
+    EXPECT_EQ(c3.G, 1);
+    EXPECT_EQ(c3.B, 1);
+    EXPECT_EQ(c3.A, 255);
 }
 
-Random::Random(const long seed)
+TEST(Color, Normalize)
 {
-    srand((uint32)seed);
+    auto c = bpf::math::Color(255, 128, 128);
+
+    EXPECT_EQ(c.Normalize(), bpf::math::Vector3f(1.0f, 0.501961f, 0.501961f));
+    EXPECT_EQ(c.NormalizeAlpha(), bpf::math::Vector4f(1.0f, 0.501961f, 0.501961f, 1.0f));
 }
 
-Random::Random()
+TEST(Color, Packed)
 {
-    srand((unsigned int)time(nullptr));
+    auto c = bpf::math::Color(0x99CCFF);
+
+    EXPECT_EQ(c.R, 153);
+    EXPECT_EQ(c.G, 204);
+    EXPECT_EQ(c.B, 255);
+    EXPECT_EQ(c.A, 255);
 }
 
-fint Random::NextInt(const fint max)
+TEST(Color, Pack)
 {
-    return (rand() % max);
+    auto c = bpf::math::Color(153, 204, 255);
+
+    EXPECT_EQ(c.R, 153);
+    EXPECT_EQ(c.G, 204);
+    EXPECT_EQ(c.B, 255);
+    EXPECT_EQ(c.A, 255);
+    EXPECT_EQ(c.Pack(), 0x99CCFF);
 }
 
-fint Random::NextInt(const fint min, const fint max)
+TEST(Color, Add)
 {
-    return (IntBounds(min, max));
+    auto c = bpf::math::Color::Red + bpf::math::Color::Green;
+
+    EXPECT_EQ(c, bpf::math::Color::Yellow);
 }
 
-uint8 Random::NextByte(const uint8 max)
+TEST(Color, Multiply)
 {
-    return ((uint8)IntBounds(0, max));
-}
+    auto c = bpf::math::Color::Red * bpf::math::Color::White;
+    auto c1 = bpf::math::Color::Yellow * bpf::math::Color::Red;
 
-uint8 Random::NextByte(const uint8 min, const uint8 max)
-{
-    return ((uint8)IntBounds(min, max));
-}
-
-uint16 Random::NextShort(const uint16 max)
-{
-    return ((uint16)IntBounds(0, max));
-}
-
-uint16 Random::NextShort(const uint16 min, const uint16 max)
-{
-    return ((uint16)IntBounds(min, max));
-}
-
-float Random::NextFloat(const float min)
-{
-    fint start = Math<fint>::Abs(rand() % 256);
-
-    return (((float)start / 256.0f) + min);
-}
-
-double Random::NextDouble()
-{
-    fint start = Math<fint>::Abs(rand() % 256);
-
-    return ((double)start / 256.0f);
+    EXPECT_EQ(c, bpf::math::Color::Red);
+    EXPECT_EQ(c1, bpf::math::Color::Red);
 }

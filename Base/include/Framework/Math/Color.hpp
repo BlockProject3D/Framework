@@ -116,7 +116,7 @@ namespace bpf
              * Constructs a Color from a packed rgb int
              * @param rgb the packed rgb integer
              */
-            explicit Color(fint rgb); // TODO : Implement
+            explicit Color(fint rgb);
 
             /**
              * Pack this color into a single integer

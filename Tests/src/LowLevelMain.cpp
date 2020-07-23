@@ -38,7 +38,7 @@ int main(int argc, char **argv, char **envp)
 #endif
 {
 #ifdef WINDOWS
-    bpf::system::WindowsApp app(Null, true);
+    bpf::system::WindowsApp app(nullptr, true);
     if (Main(app, app.GetArguments()))
         return (2);
 #else

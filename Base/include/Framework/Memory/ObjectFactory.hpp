@@ -68,7 +68,7 @@ namespace bpf
             inline UniquePtr<T> MakeUnique(const String &name, Args &&... args)
             {
                 if (!Registry.HasKey(name))
-                    return (Null);
+                    return (nullptr);
                 return (Registry[name]->MakeUnique(std::forward<Args>(args)...));
             }
 
@@ -82,7 +82,7 @@ namespace bpf
             inline SharedPtr<T> MakeShared(const String &name, Args &&... args)
             {
                 if (!Registry.HasKey(name))
-                    return (Null);
+                    return (nullptr);
                 return (Registry[name]->MakeShared(std::forward<Args>(args)...));
             }
         };

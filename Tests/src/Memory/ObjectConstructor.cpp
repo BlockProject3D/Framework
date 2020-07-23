@@ -52,8 +52,8 @@ BP_MAP_CONSTRUCTOR(MyClass, MyClass)
 
 TEST(ObjectConstructor, Basic)
 {
-    EXPECT_NE(MyClass::GetConstructor(), Null);
-    EXPECT_NE(MyClass::GetConstructor<int>(), Null);
+    EXPECT_NE(MyClass::GetConstructor(), nullptr);
+    EXPECT_NE(MyClass::GetConstructor<int>(), nullptr);
 }
 
 TEST(ObjectConstructor, Instantiate_1)

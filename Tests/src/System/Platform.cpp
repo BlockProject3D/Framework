@@ -26,8 +26,8 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <Framework/System/ModuleInterface.hpp>
 #include <Framework/System/Platform.hpp>
+#include <Framework/System/PluginInterface.hpp>
 #include <cassert>
 #include <gtest/gtest.h>
 #include <iostream>
@@ -69,7 +69,7 @@ TEST(Platform, Env)
     EXPECT_STREQ(*var.ShortName, "BPF");
     EXPECT_STREQ(*var.Name, "BlockProject Framework");
     EXPECT_STREQ(*var.Version, BP_VERSION_STRING);
-    EXPECT_EQ(var.VersionInt, BP_MODULE_VERSION_INT);
+    EXPECT_EQ(var.VersionInt, BP_PLUGIN_VERSION_INT);
 }
 
 TEST(Platform, CPU)

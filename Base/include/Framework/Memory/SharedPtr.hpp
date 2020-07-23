@@ -55,7 +55,7 @@ namespace bpf
                 , WCount(w)
                 , RawPtr(raw)
             {
-                if (Count != Null)
+                if (Count != nullptr)
                     ++*Count;
             }
 
@@ -64,9 +64,9 @@ namespace bpf
              * Constructs a null SharedPtr
              */
             inline SharedPtr() noexcept
-                : Count(Null)
-                , WCount(Null)
-                , RawPtr(Null)
+                : Count(nullptr)
+                , WCount(nullptr)
+                , RawPtr(nullptr)
             {
             }
 
@@ -91,9 +91,9 @@ namespace bpf
                 , WCount(other.WCount)
                 , RawPtr(other.RawPtr)
             {
-                other.Count = Null;
-                other.WCount = Null;
-                other.RawPtr = Null;
+                other.Count = nullptr;
+                other.WCount = nullptr;
+                other.RawPtr = nullptr;
             }
 
             /**
@@ -105,7 +105,7 @@ namespace bpf
                 , WCount(other.WCount)
                 , RawPtr(other.RawPtr)
             {
-                if (Count != Null)
+                if (Count != nullptr)
                     ++*Count;
             }
 
@@ -117,7 +117,7 @@ namespace bpf
                 , WCount(other.WCount)
                 , RawPtr(other.RawPtr)
             {
-                if (Count != Null)
+                if (Count != nullptr)
                     ++*Count;
             }
 
@@ -214,12 +214,12 @@ namespace bpf
             inline SharedPtr<T1> Cast() const
             {
 #ifdef BUILD_DEBUG
-                if (RawPtr == Null)
-                    return (Null);
+                if (RawPtr == nullptr)
+                    return (nullptr);
                 else
                 {
                     auto ptr = dynamic_cast<T1 *>(RawPtr);
-                    if (ptr == Null)
+                    if (ptr == nullptr)
                         throw ClassCastException(String("Cannot cast from ") + TypeName<T>() + " to " + TypeName<T1>());
                     return (SharedPtr<T1>(Count, WCount, ptr));
                 }

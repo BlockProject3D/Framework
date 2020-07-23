@@ -414,12 +414,12 @@ TEST(HashMap, ReadWrite_NonCopy)
 {
     HashMap<String, UniquePtr<int>> map;
 
-    map["test1"] = Null;
-    map["test2"] = Null;
-    map["test3"] = Null;
-    EXPECT_EQ(map["test1"], Null);
-    EXPECT_EQ(map["test2"], Null);
-    EXPECT_EQ(map["test3"], Null);
+    map["test1"] = nullptr;
+    map["test2"] = nullptr;
+    map["test3"] = nullptr;
+    EXPECT_EQ(map["test1"], nullptr);
+    EXPECT_EQ(map["test2"], nullptr);
+    EXPECT_EQ(map["test3"], nullptr);
     map["test1"] = MakeUnique<int>(0);
     map["test2"] = MakeUnique<int>(5);
     map["test3"] = MakeUnique<int>(9);
@@ -432,12 +432,12 @@ TEST(HashMap, ReadWrite_NonCopy_1)
 {
     HashMap<Name, UniquePtr<int>> map;
 
-    map[bpf::Name("test1")] = Null;
-    map[bpf::Name("test2")] = Null;
-    map[bpf::Name("test3")] = Null;
-    EXPECT_EQ(map[bpf::Name("test1")], Null);
-    EXPECT_EQ(map[bpf::Name("test2")], Null);
-    EXPECT_EQ(map[bpf::Name("test3")], Null);
+    map[bpf::Name("test1")] = nullptr;
+    map[bpf::Name("test2")] = nullptr;
+    map[bpf::Name("test3")] = nullptr;
+    EXPECT_EQ(map[bpf::Name("test1")], nullptr);
+    EXPECT_EQ(map[bpf::Name("test2")], nullptr);
+    EXPECT_EQ(map[bpf::Name("test3")], nullptr);
     map[bpf::Name("test1")] = MakeUnique<int>(0);
     map[bpf::Name("test2")] = MakeUnique<int>(5);
     map[bpf::Name("test3")] = MakeUnique<int>(9);
@@ -451,19 +451,19 @@ static void RunLeakCheckBody()
 {
     HashMap<String, UniquePtr<int>> map;
 
-    map["test1"] = Null;
-    map["test2"] = Null;
-    map["test3"] = Null;
-    EXPECT_EQ(map["test1"], Null);
-    EXPECT_EQ(map["test2"], Null);
-    EXPECT_EQ(map["test3"], Null);
+    map["test1"] = nullptr;
+    map["test2"] = nullptr;
+    map["test3"] = nullptr;
+    EXPECT_EQ(map["test1"], nullptr);
+    EXPECT_EQ(map["test2"], nullptr);
+    EXPECT_EQ(map["test3"], nullptr);
     map["test1"] = MakeUnique<int>(0);
     map["test2"] = MakeUnique<int>(5);
     map["test3"] = MakeUnique<int>(9);
     EXPECT_EQ(*map["test1"], 0);
     EXPECT_EQ(*map["test2"], 5);
     EXPECT_EQ(*map["test3"], 9);
-    map["test3"] = Null;
+    map["test3"] = nullptr;
 }
 
 TEST(HashMap, ReadWrite_LeakCheck)

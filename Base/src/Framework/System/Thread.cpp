@@ -78,9 +78,9 @@ DWORD WINAPI ThreadRoutine(void *ptr)
             thread->Run();
         _bpf_internal_state(*thread, Thread::FINISHED);
     }
-    catch (const bpf::Exception &)
+    catch (const bpf::Exception &ex)
     {
-        // TODO: print ex
+        ex.Print();
         _bpf_internal_state(*thread, Thread::STOPPED);
     }
     return (0);
@@ -96,19 +96,19 @@ void *ThreadRoutine(void *ptr)
             thread->Run();
         _bpf_internal_state(*thread, Thread::FINISHED);
     }
-    catch (const bpf::Exception &)
+    catch (const bpf::Exception &ex)
     {
-        // TODO: print ex
+        ex.Print();
         _bpf_internal_state(*thread, Thread::STOPPED);
     }
-    return (Null);
+    return (nullptr);
 }
 #endif
 
 Thread::Thread(const String &name)
     : _state(PENDING)
     , _name(name)
-    , _handle(Null)
+    , _handle(nullptr)
     , _special(false)
 {
 }
@@ -120,7 +120,7 @@ Thread::Thread(Thread &&other) noexcept
     _name = std::move(other._name);
     _handle = other._handle;
     _special = false;
-    other._handle = Null;
+    other._handle = nullptr;
 }
 
 Thread::~Thread()
@@ -140,7 +140,7 @@ Thread &Thread::operator=(Thread &&other) noexcept
     _handle = other._handle;
     _name = std::move(other._name);
     _special = false;
-    other._handle = Null;
+    other._handle = nullptr;
     return (*this);
 }
 
@@ -148,38 +148,38 @@ void Thread::Start()
 {
     if (_state == RUNNING)
         return;
-    if (_handle != Null)
+    if (_handle != nullptr)
         Join();
     _bpf_internal_state(*this, RUNNING);
 #ifdef WINDOWS
-    _handle = CreateThread(Null, 0, &ThreadRoutine, this, 0, Null);
-    if (_handle == Null)
+    _handle = CreateThread(nullptr, 0, &ThreadRoutine, this, 0, nullptr);
+    if (_handle == nullptr)
         throw OSException("Failed to create thread");
 #else
     _handle = malloc(sizeof(ThreadType));
-    if (_handle == Null)
+    if (_handle == nullptr)
         throw memory::MemoryException();
-    if (pthread_create(reinterpret_cast<ThreadType *>(_handle), Null, &ThreadRoutine, this) != 0)
+    if (pthread_create(reinterpret_cast<ThreadType *>(_handle), nullptr, &ThreadRoutine, this) != 0)
         throw OSException("Failed to create thread");
 #endif
 }
 
 void Thread::Join() noexcept
 {
-    if (_handle == Null)
+    if (_handle == nullptr)
         return;
 #ifdef WINDOWS
     WaitForSingleObject(_handle, INFINITE);
 #else
-    pthread_join(*reinterpret_cast<ThreadType *>(_handle), Null);
+    pthread_join(*reinterpret_cast<ThreadType *>(_handle), nullptr);
     free(_handle);
 #endif
-    _handle = Null;
+    _handle = nullptr;
 }
 
 void Thread::Kill(const bool force)
 {
-    if (_handle == Null)
+    if (_handle == nullptr)
         return;
     if (!force)
         _bpf_internal_state(*this, EXITING);
@@ -202,6 +202,6 @@ void Thread::Sleep(const uint32 milliseconds)
     struct timespec ts;
     ts.tv_sec = milliseconds / 1000;
     ts.tv_nsec = (milliseconds % 1000) * 1000000;
-    nanosleep(&ts, Null);
+    nanosleep(&ts, nullptr);
 #endif
 }

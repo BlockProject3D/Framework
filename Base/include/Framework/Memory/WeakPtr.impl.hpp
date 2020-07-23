@@ -35,7 +35,7 @@ namespace bpf
         template <typename T>
         WeakPtr<T>::~WeakPtr()
         {
-            if (Count != Null)
+            if (Count != nullptr)
                 -- *WCount;
             if (*WCount <= 0 && *Count <= 0)
             {
@@ -47,7 +47,7 @@ namespace bpf
         template <typename T>
         SharedPtr<T> WeakPtr<T>::Lock() noexcept
         {
-            if (Count == Null || *Count <= 0)
+            if (Count == nullptr || *Count <= 0)
                 return (SharedPtr<T>());
             SharedPtr<T> res;
             res.WCount = WCount;

@@ -50,7 +50,7 @@ namespace bpf
              * Constructs a null ObjectPtr
              */
             inline ObjectPtr()
-                : RawPtr(Null)
+                : RawPtr(nullptr)
             {
             }
 
@@ -61,7 +61,7 @@ namespace bpf
             inline ObjectPtr(T *raw)
                 : RawPtr(raw)
             {
-                if (RawPtr != Null)
+                if (RawPtr != nullptr)
                     RawPtr->AddRef((void **)&RawPtr);
             }
 
@@ -72,7 +72,7 @@ namespace bpf
             inline ObjectPtr(const ObjectPtr<T1> &other) noexcept
                 : RawPtr(other.RawPtr)
             {
-                if (RawPtr != Null)
+                if (RawPtr != nullptr)
                     RawPtr->AddRef((void **)&RawPtr);
             }
 
@@ -82,7 +82,7 @@ namespace bpf
             inline ObjectPtr(const ObjectPtr<T> &other)
                 : RawPtr(other.RawPtr)
             {
-                if (RawPtr != Null)
+                if (RawPtr != nullptr)
                     RawPtr->AddRef((void **)&RawPtr);
             }
 
@@ -92,17 +92,17 @@ namespace bpf
             inline ObjectPtr(ObjectPtr<T> &&other) noexcept
                 : RawPtr(other.RawPtr)
             {
-                if (RawPtr != Null)
+                if (RawPtr != nullptr)
                 {
                     RawPtr->AddRef((void **)&RawPtr);
                     RawPtr->RemoveRef((void **)&other.RawPtr);
-                    other.RawPtr = Null;
+                    other.RawPtr = nullptr;
                 }
             }
 
             inline ~ObjectPtr()
             {
-                if (RawPtr != Null)
+                if (RawPtr != nullptr)
                     RawPtr->RemoveRef((void **)&RawPtr);
             }
 
@@ -204,10 +204,10 @@ namespace bpf
              */
             ObjectPtr<T> &operator=(T *other)
             {
-                if (RawPtr != Null)
+                if (RawPtr != nullptr)
                     RawPtr->RemoveRef((void **)&RawPtr);
                 RawPtr = other;
-                if (RawPtr != Null)
+                if (RawPtr != nullptr)
                     RawPtr->AddRef((void **)&RawPtr);
                 return (*this);
             }
@@ -219,10 +219,10 @@ namespace bpf
             {
                 if (this == &other)
                     return (*this);
-                if (RawPtr != Null)
+                if (RawPtr != nullptr)
                     RawPtr->RemoveRef((void **)&RawPtr);
                 RawPtr = other.RawPtr;
-                if (RawPtr != Null)
+                if (RawPtr != nullptr)
                     RawPtr->AddRef((void **)&RawPtr);
                 return (*this);
             }
@@ -232,14 +232,14 @@ namespace bpf
              */
             ObjectPtr<T> &operator=(ObjectPtr<T> &&other) noexcept
             {
-                if (RawPtr != Null)
+                if (RawPtr != nullptr)
                     RawPtr->RemoveRef((void **)&RawPtr);
                 RawPtr = other.RawPtr;
-                if (RawPtr != Null)
+                if (RawPtr != nullptr)
                 {
                     RawPtr->AddRef((void **)&RawPtr);
                     RawPtr->RemoveRef((void **)&other.RawPtr);
-                    other.RawPtr = Null;
+                    other.RawPtr = nullptr;
                 }
                 return (*this);
             }
@@ -254,12 +254,12 @@ namespace bpf
             inline ObjectPtr<T1> Cast() const
             {
 #ifdef BUILD_DEBUG
-                if (RawPtr == Null)
-                    return (Null);
+                if (RawPtr == nullptr)
+                    return (nullptr);
                 else
                 {
                     auto ptr = dynamic_cast<T1 *>(RawPtr);
-                    if (ptr == Null)
+                    if (ptr == nullptr)
                         throw ClassCastException(String("Cannot cast from ") + TypeName<T>() + " to " + TypeName<T1>());
                     return (ObjectPtr<T1>(ptr));
                 }

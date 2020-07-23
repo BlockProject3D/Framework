@@ -58,8 +58,8 @@ HashMap<String, String> UnixApp::SetupEnvironment(char **env)
         if (key.IsEmpty())
             continue;
         auto value = str.Sub(str.IndexOf('=') + 1);
-        if (*value == Null)
-            value = ""; // Attempt to fix Linux bug of having NULL vars...
+        if (*value == nullptr)
+            value = ""; // Attempt to fix Linux bug of having null vars...
         menv.Add(key, value);
     }
     return (menv);
@@ -115,7 +115,7 @@ Paths UnixApp::SetupPaths()
 File UnixApp::GetWorkingDirectory() const
 {
     char path[PATH_MAX];
-    if (getcwd(path, PATH_MAX) != Null)
+    if (getcwd(path, PATH_MAX) != nullptr)
         return (File(path));
     else
         return (File(".").GetAbsolutePath());
