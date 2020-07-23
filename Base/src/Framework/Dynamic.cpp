@@ -40,7 +40,7 @@ Dynamic &Dynamic::operator=(const Dynamic &other)
     if (this == &other)
         return (*this);
     memory::MemUtils::Delete(_storage);
-    _storage = other._storage == Null ? Null : other._storage->Clone();
+    _storage = other._storage == nullptr ? nullptr : other._storage->Clone();
     return (*this);
 }
 
@@ -48,20 +48,20 @@ Dynamic &Dynamic::operator=(Dynamic &&other) noexcept
 {
     memory::MemUtils::Delete(_storage);
     _storage = other._storage;
-    other._storage = Null;
+    other._storage = nullptr;
     return (*this);
 }
 
 bool Dynamic::operator==(const Dynamic &other) const
 {
-    if (_storage == Null || other._storage == Null)
+    if (_storage == nullptr || other._storage == nullptr)
         return (_storage == other._storage);
     return (_storage->Equals(other._storage));
 }
 
 bool Dynamic::operator!=(const Dynamic &other) const
 {
-    if (_storage == Null || other._storage == Null)
+    if (_storage == nullptr || other._storage == nullptr)
         return (_storage != other._storage);
     return (!_storage->Equals(other._storage));
 }

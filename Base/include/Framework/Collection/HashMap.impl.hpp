@@ -186,7 +186,7 @@ namespace bpf
             , CurSize(other.CurSize)
             , ElemCount(other.ElemCount)
         {
-            other._data = Null;
+            other._data = nullptr;
             other.CurSize = 0;
             other.ElemCount = 0;
         }
@@ -198,7 +198,7 @@ namespace bpf
             _data = other._data;
             CurSize = other.CurSize;
             ElemCount = other.ElemCount;
-            other._data = Null;
+            other._data = nullptr;
             other.CurSize = 0;
             other.ElemCount = 0;
             return (*this);

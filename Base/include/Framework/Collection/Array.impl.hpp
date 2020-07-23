@@ -37,7 +37,7 @@ namespace bpf
         template <typename T>
         inline Array<T>::Array()
             : _size(0)
-            , _arr(Null)
+            , _arr(nullptr)
         {
         }
 
@@ -46,14 +46,14 @@ namespace bpf
             : _size(arr._size)
             , _arr(arr._arr)
         {
-            arr._arr = Null;
+            arr._arr = nullptr;
             arr._size = 0;
         }
 
         template <typename T>
         Array<T>::Array(const Array<T> &arr)
             : _size(arr._size)
-            , _arr(Null)
+            , _arr(nullptr)
         {
             if (_size > 0)
             {
@@ -66,7 +66,7 @@ namespace bpf
         template <typename T>
         Array<T>::Array(const fsize size)
             : _size(size)
-            , _arr(Null)
+            , _arr(nullptr)
         {
             if (size > 0)
             {
@@ -77,7 +77,7 @@ namespace bpf
         template <typename T>
         Array<T>::Array(const std::initializer_list<T> &lst)
             : _size(lst.size())
-            , _arr(Null)
+            , _arr(nullptr)
         {
             if (_size > 0)
             {
@@ -111,7 +111,7 @@ namespace bpf
             memory::MemUtils::DeleteArray(_arr, _size);
             _size = arr._size;
             _arr = arr._arr;
-            arr._arr = Null;
+            arr._arr = nullptr;
             arr._size = 0;
             return (*this);
         }

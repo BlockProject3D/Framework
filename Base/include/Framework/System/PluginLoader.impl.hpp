@@ -51,7 +51,7 @@ namespace bpf
                 throw ModuleException("Plugin has been built against a newer version of the Framework");
             else if (version < Platform::GetEnvInfo().VersionInt)
                 throw ModuleException("Plugin has been built against an older version of the Framework");
-            if ((plugin.Interface = memory::UniquePtr<BaseClass>(sym())) == Null)
+            if ((plugin.Interface = memory::UniquePtr<BaseClass>(sym())) == nullptr)
                 throw ModuleException("Plugin interface allocation failure");
             return (plugin);
         }
@@ -73,7 +73,7 @@ namespace bpf
                 throw ModuleException("Plugin has been built against a newer version of the Framework");
             else if (version < Platform::GetEnvInfo().VersionInt)
                 throw ModuleException("Plugin has been built against an older version of the Framework");
-            if ((plugin.Interface = memory::UniquePtr<BaseClass>(sym())) == Null)
+            if ((plugin.Interface = memory::UniquePtr<BaseClass>(sym())) == nullptr)
                 throw ModuleException("Plugin interface allocation failure");
             return (plugin);
         }

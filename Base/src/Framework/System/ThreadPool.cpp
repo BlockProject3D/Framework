@@ -96,7 +96,7 @@ ThreadPool::ThreadPool(ThreadPool &&other) noexcept
     , _sharedOutputQueue(std::move(other._sharedOutputQueue))
     , _threads(other._threads)
 {
-    other._threads = Null;
+    other._threads = nullptr;
     other._tcount = 0;
     other._tasks = 0;
     for (fsize i = 0; i != _tcount; ++i)
@@ -123,7 +123,7 @@ ThreadPool &ThreadPool::operator=(ThreadPool &&other) noexcept
     _outputMutex = std::move(other._outputMutex);
     _sharedOutputQueue = std::move(other._sharedOutputQueue);
     _threads = other._threads;
-    other._threads = Null;
+    other._threads = nullptr;
     other._tcount = 0;
     other._tasks = 0;
     for (fsize i = 0; i != _tcount; ++i)

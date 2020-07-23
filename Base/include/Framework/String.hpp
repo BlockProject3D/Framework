@@ -223,7 +223,7 @@ namespace bpf
          */
         inline bool IsEmpty() const noexcept
         {
-            return (Data == Null || StrLen == 0);
+            return (Data == nullptr || StrLen == 0);
         }
 
         /**

@@ -42,7 +42,7 @@ using namespace bpf;
 const String String::Empty = String();
 
 String::String() noexcept
-    : Data(Null)
+    : Data(nullptr)
     , StrLen(0)
     , UnicodeLen(0)
 {
@@ -265,11 +265,11 @@ String String::FromUTF16(const fchar16 *str)
 }
 
 String::String(const char *str)
-    : Data(Null)
+    : Data(nullptr)
     , StrLen(0)
     , UnicodeLen(0)
 {
-    if (str == Null)
+    if (str == nullptr)
         str = "(NULL)";
     for (char const *strIndex = str; *strIndex; ++UnicodeLen)
     {
@@ -283,7 +283,7 @@ String::String(const char *str)
 }
 
 String::String(const fchar c)
-    : Data(Null)
+    : Data(nullptr)
     , StrLen(1)
     , UnicodeLen(1)
 {
@@ -299,7 +299,7 @@ String::String(const fchar c)
         Data = str.Data;
         StrLen = str.StrLen;
         UnicodeLen = str.UnicodeLen;
-        str.Data = Null;
+        str.Data = nullptr;
         str.StrLen = 0;
         str.UnicodeLen = 0;
     }
@@ -318,7 +318,7 @@ String::String(String &&s) noexcept
     , StrLen(s.StrLen)
     , UnicodeLen(s.UnicodeLen)
 {
-    s.Data = Null;
+    s.Data = nullptr;
     s.StrLen = 0;
     s.UnicodeLen = 0;
 }
@@ -335,7 +335,7 @@ String &String::operator=(String &&other) noexcept
     Data = other.Data;
     StrLen = other.StrLen;
     UnicodeLen = other.UnicodeLen;
-    other.Data = Null;
+    other.Data = nullptr;
     other.StrLen = 0;
     other.UnicodeLen = 0;
     return (*this);
@@ -445,9 +445,9 @@ String &String::operator=(const String &other)
     if (this == &other)
         return (*this);
     Memory::Free(Data);
-    if (other.Data == Null)
+    if (other.Data == nullptr)
     {
-        Data = Null;
+        Data = nullptr;
         StrLen = 0;
         UnicodeLen = 0;
         return (*this);

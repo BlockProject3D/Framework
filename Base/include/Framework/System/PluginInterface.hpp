@@ -35,25 +35,25 @@
     /**
      * Integer to signal the version of the Framework a module was compiled against
      */
-    #define BP_MODULE_VERSION_INT 0x3 * 0x42
+    #define BP_PLUGIN_VERSION_INT 0x3 * 0x42
 #else
 
     /**
      * Integer to signal the version of the Framework a module was compiled against
      */
-    #define BP_MODULE_VERSION_INT 0x3
+    #define BP_PLUGIN_VERSION_INT 0x3
 #endif
 
 //Cannot be a unique pointer due to MSVC restrictions
 #ifdef WINDOWS
 
     /**
-     * Implement a module entry function in order to allow this module to be loaded by ModuleManager
+     * Implement a plugin entry function in order to allow this module to be loaded by ModuleManager
      * @param Name the name of the module
      * @param BaseClass the base class this module provides
      * @param Class the module main class to allocate (must extend BaseClass)
      */
-    #define BP_IMPLEMENT_MODULE(Name, BaseClass, Class) \
+    #define BP_IMPLEMENT_PLUGIN(Name, BaseClass, Class) \
     extern "C" \
     { \
         __declspec(dllexport) BaseClass *Name##_Link() \
@@ -62,18 +62,18 @@
         } \
         __declspec(dllexport) bpf::fint Name##_Version() \
         { \
-            return (BP_MODULE_VERSION_INT); \
+            return (BP_PLUGIN_VERSION_INT); \
         } \
     }
 #else
 
     /**
-     * Implement a module entry function in order to allow this module to be loaded by ModuleManager
+     * Implement a plugin entry function in order to allow this module to be loaded by ModuleManager
      * @param Name the name of the module
      * @param BaseClass the base class this module provides
      * @param Class the module main class to allocate (must extend BaseClass)
      */
-    #define BP_IMPLEMENT_MODULE(Name, BaseClass, Class) \
+    #define BP_IMPLEMENT_PLUGIN(Name, BaseClass, Class) \
     extern "C" \
     { \
         BaseClass *Name##_Link() \
@@ -82,7 +82,7 @@
         } \
         bpf::fint Name##_Version() \
         { \
-            return (BP_MODULE_VERSION_INT); \
+            return (BP_PLUGIN_VERSION_INT); \
         } \
     }
 #endif

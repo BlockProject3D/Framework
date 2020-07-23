@@ -46,14 +46,14 @@ struct Metadata
 void *Memory::Malloc(fsize size)
 {
     if (size == 0)
-        return (Null);
+        return (nullptr);
 #ifdef BUILD_DEBUG
     void *data = malloc(size + sizeof(Metadata));
 #else
     void *data = malloc(size);
 #endif
 
-    if (data == Null)
+    if (data == nullptr)
         throw MemoryException();
 #ifdef BUILD_DEBUG
     MemMutex.Lock();
@@ -71,7 +71,7 @@ void *Memory::Malloc(fsize size)
 void Memory::Free(void *addr) noexcept
 {
 #ifdef BUILD_DEBUG
-    if (addr == Null)
+    if (addr == nullptr)
         return;
     MemMutex.Lock();
     --Allocs;
@@ -87,7 +87,7 @@ void *Memory::Realloc(void *addr, fsize newsize)
 {
 #ifdef BUILD_DEBUG
     void *data;
-    if (addr != Null)
+    if (addr != nullptr)
     {
         MemMutex.Lock();
         CurUsedMem -= reinterpret_cast<Metadata *>(static_cast<char *>(addr) - sizeof(Metadata))->MemSize;
@@ -99,7 +99,7 @@ void *Memory::Realloc(void *addr, fsize newsize)
         ++Allocs;
         data = realloc(addr, newsize + sizeof(Metadata));
     }
-    if (data == Null)
+    if (data == nullptr)
         throw MemoryException();
     auto *meta = static_cast<Metadata *>(data);
     meta->MemSize = newsize;
@@ -109,7 +109,7 @@ void *Memory::Realloc(void *addr, fsize newsize)
     return (static_cast<char *>(data) + sizeof(Metadata));
 #else
     void *data = realloc(addr, newsize);
-    if (data == Null)
+    if (data == nullptr)
         throw MemoryException();
     return (data);
 #endif

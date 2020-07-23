@@ -34,7 +34,7 @@ TEST(Dynamic, Basic_1)
 {
     bpf::Dynamic dyn;
 
-    EXPECT_EQ(dyn, Null);
+    EXPECT_EQ(dyn, nullptr);
     dyn = -42;
     EXPECT_EQ((int)dyn, -42);
 }
@@ -50,9 +50,9 @@ TEST(Dynamic, Basic_2)
 
 TEST(Dynamic, Basic_3)
 {
-    bpf::Dynamic dyn = Null;
+    bpf::Dynamic dyn = nullptr;
 
-    EXPECT_EQ(dyn, Null);
+    EXPECT_EQ(dyn, nullptr);
     EXPECT_THROW((void)((int)dyn), bpf::memory::ClassCastException);
     dyn = -42.42;
     EXPECT_EQ((double)dyn, -42.42);
@@ -83,8 +83,8 @@ TEST(Dynamic, Move_1)
     dyn = -42;
     EXPECT_EQ((int)dyn, -42);
     auto copy = std::move(dyn);
-    EXPECT_EQ(dyn, Null); //NOLINT
-    EXPECT_NE(copy, Null);
+    EXPECT_EQ(dyn, nullptr); //NOLINT
+    EXPECT_NE(copy, nullptr);
     EXPECT_EQ((int)copy, -42);
     copy = 42;
     EXPECT_EQ((int)copy, 42);
@@ -102,12 +102,12 @@ TEST(Dynamic, Move_2)
     copy = 42;
     EXPECT_EQ((int)copy, 42);
     dyn = std::move(copy);
-    EXPECT_NE(dyn, Null);
-    EXPECT_EQ(copy, Null); //NOLINT
+    EXPECT_NE(dyn, nullptr);
+    EXPECT_EQ(copy, nullptr); //NOLINT
     EXPECT_EQ((int)dyn, 42);
     EXPECT_THROW((void)((float)dyn), bpf::memory::ClassCastException);
     auto copy1 = copy;
-    EXPECT_EQ(copy1, Null); //NOLINT
+    EXPECT_EQ(copy1, nullptr); //NOLINT
 }
 
 TEST(Dynamic, ComplexType)
@@ -116,8 +116,8 @@ TEST(Dynamic, ComplexType)
     auto str = (bpf::String)dyn;
 
     EXPECT_STREQ(*str, "My String");
-    dyn = Null;
-    EXPECT_EQ(dyn, Null);
+    dyn = nullptr;
+    EXPECT_EQ(dyn, nullptr);
 }
 
 TEST(Dynamic, NonCopy)
@@ -125,12 +125,12 @@ TEST(Dynamic, NonCopy)
     bpf::Dynamic mem = bpf::memory::MakeUnique<int>(42);
     auto mv = std::move(mem);
 
-    EXPECT_NE(mv, Null);
-    EXPECT_EQ(mem, Null); //NOLINT
+    EXPECT_NE(mv, nullptr);
+    EXPECT_EQ(mem, nullptr); //NOLINT
     auto &ptr = (bpf::memory::UniquePtr<int> &)mv;
     EXPECT_EQ(*ptr, 42);
     auto copy = mv;
-    EXPECT_EQ(copy, Null);
+    EXPECT_EQ(copy, nullptr);
 }
 
 TEST(Dynamic, Compare)

@@ -31,7 +31,7 @@
 
 using namespace bpf::math;
 
-void IncompatibleMatrixSizeException::Print() const
+void IncompatibleMatrixSizeException::Print() const noexcept
 {
     std::cerr << "IncompatibleMatrixSizeException: Matrix of size " << _sizea << " is incompatible with another matrix of size " << _sizeb << std::endl;
 }

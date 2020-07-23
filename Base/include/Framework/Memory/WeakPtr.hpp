@@ -50,7 +50,7 @@ namespace bpf
             inline WeakPtr(fint *c, T *raw, fint *w)
                 : Count(c), WCount(w), RawPtr(raw)
             {
-                if (Count != Null)
+                if (Count != nullptr)
                     ++ *WCount;
             }
 
@@ -62,7 +62,7 @@ namespace bpf
             inline WeakPtr(const SharedPtr<T> &other) noexcept
                 : Count(other.Count), WCount(other.WCount), RawPtr(other.RawPtr)
             {
-                if (Count != Null)
+                if (Count != nullptr)
                     ++ *WCount;
             }
 
@@ -72,7 +72,7 @@ namespace bpf
             inline WeakPtr(const WeakPtr<T> &other) noexcept
                 : Count(other.Count), WCount(other.WCount), RawPtr(other.RawPtr)
             {
-                if (Count != Null)
+                if (Count != nullptr)
                     ++ *WCount;
             }
 
@@ -94,12 +94,12 @@ namespace bpf
             inline WeakPtr<T1> Cast() const
             {
 #ifdef BUILD_DEBUG
-                if (RawPtr == Null)
-                    return (Null);
+                if (RawPtr == nullptr)
+                    return (nullptr);
                 else
                 {
                     auto ptr = dynamic_cast<T1 *>(RawPtr);
-                    if (ptr == Null)
+                    if (ptr == nullptr)
                         throw ClassCastException(String("Cannot cast from ") + TypeName<T>() + " to " + TypeName<T1>());
                     return (WeakPtr<T1>(Count, ptr, WCount));
                 }

@@ -1,9 +1,9 @@
 build
 BPF.cmake
 BPF.Compression.cmake
-build_unix
-/build_linux
-/build-linux
+build-linux
 .vscode
-/cmake-build-debug/
+cmake-build-debug
+cmake-build-release
+cmake-build-debugwithcoverage
 .idea

@@ -48,8 +48,8 @@ TEST(ThreadPool, Basic)
     EXPECT_TRUE(mv.IsIdle());
     pool = std::move(mv);
     EXPECT_TRUE(pool.IsIdle());
-    EXPECT_THROW(pool.Run(Null), bpf::system::OSException);
-    EXPECT_THROW(pool.Run(Null, Null), bpf::system::OSException);
+    EXPECT_THROW(pool.Run(nullptr), bpf::system::OSException);
+    EXPECT_THROW(pool.Run(nullptr, nullptr), bpf::system::OSException);
 }
 
 TEST(ThreadPool, Run_1)

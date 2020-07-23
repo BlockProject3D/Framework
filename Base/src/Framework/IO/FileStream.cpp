@@ -60,14 +60,14 @@ FileStream::FileStream(const File &file, fint mode)
         else
             md1 |= OPEN_ALWAYS;
     }
-    _handle = CreateFileW(reinterpret_cast<LPCWSTR>(*file.PlatformPath().ToUTF16()), md, FILE_SHARE_READ, Null, md1, FILE_ATTRIBUTE_NORMAL, Null);
+    _handle = CreateFileW(reinterpret_cast<LPCWSTR>(*file.PlatformPath().ToUTF16()), md, FILE_SHARE_READ, nullptr, md1, FILE_ATTRIBUTE_NORMAL, nullptr);
     if (_handle == INVALID_HANDLE_VALUE)
         throw IOException(String("Could not open file '") + file.PlatformPath() + "' : " + OSPrivate::ObtainLastErrorString());
     if (mode & FILE_MODE_APPEND)
     {
         LARGE_INTEGER pos;
         pos.QuadPart = 0;
-        SetFilePointerEx(_handle, pos, Null, FILE_END);
+        SetFilePointerEx(_handle, pos, nullptr, FILE_END);
     }
 #else
     int md = 0;
@@ -108,7 +108,7 @@ void FileStream::SeekOffset(int64 offset) const
         throw IOException("File is closed");
     LARGE_INTEGER pos;
     pos.QuadPart = offset;
-    SetFilePointerEx(_handle, pos, Null, FILE_CURRENT);
+    SetFilePointerEx(_handle, pos, nullptr, FILE_CURRENT);
 #else
     if (_handle == -1)
         throw IOException("File is closed");
@@ -125,7 +125,7 @@ void FileStream::Seek(uint64 pos) const
         throw IOException("File is closed");
     LARGE_INTEGER pos1;
     pos1.QuadPart = pos;
-    SetFilePointerEx(_handle, pos1, Null, FILE_BEGIN);
+    SetFilePointerEx(_handle, pos1, nullptr, FILE_BEGIN);
 #else
     if (_handle == -1)
         throw IOException("File is closed");
@@ -154,7 +154,7 @@ fsize FileStream::Read(void *buf, fsize bufsize)
         throw IOException("File has not been oppened with read mode");
 #ifdef WINDOWS
     DWORD readsize;
-    if (ReadFile(_handle, buf, (DWORD)bufsize, &readsize, Null) == FALSE)
+    if (ReadFile(_handle, buf, (DWORD)bufsize, &readsize, nullptr) == FALSE)
         throw IOException(String("Error reading file : ") + OSPrivate::ObtainLastErrorString());
     return (readsize);
 #else
@@ -171,7 +171,7 @@ fsize FileStream::Write(const void *buf, fsize bufsize)
         throw IOException("File has not been oppened with write mode");
 #ifdef WINDOWS
     DWORD writesize;
-    if (WriteFile(_handle, buf, (DWORD)bufsize, &writesize, Null) == FALSE)
+    if (WriteFile(_handle, buf, (DWORD)bufsize, &writesize, nullptr) == FALSE)
         throw IOException(String("Error writing file : ") + OSPrivate::ObtainLastErrorString());
     return (writesize);
 #else

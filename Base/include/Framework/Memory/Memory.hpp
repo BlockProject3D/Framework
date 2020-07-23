@@ -34,8 +34,6 @@
     #include "Framework/System/Mutex.hpp"
 #endif
 
-#define Null nullptr
-
 namespace bpf
 {
     namespace memory

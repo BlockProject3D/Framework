@@ -362,8 +362,8 @@ namespace bpf
                 , _number(other._number)
                 , _bool(other._bool)
                 , _string(other._string)
-                , _object(other._object != Null ? memory::MakeUnique<Object>(*other._object) : Null)
-                , _array(other._array != Null ? memory::MakeUnique<Array>(*other._array) : Null)
+                , _object(other._object != nullptr ? memory::MakeUnique<Object>(*other._object) : nullptr)
+                , _array(other._array != nullptr ? memory::MakeUnique<Array>(*other._array) : nullptr)
             {
             }
 
@@ -419,7 +419,7 @@ namespace bpf
              * @param val the string to store
              */
             inline Json(const char *val)
-                : _type(val != Null ? EType::STRING : EType::NONE)
+                : _type(val != nullptr ? EType::STRING : EType::NONE)
                 , _number(0.0)
                 , _bool(false)
                 , _string(val)
@@ -473,7 +473,7 @@ namespace bpf
                 , _number(0.0)
                 , _bool(false)
                 , _string("")
-                , _object(Null)
+                , _object(nullptr)
                 , _array(memory::MakeUnique<Array>(arr))
             {
             }
@@ -487,7 +487,7 @@ namespace bpf
                 , _number(0.0)
                 , _bool(false)
                 , _string("")
-                , _object(Null)
+                , _object(nullptr)
                 , _array(memory::MakeUnique<Array>(std::move(arr)))
             {
             }
@@ -626,7 +626,7 @@ namespace bpf
              */
             inline bool operator==(const char *other) const
             {
-                if (_type == EType::NONE && other == Null)
+                if (_type == EType::NONE && other == nullptr)
                     return (true);
                 if (_type != EType::STRING)
                     return (false);

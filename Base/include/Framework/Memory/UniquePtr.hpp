@@ -50,7 +50,7 @@ namespace bpf
              * Constructs a null UniquePtr
              */
             inline UniquePtr() noexcept
-                : RawPtr(Null)
+                : RawPtr(nullptr)
             {
             }
 
@@ -69,7 +69,7 @@ namespace bpf
             inline UniquePtr(UniquePtr<T> &&other) noexcept
                 : RawPtr(other.RawPtr)
             {
-                other.RawPtr = Null;
+                other.RawPtr = nullptr;
             }
 
             /**
@@ -79,7 +79,7 @@ namespace bpf
             inline UniquePtr(UniquePtr<T1> &&other) noexcept
                 : RawPtr(other.RawPtr)
             {
-                other.RawPtr = Null;
+                other.RawPtr = nullptr;
             }
 
             inline ~UniquePtr()
@@ -174,19 +174,19 @@ namespace bpf
             inline UniquePtr<T1> Cast()
             {
 #ifdef BUILD_DEBUG
-                if (RawPtr == Null)
-                    return (Null);
+                if (RawPtr == nullptr)
+                    return (nullptr);
                 else
                 {
                     auto ptr = dynamic_cast<T1 *>(RawPtr);
-                    if (ptr == Null)
+                    if (ptr == nullptr)
                         throw ClassCastException(String("Cannot cast from ") + TypeName<T>() + " to " + TypeName<T1>());
-                    RawPtr = Null;
+                    RawPtr = nullptr;
                     return (UniquePtr<T1>(ptr));
                 }
 #else
                 auto ptr = static_cast<T1 *>(RawPtr);
-                RawPtr = Null;
+                RawPtr = nullptr;
                 return (UniquePtr<T1>(ptr));
 #endif
             }

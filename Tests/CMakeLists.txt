@@ -48,6 +48,7 @@ set(SOURCES
     src/Math/VectorStatic.cpp
     src/Math/VectorDynamic.cpp
     src/Math/Math.cpp
+    src/Math/Color.cpp
     src/Collection/List.cpp
     src/Collection/ArrayList.cpp
     src/Collection/HashMap.cpp

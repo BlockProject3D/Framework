@@ -78,7 +78,7 @@ namespace bpf
                 return ("IncompatibleMatrixSize");
             }
 
-            void Print() const final;
+            void Print() const noexcept final;
         };
     }
 }

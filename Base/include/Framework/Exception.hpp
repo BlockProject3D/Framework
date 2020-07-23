@@ -51,6 +51,6 @@ namespace bpf
         /**
          * Print the exception to the console
          */
-        virtual void Print() const;
+        virtual void Print() const noexcept;
     };
 }

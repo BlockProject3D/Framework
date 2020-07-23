@@ -205,7 +205,7 @@ DateTime DateTime::UTCNow()
 {
     DateTime res;
 
-    res._curtm = std::time(Null);
+    res._curtm = std::time(nullptr);
     res.RecalcUTC();
     return (res);
 }
@@ -214,7 +214,7 @@ DateTime DateTime::Now()
 {
     DateTime res;
 
-    res._curtm = std::time(Null);
+    res._curtm = std::time(nullptr);
     res.RecalcLocal();
     return (res);
 }

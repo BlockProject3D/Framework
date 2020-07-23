@@ -35,8 +35,8 @@ namespace bpf
     {
         template <typename T>
         inline List<T>::List()
-            : _first(Null)
-            , _last(Null)
+            : _first(nullptr)
+            , _last(nullptr)
             , _count(0)
         {
         }
@@ -47,15 +47,15 @@ namespace bpf
             , _last(other._last)
             , _count(other._count)
         {
-            other._first = Null;
-            other._last = Null;
+            other._first = nullptr;
+            other._last = nullptr;
             other._count = 0;
         }
 
         template <typename T>
         List<T>::List(const List<T> &other)
-            : _first(Null)
-            , _last(Null)
+            : _first(nullptr)
+            , _last(nullptr)
             , _count(0)
         {
             for (auto &elem : other)
@@ -64,8 +64,8 @@ namespace bpf
 
         template <typename T>
         List<T>::List(const std::initializer_list<T> &lst)
-            : _first(Null)
-            , _last(Null)
+            : _first(nullptr)
+            , _last(nullptr)
             , _count(0)
         {
             for (auto &elem : lst)
@@ -85,8 +85,8 @@ namespace bpf
             _first = other._first;
             _last = other._last;
             _count = other._count;
-            other._first = Null;
-            other._last = Null;
+            other._first = nullptr;
+            other._last = nullptr;
             other._count = 0;
             return (*this);
         }
@@ -126,11 +126,11 @@ namespace bpf
             Node *newi = memory::MemUtils::New<Node>(elem);
 
             newi->Next = nd;
-            if (nd != Null)
+            if (nd != nullptr)
             {
                 newi->Prev = nd->Prev;
                 nd->Prev = newi;
-                if (newi->Prev != Null)
+                if (newi->Prev != nullptr)
                     newi->Prev->Next = newi;
                 if (pos == 0)
                     _first = newi;
@@ -153,11 +153,11 @@ namespace bpf
             Node *newi = memory::MemUtils::New<Node>(std::move(elem));
 
             newi->Next = nd;
-            if (nd != Null)
+            if (nd != nullptr)
             {
                 newi->Prev = nd->Prev;
                 nd->Prev = newi;
-                if (newi->Prev != Null)
+                if (newi->Prev != nullptr)
                     newi->Prev->Next = newi;
                 if (pos == 0)
                     _first = newi;
@@ -180,11 +180,11 @@ namespace bpf
             Node *newi = memory::MemUtils::New<Node>(elem);
 
             newi->Next = nd;
-            if (nd != Null)
+            if (nd != nullptr)
             {
                 newi->Prev = nd->Prev;
                 nd->Prev = newi;
-                if (newi->Prev != Null)
+                if (newi->Prev != nullptr)
                     newi->Prev->Next = newi;
                 if (pos._cur == _first)
                     _first = newi;
@@ -207,11 +207,11 @@ namespace bpf
             Node *newi = memory::MemUtils::New<Node>(std::move(elem));
 
             newi->Next = nd;
-            if (nd != Null)
+            if (nd != nullptr)
             {
                 newi->Prev = nd->Prev;
                 nd->Prev = newi;
-                if (newi->Prev != Null)
+                if (newi->Prev != nullptr)
                     newi->Prev->Next = newi;
                 if (pos._cur == _first)
                     _first = newi;
@@ -232,7 +232,7 @@ namespace bpf
         {
             Node *newi = memory::MemUtils::New<Node>(elem);
 
-            if (_last == Null)
+            if (_last == nullptr)
                 _first = newi;
             else
             {
@@ -248,7 +248,7 @@ namespace bpf
         {
             Node *newi = memory::MemUtils::New<Node>(std::move(elem));
 
-            if (_last == Null)
+            if (_last == nullptr)
                 _first = newi;
             else
             {
@@ -309,7 +309,7 @@ namespace bpf
         template <template <typename> class Comparator>
         void List<T>::MergeSort()
         {
-            Node *curNode = Null;
+            Node *curNode = nullptr;
             Node *startl;
             Node *startr;
             Node *endl;
@@ -318,19 +318,19 @@ namespace bpf
             for (fsize sz = 1; sz < _count; sz *= 2)
             {
                 startl = _first;
-                while (startl != Null)
+                while (startl != nullptr)
                 {
                     bool first = false;
                     if (startl == _first)
                         first = true;
                     endl = startl;
-                    for (fsize i = 0; endl->Next != Null && i != sz - 1; ++i)
+                    for (fsize i = 0; endl->Next != nullptr && i != sz - 1; ++i)
                         endl = endl->Next;
                     startr = endl->Next;
-                    if (startr == Null)
+                    if (startr == nullptr)
                         break;
                     endr = startr;
-                    for (fsize i = 0; endr->Next != Null && i != sz - 1; ++i)
+                    for (fsize i = 0; endr->Next != nullptr && i != sz - 1; ++i)
                         endr = endr->Next;
                     Node *cpy = endr->Next; // Get a hold on the start for the next partitions before Merge function destroys it...
                     Merge<Comparator>(&startl, &endl, &startr, &endr);
@@ -367,7 +367,7 @@ namespace bpf
         template <template <typename> class Comparator>
         void List<T>::QuickSort(Node *start, Node *end)
         {
-            if (end != Null && start != end && start != end->Next)
+            if (end != nullptr && start != end && start != end->Next)
             {
                 Node *res = Partition<Comparator>(start, end);
                 QuickSort<Comparator>(start, res->Prev);
@@ -388,8 +388,8 @@ namespace bpf
                 MergeSort<Comparator>();
                 /* Re-chain the broken list */
                 Node *cur = _first;
-                Node *last = Null;
-                while (cur != Null)
+                Node *last = nullptr;
+                while (cur != nullptr)
                 {
                     cur->Prev = last;
                     last = cur;
@@ -404,7 +404,7 @@ namespace bpf
         {
             Node *an = a._cur;
             Node *bn = b._cur;
-            if (an == Null || bn == Null || an == bn)
+            if (an == nullptr || bn == nullptr || an == bn)
                 return;
             Swap(an, bn);
         }
@@ -412,7 +412,7 @@ namespace bpf
         template <typename T>
         void List<T>::RemoveAt(Iterator &pos)
         {
-            if (pos._cur == Null)
+            if (pos._cur == nullptr)
                 return;
             Node *next = pos._cur->Next;
             RemoveNode(pos._cur);
@@ -422,7 +422,7 @@ namespace bpf
         template <typename T>
         void List<T>::RemoveAt(Iterator &&pos)
         {
-            if (pos._cur == Null)
+            if (pos._cur == nullptr)
                 return;
             Node *next = pos._cur->Next;
             RemoveNode(pos._cur);
@@ -449,7 +449,7 @@ namespace bpf
                     return cur;
                 }
             }
-            return Null;
+            return nullptr;
         }
 
         template <typename T>
@@ -493,7 +493,7 @@ namespace bpf
                 if (Comparator<T>::Eval(cur->Data, elem))
                 {
                     Node *toRM = cur;
-                    cur = (all) ? cur->Next : Null;
+                    cur = (all) ? cur->Next : nullptr;
                     RemoveNode(toRM);
                 }
                 else
@@ -509,9 +509,9 @@ namespace bpf
                 Node *lst = _last->Prev;
 
                 if (lst)
-                    lst->Next = Null;
+                    lst->Next = nullptr;
                 else
-                    _first = Null;
+                    _first = nullptr;
                 memory::MemUtils::Delete(_last);
                 _last = lst;
                 --_count;
@@ -523,7 +523,7 @@ namespace bpf
         {
             Node *elem = GetNode(id);
 
-            if (elem == Null)
+            if (elem == nullptr)
                 throw IndexException((fint)id);
             return (elem->Data);
         }
@@ -533,7 +533,7 @@ namespace bpf
         {
             Node *elem = GetNode(id);
 
-            if (elem == Null)
+            if (elem == nullptr)
                 throw IndexException((fint)id);
             return (elem->Data);
         }
@@ -558,7 +558,7 @@ namespace bpf
                 else
                     cur = cur->Next;
             }
-            return (Iterator(Null, _last));
+            return (Iterator(nullptr, _last));
         }
 
         template <typename T>
@@ -574,7 +574,7 @@ namespace bpf
                 cur = cur->Next;
                 ++pos;
             }
-            return (Iterator(Null, _last));
+            return (Iterator(nullptr, _last));
         }
 
         template <typename T>
@@ -584,7 +584,7 @@ namespace bpf
                 return (false);
             Node *cur = _first;
             Node *cur1 = other._first;
-            while (cur != Null)
+            while (cur != nullptr)
             {
                 if (cur->Data != cur1->Data)
                     return (false);
