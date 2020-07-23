@@ -140,7 +140,7 @@ TEST(Thread, Move_3)
     EXPECT_EQ(thread.GetState(), bpf::system::Thread::PENDING);
     auto th = std::move(thread);
     EXPECT_EQ(th.GetState(), bpf::system::Thread::PENDING);
-    EXPECT_EQ(th._value, 0);
+    EXPECT_EQ(th._value, 0u);
     EXPECT_EQ(th.except, false);
     th.Start();
     EXPECT_EQ(th.GetState(), bpf::system::Thread::RUNNING);

@@ -79,6 +79,7 @@ TEST(MatrixStatic, Transpose_Square_2)
     };
 
     EXPECT_EQ(mat.Transpose(), expected);
+    EXPECT_NE(mat, expected);
     EXPECT_FALSE(mat == expected);
 }
 
@@ -117,6 +118,7 @@ TEST(MatrixStatic, SwapRows_Square)
     //4 0 1
     //0 1 2
     //1 0 3
+    EXPECT_NE(mat, mat1);
     mat(0, 2) = 3;
     mat(1, 2) = 2;
     mat(2, 0) = 4;

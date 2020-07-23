@@ -118,6 +118,7 @@ TEST(Quat, Interpolation)
     EXPECT_EQ(bpf::Quatld::Slerp(q, q, 0.1f), q);
     EXPECT_EQ(bpf::Quatld::Slerp(q, q1, 1.0f), q1);
     EXPECT_EQ(bpf::Quatld::Slerp(q, q2, 1.0f), q2);
+    EXPECT_NE(bpf::Quatld::Slerp(q, q2, 1.0f), q);
 }
 
 TEST(Quat, Norm)

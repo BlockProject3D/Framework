@@ -30,6 +30,13 @@
 #include <gtest/gtest.h>
 #include <Framework/Math/MathUtils.hpp>
 #include <Framework/Math/Math.hpp>
+#include <Framework/String.hpp>
+
+TEST(Math, Inifinity)
+{
+    EXPECT_STREQ(*bpf::String::ValueOf(bpf::math::inf), "inf");
+    EXPECT_STREQ(*bpf::String::ValueOf(-bpf::math::inf), "-inf");
+}
 
 TEST(Math, Epislon)
 {

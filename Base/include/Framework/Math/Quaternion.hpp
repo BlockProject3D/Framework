@@ -188,6 +188,16 @@ namespace bpf
             bool operator==(const Quaternion<T> &other) const;
 
             /**
+             * Compare two quaternions
+             * @param other quaternion to compare with
+             * @return true if the two quaternions are not equal, false otherwise
+             */
+            inline bool operator!=(const Quaternion<T> &other) const
+            {
+                return (!operator==(other));
+            }
+
+            /**
              * Performs quaternion-quaternion multiplication
              * @param other operand
              * @return new quaternion
