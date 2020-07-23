@@ -31,7 +31,6 @@
 #include <Framework/Collection/Stringifier.List.hpp>
 #include <Framework/String.hpp>
 #include <Framework/TypeInfo.hpp>
-#include <cassert>
 #include <gtest/gtest.h>
 #include <iostream>
 
@@ -659,7 +658,10 @@ TEST(String, ValueOf)
 TEST(String, Safety)
 {
     bpf::String str = "this is a test";
-    EXPECT_THROW(str += str[-1], bpf::IndexException);
+    bpf::String str1 = "this is a test1";
+    EXPECT_EQ(str[-1], bpf::String::UTF32("t")); //MSVC wants slow unoptimized code; fine!
+    EXPECT_EQ(str1[-1], bpf::String::UTF32("1")); //MSVC wants slow unoptimized code; fine!
+    EXPECT_EQ(str1[-2], bpf::String::UTF32("t")); //MSVC wants slow unoptimized code; fine!
     EXPECT_THROW(str += str[9999], bpf::IndexException);
     EXPECT_THROW(str += str[15], bpf::IndexException);
 }
@@ -737,7 +739,7 @@ TEST(String, Chinese_2)
 TEST(String, Chinese_3)
 {
     bpf::String str = "你好，我是清华大学的留学生";
-    const bpf::fchar16 *expected = reinterpret_cast<const bpf::fchar16 *>(u"你好，我是清华大学的留学生");
+    auto *expected = reinterpret_cast<const bpf::fchar16 *>(u"你好，我是清华大学的留学生");
     auto arr = str.ToUTF16();
     auto recover = bpf::String::FromUTF16(*arr);
 

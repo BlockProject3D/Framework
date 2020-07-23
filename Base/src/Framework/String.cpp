@@ -55,6 +55,10 @@ fint String::InternalToInt(const String &str)
 
 fchar String::UTF32(const char *utf8char)
 {
+    if (utf8char[0] == '\0')
+        return (0u);
+    else if (utf8char[1] == '\0')
+        return ((fchar)utf8char[0]); //Slight patch to make function run faster on ASCII codes
     fchar res = 0;
 
     switch (CalcCharIncrement(utf8char[0]))

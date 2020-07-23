@@ -275,11 +275,12 @@ namespace bpf
          */
         inline fchar operator[](const fisize id) const
         {
-            if (id < 0 || id > Len())
+            auto i = (fsize)(id < 0 ? Len() + id : id);
+            if (i > (fsize)Len())
                 throw IndexException(id);
             if (UnicodeLen == StrLen)
-                return ((fchar)Data[id]);
-            return (String::UTF32(Data + CalcStartFromUnicode(id)));
+                return ((fchar)Data[i]);
+            return (String::UTF32(Data + CalcStartFromUnicode(i)));
         }
 
         /**
