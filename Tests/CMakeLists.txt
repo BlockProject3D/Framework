@@ -85,9 +85,5 @@ set(SOURCES
 bp_setup_program(${PROJECT_NAME})
 target_compile_definitions(${PROJECT_NAME} PRIVATE "BP_VERSION_STRING=\"${BP_VERSION_STRING}\"")
 
-#This warning is an aberation of false-positives
-#Seriously Clang team: go learn how to code!!!
-bp_check_and_flag(${PROJECT_NAME} -Wno-self-assign-overloaded)
-
 bp_use_module(${PROJECT_NAME} BPF.Compression)
 target_link_libraries(${PROJECT_NAME} PRIVATE gtest_main)

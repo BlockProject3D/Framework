@@ -61,6 +61,8 @@ namespace bpf
             }
         }
 
+        constexpr auto inf = INFINITY;
+
         /**
          * Core math functions
          * @tparam T type of number to perform operations on

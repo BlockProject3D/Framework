@@ -106,7 +106,7 @@ TEST(VectorDynamic, Operators)
     EXPECT_THROW(identity -= Vectorf(4), bpf::math::IncompatibleMatrixSizeException);
     identity += zero;
     EXPECT_THROW(identity += Vectorf(4), bpf::math::IncompatibleMatrixSizeException);
-    identity /= identity;
+    identity /= Vectorf::Identity(5);
     EXPECT_THROW(identity /= Vectorf(4), bpf::math::IncompatibleMatrixSizeException);
     EXPECT_EQ(identity, Vectorf::Identity(5));
     identity *= zero;

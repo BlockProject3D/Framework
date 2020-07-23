@@ -177,6 +177,16 @@ namespace bpf
             bool operator==(const Matrix<T, N, M> &other) const;
 
             /**
+             * Compare two matrices
+             * @param other matrix to compare with
+             * @return true if the two matrices are not equal, false otherwise
+             */
+            inline bool operator!=(const Matrix<T, N, M> &other) const
+            {
+                return (!operator==(other));
+            }
+
+            /**
              * Performs matrix-matrix multiplication
              * @tparam P number of columns of the other matrix
              * @param other operand
@@ -406,6 +416,16 @@ namespace bpf
              * @return true if the two matrices are equal, false otherwise
              */
             bool operator==(const Matrix<T, N, N> &other) const;
+
+            /**
+             * Compare two matrices
+             * @param other matrix to compare with
+             * @return true if the two matrices are not equal, false otherwise
+             */
+            inline bool operator!=(const Matrix<T, N, N> &other) const
+            {
+                return (!operator==(other));
+            }
 
             /**
              * Performs matrix-matrix multiplication
@@ -693,6 +713,16 @@ namespace bpf
              * @return true if the two matrices are equal, false otherwise
              */
             bool operator==(const Matrix<T> &other) const;
+
+            /**
+             * Compare two matrices
+             * @param other matrix to compare with
+             * @return true if the two matrices are not equal, false otherwise
+             */
+            inline bool operator!=(const Matrix<T> &other) const
+            {
+                return (!operator==(other));
+            }
 
             /**
              * Performs matrix-matrix multiplication

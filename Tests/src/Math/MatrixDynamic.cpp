@@ -79,6 +79,7 @@ TEST(MatrixDynamic, Transpose_Square_2)
     });
 
     EXPECT_EQ(mat.Transpose(), expected);
+    EXPECT_NE(mat, expected);
     EXPECT_FALSE(mat == expected);
 }
 
@@ -96,6 +97,7 @@ TEST(MatrixDynamic, Transpose_NonSquare)
     mat(1, 2) = 1;
     mat(0, 2) = 3;
     EXPECT_EQ(mat.Transpose(), mat1);
+    EXPECT_NE(mat, mat1);
     EXPECT_FALSE(mat == mat1);
 }
 
