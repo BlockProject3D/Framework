@@ -67,6 +67,11 @@ namespace bpf
              */
             FileStream(const File &file, fint mode);
 
+            /**
+             * Move constructor
+             */
+            FileStream(FileStream &&other) noexcept;
+
             ~FileStream() final;
 
             /**
@@ -77,7 +82,12 @@ namespace bpf
             /**
              * Cannot copy a FileStream
              */
-            FileStream operator=(const FileStream &other) = delete;
+            FileStream &operator=(const FileStream &other) = delete;
+
+            /**
+             * Move assignment operator
+             */
+            FileStream &operator=(FileStream &&other) noexcept;
 
             /**
              * Sets the file cursor position to an offset relative to the current position

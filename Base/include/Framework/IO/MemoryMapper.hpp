@@ -57,6 +57,11 @@ namespace bpf
              */
             MemoryMapper(const File &file, fint mode);
 
+            /**
+             * Move constructor
+             */
+            MemoryMapper(MemoryMapper &&other) noexcept;
+
             ~MemoryMapper();
 
             /**
@@ -68,6 +73,11 @@ namespace bpf
              * Cannot copy a MemoryMapper
              */
             MemoryMapper operator=(const MemoryMapper &other) = delete;
+
+            /**
+             * Move assignment operator
+             */
+            MemoryMapper &operator=(MemoryMapper &&other) noexcept;
 
             /**
              * Map or re-map the file in virtual memory

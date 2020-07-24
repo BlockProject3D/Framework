@@ -88,6 +88,17 @@ FileStream::FileStream(const File &file, fint mode)
 #endif
 }
 
+FileStream::FileStream(FileStream &&other) noexcept
+    : _mode(other._mode)
+    , _handle(other._handle)
+{
+#ifdef WINDOWS
+    other._handle = INVALID_HANDLE_VALUE;
+#else
+    other._handle = -1;
+#endif
+}
+
 FileStream::~FileStream()
 {
 #ifdef WINDOWS
@@ -97,6 +108,25 @@ FileStream::~FileStream()
     if (_handle != -1)
         close(_handle);
 #endif
+}
+
+FileStream &FileStream::operator=(FileStream &&other) noexcept
+{
+#ifdef WINDOWS
+    if (_handle != INVALID_HANDLE_VALUE)
+        CloseHandle(_handle);
+#else
+    if (_handle != -1)
+        close(_handle);
+#endif
+    _handle = other._handle;
+    _mode = other._mode;
+#ifdef WINDOWS
+    other._handle = INVALID_HANDLE_VALUE;
+#else
+    other._handle = -1;
+#endif
+    return (*this);
 }
 
 void FileStream::SeekOffset(int64 offset) const

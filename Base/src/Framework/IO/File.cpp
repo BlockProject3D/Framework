@@ -99,10 +99,6 @@ File::File()
 {
 }
 
-File::~File()
-{
-}
-
 bool File::HasAccess(const int type) const
 {
 #ifdef WINDOWS

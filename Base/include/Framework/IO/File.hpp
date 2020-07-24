@@ -67,8 +67,6 @@ namespace bpf
              */
             File();
 
-            ~File();
-
             /**
              * Checks wether the current application is allowed to access a given file or folder
              * @param type the access type to check (see FILE_MODE_* constants)
