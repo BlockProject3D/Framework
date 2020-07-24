@@ -27,19 +27,26 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Framework/System/WindowsApp.hpp"
+#include "Framework/IO/IOException.hpp"
 #include "Framework/System/OSException.hpp"
 #include <Windows.h>
+#include <cstdio>
 #include <fcntl.h>
 #include <fstream>
 #include <io.h>
-#include <iostream>
-#include <stdio.h>
 #undef SetConsoleTitle
 
 using namespace bpf::system;
 using namespace bpf::collection;
 using namespace bpf::io;
 using namespace bpf;
+
+namespace bpf
+{
+    using _internal_AddDllDirectory = void *(WINAPI *)(PCWSTR str);
+    using _internal_RemoveDllDirectory = BOOL (WINAPI *)(void *handle);
+    using _internal_SetDefaultDllDirectories = BOOL (WINAPI *)(DWORD flags);
+}
 
 WindowsApp::WindowsApp(void *hinstance, bool hasConsole)
     : Application(_env, _fileName, _props)
@@ -49,6 +56,27 @@ WindowsApp::WindowsApp(void *hinstance, bool hasConsole)
     , _fileName(SetupFileName())
     , _props(SetupPaths())
 {
+    _kernel = LoadLibrary("Kernel32.dll");
+    if (_kernel != nullptr)
+    {
+        _addDllDir = reinterpret_cast<void *>(GetProcAddress(reinterpret_cast<HMODULE>(_kernel), "AddDllDirectory"));
+        _rmDllDir = reinterpret_cast<void *>(GetProcAddress(reinterpret_cast<HMODULE>(_kernel), "RemoveDllDirectory"));
+        auto setdlldirs = reinterpret_cast<_internal_SetDefaultDllDirectories>(
+            GetProcAddress(reinterpret_cast<HMODULE>(_kernel), "SetDefaultDllDirectories"));
+        if (setdlldirs != nullptr)
+            setdlldirs(0x00001000); //Set the recommended search path
+    }
+    else
+    {
+        _addDllDir = nullptr;
+        _rmDllDir = nullptr;
+    }
+}
+
+WindowsApp::~WindowsApp()
+{
+    if (_kernel != nullptr)
+        FreeModule(reinterpret_cast<HMODULE>(_kernel));
 }
 
 HashMap<String, String> WindowsApp::SetupEnvironment()
@@ -164,13 +192,47 @@ File WindowsApp::GetWorkingDirectory() const
 
 bool WindowsApp::SetWorkingDirectory(const File &file)
 {
-    if (!SetCurrentDirectoryW(reinterpret_cast<LPCWSTR>(*file.PlatformPath().ToUTF16())))
-        return (false);
-    return (true);
+    return (SetCurrentDirectoryW(reinterpret_cast<LPCWSTR>(*file.PlatformPath().ToUTF16())));
 }
 
 void WindowsApp::DisableErrorDialogs() noexcept
 {
     SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX);
-    _set_abort_behavior(0,_WRITE_ABORT_MSG);
+    _set_abort_behavior(0, _WRITE_ABORT_MSG);
+}
+
+void WindowsApp::SetModuleDirectories(const collection::Array<io::File> &directories)
+{
+    if (directories.Size() > 1 &&
+        _addDllDir == nullptr) // We have more than 1 directory and no support for AddDllDirectory
+        throw OSException("Multi-module directory not supported on this system");
+    for (auto &dir : directories)
+    {
+        if (!dir.IsDirectory())
+            throw io::IOException(String("Path '") + dir.Path() + "' is not a directory");
+    }
+    if (_addDllDir != nullptr)
+    {
+        if (_dlls.Size() > 0)
+        {
+            auto rmdir = reinterpret_cast<_internal_RemoveDllDirectory>(_rmDllDir);
+            for (auto dir : _dlls)
+                rmdir(dir);
+            _dlls.Clear();
+        }
+        for (auto &dir : directories)
+        {
+            auto adddir = reinterpret_cast<_internal_AddDllDirectory>(_addDllDir);
+            auto u16 = dir.PlatformPath().ToUTF16();
+            auto handle = adddir(reinterpret_cast<PCWSTR>(*u16));
+            if (handle != nullptr)
+                _dlls.Add(handle);
+        }
+    }
+    else
+    {
+        auto u16 = directories[0].PlatformPath().ToUTF16();
+        if (!SetDllDirectoryW(reinterpret_cast<LPCWSTR>(*u16)))
+            throw OSException("Failed to set module directories");
+    }
 }

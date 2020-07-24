@@ -27,8 +27,11 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Framework/System/UnixApp.hpp"
+#include "Framework/System/OSException.hpp"
+#include "Framework/IO/IOException.hpp"
 #include <climits>
 #include <unistd.h>
+#include <cstdlib>
 
 #ifndef LINUX
     #include <mach-o/dyld.h>
@@ -124,4 +127,25 @@ File UnixApp::GetWorkingDirectory() const
 bool UnixApp::SetWorkingDirectory(const File &file)
 {
     return (chdir(*file.PlatformPath()) != -1);
+}
+
+void UnixApp::SetModuleDirectories(const collection::Array<io::File> &directories)
+{
+    for (auto &dir : directories)
+    {
+        if (!dir.IsDirectory())
+            throw io::IOException(String("Path '") + dir.Path() + "' is not a directory");
+    }
+#ifdef MAC
+    const char *VNAME = "DYLD_LIBRARY_PATH";
+#else
+    const char *VNAME = "LD_LIBRARY_PATH";
+#endif
+    auto cur = _env[VNAME];
+    if (!cur.EndsWith(';'))
+        cur += ';';
+    for (auto &dir : directories)
+        cur += dir.PlatformPath() + ';';
+    if (setenv(VNAME, *cur, 1) != 0)
+        throw OSException("Failed to set module directories");
 }
