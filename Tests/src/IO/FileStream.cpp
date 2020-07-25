@@ -58,14 +58,15 @@ TEST(FileStream, OpenExcept_MemLeak)
 TEST(FileStream, Move)
 {
     bpf::io::File f("./doesnotexist.txt");
+    bpf::io::File f1("./doesnotexist1.txt");
     bpf::io::FileStream stream(f, bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
     auto stream1 = std::move(stream);
-    stream1.Close();
-    stream1 = bpf::io::FileStream(f, bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
+    stream1 = bpf::io::FileStream(f1, bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
     stream = std::move(stream1);
     EXPECT_EQ(stream.Write("This is a test", 14), (bpf::fsize)14);
     stream.Close();
     f.Delete();
+    f1.Delete();
 }
 
 TEST(FileStream, Open_ReadWrite)
