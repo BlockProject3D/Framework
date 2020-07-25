@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -35,13 +35,15 @@
 
 TEST(FileStream, OpenExcept)
 {
-    EXPECT_THROW(bpf::io::FileStream(bpf::io::File("./doesnotexist.txt"), bpf::io::FILE_MODE_READ), bpf::io::IOException);
+    EXPECT_THROW(bpf::io::FileStream(bpf::io::File("./doesnotexist.txt"), bpf::io::FILE_MODE_READ),
+                 bpf::io::IOException);
 }
 
 #ifdef BUILD_DEBUG
 static void Test_OpenExcept_MemLeak()
 {
-    EXPECT_THROW(bpf::io::FileStream(bpf::io::File("./doesnotexist.txt"), bpf::io::FILE_MODE_READ), bpf::io::IOException);
+    EXPECT_THROW(bpf::io::FileStream(bpf::io::File("./doesnotexist.txt"), bpf::io::FILE_MODE_READ),
+                 bpf::io::IOException);
 }
 
 TEST(FileStream, OpenExcept_MemLeak)
@@ -56,14 +58,15 @@ TEST(FileStream, OpenExcept_MemLeak)
 TEST(FileStream, Move)
 {
     bpf::io::File f("./doesnotexist.txt");
+    bpf::io::File f1("./doesnotexist1.txt");
     bpf::io::FileStream stream(f, bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
-
     auto stream1 = std::move(stream);
-    stream1 = bpf::io::FileStream(f, bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
+    stream1 = bpf::io::FileStream(f1, bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
     stream = std::move(stream1);
     EXPECT_EQ(stream.Write("This is a test", 14), (bpf::fsize)14);
     stream.Close();
     f.Delete();
+    f1.Delete();
 }
 
 TEST(FileStream, Open_ReadWrite)
@@ -88,12 +91,14 @@ TEST(FileStream, Open_ReadWrite)
 TEST(FileStream, Open_Append)
 {
     {
-        bpf::io::FileStream stream(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
+        bpf::io::FileStream stream(bpf::io::File("./edit_me.txt"),
+                                   bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
         stream.SeekOffset(0);
         EXPECT_EQ(stream.Write("This is a test\n", 15), (bpf::fsize)15);
     }
     {
-        bpf::io::FileStream stream(bpf::io::File("./edit_me.txt"), bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_APPEND);
+        bpf::io::FileStream stream(bpf::io::File("./edit_me.txt"),
+                                   bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_APPEND);
         EXPECT_EQ(stream.Write("3.141592654", 11), (bpf::fsize)11);
         EXPECT_THROW(stream.Seek(0), bpf::io::IOException);
         EXPECT_THROW(stream.SeekOffset(0), bpf::io::IOException);

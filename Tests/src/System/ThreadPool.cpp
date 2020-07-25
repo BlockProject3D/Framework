@@ -66,7 +66,7 @@ TEST(ThreadPool, Run_1)
         [&res](bpf::Dynamic &dyn) { res = (bpf::fsize)dyn; });
     while (!pool.IsIdle())
         pool.Poll();
-    EXPECT_EQ(res, 4);
+    EXPECT_EQ(res, 4u);
 }
 
 TEST(ThreadPool, Run_2)
@@ -83,7 +83,7 @@ TEST(ThreadPool, Run_2)
         [&res](bpf::Dynamic &dyn) { res = (bpf::fsize)dyn; });
     while (!pool.IsIdle())
         pool.Poll();
-    EXPECT_EQ(res, 4);
+    EXPECT_EQ(res, 4u);
     pool.Run(
         [] {
           bpf::fsize i = 1;
@@ -94,7 +94,7 @@ TEST(ThreadPool, Run_2)
         [&res](bpf::Dynamic &dyn) { res = (bpf::fsize)dyn; });
     while (!pool.IsIdle())
         pool.Poll();
-    EXPECT_EQ(res, 4);
+    EXPECT_EQ(res, 4u);
     pool.Poll();
 }
 
@@ -115,7 +115,7 @@ TEST(ThreadPool, Run_3)
     }
     while (!pool.IsIdle())
         pool.Poll();
-    EXPECT_EQ(res, 16384);
+    EXPECT_EQ(res, 16384u);
 }
 
 TEST(ThreadPool, Run_4)
@@ -138,7 +138,7 @@ TEST(ThreadPool, Run_4)
     }
     while (!pool.IsIdle())
         pool.Poll();
-    EXPECT_EQ(res, 16384);
+    EXPECT_EQ(res, 16384u);
 }
 
 TEST(ThreadPool, Run_5)
@@ -158,7 +158,7 @@ TEST(ThreadPool, Run_5)
     }
     while (!pool.IsIdle())
         pool.Poll();
-    EXPECT_EQ(res, 16384);
+    EXPECT_EQ(res, 16384u);
     for (bpf::fsize i = 0; i != 6; ++i)
     {
         pool.Run(
@@ -172,5 +172,5 @@ TEST(ThreadPool, Run_5)
     }
     while (!pool.IsIdle())
         pool.Poll();
-    EXPECT_EQ(res, 16384);
+    EXPECT_EQ(res, 16384u);
 }
