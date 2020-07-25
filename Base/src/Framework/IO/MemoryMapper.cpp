@@ -121,22 +121,10 @@ MemoryMapper::MemoryMapper(MemoryMapper &&other) noexcept
 
 MemoryMapper::~MemoryMapper()
 {
-#ifdef WINDOWS
-    if (_mem != nullptr)
-        UnmapViewOfFile(_mem);
-    if (_mapper != nullptr)
-        CloseHandle(_mapper);
-    if (_handle != INVALID_HANDLE_VALUE)
-        CloseHandle(_handle);
-#else
-    if (_mem != nullptr)
-        munmap(_mem, _size);
-    if (_handle != -1)
-        close(_handle);
-#endif
+    Close();
 }
 
-MemoryMapper &MemoryMapper::operator=(MemoryMapper &&other) noexcept
+void MemoryMapper::Close()
 {
 #ifdef WINDOWS
     if (_mem != nullptr)
@@ -145,12 +133,22 @@ MemoryMapper &MemoryMapper::operator=(MemoryMapper &&other) noexcept
         CloseHandle(_mapper);
     if (_handle != INVALID_HANDLE_VALUE)
         CloseHandle(_handle);
+    _handle = INVALID_HANDLE_VALUE;
+    _mapper = nullptr;
 #else
     if (_mem != nullptr)
         munmap(_mem, _size);
     if (_handle != -1)
         close(_handle);
+    _handle = -1;
 #endif
+    _mem = nullptr;
+    _memoff = nullptr;
+}
+
+MemoryMapper &MemoryMapper::operator=(MemoryMapper &&other) noexcept
+{
+    Close();
     _file = std::move(other._file);
     _mem = other._mem;
     _mode = other._mode;
@@ -224,4 +222,16 @@ void MemoryMapper::Map(uint64 pos, fsize size)
     addr += pos - nearestpsize;
     _memoff = addr;
 #endif
+}
+
+void MemoryMapper::Unmap()
+{
+#ifdef WINDOWS
+    if (_mem != nullptr)
+        UnmapViewOfFile(_mem);
+#else
+    if (_mem != nullptr)
+        munmap(_mem, _size);
+#endif
+    _mem = nullptr;
 }

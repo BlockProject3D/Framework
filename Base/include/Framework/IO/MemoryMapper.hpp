@@ -88,6 +88,16 @@ namespace bpf
             void Map(uint64 pos, fsize size);
 
             /**
+             * Unmaps any previous mappings of the file
+             */
+            void Unmap();
+
+            /**
+             * Closes this MemoryMapper
+             */
+            void Close();
+
+            /**
              * Returns the mapped file
              * @return immutable File reference
              */
