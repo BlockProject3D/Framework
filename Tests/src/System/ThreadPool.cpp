@@ -66,7 +66,7 @@ TEST(ThreadPool, Run_1)
         [&res](bpf::Dynamic &dyn) { res = (bpf::fsize)dyn; });
     while (!pool.IsIdle())
         pool.Poll();
-    EXPECT_EQ(res, 4);
+    EXPECT_EQ(res, 4u);
 }
 
 TEST(ThreadPool, Run_2)
