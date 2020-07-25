@@ -34,6 +34,11 @@ using namespace bpf;
 
 Logger::Logger(String name)
     : _name(std::move(name))
+#ifdef BUILD_DEBUG
+    , _level(ELogLevel::DEBUG)
+#else
+    , _level(ELogLevel::INFO)
+#endif
 {
 }
 
