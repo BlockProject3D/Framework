@@ -44,10 +44,13 @@ namespace bpf
         private:
             collection::List<memory::UniquePtr<ILogAdapter>> _handlers;
             String _name;
+            ELogLevel _level;
 
             template <typename ...Args>
             inline void LogMessage(const ELogLevel level, const String &format, Args &&...args)
             {
+                if (level > _level)
+                    return;
                 for (auto &ptr : _handlers)
                     ptr->LogMessage(level, _name, String::Format(format, std::forward<Args &&>(args)...));
             }
@@ -57,6 +60,26 @@ namespace bpf
              * @param name the category name
              */
             explicit Logger(String name);
+
+            /**
+             * Sets the maximum log level. All log messages that are greater than this level are ignored.
+             * The default is ELogLevel::DEBUG is debug builds and INFO in release builds
+             * @param level the new maximum log level
+             */
+            inline void SetLevel(const ELogLevel level)
+            {
+                _level = level;
+            }
+
+            /**
+             * Move constructor
+             */
+            Logger(Logger &&other) noexcept;
+
+            /**
+             * Move assignment operator
+             */
+            Logger &operator=(Logger &&other) noexcept;
 
             /**
              * Explicit deleted copy constructor (MSVC Fix: for some reasons MSVC is unable to identify this class cannot be coppied)
