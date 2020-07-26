@@ -36,7 +36,7 @@ private:
     bpf::collection::List<bpf::String> &_log;
 
 public:
-    MemoryLog(bpf::collection::List<bpf::String> &log)
+    explicit MemoryLog(bpf::collection::List<bpf::String> &log)
         : _log(log)
     {
     }
