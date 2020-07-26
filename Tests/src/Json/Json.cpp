@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -35,7 +35,71 @@
 
 using J = bpf::json::Json;
 
-TEST(Json, API_1)
+TEST(Json, API_1_1)
+{
+    J::Object obj{
+        {"Test", 0.0},
+        {"Test1", true},
+        {"TestArray", J::Array {"A", "B", "TrouDuCul"}},
+        {"TestObject", J::Object
+            {
+                {"a", 0.0},
+                {"b", 0.1},
+                {"c", true}
+            }
+        }
+    };
+
+    EXPECT_EQ(obj["Test"], 0.0);
+    EXPECT_FALSE(obj["Test"] == true);
+    EXPECT_FALSE(obj["Test"] == "test");
+    EXPECT_FALSE(obj["Test"] == bpf::String("test"));
+    EXPECT_FALSE(obj["Test"] == bpf::i64(42));
+    EXPECT_EQ(obj["Test1"], true);
+    EXPECT_FALSE(obj["Test1"] == 0.0);
+    EXPECT_FALSE(obj["Test1"] == bpf::i64(0));
+    const J::Object &objConst = obj;
+    EXPECT_TRUE(objConst["TestArray"].Type().IsArray());
+    const J::Array &carr = objConst["TestArray"];
+    EXPECT_EQ(carr[0], "A");
+    EXPECT_STREQ(*carr[0].ToString(), "A");
+    J::Array &arr = obj["TestArray"];
+    J v = 42.42;
+    arr.Add(42.42);
+    arr.Add(v);
+    EXPECT_EQ(carr[3], 42.42);
+    EXPECT_EQ(carr[4], 42.42);
+    arr.RemoveAt(4);
+    arr.RemoveAt(0);
+    EXPECT_EQ(carr.Size(), 3u);
+    EXPECT_EQ(arr.Size(), 3u);
+    arr.Items.Clear();
+    EXPECT_EQ(carr.Size(), 0u);
+    EXPECT_EQ(arr.Size(), 0u);
+    const J::Object &cobj = objConst["TestObject"];
+    EXPECT_EQ(cobj["a"], 0.0);
+    EXPECT_EQ(cobj["b"], 0.1);
+    EXPECT_EQ(cobj["c"], true);
+    J::Object &mobj = obj["TestObject"];
+    mobj.Add("test", 42.42);
+    mobj.Add("test1", v);
+    EXPECT_TRUE(cobj["test"].Type().IsNumber());
+    EXPECT_TRUE(cobj["test"].Type().IsDouble());
+    EXPECT_FALSE(cobj["test"].Type().IsInteger());
+    EXPECT_EQ(cobj["test"], 42.42);
+    EXPECT_EQ(mobj["test"], 42.42);
+    EXPECT_EQ(cobj["test1"], 42.42);
+    EXPECT_EQ(mobj["test1"], 42.42);
+    mobj.RemoveAt("test1");
+    mobj.RemoveAt("a");
+    EXPECT_EQ(mobj.Size(), 4u);
+    EXPECT_EQ(cobj.Size(), 4u);
+    mobj.Properties.Clear();
+    EXPECT_EQ(mobj.Size(), 0u);
+    EXPECT_EQ(cobj.Size(), 0u);
+}
+
+TEST(Json, API_1_2)
 {
     J::Object obj{
         {"Test", 0.0},
