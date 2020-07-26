@@ -55,9 +55,11 @@ TEST(Json, API_1)
     EXPECT_FALSE(obj["Test"] == true);
     EXPECT_FALSE(obj["Test"] == "test");
     EXPECT_FALSE(obj["Test"] == bpf::String("test"));
+    EXPECT_FALSE(obj["Test"] == bpf::i64(42));
     EXPECT_EQ(obj["Test1"], true);
     EXPECT_FALSE(obj["Test1"] == 0.0);
     const J::Object &objConst = obj;
+    EXPECT_TRUE(objConst["TestArray"].Type().IsArray());
     const J::Array &carr = objConst["TestArray"];
     EXPECT_EQ(carr[0], "A");
     EXPECT_STREQ(*carr[0].ToString(), "A");
@@ -79,9 +81,14 @@ TEST(Json, API_1)
     EXPECT_EQ(cobj["b"], 0.1);
     EXPECT_EQ(cobj["c"], true);
     EXPECT_EQ(cobj["d"], bpf::i64(42));
+    EXPECT_TRUE(cobj["d"].Type().IsNumber());
+    EXPECT_TRUE(cobj["d"].Type().IsInteger());
     J::Object &mobj = obj["TestObject"];
     mobj.Add("test", 42.42);
     mobj.Add("test1", v);
+    EXPECT_TRUE(cobj["test"].Type().IsNumber());
+    EXPECT_TRUE(cobj["test"].Type().IsDouble());
+    EXPECT_FALSE(cobj["test"].Type().IsInteger());
     EXPECT_EQ(cobj["test"], 42.42);
     EXPECT_EQ(mobj["test"], 42.42);
     EXPECT_EQ(cobj["test1"], 42.42);
@@ -119,11 +126,13 @@ TEST(Json, API_2)
     for (auto &json : arr)
     {
         EXPECT_EQ(json.Type(), J::OBJECT);
+        EXPECT_TRUE(json.Type().IsObject());
         EXPECT_EQ(json.ToObject()["Test"], "a");
         EXPECT_EQ(json.ToObject()["Test1"], "b");
         const J::Object &jobj = json;
         for (auto &sjson : jobj)
         {
+            EXPECT_TRUE(sjson.Value.Type().IsString());
             EXPECT_EQ(sjson.Value.Type(), J::STRING);
             EXPECT_TRUE(sjson.Key == "Test" || sjson.Key == "Test1");
         }
@@ -213,7 +222,7 @@ TEST(Json, API_6)
     {
         {"MyStr", "Test"},
     };
-    J::Array myArr = J::Array{ 1.0, true };
+    J::Array myArr = J::Array{ 1.0, true, bpf::i64(42) };
     J val = myObj;
     J val1 = myArr;
     auto obj1 = &val;
@@ -243,6 +252,8 @@ TEST(Json, API_6)
     EXPECT_EQ(d, 1.0);
     bool b = myArr[1];
     EXPECT_EQ(b, true);
+    bpf::int64 i = myArr[2];
+    EXPECT_EQ(i, 42);
 }
 
 TEST(Json, LexerParser)
