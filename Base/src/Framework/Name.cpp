@@ -30,21 +30,38 @@
 
 using namespace bpf;
 
-Name::Name(const char *str) noexcept
-    : _hash(5381)
+uint32 Name::Hash32(const char *str) noexcept
 {
+    uint32 hash = 5381;
+
     for (fsize i = 0; str[i]; ++i)
-        _hash = ((_hash << 5) + _hash) + str[i];
+        hash = ((hash << 5) + hash) + str[i];
+    return (hash);
 }
 
-Name::Name(const String &str) noexcept
-    : _hash(5381)
+uint32 Name::Hash32(const String &str) noexcept
 {
+    uint32 hash = 5381;
+
     for (fisize i = 0; i != str.Size(); ++i)
-        _hash = ((_hash << 5) + _hash) + str.ByteAt(i);
+        hash = ((hash << 5) + hash) + str.ByteAt(i);
+    return (hash);
 }
 
-Name::Name(const fsize hash) noexcept
-    : _hash(hash)
+uint64 Name::Hash64(const char *str) noexcept
 {
+    uint64 hash = 5381;
+
+    for (fsize i = 0; str[i]; ++i)
+        hash = ((hash << 5) + hash) + str[i];
+    return (hash);
+}
+
+uint64 Name::Hash64(const String &str) noexcept
+{
+    uint64 hash = 5381;
+
+    for (fisize i = 0; i != str.Size(); ++i)
+        hash = ((hash << 5) + hash) + str.ByteAt(i);
+    return (hash);
 }
