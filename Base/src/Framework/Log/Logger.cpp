@@ -34,7 +34,28 @@ using namespace bpf;
 
 Logger::Logger(String name)
     : _name(std::move(name))
+#ifdef BUILD_DEBUG
+    , _level(ELogLevel::DEBUG)
+#else
+    , _level(ELogLevel::INFO)
+#endif
 {
+}
+
+Logger::Logger(Logger &&other) noexcept
+    : _handlers(std::move(other._handlers))
+    , _name(std::move(other._name))
+    , _level(other._level)
+{
+}
+
+Logger &Logger::operator=(Logger &&other) noexcept
+{
+    _handlers.Clear();
+    _handlers = std::move(other._handlers);
+    _name = std::move(other._name);
+    _level = other._level;
+    return (*this);
 }
 
 void Logger::AddHandler(UniquePtr<ILogAdapter> &&ptr)

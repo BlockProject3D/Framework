@@ -95,18 +95,76 @@ MemoryMapper::MemoryMapper(const File &file, fint mode)
 #endif
 }
 
+MemoryMapper::MemoryMapper(MemoryMapper &&other) noexcept
+    : _file(std::move(other._file))
+    , _mem(other._mem)
+    , _mode(other._mode)
+    , _memoff(other._memoff)
+#ifdef WINDOWS
+    , _handle(other._handle)
+    , _mapper(other._mapper)
+#else
+    , _handle(other._handle)
+    , _size(other._size)
+#endif
+{
+    other._mem = nullptr;
+    other._memoff = nullptr;
+#ifdef WINDOWS
+    other._handle = INVALID_HANDLE_VALUE;
+    other._mapper = nullptr;
+#else
+    other._handle = -1;
+    other._size = 0;
+#endif
+}
+
 MemoryMapper::~MemoryMapper()
+{
+    Close();
+}
+
+void MemoryMapper::Close()
 {
 #ifdef WINDOWS
     if (_mem != nullptr)
         UnmapViewOfFile(_mem);
-    CloseHandle(_mapper);
-    CloseHandle(_handle);
+    if (_mapper != nullptr)
+        CloseHandle(_mapper);
+    if (_handle != INVALID_HANDLE_VALUE)
+        CloseHandle(_handle);
+    _handle = INVALID_HANDLE_VALUE;
+    _mapper = nullptr;
 #else
     if (_mem != nullptr)
         munmap(_mem, _size);
-    close(_handle);
+    if (_handle != -1)
+        close(_handle);
+    _handle = -1;
 #endif
+    _mem = nullptr;
+    _memoff = nullptr;
+}
+
+MemoryMapper &MemoryMapper::operator=(MemoryMapper &&other) noexcept
+{
+    Close();
+    _file = std::move(other._file);
+    _mem = other._mem;
+    _mode = other._mode;
+    _memoff = other._memoff;
+#ifdef WINDOWS
+    _handle = other._handle;
+    _mapper = other._mapper;
+    other._handle = INVALID_HANDLE_VALUE;
+    other._mapper = nullptr;
+#else
+    _handle = other._handle;
+    _size = other._size;
+    other._handle = -1;
+    other._size = 0;
+#endif
+    return (*this);
 }
 
 #ifdef WINDOWS
@@ -164,4 +222,16 @@ void MemoryMapper::Map(uint64 pos, fsize size)
     addr += pos - nearestpsize;
     _memoff = addr;
 #endif
+}
+
+void MemoryMapper::Unmap()
+{
+#ifdef WINDOWS
+    if (_mem != nullptr)
+        UnmapViewOfFile(_mem);
+#else
+    if (_mem != nullptr)
+        munmap(_mem, _size);
+#endif
+    _mem = nullptr;
 }

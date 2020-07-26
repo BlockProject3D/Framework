@@ -38,24 +38,24 @@ namespace bpf
         enum class ELogLevel
         {
             /**
-             * Information messages
+             * Error messages
              */
-            INFO,
+            ERROR = 0,
 
             /**
              * Warning messages
              */
-            WARNING,
+            WARNING = 1,
 
             /**
-             * Error messages
+             * Information messages
              */
-            ERROR,
+            INFO = 2,
 
             /**
              * Debug messages
              */
-            DEBUG
+            DEBUG = 3
         };
     }
 }

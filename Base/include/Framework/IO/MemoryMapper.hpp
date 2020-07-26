@@ -57,6 +57,11 @@ namespace bpf
              */
             MemoryMapper(const File &file, fint mode);
 
+            /**
+             * Move constructor
+             */
+            MemoryMapper(MemoryMapper &&other) noexcept;
+
             ~MemoryMapper();
 
             /**
@@ -70,12 +75,27 @@ namespace bpf
             MemoryMapper operator=(const MemoryMapper &other) = delete;
 
             /**
+             * Move assignment operator
+             */
+            MemoryMapper &operator=(MemoryMapper &&other) noexcept;
+
+            /**
              * Map or re-map the file in virtual memory
              * @param pos position in bytes in the file to start mapping
              * @param size the size in bytes to map
              * @throw IOException in case of system error or if the size is greater than the size of the mapped file
              */
             void Map(uint64 pos, fsize size);
+
+            /**
+             * Unmaps any previous mappings of the file
+             */
+            void Unmap();
+
+            /**
+             * Closes this MemoryMapper
+             */
+            void Close();
 
             /**
              * Returns the mapped file
