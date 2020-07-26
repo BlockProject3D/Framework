@@ -92,8 +92,8 @@ TEST(Json, API_1_1)
     EXPECT_EQ(mobj["test1"], 42.42);
     mobj.RemoveAt("test1");
     mobj.RemoveAt("a");
-    EXPECT_EQ(mobj.Size(), 4u);
-    EXPECT_EQ(cobj.Size(), 4u);
+    EXPECT_EQ(mobj.Size(), 3u);
+    EXPECT_EQ(cobj.Size(), 3u);
     mobj.Properties.Clear();
     EXPECT_EQ(mobj.Size(), 0u);
     EXPECT_EQ(cobj.Size(), 0u);
