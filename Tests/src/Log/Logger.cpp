@@ -64,7 +64,7 @@ TEST(Logger, Basic)
     EXPECT_STREQ(*log.Last(), "[UT] 0 Test");
 }
 
-TEST(Logger, Move)
+TEST(Logger, Move_1)
 {
     bpf::collection::List<bpf::String> log;
     auto lg = bpf::log::Logger("UT");
@@ -82,6 +82,24 @@ TEST(Logger, Move)
     EXPECT_STREQ(*log.Last(), "[UT1] 1 Test");
     lg.Error("Test");
     EXPECT_STREQ(*log.Last(), "[UT1] 0 Test");
+}
+
+TEST(Logger, Move_2)
+{
+    bpf::collection::List<bpf::String> log;
+    auto lg1 = bpf::log::Logger("UT");
+    auto lg = std::move(lg1);
+
+    lg.AddHandler(bpf::memory::MakeUnique<MemoryLog>(log));
+    lg.SetLevel(bpf::log::ELogLevel::DEBUG);
+    lg.Debug("Test");
+    EXPECT_STREQ(*log.Last(), "[UT] 3 Test");
+    lg.Info("Test");
+    EXPECT_STREQ(*log.Last(), "[UT] 2 Test");
+    lg.Warning("Test");
+    EXPECT_STREQ(*log.Last(), "[UT] 1 Test");
+    lg.Error("Test");
+    EXPECT_STREQ(*log.Last(), "[UT] 0 Test");
 }
 
 TEST(Logger, MinLevel_1)
