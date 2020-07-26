@@ -71,7 +71,7 @@ TEST(Logger, Move)
     auto lg1 = bpf::log::Logger("UT1");
 
     lg.AddHandler(bpf::memory::MakeUnique<MemoryLog>(log));
-    lg.SetLevel(bpf::log::ELogLevel::DEBUG);
+    lg1.SetLevel(bpf::log::ELogLevel::DEBUG);
     lg1.AddHandler(bpf::memory::MakeUnique<MemoryLog>(log));
     lg = std::move(lg1);
     lg.Debug("Test");
