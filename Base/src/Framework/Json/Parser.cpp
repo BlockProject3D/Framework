@@ -124,7 +124,11 @@ bool Parser::CheckNumber(Json &j)
 {
     if (_tokens.Top().Type != Lexer::ETokenType::NUMBER)
         return (false);
-    j = Double::Parse(_tokens.Top().Data);
+    int64 i;
+    if (!Int64::TryParse(_tokens.Top().Data, i))
+        j = Double::Parse(_tokens.Top().Data);
+    else
+        j = i;
     _line = _tokens.Pop().Line;
     return (true);
 }

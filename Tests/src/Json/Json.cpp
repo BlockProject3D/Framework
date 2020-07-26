@@ -45,7 +45,8 @@ TEST(Json, API_1)
             {
                 {"a", 0.0},
                 {"b", 0.1},
-                {"c", true}
+                {"c", true},
+                {"d", bpf::i64(42)},
             }
         }
     };
@@ -68,15 +69,16 @@ TEST(Json, API_1)
     EXPECT_EQ(carr[4], 42.42);
     arr.RemoveAt(4);
     arr.RemoveAt(0);
-    EXPECT_EQ(carr.Size(), 3U);
-    EXPECT_EQ(arr.Size(), 3U);
+    EXPECT_EQ(carr.Size(), 3u);
+    EXPECT_EQ(arr.Size(), 3u);
     arr.Items.Clear();
-    EXPECT_EQ(carr.Size(), 0U);
-    EXPECT_EQ(arr.Size(), 0U);
+    EXPECT_EQ(carr.Size(), 0u);
+    EXPECT_EQ(arr.Size(), 0u);
     const J::Object &cobj = objConst["TestObject"];
     EXPECT_EQ(cobj["a"], 0.0);
     EXPECT_EQ(cobj["b"], 0.1);
     EXPECT_EQ(cobj["c"], true);
+    EXPECT_EQ(cobj["d"], bpf::i64(42));
     J::Object &mobj = obj["TestObject"];
     mobj.Add("test", 42.42);
     mobj.Add("test1", v);
@@ -86,11 +88,11 @@ TEST(Json, API_1)
     EXPECT_EQ(mobj["test1"], 42.42);
     mobj.RemoveAt("test1");
     mobj.RemoveAt("a");
-    EXPECT_EQ(mobj.Size(), 3U);
-    EXPECT_EQ(cobj.Size(), 3U);
+    EXPECT_EQ(mobj.Size(), 4u);
+    EXPECT_EQ(cobj.Size(), 4u);
     mobj.Properties.Clear();
-    EXPECT_EQ(mobj.Size(), 0U);
-    EXPECT_EQ(cobj.Size(), 0U);
+    EXPECT_EQ(mobj.Size(), 0u);
+    EXPECT_EQ(cobj.Size(), 0u);
 }
 
 TEST(Json, API_2)
@@ -228,7 +230,9 @@ TEST(Json, API_6)
     EXPECT_THROW((void)((J::Object &)val1), bpf::json::JsonException);
     EXPECT_THROW(val1.ToObject(), bpf::json::JsonException);
     EXPECT_THROW((void)((double)val), bpf::json::JsonException);
-    EXPECT_THROW(val.ToNumber(), bpf::json::JsonException);
+    EXPECT_THROW((void)((bpf::int64)val), bpf::json::JsonException);
+    EXPECT_THROW(val.ToDouble(), bpf::json::JsonException);
+    EXPECT_THROW(val.ToInteger(), bpf::json::JsonException);
     EXPECT_THROW((void)((bool)val), bpf::json::JsonException);
     EXPECT_THROW(val.ToBoolean(), bpf::json::JsonException);
     EXPECT_STREQ(*val.ToObject()["MyStr"].ToString(), "Test");
@@ -263,7 +267,7 @@ TEST(Json, LexerParser)
     J::Object testObject = testObj;
     EXPECT_EQ(testObject["test"], true);
     EXPECT_EQ(testObject["test"], true);
-    EXPECT_EQ(testObject["-42"], -42.0);
+    EXPECT_EQ(testObject["-42"], bpf::i64(-42));
     EXPECT_EQ(testObject["TheNull"], nullptr);
     EXPECT_EQ(testObject["TheNull"], nullptr);
     EXPECT_EQ(testObject["TheNull"], nullptr);
@@ -308,7 +312,7 @@ TEST(Json, LexerParser_Comments)
     J::Object testObject = testObj;
     EXPECT_EQ(testObject["test"], true);
     EXPECT_EQ(testObject["test"], true);
-    EXPECT_EQ(testObject["-42"], -42.0);
+    EXPECT_EQ(testObject["-42"], bpf::i64(-42));
     EXPECT_EQ(testObject["TheNull"], nullptr);
     EXPECT_EQ(testObject["TheNull"], nullptr);
     EXPECT_EQ(testObject["TheNull"], nullptr);
