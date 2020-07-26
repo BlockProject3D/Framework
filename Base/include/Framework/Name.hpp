@@ -32,7 +32,8 @@
 namespace bpf
 {
     /**
-     * Utility class to represent a hashed string
+     * Utility class to represent a hashed string.
+     * By default this class uses the register size of the current system to store the hash number
      */
     class BPF_API Name
     {
@@ -53,19 +54,36 @@ namespace bpf
          * Construct a Name from a low-level string
          * @param str the low-level null-terminated c-string to build a hash from
          */
-        explicit Name(const char *str) noexcept;
+        explicit inline Name(const char *str) noexcept
+#ifdef PLATFORM_64
+        : _hash(Hash64(str))
+#else
+        : _hash(Hash32(str))
+#endif
+        {
+        }
 
         /**
          * Constructs a Name from a high-level string
          * @param str the high-level string to build a hash from
          */
-        explicit Name(const String &str) noexcept;
+        explicit inline Name(const String &str) noexcept
+#ifdef PLATFORM_64
+            : _hash(Hash64(str))
+#else
+            : _hash(Hash32(str))
+#endif
+        {
+        }
 
         /**
          * Constructs a Name from an existing hash
          * @param hash the hash to copy
          */        
-        explicit Name(fsize hash) noexcept;
+        explicit inline Name(fsize hash) noexcept
+            : _hash(hash)
+        {
+        }
 
         /**
          * Returns the hash value
@@ -75,6 +93,34 @@ namespace bpf
         {
             return (_hash);
         }
+
+        /**
+         * Computes 32 bits string hash
+         * @param str string to hash
+         * @return 32 bits unsigned
+         */
+        static uint32 Hash32(const char *str) noexcept;
+
+        /**
+         * Computes 32 bits string hash
+         * @param str high-level string to hash
+         * @return 32 bits unsigned
+         */
+        static uint32 Hash32(const String &str) noexcept;
+
+        /**
+         * Computes 64 bits string hash
+         * @param str string to hash
+         * @return 64 bits unsigned
+         */
+        static uint64 Hash64(const char *str) noexcept;
+
+        /**
+         * Computes 64 bits string hash
+         * @param str high-level string to hash
+         * @return 64 bits unsigned
+         */
+        static uint64 Hash64(const String &str) noexcept;
 
         /**
          * Compare Name
