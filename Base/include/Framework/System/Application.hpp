@@ -27,6 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/Collection/Array.hpp"
 #include "Framework/Collection/HashMap.hpp"
 #include "Framework/String.hpp"
 #include "Framework/System/Paths.hpp"
@@ -69,13 +70,16 @@ namespace bpf
             {
             }
 
-            virtual ~Application() {}
+            virtual ~Application()
+            {
+            }
 
             /**
              * Allocates a console for this application if it does not already have one.
              * Only useful when the system do not create a console
              * @param rows number of rows in the console window
              * @param columns number of columns in the console window
+             * @throw OSException in case of system error
              */
             virtual void CreateConsole(fint rows = 32, fint columns = 80) = 0;
 
@@ -97,6 +101,14 @@ namespace bpf
              * Useful when building command line applications
              */
             virtual void DisableErrorDialogs() noexcept = 0;
+
+            /**
+             * Sets the additional module directories for this application
+             * @param directories the new directories to use for resolving dependencies
+             * @throw OSException if multiple directories are given and the system only supports one or if system error
+             * @throw io::IOException if any of the given paths is not a directory
+             */
+            virtual void SetModuleDirectories(const collection::Array<io::File> &directories) = 0;
         };
     }
 };

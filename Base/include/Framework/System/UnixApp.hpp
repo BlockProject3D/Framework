@@ -58,6 +58,7 @@ namespace bpf
             {
                 // Linux does not have automatic message box spawn on crash
             }
+            void SetModuleDirectories(const collection::Array<io::File> &directories);
         };
     }
 }

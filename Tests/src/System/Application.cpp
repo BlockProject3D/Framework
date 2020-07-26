@@ -26,44 +26,14 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-#include "Framework/System/Application.hpp"
-#include "Framework/Collection/List.hpp"
+#include <gtest/gtest.h>
+#include <Framework/System/Application.hpp>
+#include <Framework/IO/IOException.hpp>
 
-namespace bpf
+extern bpf::system::Application *g_app;
+
+TEST(Application, SetModuleDirectories)
 {
-    namespace system
-    {
-        class BPF_API WindowsApp final : public Application
-        {
-        private:
-            void *_hInstance;
-            bool _hasConsole;
-
-            collection::HashMap<String, String> _env;
-            String _fileName;
-            Paths _props;
-            void *_addDllDir;
-            void *_rmDllDir;
-            void *_kernel;
-            collection::List<void *> _dlls;
-
-            static collection::HashMap<String, String> SetupEnvironment();
-            String SetupFileName();
-            Paths SetupPaths();
-
-        public:
-            WindowsApp(void *hinstance, bool hasConsole);
-            ~WindowsApp();
-
-            void CreateConsole(fint rows, fint columns) final;
-
-            static collection::Array<String> GetArguments();
-
-            io::File GetWorkingDirectory() const final;
-            bool SetWorkingDirectory(const io::File &file) final;
-            void DisableErrorDialogs() noexcept final;
-            void SetModuleDirectories(const collection::Array<io::File> &directories);
-        };
-    }
-};
+    EXPECT_THROW(g_app->SetModuleDirectories({g_app->Props.ThirdParty}), bpf::io::IOException);
+    g_app->SetModuleDirectories({g_app->Props.UserHome});
+}
