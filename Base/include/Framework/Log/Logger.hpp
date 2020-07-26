@@ -72,6 +72,16 @@ namespace bpf
             }
 
             /**
+             * Move constructor
+             */
+            Logger(Logger &&other) noexcept;
+
+            /**
+             * Move assignment operator
+             */
+            Logger &operator=(Logger &&other) noexcept;
+
+            /**
              * Explicit deleted copy constructor (MSVC Fix: for some reasons MSVC is unable to identify this class cannot be coppied)
              */
             Logger(const Logger &other) = delete;

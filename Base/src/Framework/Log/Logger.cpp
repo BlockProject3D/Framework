@@ -42,6 +42,22 @@ Logger::Logger(String name)
 {
 }
 
+Logger::Logger(Logger &&other) noexcept
+    : _handlers(std::move(other._handlers))
+    , _name(std::move(other._name))
+    , _level(other._level)
+{
+}
+
+Logger &Logger::operator=(Logger &&other) noexcept
+{
+    _handlers.Clear();
+    _handlers = std::move(other._handlers);
+    _name = std::move(other._name);
+    _level = other._level;
+    return (*this);
+}
+
 void Logger::AddHandler(UniquePtr<ILogAdapter> &&ptr)
 {
     _handlers.Add(std::move(ptr));
