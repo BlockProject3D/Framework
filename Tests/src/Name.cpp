@@ -44,3 +44,21 @@ TEST(Name, Creation)
     EXPECT_EQ(name, name2);
     EXPECT_NE(name, bpf::Name((bpf::fsize)0));
 }
+
+TEST(Name, Hash_64)
+{
+    auto name = bpf::Name::Hash64("Test");
+    auto name1 = bpf::Name::Hash64(bpf::String("Test"));
+
+    EXPECT_GT(name, (bpf::fsize)0);
+    EXPECT_EQ(name, name1);
+}
+
+TEST(Name, Hash_32)
+{
+    auto name = bpf::Name::Hash32("Test");
+    auto name1 = bpf::Name::Hash32(bpf::String("Test"));
+
+    EXPECT_GT(name, (bpf::fsize)0);
+    EXPECT_EQ(name, name1);
+}
