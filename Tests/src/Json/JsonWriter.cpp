@@ -60,6 +60,34 @@ TEST(JsonWriter, Basic)
     EXPECT_STREQ(*writer.Serialize(obj), expected);
 }
 
+TEST(JsonWriter, Basic_1)
+{
+    J::Object obj{
+        {"Test", bpf::i64(42)},
+        {"Test1", true},
+        {"Test2", nullptr},
+        {"TestArray", J::Array {"A", "B", "TrouDuCul"}},
+        {"TestObject", J::Object
+                     {
+                         {"a", 0.0},
+                         {"b", 0.1},
+                         {"c", true}
+                     }
+        }
+    };
+    bpf::json::Writer writer(false);
+    const char *expected =
+        "{"
+        "\"Test\":42,"
+        "\"Test1\":true,"
+        "\"Test2\":null,"
+        "\"TestArray\":[\"A\",\"B\",\"TrouDuCul\"],"
+        "\"TestObject\":{\"a\":0,\"b\":0.1,\"c\":true}"
+        "}";
+
+    EXPECT_STREQ(*writer.Serialize(obj), expected);
+}
+
 TEST(JsonWriter, Basic_IgnoreNulls)
 {
     J::Object obj{

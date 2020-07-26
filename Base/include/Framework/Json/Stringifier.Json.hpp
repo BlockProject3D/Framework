@@ -73,8 +73,10 @@ namespace bpf
             {
             case json::Json::EType::STRING:
                 return (val.ToString());
-            case json::Json::EType::NUMBER:
-                return (String::ValueOf(val.ToNumber(), prec));
+            case json::Json::EType::DOUBLE:
+                return (String::ValueOf(val.ToDouble(), prec));
+            case json::Json::EType::INTEGER:
+                return (String::ValueOf(val.ToInteger(), prec));
             case json::Json::EType::BOOLEAN:
                 return (String::ValueOf(val.ToBoolean(), prec));
             case json::Json::EType::NONE:

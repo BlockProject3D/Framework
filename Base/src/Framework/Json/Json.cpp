@@ -49,7 +49,8 @@ Json &Json::operator=(const Json &other)
     if (this == &other)
         return (*this);
     _type = other._type;
-    _number = other._number;
+    _double = other._double;
+    _integer = other._integer;
     _bool = other._bool;
     _string = other._string;
     _array = other._array != nullptr ? MakeUnique<Array>(*other._array) : nullptr;
@@ -60,7 +61,8 @@ Json &Json::operator=(const Json &other)
 Json &Json::operator=(Json &&other) noexcept
 {
     _type = other._type;
-    _number = other._number;
+    _double = other._double;
+    _integer = other._integer;
     _bool = other._bool;
     _string = std::move(other._string);
     _array = std::move(other._array);

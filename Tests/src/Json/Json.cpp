@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -35,7 +35,7 @@
 
 using J = bpf::json::Json;
 
-TEST(Json, API_1)
+TEST(Json, API_1_1)
 {
     J::Object obj{
         {"Test", 0.0},
@@ -54,9 +54,12 @@ TEST(Json, API_1)
     EXPECT_FALSE(obj["Test"] == true);
     EXPECT_FALSE(obj["Test"] == "test");
     EXPECT_FALSE(obj["Test"] == bpf::String("test"));
+    EXPECT_FALSE(obj["Test"] == bpf::i64(42));
     EXPECT_EQ(obj["Test1"], true);
     EXPECT_FALSE(obj["Test1"] == 0.0);
+    EXPECT_FALSE(obj["Test1"] == bpf::i64(0));
     const J::Object &objConst = obj;
+    EXPECT_TRUE(objConst["TestArray"].Type().IsArray());
     const J::Array &carr = objConst["TestArray"];
     EXPECT_EQ(carr[0], "A");
     EXPECT_STREQ(*carr[0].ToString(), "A");
@@ -68,11 +71,11 @@ TEST(Json, API_1)
     EXPECT_EQ(carr[4], 42.42);
     arr.RemoveAt(4);
     arr.RemoveAt(0);
-    EXPECT_EQ(carr.Size(), 3U);
-    EXPECT_EQ(arr.Size(), 3U);
+    EXPECT_EQ(carr.Size(), 3u);
+    EXPECT_EQ(arr.Size(), 3u);
     arr.Items.Clear();
-    EXPECT_EQ(carr.Size(), 0U);
-    EXPECT_EQ(arr.Size(), 0U);
+    EXPECT_EQ(carr.Size(), 0u);
+    EXPECT_EQ(arr.Size(), 0u);
     const J::Object &cobj = objConst["TestObject"];
     EXPECT_EQ(cobj["a"], 0.0);
     EXPECT_EQ(cobj["b"], 0.1);
@@ -80,17 +83,88 @@ TEST(Json, API_1)
     J::Object &mobj = obj["TestObject"];
     mobj.Add("test", 42.42);
     mobj.Add("test1", v);
+    EXPECT_TRUE(cobj["test"].Type().IsNumber());
+    EXPECT_TRUE(cobj["test"].Type().IsDouble());
+    EXPECT_FALSE(cobj["test"].Type().IsInteger());
     EXPECT_EQ(cobj["test"], 42.42);
     EXPECT_EQ(mobj["test"], 42.42);
     EXPECT_EQ(cobj["test1"], 42.42);
     EXPECT_EQ(mobj["test1"], 42.42);
     mobj.RemoveAt("test1");
     mobj.RemoveAt("a");
-    EXPECT_EQ(mobj.Size(), 3U);
-    EXPECT_EQ(cobj.Size(), 3U);
+    EXPECT_EQ(mobj.Size(), 3u);
+    EXPECT_EQ(cobj.Size(), 3u);
     mobj.Properties.Clear();
-    EXPECT_EQ(mobj.Size(), 0U);
-    EXPECT_EQ(cobj.Size(), 0U);
+    EXPECT_EQ(mobj.Size(), 0u);
+    EXPECT_EQ(cobj.Size(), 0u);
+}
+
+TEST(Json, API_1_2)
+{
+    J::Object obj{
+        {"Test", 0.0},
+        {"Test1", true},
+        {"TestArray", J::Array {"A", "B", "TrouDuCul"}},
+        {"TestObject", J::Object
+            {
+                {"a", 0.0},
+                {"b", 0.1},
+                {"c", true},
+                {"d", bpf::i64(42)},
+            }
+        }
+    };
+
+    EXPECT_EQ(obj["Test"], 0.0);
+    EXPECT_FALSE(obj["Test"] == true);
+    EXPECT_FALSE(obj["Test"] == "test");
+    EXPECT_FALSE(obj["Test"] == bpf::String("test"));
+    EXPECT_FALSE(obj["Test"] == bpf::i64(42));
+    EXPECT_EQ(obj["Test1"], true);
+    EXPECT_FALSE(obj["Test1"] == 0.0);
+    EXPECT_FALSE(obj["Test1"] == bpf::i64(0));
+    const J::Object &objConst = obj;
+    EXPECT_TRUE(objConst["TestArray"].Type().IsArray());
+    const J::Array &carr = objConst["TestArray"];
+    EXPECT_EQ(carr[0], "A");
+    EXPECT_STREQ(*carr[0].ToString(), "A");
+    J::Array &arr = obj["TestArray"];
+    J v = 42.42;
+    arr.Add(42.42);
+    arr.Add(v);
+    EXPECT_EQ(carr[3], 42.42);
+    EXPECT_EQ(carr[4], 42.42);
+    arr.RemoveAt(4);
+    arr.RemoveAt(0);
+    EXPECT_EQ(carr.Size(), 3u);
+    EXPECT_EQ(arr.Size(), 3u);
+    arr.Items.Clear();
+    EXPECT_EQ(carr.Size(), 0u);
+    EXPECT_EQ(arr.Size(), 0u);
+    const J::Object &cobj = objConst["TestObject"];
+    EXPECT_EQ(cobj["a"], 0.0);
+    EXPECT_EQ(cobj["b"], 0.1);
+    EXPECT_EQ(cobj["c"], true);
+    EXPECT_EQ(cobj["d"], bpf::i64(42));
+    EXPECT_TRUE(cobj["d"].Type().IsNumber());
+    EXPECT_TRUE(cobj["d"].Type().IsInteger());
+    J::Object &mobj = obj["TestObject"];
+    mobj.Add("test", 42.42);
+    mobj.Add("test1", v);
+    EXPECT_TRUE(cobj["test"].Type().IsNumber());
+    EXPECT_TRUE(cobj["test"].Type().IsDouble());
+    EXPECT_FALSE(cobj["test"].Type().IsInteger());
+    EXPECT_EQ(cobj["test"], 42.42);
+    EXPECT_EQ(mobj["test"], 42.42);
+    EXPECT_EQ(cobj["test1"], 42.42);
+    EXPECT_EQ(mobj["test1"], 42.42);
+    mobj.RemoveAt("test1");
+    mobj.RemoveAt("a");
+    EXPECT_EQ(mobj.Size(), 4u);
+    EXPECT_EQ(cobj.Size(), 4u);
+    mobj.Properties.Clear();
+    EXPECT_EQ(mobj.Size(), 0u);
+    EXPECT_EQ(cobj.Size(), 0u);
 }
 
 TEST(Json, API_2)
@@ -117,11 +191,13 @@ TEST(Json, API_2)
     for (auto &json : arr)
     {
         EXPECT_EQ(json.Type(), J::OBJECT);
+        EXPECT_TRUE(json.Type().IsObject());
         EXPECT_EQ(json.ToObject()["Test"], "a");
         EXPECT_EQ(json.ToObject()["Test1"], "b");
         const J::Object &jobj = json;
         for (auto &sjson : jobj)
         {
+            EXPECT_TRUE(sjson.Value.Type().IsString());
             EXPECT_EQ(sjson.Value.Type(), J::STRING);
             EXPECT_TRUE(sjson.Key == "Test" || sjson.Key == "Test1");
         }
@@ -211,7 +287,7 @@ TEST(Json, API_6)
     {
         {"MyStr", "Test"},
     };
-    J::Array myArr = J::Array{ 1.0, true };
+    J::Array myArr = J::Array{ 1.0, true, bpf::i64(42) };
     J val = myObj;
     J val1 = myArr;
     auto obj1 = &val;
@@ -228,7 +304,9 @@ TEST(Json, API_6)
     EXPECT_THROW((void)((J::Object &)val1), bpf::json::JsonException);
     EXPECT_THROW(val1.ToObject(), bpf::json::JsonException);
     EXPECT_THROW((void)((double)val), bpf::json::JsonException);
-    EXPECT_THROW(val.ToNumber(), bpf::json::JsonException);
+    EXPECT_THROW((void)((bpf::int64)val), bpf::json::JsonException);
+    EXPECT_THROW(val.ToDouble(), bpf::json::JsonException);
+    EXPECT_THROW(val.ToInteger(), bpf::json::JsonException);
     EXPECT_THROW((void)((bool)val), bpf::json::JsonException);
     EXPECT_THROW(val.ToBoolean(), bpf::json::JsonException);
     EXPECT_STREQ(*val.ToObject()["MyStr"].ToString(), "Test");
@@ -239,6 +317,8 @@ TEST(Json, API_6)
     EXPECT_EQ(d, 1.0);
     bool b = myArr[1];
     EXPECT_EQ(b, true);
+    bpf::int64 i = myArr[2];
+    EXPECT_EQ(i, 42);
 }
 
 TEST(Json, LexerParser)
@@ -263,7 +343,7 @@ TEST(Json, LexerParser)
     J::Object testObject = testObj;
     EXPECT_EQ(testObject["test"], true);
     EXPECT_EQ(testObject["test"], true);
-    EXPECT_EQ(testObject["-42"], -42.0);
+    EXPECT_EQ(testObject["-42"], bpf::i64(-42));
     EXPECT_EQ(testObject["TheNull"], nullptr);
     EXPECT_EQ(testObject["TheNull"], nullptr);
     EXPECT_EQ(testObject["TheNull"], nullptr);
@@ -308,7 +388,7 @@ TEST(Json, LexerParser_Comments)
     J::Object testObject = testObj;
     EXPECT_EQ(testObject["test"], true);
     EXPECT_EQ(testObject["test"], true);
-    EXPECT_EQ(testObject["-42"], -42.0);
+    EXPECT_EQ(testObject["-42"], bpf::i64(-42));
     EXPECT_EQ(testObject["TheNull"], nullptr);
     EXPECT_EQ(testObject["TheNull"], nullptr);
     EXPECT_EQ(testObject["TheNull"], nullptr);
