@@ -58,6 +58,7 @@ TEST(Json, API_1)
     EXPECT_FALSE(obj["Test"] == bpf::i64(42));
     EXPECT_EQ(obj["Test1"], true);
     EXPECT_FALSE(obj["Test1"] == 0.0);
+    EXPECT_FALSE(obj["Test1"] == bpf::i64(0));
     const J::Object &objConst = obj;
     EXPECT_TRUE(objConst["TestArray"].Type().IsArray());
     const J::Array &carr = objConst["TestArray"];
