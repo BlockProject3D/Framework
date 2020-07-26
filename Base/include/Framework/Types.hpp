@@ -145,4 +145,10 @@ namespace bpf
      * Signed type variant used for certain collections
      */
     using fisize = intptr;
+
+    template <typename T>
+    inline int64 i64(T t)
+    {
+        return (static_cast<int64>(t));
+    }
 }
