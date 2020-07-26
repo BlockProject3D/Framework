@@ -110,11 +110,11 @@ TEST(Logger, MinLevel_1)
     lg.AddHandler(bpf::memory::MakeUnique<MemoryLog>(log));
     lg.SetLevel(bpf::log::ELogLevel::ERROR);
     lg.Debug("Test");
-    EXPECT_EQ(log.Size(), 0);
+    EXPECT_EQ(log.Size(), 0u);
     lg.Info("Test");
-    EXPECT_EQ(log.Size(), 0);
+    EXPECT_EQ(log.Size(), 0u);
     lg.Warning("Test");
-    EXPECT_EQ(log.Size(), 0);
+    EXPECT_EQ(log.Size(), 0u);
     lg.Error("Test");
     EXPECT_STREQ(*log.Last(), "[UT] 0 Test");
 }
@@ -127,7 +127,7 @@ TEST(Logger, MinLevel_2)
     lg.AddHandler(bpf::memory::MakeUnique<MemoryLog>(log));
     lg.SetLevel(bpf::log::ELogLevel::INFO);
     lg.Debug("Test");
-    EXPECT_EQ(log.Size(), 0);
+    EXPECT_EQ(log.Size(), 0u);
     lg.Info("Test");
     EXPECT_STREQ(*log.Last(), "[UT] 2 Test");
     lg.Warning("Test");
