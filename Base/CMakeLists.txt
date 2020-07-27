@@ -81,6 +81,7 @@ set(SOURCES
     ./include/Framework/Memory/ObjectFactory.hpp
     ./include/Framework/Memory/ObjectConstructor.hpp
     ./include/Framework/Memory/ObjectPtr.hpp
+    ./include/Framework/Memory/RawMemberFunction.hpp
     ./include/Framework/Network/Network.hpp
     ./include/Framework/System/Module.hpp
     ./include/Framework/System/ModuleException.hpp
