@@ -33,9 +33,18 @@
 
 namespace bpf
 {
+    /**
+     * Represents a delegate function
+     * @tparam Fn the function signature (using functional-like notation)
+     */
     template <typename Fn>
     class BP_TPL_API Delegate;
 
+    /**
+     * Represents a delegate function
+     * @tparam R the return type
+     * @tparam Args the argument types
+     */
     template <typename R, typename... Args>
     class BP_TPL_API Delegate<R(Args...)>
     {
@@ -45,6 +54,12 @@ namespace bpf
         memory::ObjectPtr<memory::Object> _object;
 
     public:
+        /**
+         * Constructs a delegate from an ObjectPtr
+         * @tparam T the type of this
+         * @param func the function pointer
+         * @param thisptr the pointer to this
+         */
         template <typename T>
         inline Delegate(R (T::*func)(Args...), memory::ObjectPtr<T> &&thisptr) noexcept
             : _member(static_cast<FuncType>(func))
@@ -52,6 +67,12 @@ namespace bpf
         {
         }
 
+        /**
+         * Constructs a delegate from an ObjectPtr
+         * @tparam T the type of this
+         * @param func the function pointer
+         * @param thisptr the pointer to this
+         */
         template <typename T>
         inline Delegate(R (T::*func)(Args...), const memory::ObjectPtr<T> &thisptr)
             : _member(static_cast<FuncType>(func))
@@ -59,6 +80,12 @@ namespace bpf
         {
         }
 
+        /**
+         * Constructs a delegate from a raw pointer
+         * @tparam T the type of this
+         * @param func the function pointer
+         * @param thisptr the pointer to this
+         */
         template <typename T>
         inline Delegate(R (T::*func)(Args...), T *thisptr)
             : _member(static_cast<FuncType>(func))
@@ -66,17 +93,29 @@ namespace bpf
         {
         }
 
+        /**
+         * Constructs a null delegate
+         */
         inline Delegate() noexcept
             : _member(nullptr)
             , _object(nullptr)
         {
         }
 
+        /**
+         * Conversion operator used to check if the delegate is valid
+         * @return true if this delegate is safe to be called, false otherwise
+         */
         inline operator bool() const noexcept
         {
             return (_member != nullptr && _object != nullptr);
         }
 
+        /**
+         * Invokes the delegate function
+         * @param args the arguments to pass to the delegate
+         * @return the return value of the delegate
+         */
         inline R operator()(Args &&... args)
         {
             if (_member == nullptr || _object == nullptr)
@@ -85,6 +124,11 @@ namespace bpf
         }
     };
 
+    /**
+     * Represents a delegate function (const version)
+     * @tparam R the return type
+     * @tparam Args the argument types
+     */
     template <typename R, typename... Args>
     class BP_TPL_API Delegate<R(Args...) const>
     {
@@ -94,6 +138,12 @@ namespace bpf
         memory::ObjectPtr<memory::Object> _object;
 
     public:
+        /**
+         * Constructs a delegate from an ObjectPtr
+         * @tparam T the type of this
+         * @param func the function pointer
+         * @param thisptr the pointer to this
+         */
         template <typename T>
         inline Delegate(R (T::*func)(Args...) const, memory::ObjectPtr<T> &&thisptr) noexcept
             : _member(static_cast<FuncType>(func))
@@ -101,6 +151,12 @@ namespace bpf
         {
         }
 
+        /**
+         * Constructs a delegate from an ObjectPtr
+         * @tparam T the type of this
+         * @param func the function pointer
+         * @param thisptr the pointer to this
+         */
         template <typename T>
         inline Delegate(R (T::*func)(Args...) const, const memory::ObjectPtr<T> &thisptr)
             : _member(static_cast<FuncType>(func))
@@ -108,6 +164,12 @@ namespace bpf
         {
         }
 
+        /**
+         * Constructs a delegate from a raw pointer
+         * @tparam T the type of this
+         * @param func the function pointer
+         * @param thisptr the pointer to this
+         */
         template <typename T>
         inline Delegate(R (T::*func)(Args...) const, T *thisptr)
             : _member(static_cast<FuncType>(func))
@@ -115,17 +177,29 @@ namespace bpf
         {
         }
 
+        /**
+         * Constructs a null delegate
+         */
         inline Delegate() noexcept
             : _member(nullptr)
             , _object(nullptr)
         {
         }
 
+        /**
+         * Conversion operator used to check if the delegate is valid
+         * @return true if this delegate is safe to be called, false otherwise
+         */
         inline operator bool() const noexcept
         {
             return (_member != nullptr && _object != nullptr);
         }
 
+        /**
+         * Invokes the delegate function
+         * @param args the arguments to pass to the delegate
+         * @return the return value of the delegate
+         */
         inline R operator()(Args &&... args)
         {
             if (_member == nullptr || _object == nullptr)
