@@ -41,7 +41,7 @@ namespace bpf
     class BP_TPL_API Delegate;
 
     /**
-     * Represents a delegate function
+     * Represents a delegate function (non const mode)
      * @tparam R the return type
      * @tparam Args the argument types
      */
@@ -114,6 +114,7 @@ namespace bpf
         /**
          * Invokes the delegate function
          * @param args the arguments to pass to the delegate
+         * @throw RuntimeException in case this delegate is null
          * @return the return value of the delegate
          */
         inline R operator()(Args &&... args)
