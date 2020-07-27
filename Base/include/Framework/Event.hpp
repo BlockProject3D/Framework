@@ -32,18 +32,75 @@
 
 namespace bpf
 {
-    template <typename Fn, typename... Args>
-    class BP_TPL_API Event
+    /**
+     * Represents an event
+     * @tparam Fn delegate signature (using functional-like notation)
+     */
+    template <typename Fn>
+    class BP_TPL_API Event;
+
+    /**
+     * Represents an event (non const mode)
+     * @tparam R the return type
+     * @tparam Args the argument types
+     */
+    template <typename R, typename... Args>
+    class BP_TPL_API Event<R(Args...)>
     {
     private:
-        collection::List<Delegate<Fn, Args...>> _lst;
+        collection::List<Delegate<R(Args...)>> _lst;
 
     public:
-        inline void operator+=(Delegate<Fn, Args...> &&delegate)
+        /**
+         * Subscribes a new delegate to this event
+         * @param delegate the delegate to register
+         */
+        inline void operator+=(Delegate<R(Args...)> &&delegate)
         {
-            _lst.Add(delegate);
+            _lst.Add(std::move(delegate));
         }
 
+        /**
+         * Invokes this event. Delegates are automatically removed
+         * @param args the arguments to pass to the delegate
+         */
+        inline void Invoke(Args &&... args)
+        {
+            for (auto &it = _lst.begin(); it != _lst.end(); ++it)
+            {
+                if (!*it)
+                    _lst.RemoveAt(it);
+                if (it != _lst.end() && *it)
+                    *it(std::forward<Args>(args)...);
+            }
+        }
+    };
+
+    /**
+     * Represents an event (const mode)
+     * @tparam R the return type
+     * @tparam Args the argument types
+     */
+    template <typename R, typename... Args>
+    class BP_TPL_API Event<R(Args...) const>
+    {
+    private:
+        collection::List<Delegate<R(Args...) const>> _lst;
+
+    public:
+        /**
+         * Subscribes a new delegate to this event
+         * @param delegate the delegate to register
+         */
+        inline void operator+=(Delegate<R(Args...) const> &&delegate)
+        {
+            _lst.Add(std::move(delegate));
+        }
+
+        /**
+         * Invokes this event. Delegates are automatically removed
+         * @param args the arguments to pass to the delegate
+         */
         inline void Invoke(Args &&... args)
         {
             for (auto &it = _lst.begin(); it != _lst.end(); ++it)
