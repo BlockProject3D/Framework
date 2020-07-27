@@ -27,51 +27,31 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Memory/ObjectPtr.hpp"
-#include "Framework/RuntimeException.hpp"
-#include <type_traits>
+#include "Framework/Collection/List.hpp"
+#include "Framework/Delegate.hpp"
 
 namespace bpf
 {
     template <typename Fn, typename... Args>
-    class BP_TPL_API Delegate
+    class BP_TPL_API Event
     {
     private:
-        using FuncType = typename std::result_of<Fn>::type (memory::Object::*)(Args...);
-        FuncType _member;
-        memory::ObjectPtr<memory::Object> _object;
+        collection::List<Delegate<Fn, Args...>> _lst;
 
     public:
-        template <typename T>
-        inline Delegate(typename std::result_of<Fn>::type (T::*func)(Args...), memory::ObjectPtr<T> &&thisptr) noexcept
-            : _member(func)
-            , _object(std::move(thisptr))
+        inline void operator+=(Delegate<Fn, Args...> &&delegate)
         {
+            _lst.Add(delegate);
         }
 
-        template <typename T>
-        inline Delegate(typename std::result_of<Fn>::type (T::*func)(Args...), const memory::ObjectPtr<T> &thisptr)
-            : _member(func)
-            , _object(thisptr)
+        inline void Invoke(Args &&... args)
         {
-        }
-
-        inline Delegate() noexcept
-            : _member(nullptr)
-            , _object(nullptr)
-        {
-        }
-
-        inline operator bool() const noexcept
-        {
-            return (_member != nullptr && _object != nullptr);
-        }
-
-        inline typename std::result_of<Fn>::type operator()(Args &&... args)
-        {
-            if (_member == nullptr || _object == nullptr)
-                throw RuntimeException("Delegate", "Attempt to call null");
-            return (_object->*_member(std::forward<Args>(args)...));
+            for (auto &it = _lst.begin(); it != _lst.end(); ++it)
+            {
+                if (!*it)
+                    _lst.RemoveAt(it);
+                *it(std::forward<Args>(args)...);
+            }
         }
     };
 }
