@@ -33,25 +33,35 @@
 
 namespace bpf
 {
-    template <typename Fn, typename... Args>
-    class BP_TPL_API Delegate
+    template <typename Fn>
+    class BP_TPL_API Delegate;
+
+    template <typename R, typename... Args>
+    class BP_TPL_API Delegate<R(Args...)>
     {
     private:
-        using FuncType = typename std::result_of<Fn>::type (memory::Object::*)(Args...);
+        using FuncType = R (memory::Object::*)(Args...);
         FuncType _member;
         memory::ObjectPtr<memory::Object> _object;
 
     public:
         template <typename T>
-        inline Delegate(typename std::result_of<Fn>::type (T::*func)(Args...), memory::ObjectPtr<T> &&thisptr) noexcept
-            : _member(func)
+        inline Delegate(R (T::*func)(Args...), memory::ObjectPtr<T> &&thisptr) noexcept
+            : _member(static_cast<FuncType>(func))
             , _object(std::move(thisptr))
         {
         }
 
         template <typename T>
-        inline Delegate(typename std::result_of<Fn>::type (T::*func)(Args...), const memory::ObjectPtr<T> &thisptr)
-            : _member(func)
+        inline Delegate(R (T::*func)(Args...), const memory::ObjectPtr<T> &thisptr)
+            : _member(static_cast<FuncType>(func))
+            , _object(thisptr)
+        {
+        }
+
+        template <typename T>
+        inline Delegate(R (T::*func)(Args...), T *thisptr)
+            : _member(static_cast<FuncType>(func))
             , _object(thisptr)
         {
         }
@@ -67,11 +77,60 @@ namespace bpf
             return (_member != nullptr && _object != nullptr);
         }
 
-        inline typename std::result_of<Fn>::type operator()(Args &&... args)
+        inline R operator()(Args &&... args)
         {
             if (_member == nullptr || _object == nullptr)
                 throw RuntimeException("Delegate", "Attempt to call null");
-            return (_object->*_member(std::forward<Args>(args)...));
+            return ((_object.Raw()->*_member)(std::forward<Args>(args)...));
+        }
+    };
+
+    template <typename R, typename... Args>
+    class BP_TPL_API Delegate<R(Args...) const>
+    {
+    private:
+        using FuncType = R (memory::Object::*)(Args...) const;
+        FuncType _member;
+        memory::ObjectPtr<memory::Object> _object;
+
+    public:
+        template <typename T>
+        inline Delegate(R (T::*func)(Args...) const, memory::ObjectPtr<T> &&thisptr) noexcept
+            : _member(static_cast<FuncType>(func))
+            , _object(std::move(thisptr))
+        {
+        }
+
+        template <typename T>
+        inline Delegate(R (T::*func)(Args...) const, const memory::ObjectPtr<T> &thisptr)
+            : _member(static_cast<FuncType>(func))
+            , _object(thisptr)
+        {
+        }
+
+        template <typename T>
+        inline Delegate(R (T::*func)(Args...) const, T *thisptr)
+            : _member(static_cast<FuncType>(func))
+            , _object(thisptr)
+        {
+        }
+
+        inline Delegate() noexcept
+            : _member(nullptr)
+            , _object(nullptr)
+        {
+        }
+
+        inline operator bool() const noexcept
+        {
+            return (_member != nullptr && _object != nullptr);
+        }
+
+        inline R operator()(Args &&... args)
+        {
+            if (_member == nullptr || _object == nullptr)
+                throw RuntimeException("Delegate", "Attempt to call null");
+            return ((_object.Raw()->*_member)(std::forward<Args>(args)...));
         }
     };
 }
