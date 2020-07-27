@@ -300,6 +300,9 @@ namespace bpf
                 return (ObjectPtr<T1>(static_cast<T1 *>(RawPtr)));
 #endif
             }
+
+            template <typename T1>
+            friend class ObjectPtr;
         };
     }
 }

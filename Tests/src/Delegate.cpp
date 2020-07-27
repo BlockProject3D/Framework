@@ -135,12 +135,14 @@ TEST(ObjectPtr, MemberCall_3)
     EXPECT_EQ(res, -42);
 }
 
-TEST(Delegate, Basic)
+TEST(Delegate, Basic_1)
 {
     auto ptr = bpf::memory::MakeUnique<MyObject>(-42);
     auto delegate = bpf::Delegate<int()>(&MyObject::TestFunc, ptr.Raw());
     auto delegate1 = bpf::Delegate<void(int &)>(&MyObject::TestFunc1, ptr.Raw());
     auto delegate2 = bpf::Delegate<int() const>(&MyObject::TestFunc2, ptr.Raw());
+    auto delegate3 = bpf::Delegate<void()>();
+    auto delegate4 = bpf::Delegate<void() const>();
     EXPECT_TRUE(delegate);
     auto val = delegate();
     EXPECT_EQ(val, -42);
@@ -150,4 +152,73 @@ TEST(Delegate, Basic)
     EXPECT_EQ(val, -42);
     val = delegate2();
     EXPECT_EQ(val, -42);
+    EXPECT_FALSE(delegate3);
+    EXPECT_THROW(delegate3(), bpf::RuntimeException);
+    EXPECT_FALSE(delegate4);
+    EXPECT_THROW(delegate4(), bpf::RuntimeException);
+    auto d = delegate4;
+    EXPECT_FALSE(d);
+    EXPECT_THROW(d(), bpf::RuntimeException);
+    auto d1 = std::move(delegate4);
+    EXPECT_FALSE(d1);
+    EXPECT_THROW(d1(), bpf::RuntimeException);
+}
+
+TEST(Delegate, Basic_2)
+{
+    auto ptr = bpf::memory::MakeUnique<MyObject>(-42);
+    auto objptr = bpf::memory::ObjectPtr<MyObject>(ptr.Raw());
+    auto delegate = bpf::Delegate<int()>(&MyObject::TestFunc, objptr);
+    auto delegate1 = bpf::Delegate<void(int &)>(&MyObject::TestFunc1, objptr);
+    auto delegate2 = bpf::Delegate<int() const>(&MyObject::TestFunc2, objptr);
+    auto delegate3 = bpf::Delegate<void()>();
+    auto delegate4 = bpf::Delegate<void() const>();
+    EXPECT_TRUE(delegate);
+    auto val = delegate();
+    EXPECT_EQ(val, -42);
+    val = -12;
+    EXPECT_EQ(val, -12);
+    delegate1(val);
+    EXPECT_EQ(val, -42);
+    val = delegate2();
+    EXPECT_EQ(val, -42);
+    EXPECT_FALSE(delegate3);
+    EXPECT_THROW(delegate3(), bpf::RuntimeException);
+    EXPECT_FALSE(delegate4);
+    EXPECT_THROW(delegate4(), bpf::RuntimeException);
+    auto d = delegate4;
+    EXPECT_FALSE(d);
+    EXPECT_THROW(d(), bpf::RuntimeException);
+    auto d1 = std::move(delegate4);
+    EXPECT_FALSE(d1);
+    EXPECT_THROW(d1(), bpf::RuntimeException);
+}
+
+TEST(Delegate, Basic_3)
+{
+    auto ptr = bpf::memory::MakeUnique<MyObject>(-42);
+    auto delegate = bpf::Delegate<int()>(&MyObject::TestFunc, bpf::memory::ObjectPtr<MyObject>(ptr.Raw()));
+    auto delegate1 = bpf::Delegate<void(int &)>(&MyObject::TestFunc1, bpf::memory::ObjectPtr<MyObject>(ptr.Raw()));
+    auto delegate2 = bpf::Delegate<int() const>(&MyObject::TestFunc2, bpf::memory::ObjectPtr<MyObject>(ptr.Raw()));
+    auto delegate3 = bpf::Delegate<void()>();
+    auto delegate4 = bpf::Delegate<void() const>();
+    EXPECT_TRUE(delegate);
+    auto val = delegate();
+    EXPECT_EQ(val, -42);
+    val = -12;
+    EXPECT_EQ(val, -12);
+    delegate1(val);
+    EXPECT_EQ(val, -42);
+    val = delegate2();
+    EXPECT_EQ(val, -42);
+    EXPECT_FALSE(delegate3);
+    EXPECT_THROW(delegate3(), bpf::RuntimeException);
+    EXPECT_FALSE(delegate4);
+    EXPECT_THROW(delegate4(), bpf::RuntimeException);
+    auto d = delegate4;
+    EXPECT_FALSE(d);
+    EXPECT_THROW(d(), bpf::RuntimeException);
+    auto d1 = std::move(delegate4);
+    EXPECT_FALSE(d1);
+    EXPECT_THROW(d1(), bpf::RuntimeException);
 }
