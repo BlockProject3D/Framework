@@ -143,10 +143,10 @@ namespace bpf
         private:
             fsize _curid;
             fsize _max;
-            const T *_arr;
+            T *_arr;
 
         public:
-            inline ArrayIterator(const T *lowlevel, const fsize size, const fsize start)
+            inline ArrayIterator(T *lowlevel, const fsize size, const fsize start)
                 : _curid(start)
                 , _max(size)
                 , _arr(lowlevel)

@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Collection/Iterator.hpp"
+#include "Framework/Collection/HashMap.Iterator.hpp"
 #include "Framework/Collection/Utility.hpp"
 #include "Framework/Hash.Base.hpp"
 #include "Framework/Hash.hpp"
@@ -72,6 +72,15 @@ namespace bpf
             };
 
         public:
+            using Iterator = HashMapIterator<HashMap<K, V, HashOp>, Entry, Node>;
+            using CIterator = HashMapConstIterator<HashMap<K, V, HashOp>, Entry, Node>;
+            using ReverseIterator = HashMapReverseIterator<HashMap<K, V, HashOp>, Entry, Node>;
+            using CReverseIterator = HashMapConstReverseIterator<HashMap<K, V, HashOp>, Entry, Node>;
+
+            friend Iterator;
+            friend CIterator;
+            friend ReverseIterator;
+            friend CReverseIterator;
 
         private:
             Node *_data;
@@ -258,7 +267,25 @@ namespace bpf
              * Returns an iterator to the begining of the collection
              * @return new iterator
              */
-            inline Iterator begin() const
+            inline CIterator begin() const
+            {
+                return (CIterator(_data, 0, CurSize));
+            }
+
+            /**
+             * Returns an iterator to the end of the collection
+             * @return new iterator
+             */
+            inline CIterator end() const
+            {
+                return (CIterator(_data, CurSize, CurSize));
+            }
+
+            /**
+             * Returns an iterator to the begining of the collection
+             * @return new iterator
+             */
+            inline Iterator begin()
             {
                 return (Iterator(_data, 0, CurSize));
             }
@@ -267,7 +294,7 @@ namespace bpf
              * Returns an iterator to the end of the collection
              * @return new iterator
              */
-            inline Iterator end() const
+            inline Iterator end()
             {
                 return (Iterator(_data, CurSize, CurSize));
             }
@@ -276,7 +303,25 @@ namespace bpf
              * Returns a reverse iterator to the begining of the collection
              * @return new iterator
              */
-            inline ReverseIterator rbegin() const
+            inline CReverseIterator rbegin() const
+            {
+                return (CReverseIterator(_data, CurSize - 1, CurSize));
+            }
+
+            /**
+             * Returns a reverse iterator to the end of the collection
+             * @return new iterator
+             */
+            inline CReverseIterator rend() const
+            {
+                return (CReverseIterator(_data, (fsize)-1, CurSize));
+            }
+
+            /**
+             * Returns a reverse iterator to the begining of the collection
+             * @return new iterator
+             */
+            inline ReverseIterator rbegin()
             {
                 return (ReverseIterator(_data, CurSize - 1, CurSize));
             }
@@ -285,7 +330,7 @@ namespace bpf
              * Returns a reverse iterator to the end of the collection
              * @return new iterator
              */
-            inline ReverseIterator rend() const
+            inline ReverseIterator rend()
             {
                 return (ReverseIterator(_data, (fsize)-1, CurSize));
             }
