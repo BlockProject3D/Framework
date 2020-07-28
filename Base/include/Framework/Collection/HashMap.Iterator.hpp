@@ -250,7 +250,7 @@ namespace bpf
 
         public:
             inline HashMapReverseIterator(NodeType *data, fsize start, fsize size)
-                : HashMapConstIterator<HashMap, EntryType, NodeType>(data, start, size, true)
+                : HashMapIterator<HashMap, EntryType, NodeType>(data, start, size, true)
             {
             }
 
@@ -273,8 +273,6 @@ namespace bpf
                 }
                 return (*this);
             }
-
-            friend HashMap;
         };
     }
 }

@@ -136,13 +136,13 @@ namespace bpf
 
             /**
              * Removes an element from the hash table
-             * @param pos iterator of the element to remove
+             * @param pos iterator of the element to remove, it is undefined behavior to pass a derived Iterator type
              */
             void RemoveAt(Iterator &pos);
 
             /**
              * Removes an element from the hash table
-             * @param pos iterator of the element to remove
+             * @param pos iterator of the element to remove, it is undefined behavior to pass a derived Iterator type
              */
             void RemoveAt(Iterator &&pos);
 
@@ -173,14 +173,14 @@ namespace bpf
              * @param other HashMap to compare with
              * @return true if the two maps are equal, false otherwise
              */
-            bool operator==(const HashMap<K, V, HashOp> &other);
+            bool operator==(const HashMap<K, V, HashOp> &other) const noexcept;
 
             /**
              * Compare HashMap by performing a per-element check
              * @param other HashMap to compare with
              * @return false if the two maps are equal, true otherwise
              */
-            inline bool operator!=(const HashMap<K, V, HashOp> &other)
+            inline bool operator!=(const HashMap<K, V, HashOp> &other) const noexcept
             {
                 return (!operator==(other));
             }

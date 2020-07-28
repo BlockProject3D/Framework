@@ -197,14 +197,14 @@ namespace bpf
              * @param other List to compare with
              * @return true if the two lists are equal, false otherwise
              */
-            bool operator==(const List<T> &other);
+            bool operator==(const List<T> &other) const noexcept;
 
             /**
              * Compare List by performing a per-element check
              * @param other ArrayList to compare with
              * @return false if the two lists are equal, true otherwise
              */
-            inline bool operator!=(const List<T> &other)
+            inline bool operator!=(const List<T> &other) const noexcept
             {
                 return (!operator==(other));
             }
@@ -217,13 +217,13 @@ namespace bpf
 
             /**
              * Removes an item at an arbitary position in the list
-             * @param pos item position
+             * @param pos item position, it is undefined behavior to pass a derived Iterator type
              */
             void RemoveAt(Iterator &pos);
 
             /**
              * Removes an item at an arbitary position in the list
-             * @param pos item position
+             * @param pos item position, it is undefined behavior to pass a derived Iterator type
              */
             void RemoveAt(Iterator &&pos);
 

@@ -34,144 +34,6 @@ namespace bpf
     namespace collection
     {
         template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
-        Map<K, V, Greater, Less>::Iterator::Iterator(Node *root, Node *start)
-            : _root(root)
-        {
-            ResetIterator();
-            if (start != reinterpret_cast<Node *>(1))
-            {
-                while (_curNode != start)
-                    operator++();
-            }
-        }
-
-        template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
-        void Map<K, V, Greater, Less>::Iterator::ResetIterator()
-        {
-            _fixedRoot = nullptr;
-            _curNode = nullptr;
-            _stack.Clear();
-            _backStack.Clear();
-            Node *nd = _root;
-            while (nd != nullptr)
-            {
-                _stack.Push(nd);
-                nd = nd->Left;
-            }
-            operator++();
-            if (_curNode == _root)
-                _fixedRoot = _curNode;
-            else
-                _fixedRoot = _curNode->Parent;
-        }
-
-        template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
-        typename Map<K, V, Greater, Less>::Iterator &Map<K, V, Greater, Less>::Iterator::operator++()
-        {
-            if (_curNode != nullptr)
-                _backStack.Push(_curNode);
-            if (_stack.Size() == 0)
-            {
-                _curNode = nullptr;
-                return (*this);
-            }
-            Node *cpy = _stack.Pop();
-            _curNode = cpy;
-            cpy = cpy->Right;
-            while (cpy != nullptr)
-            {
-                _stack.Push(cpy);
-                cpy = cpy->Left;
-            }
-            return (*this);
-        }
-
-        template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
-        typename Map<K, V, Greater, Less>::Iterator &Map<K, V, Greater, Less>::Iterator::operator--()
-        {
-            if (_backStack.Size() == 0)
-                return (*this);
-            if (_curNode == _fixedRoot)
-            {
-                ResetIterator();
-                return (*this);
-            }
-            if (_curNode != nullptr)
-                _stack.Push(_curNode);
-            _curNode = _backStack.Pop();
-            return (*this);
-        }
-
-        template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
-        Map<K, V, Greater, Less>::ReverseIterator::ReverseIterator(Node *root, Node *start)
-            : _root(root)
-        {
-            ResetIterator();
-            if (start != reinterpret_cast<Node *>(1))
-            {
-                while (_curNode != start)
-                    operator++();
-            }
-        }
-
-        template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
-        void Map<K, V, Greater, Less>::ReverseIterator::ResetIterator()
-        {
-            _fixedRoot = nullptr;
-            _curNode = nullptr;
-            _stack.Clear();
-            _backStack.Clear();
-            Node *nd = _root;
-            while (nd != nullptr)
-            {
-                _stack.Push(nd);
-                nd = nd->Right;
-            }
-            operator++();
-            if (_curNode == _root)
-                _fixedRoot = _curNode;
-            else
-                _fixedRoot = _curNode->Parent;
-        }
-
-        template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
-        typename Map<K, V, Greater, Less>::ReverseIterator &Map<K, V, Greater, Less>::ReverseIterator::operator++()
-        {
-            if (_curNode != nullptr)
-                _backStack.Push(_curNode);
-            if (_stack.Size() == 0)
-            {
-                _curNode = nullptr;
-                return (*this);
-            }
-            Node *cpy = _stack.Pop();
-            _curNode = cpy;
-            cpy = cpy->Left;
-            while (cpy != nullptr)
-            {
-                _stack.Push(cpy);
-                cpy = cpy->Right;
-            }
-            return (*this);
-        }
-
-        template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
-        typename Map<K, V, Greater, Less>::ReverseIterator &Map<K, V, Greater, Less>::ReverseIterator::operator--()
-        {
-            if (_backStack.Size() == 0)
-                return (*this);
-            if (_curNode == _fixedRoot)
-            {
-                ResetIterator();
-                return (*this);
-            }
-            if (_curNode != nullptr)
-                _stack.Push(_curNode);
-            _curNode = _backStack.Pop();
-            return (*this);
-        }
-
-        template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
         Map<K, V, Greater, Less>::Map()
             : _root(nullptr)
             , _count(0)
@@ -726,11 +588,11 @@ namespace bpf
         }
 
         template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
-        bool Map<K, V, Greater, Less>::operator==(const Map<K, V, Greater, Less> &other)
+        bool Map<K, V, Greater, Less>::operator==(const Map<K, V, Greater, Less> &other) const noexcept
         {
             if (_count != other._count)
                 return (false);
-            Iterator it = begin();
+            auto it = begin();
 
             while (it != end())
             {

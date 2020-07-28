@@ -140,7 +140,7 @@ namespace bpf
         template <typename T>
         class BP_TPL_API ArrayIterator : public Iterator<ArrayIterator<T>, T>
         {
-        private:
+        protected:
             fsize _curid;
             fsize _max;
             T *_arr;
@@ -207,11 +207,11 @@ namespace bpf
         class BP_TPL_API ArrayReverseIterator : public ArrayIterator<T>
         {
         private:
-            using ArrayConstIterator<T>::_curid;
-            using ArrayConstIterator<T>::_max;
+            using ArrayIterator<T>::_curid;
+            using ArrayIterator<T>::_max;
 
         public:
-            inline ArrayReverseIterator(const T *lowlevel, const fsize size, const fsize start)
+            inline ArrayReverseIterator(T *lowlevel, const fsize size, const fsize start)
                 : ArrayIterator<T>(lowlevel, size, start)
             {
             }

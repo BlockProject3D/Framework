@@ -263,9 +263,9 @@ namespace bpf
         {
             if (a.CurID >= CurSize || b.CurID >= CurSize || _data[a.CurID].State != ENTRY_STATE_OCCUPIED || _data[b.CurID].State != ENTRY_STATE_OCCUPIED)
                 return;
-            auto v = std::move(this->operator[](a->Key));
-            this->operator[](a->Key) = std::move(this->operator[](b->Key));
-            this->operator[](b->Key) = std::move(v);
+            auto v = std::move(_data[a.CurID].KeyVal.Value);
+            _data[a.CurID].KeyVal.Value = std::move(_data[b.CurID].KeyVal.Value);
+            _data[b.CurID].KeyVal.Value = std::move(v);
         }
 
         template <typename K, typename V, typename HashOp>
@@ -328,11 +328,11 @@ namespace bpf
         }
 
         template <typename K, typename V, typename HashOp>
-        bool HashMap<K, V, HashOp>::operator==(const HashMap<K, V, HashOp> &other)
+        bool HashMap<K, V, HashOp>::operator==(const HashMap<K, V, HashOp> &other) const noexcept
         {
             if (ElemCount != other.ElemCount)
                 return (false);
-            Iterator it = begin();
+            auto it = begin();
 
             while (it != end())
             {

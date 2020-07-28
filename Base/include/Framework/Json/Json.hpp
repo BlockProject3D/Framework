@@ -182,6 +182,8 @@ namespace bpf
             public:
                 using Iterator = collection::Map<String, Json>::Iterator;
                 using ReverseIterator = collection::Map<String, Json>::ReverseIterator;
+                using CIterator = collection::Map<String, Json>::CIterator;
+                using CReverseIterator = collection::Map<String, Json>::CReverseIterator;
 
                 /**
                  * Object properties
@@ -283,7 +285,7 @@ namespace bpf
                  * Returns an iterator to the begining of the collection
                  * @return new iterator
                  */
-                inline Iterator begin() const
+                inline CIterator begin() const
                 {
                     return (Properties.begin());
                 }
@@ -292,7 +294,25 @@ namespace bpf
                  * Returns an iterator to the end of the collection
                  * @return new iterator
                  */
-                inline Iterator end() const
+                inline CIterator end() const
+                {
+                    return (Properties.end());
+                }
+
+                /**
+                 * Returns an iterator to the begining of the collection
+                 * @return new iterator
+                 */
+                inline Iterator begin()
+                {
+                    return (Properties.begin());
+                }
+
+                /**
+                 * Returns an iterator to the end of the collection
+                 * @return new iterator
+                 */
+                inline Iterator end()
                 {
                     return (Properties.end());
                 }
@@ -301,7 +321,7 @@ namespace bpf
                  * Returns a reverse iterator to the begining of the collection
                  * @return new iterator
                  */
-                inline ReverseIterator rbegin() const
+                inline CReverseIterator rbegin() const
                 {
                     return (Properties.rbegin());
                 }
@@ -310,7 +330,25 @@ namespace bpf
                  * Returns a reverse iterator to the end of the collection
                  * @return new iterator
                  */
-                inline ReverseIterator rend() const
+                inline CReverseIterator rend() const
+                {
+                    return (Properties.rend());
+                }
+
+                /**
+                 * Returns a reverse iterator to the begining of the collection
+                 * @return new iterator
+                 */
+                inline ReverseIterator rbegin()
+                {
+                    return (Properties.rbegin());
+                }
+
+                /**
+                 * Returns a reverse iterator to the end of the collection
+                 * @return new iterator
+                 */
+                inline ReverseIterator rend()
                 {
                     return (Properties.rend());
                 }
@@ -324,6 +362,8 @@ namespace bpf
             public:
                 using Iterator = collection::List<Json>::Iterator;
                 using ReverseIterator = collection::List<Json>::ReverseIterator;
+                using CIterator = collection::List<Json>::CIterator;
+                using CReverseIterator = collection::List<Json>::CReverseIterator;
 
                 /**
                  * Array content
@@ -423,7 +463,7 @@ namespace bpf
                  * Returns an iterator to the begining of the collection
                  * @return new iterator
                  */
-                inline Iterator begin() const
+                inline CIterator begin() const
                 {
                     return (Items.begin());
                 }
@@ -432,7 +472,25 @@ namespace bpf
                  * Returns an iterator to the end of the collection
                  * @return new iterator
                  */
-                inline Iterator end() const
+                inline CIterator end() const
+                {
+                    return (Items.end());
+                }
+
+                /**
+                 * Returns an iterator to the begining of the collection
+                 * @return new iterator
+                 */
+                inline Iterator begin()
+                {
+                    return (Items.begin());
+                }
+
+                /**
+                 * Returns an iterator to the end of the collection
+                 * @return new iterator
+                 */
+                inline Iterator end()
                 {
                     return (Items.end());
                 }
@@ -441,7 +499,7 @@ namespace bpf
                  * Returns a reverse iterator to the begining of the collection
                  * @return new iterator
                  */
-                inline ReverseIterator rbegin() const
+                inline CReverseIterator rbegin() const
                 {
                     return (Items.rbegin());
                 }
@@ -450,7 +508,25 @@ namespace bpf
                  * Returns a reverse iterator to the end of the collection
                  * @return new iterator
                  */
-                inline ReverseIterator rend() const
+                inline CReverseIterator rend() const
+                {
+                    return (Items.rend());
+                }
+
+                /**
+                 * Returns a reverse iterator to the begining of the collection
+                 * @return new iterator
+                 */
+                inline ReverseIterator rbegin()
+                {
+                    return (Items.rbegin());
+                }
+
+                /**
+                 * Returns a reverse iterator to the end of the collection
+                 * @return new iterator
+                 */
+                inline ReverseIterator rend()
                 {
                     return (Items.rend());
                 }

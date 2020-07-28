@@ -254,7 +254,7 @@ namespace bpf
              */
             inline Iterator begin()
             {
-                return (Iterator(_arr, 0));
+                return (Iterator(_arr, I, 0));
             }
 
             /**
@@ -263,7 +263,7 @@ namespace bpf
              */
             inline Iterator end()
             {
-                return (Iterator(_arr, I));
+                return (Iterator(_arr, I, I));
             }
 
             /**
@@ -272,7 +272,7 @@ namespace bpf
              */
             inline CIterator begin() const
             {
-                return (CIterator(_arr, 0));
+                return (CIterator(_arr, I, 0));
             }
 
             /**
@@ -281,7 +281,7 @@ namespace bpf
              */
             inline CIterator end() const
             {
-                return (CIterator(_arr, I));
+                return (CIterator(_arr, I, I));
             }
 
             /**
