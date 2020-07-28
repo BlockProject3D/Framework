@@ -66,12 +66,12 @@ namespace bpf
          */
         inline void Invoke(Args &&... args)
         {
-            for (auto &it = _lst.begin(); it != _lst.end(); ++it)
+            for (auto it = _lst.begin(); it != _lst.end(); ++it)
             {
                 if (!*it)
                     _lst.RemoveAt(it);
                 if (it != _lst.end() && *it)
-                    *it(std::forward<Args>(args)...);
+                    (*it)(std::forward<Args>(args)...);
             }
         }
     };
