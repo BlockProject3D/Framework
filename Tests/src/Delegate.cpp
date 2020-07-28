@@ -222,3 +222,25 @@ TEST(Delegate, Basic_3)
     EXPECT_FALSE(d1);
     EXPECT_THROW(d1(), bpf::RuntimeException);
 }
+
+TEST(Delegate, Safety)
+{
+    auto ptr = bpf::memory::MakeUnique<MyObject>(-42);
+    auto delegate = bpf::Delegate<int()>(&MyObject::TestFunc, ptr.Raw());
+    auto delegate1 = bpf::Delegate<void(int &)>(&MyObject::TestFunc1, ptr.Raw());
+    auto delegate2 = bpf::Delegate<int() const>(&MyObject::TestFunc2, ptr.Raw());
+    auto delegate3 = bpf::Delegate<void()>();
+    auto delegate4 = bpf::Delegate<void() const>();
+    ptr = nullptr; //Kill UniquePtr
+    EXPECT_FALSE(delegate);
+    EXPECT_FALSE(delegate1);
+    EXPECT_FALSE(delegate2);
+    EXPECT_FALSE(delegate3);
+    EXPECT_FALSE(delegate4);
+    int res;
+    EXPECT_THROW(delegate(), bpf::RuntimeException);
+    EXPECT_THROW(delegate1(res), bpf::RuntimeException);
+    EXPECT_THROW(delegate2(), bpf::RuntimeException);
+    EXPECT_THROW(delegate3(), bpf::RuntimeException);
+    EXPECT_THROW(delegate4(), bpf::RuntimeException);
+}
