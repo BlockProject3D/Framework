@@ -72,52 +72,6 @@ namespace bpf
             };
 
         public:
-            class BP_TPL_API Iterator : public IIterator<typename HashMap<K, V, HashOp>::Iterator, Entry>
-            {
-            protected:
-                Node *_data;
-                fsize MaxSize;
-                fsize MinSize;
-                fsize CurID;
-                void SearchNextEntry();
-                void SearchPrevEntry();
-
-            public:
-                Iterator(Node *data, fsize start, fsize size, bool reverse = false);
-                Iterator &operator++();
-                Iterator &operator--();
-                inline const Entry &operator*() const
-                {
-                    return (_data[CurID].KeyVal);
-                }
-                inline const Entry *operator->() const
-                {
-                    return (&_data[CurID].KeyVal);
-                }
-                inline bool operator==(const Iterator &other) const
-                {
-                    return (CurID == other.CurID);
-                }
-                inline bool operator!=(const Iterator &other) const
-                {
-                    return (CurID != other.CurID);
-                }
-
-                friend class HashMap<K, V, HashOp>;
-            };
-
-            class BP_TPL_API ReverseIterator final : public Iterator
-            {
-            public:
-                inline ReverseIterator(Node *data, fsize start, fsize size)
-                    : Iterator(data, start, size, true)
-                {
-                }
-                ReverseIterator &operator++();
-                ReverseIterator &operator--();
-
-                friend class HashMap<K, V, HashOp>;
-            };
 
         private:
             Node *_data;

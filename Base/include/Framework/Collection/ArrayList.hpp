@@ -55,6 +55,8 @@ namespace bpf
         public:
             using Iterator = typename Array<T>::Iterator;
             using ReverseIterator = typename Array<T>::ReverseIterator;
+            using CIterator = typename Array<T>::CIterator;
+            using CReverseIterator = typename Array<T>::CReverseIterator;
 
             /**
              * Constructs a new ArrayList
@@ -403,7 +405,25 @@ namespace bpf
              * Returns an iterator to the begining of the collection
              * @return new iterator
              */
-            inline Iterator begin() const
+            inline CIterator begin() const
+            {
+                return (CIterator(*_arr, _curid, 0));
+            }
+
+            /**
+             * Returns an iterator to the end of the collection
+             * @return new iterator
+             */
+            inline CIterator end() const
+            {
+                return (CIterator(*_arr, _curid, _curid));
+            }
+
+            /**
+             * Returns an iterator to the begining of the collection
+             * @return new iterator
+             */
+            inline Iterator begin()
             {
                 return (Iterator(*_arr, _curid, 0));
             }
@@ -412,7 +432,7 @@ namespace bpf
              * Returns an iterator to the end of the collection
              * @return new iterator
              */
-            inline Iterator end() const
+            inline Iterator end()
             {
                 return (Iterator(*_arr, _curid, _curid));
             }
@@ -421,7 +441,25 @@ namespace bpf
              * Returns a reverse iterator to the begining of the collection
              * @return new iterator
              */
-            inline ReverseIterator rbegin() const
+            inline CReverseIterator rbegin() const
+            {
+                return (CReverseIterator(*_arr, _curid, _curid - 1));
+            }
+
+            /**
+             * Returns a reverse iterator to the end of the collection
+             * @return new iterator
+             */
+            inline CReverseIterator rend() const
+            {
+                return (CReverseIterator(*_arr, _curid, (fsize)-1));
+            }
+
+            /**
+             * Returns a reverse iterator to the begining of the collection
+             * @return new iterator
+             */
+            inline ReverseIterator rbegin()
             {
                 return (ReverseIterator(*_arr, _curid, _curid - 1));
             }
@@ -430,7 +468,7 @@ namespace bpf
              * Returns a reverse iterator to the end of the collection
              * @return new iterator
              */
-            inline ReverseIterator rend() const
+            inline ReverseIterator rend()
             {
                 return (ReverseIterator(*_arr, _curid, (fsize)-1));
             }

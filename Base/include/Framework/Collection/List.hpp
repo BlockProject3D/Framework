@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Collection/Iterator.hpp"
+#include "Framework/Collection/List.Iterator.hpp"
 #include "Framework/Collection/Utility.hpp"
 #include "Framework/IndexException.hpp"
 #include "Framework/Types.hpp"
@@ -67,95 +67,10 @@ namespace bpf
             };
 
         public:
-            class BP_TPL_API Iterator final : public IIterator<typename List<T>::Iterator, T>
-            {
-            private:
-                Node *_cur;
-                Node *_reset;
-
-            public:
-                inline Iterator(Node *start, Node *reset)
-                    : _cur(start)
-                    , _reset(reset)
-                {
-                }
-                inline Iterator &operator++()
-                {
-                    if (_cur)
-                        _cur = _cur->Next;
-                    return (*this);
-                }
-                inline Iterator &operator--()
-                {
-                    if (_cur)
-                        _cur = _cur->Prev ? _cur->Prev : _cur;
-                    else
-                        _cur = _reset;
-                    return (*this);
-                }
-                inline const T *operator->() const
-                {
-                    return (&_cur->Data);
-                }
-                inline const T &operator*() const
-                {
-                    return (_cur->Data);
-                }
-                inline bool operator==(const Iterator &it) const
-                {
-                    return (_cur == it._cur);
-                }
-                inline bool operator!=(const Iterator &it) const
-                {
-                    return (_cur != it._cur);
-                }
-
-                friend class List<T>;
-            };
-
-            class BP_TPL_API ReverseIterator final : public IIterator<typename List<T>::ReverseIterator, T>
-            {
-            private:
-                Node *_cur;
-                Node *_reset;
-
-            public:
-                inline ReverseIterator(Node *start, Node *reset)
-                    : _cur(start)
-                    , _reset(reset)
-                {
-                }
-                inline ReverseIterator &operator++()
-                {
-                    if (_cur)
-                        _cur = _cur->Prev;
-                    return (*this);
-                }
-                inline ReverseIterator &operator--()
-                {
-                    if (_cur)
-                        _cur = _cur->Next ? _cur->Next : _cur;
-                    else
-                        _cur = _reset;
-                    return (*this);
-                }
-                inline const T *operator->() const
-                {
-                    return (&_cur->Data);
-                }
-                inline const T &operator*() const
-                {
-                    return (_cur->Data);
-                }
-                inline bool operator==(const ReverseIterator &it) const
-                {
-                    return (_cur == it._cur);
-                }
-                inline bool operator!=(const ReverseIterator &it) const
-                {
-                    return (_cur != it._cur);
-                }
-            };
+            using Iterator = ListIterator<T, Node>;
+            using CIterator = ListConstIterator<T, Node>;
+            using ReverseIterator = ListReverseIterator<T, Node>;
+            using CReverseIterator = ListConstReverseIterator<T, Node>;
 
         private:
             Node *_first;
@@ -358,7 +273,8 @@ namespace bpf
 
             /**
              * Sorts this collection in place
-             * @param stable if true this function will apply a Merge-Sort algorithm, otherwise this function uses the Quick-Sort algorithm
+             * @param stable if true this function will apply a Merge-Sort algorithm, otherwise this function uses the
+             * Quick-Sort algorithm
              * @tparam Comparator comparision operator
              */
             template <template <typename> class Comparator = ops::Less>
@@ -430,7 +346,25 @@ namespace bpf
              * Returns an iterator to the begining of the collection
              * @return new iterator
              */
-            inline Iterator begin() const
+            inline CIterator begin() const
+            {
+                return (CIterator(_first, _last));
+            }
+
+            /**
+             * Returns an iterator to the end of the collection
+             * @return new iterator
+             */
+            inline CIterator end() const
+            {
+                return (CIterator(nullptr, _last));
+            }
+
+            /**
+             * Returns an iterator to the begining of the collection
+             * @return new iterator
+             */
+            inline Iterator begin()
             {
                 return (Iterator(_first, _last));
             }
@@ -439,7 +373,7 @@ namespace bpf
              * Returns an iterator to the end of the collection
              * @return new iterator
              */
-            inline Iterator end() const
+            inline Iterator end()
             {
                 return (Iterator(nullptr, _last));
             }
@@ -448,7 +382,25 @@ namespace bpf
              * Returns a reverse iterator to the begining of the collection
              * @return new iterator
              */
-            inline ReverseIterator rbegin() const
+            inline CReverseIterator rbegin() const
+            {
+                return (CReverseIterator(_last, _first));
+            }
+
+            /**
+             * Returns a reverse iterator to the end of the collection
+             * @return new iterator
+             */
+            inline CReverseIterator rend() const
+            {
+                return (CReverseIterator(nullptr, _first));
+            }
+
+            /**
+             * Returns a reverse iterator to the begining of the collection
+             * @return new iterator
+             */
+            inline ReverseIterator rbegin()
             {
                 return (ReverseIterator(_last, _first));
             }
@@ -457,7 +409,7 @@ namespace bpf
              * Returns a reverse iterator to the end of the collection
              * @return new iterator
              */
-            inline ReverseIterator rend() const
+            inline ReverseIterator rend()
             {
                 return (ReverseIterator(nullptr, _first));
             }

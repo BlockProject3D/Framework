@@ -97,14 +97,14 @@ namespace bpf
              * @param other operand
              * @return true if this equals other, false otherwise
              */
-            bool operator==(const IType &other);
+            bool operator==(const IType &other) const noexcept;
 
             /**
              * Compare ConstIterator
              * @param other operand
              * @return true if this does not equal other, false otherwise
              */
-            bool operator!=(const IType &other);
+            bool operator!=(const IType &other) const noexcept;
         };
 
         /**
@@ -171,14 +171,14 @@ namespace bpf
              * @param other operand
              * @return true if this equals other, false otherwise
              */
-            bool operator==(const IType &other);
+            bool operator==(const IType &other) const noexcept;
 
             /**
              * Compare Iterator
              * @param other operand
              * @return true if this does not equal other, false otherwise
              */
-            bool operator!=(const IType &other);
+            bool operator!=(const IType &other) const noexcept;
         };
 
         template <typename C>
