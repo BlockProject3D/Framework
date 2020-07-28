@@ -27,37 +27,189 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/Types.hpp"
 
 namespace bpf
 {
     namespace collection
     {
         /**
-         * Abstract iterator
-         * @tparam C the target collection type for this Iterator
-         * @tparam T the target iterated object type
+         * Constant iterator
+         * @tparam IType the actual iterator type
+         * @tparam T the target iterated value type
          */
-        template <typename C, typename T>
-        class BP_TPL_API IIterator
+        template <typename IType, typename T>
+        class BP_TPL_API ConstIterator
         {
         public:
-            virtual ~IIterator() {}
-            virtual IIterator &operator++() = 0;
-            virtual IIterator &operator--() = 0;
-            virtual const T &operator*() const = 0;
-            virtual const T *operator->() const = 0;
-            virtual bool operator==(const C &other) const = 0;
-            virtual bool operator!=(const C &other) const = 0;
+            /**
+             * Advances this iterator forward
+             * @param i how many steps should we advance
+             */
+            inline void operator+=(fsize i)
+            {
+                while (i > 0)
+                {
+                    operator++();
+                    --i;
+                }
+            }
+
+            /**
+             * Advances this iterator backward
+             * @param i how many steps should we advance
+             */
+            inline void operator-=(fsize i)
+            {
+                while (i > 0)
+                {
+                    operator--();
+                    --i;
+                }
+            }
+
+            /**
+             * Increments this iterator to the next position
+             * @return reference to iterator type
+             */
+            IType &operator++();
+
+            /**
+             * Decrements this iterator to the previous position
+             * @return reference to iterator type
+             */
+            IType &operator--();
+
+            /**
+             * Access to the value type at the current iterator position
+             * @return immutable reference to T
+             */
+            const T &operator*() const;
+
+            /**
+             * Access to the value type at the current iterator position
+             * @return immutable pointer to T
+             */
+            const T *operator->() const;
+
+            /**
+             * Compare ConstIterator
+             * @param other operand
+             * @return true if this equals other, false otherwise
+             */
+            bool operator==(const IType &other);
+
+            /**
+             * Compare ConstIterator
+             * @param other operand
+             * @return true if this does not equal other, false otherwise
+             */
+            bool operator!=(const IType &other);
+        };
+
+        /**
+         * Non-constant iterator
+         * @tparam IType the actual iterator type
+         * @tparam T the target iterated value type
+         */
+        template <typename IType, typename T>
+        class BP_TPL_API Iterator
+        {
+        public:
+            /**
+             * Advances this iterator forward
+             * @param i how many steps should we advance
+             */
+            void operator+=(fsize i)
+            {
+                while (i > 0)
+                {
+                    operator++();
+                    --i;
+                }
+            }
+
+            /**
+             * Advances this iterator backward
+             * @param i how many steps should we advance
+             */
+            inline void operator-=(fsize i)
+            {
+                while (i > 0)
+                {
+                    operator--();
+                    --i;
+                }
+            }
+
+            /**
+             * Increments this iterator to the next position
+             * @return reference to iterator type
+             */
+            IType &operator++();
+
+            /**
+             * Decrements this iterator to the previous position
+             * @return reference to iterator type
+             */
+            IType &operator--();
+
+            /**
+             * Access to the value type at the current iterator position
+             * @return immutable reference to T
+             */
+            T &operator*();
+
+            /**
+             * Access to the value type at the current iterator position
+             * @return immutable pointer to T
+             */
+            T *operator->();
+
+            /**
+             * Compare Iterator
+             * @param other operand
+             * @return true if this equals other, false otherwise
+             */
+            bool operator==(const IType &other);
+
+            /**
+             * Compare Iterator
+             * @param other operand
+             * @return true if this does not equal other, false otherwise
+             */
+            bool operator!=(const IType &other);
+        };
+
+        template <typename C>
+        class BP_TPL_API ConstReverseAdapter
+        {
+        private:
+            const C &_ref;
+
+        public:
+            inline explicit ConstReverseAdapter(const C &ref)
+                : _ref(ref)
+            {
+            }
+            inline typename C::CReverseIterator begin() const
+            {
+                return (_ref.rbegin());
+            }
+            inline typename C::CReverseIterator end() const
+            {
+                return (_ref.rend());
+            }
         };
 
         template <typename C>
         class BP_TPL_API ReverseAdapter
         {
         private:
-            const C &_ref;
+            C &_ref;
 
         public:
-            inline explicit ReverseAdapter(const C &ref)
+            inline explicit ReverseAdapter(C &ref)
                 : _ref(ref)
             {
             }
@@ -77,7 +229,18 @@ namespace bpf
          * @param container the actual collection to iterate in reverse order
          */
         template <typename C>
-        BP_TPL_API ReverseAdapter<C> Reverse(const C &container)
+        BP_TPL_API ConstReverseAdapter<C> Reverse(const C &container)
+        {
+            return (ConstReverseAdapter<C>(container));
+        }
+
+        /**
+         * Utility function used to walk a iterable collection in reverse order using the C++ 11 range for loop syntax
+         * @tparam C the collection type
+         * @param container the actual collection to iterate in reverse order
+         */
+        template <typename C>
+        BP_TPL_API ReverseAdapter<C> Reverse(C &container)
         {
             return (ReverseAdapter<C>(container));
         }
