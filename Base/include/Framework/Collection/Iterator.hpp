@@ -50,7 +50,7 @@ namespace bpf
             {
                 while (i > 0)
                 {
-                    operator++();
+                    IType::operator++();
                     --i;
                 }
             }
@@ -63,7 +63,7 @@ namespace bpf
             {
                 while (i > 0)
                 {
-                    operator--();
+                    IType::operator--();
                     --i;
                 }
             }
@@ -156,15 +156,27 @@ namespace bpf
 
             /**
              * Access to the value type at the current iterator position
-             * @return immutable reference to T
+             * @return mutable reference to T
              */
             T &operator*();
 
             /**
              * Access to the value type at the current iterator position
-             * @return immutable pointer to T
+             * @return mutable pointer to T
              */
             T *operator->();
+
+            /**
+             * Access to the value type at the current iterator position
+             * @return imutable reference to T
+             */
+            const T &operator*() const;
+
+            /**
+             * Access to the value type at the current iterator position
+             * @return mutable pointer to T
+             */
+            const T *operator->() const;
 
             /**
              * Compare Iterator

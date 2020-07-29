@@ -226,6 +226,16 @@ namespace bpf
                 return (&_data[CurID].KeyVal);
             }
 
+            inline const EntryType &operator*() const
+            {
+                return (_data[CurID].KeyVal);
+            }
+
+            inline const EntryType *operator->() const
+            {
+                return (&_data[CurID].KeyVal);
+            }
+
             inline bool operator==(const HashMapIterator &other) const
             {
                 return (CurID == other.CurID);

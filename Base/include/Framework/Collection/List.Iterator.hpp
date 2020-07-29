@@ -149,6 +149,16 @@ namespace bpf
                 return (*this);
             }
 
+            inline T *operator->()
+            {
+                return (&_cur->Data);
+            }
+
+            inline T &operator*()
+            {
+                return (_cur->Data);
+            }
+
             inline const T *operator->() const
             {
                 return (&_cur->Data);

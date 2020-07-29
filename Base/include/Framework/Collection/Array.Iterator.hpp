@@ -187,6 +187,16 @@ namespace bpf
                 return (&_arr[_curid]);
             }
 
+            inline const T &operator*() const
+            {
+                return (_arr[_curid]);
+            }
+
+            inline const T *operator->() const
+            {
+                return (&_arr[_curid]);
+            }
+
             inline bool operator==(const ArrayIterator &other) const noexcept
             {
                 return (_curid == other._curid);
