@@ -438,6 +438,66 @@ TEST(ArrayList, ReverseIterator_2)
     EXPECT_EQ(lst.rbegin()->ByteAt(0), 'c');
 }
 
+TEST(ArrayList, CIterator_1)
+{
+    ArrayList<int> lst1 = {0, 3, 7, 0};
+    const auto &lst = lst1;
+
+    auto it = lst.begin();
+    ++it;
+    --it;
+    EXPECT_EQ(it, lst.begin());
+    --it;
+    ++it;
+    EXPECT_EQ(it, ++lst.begin());
+    it = lst.end();
+    --it;
+    ++it;
+    EXPECT_EQ(it, lst.end());
+    ++it;
+    --it;
+    EXPECT_EQ(it, --lst.end());
+}
+
+TEST(ArrayList, CIterator_2)
+{
+    ArrayList<String> lst1 = {"a", "b", "c"};
+    const auto &lst = lst1;
+
+    EXPECT_EQ(lst.begin()->Size(), 1);
+    EXPECT_EQ(lst.begin()->ByteAt(0), 'a');
+}
+
+TEST(ArrayList, CReverseIterator_1)
+{
+    ArrayList<int> lst1 = {0, 3, 7, 0};
+    const auto &lst = lst1;
+
+    auto it = lst.rbegin();
+    ++it;
+    --it;
+    EXPECT_EQ(it, lst.rbegin());
+    --it;
+    ++it;
+    EXPECT_EQ(it, ++lst.rbegin());
+    it = lst.rend();
+    --it;
+    ++it;
+    EXPECT_EQ(it, lst.rend());
+    ++it;
+    --it;
+    EXPECT_EQ(it, --lst.rend());
+}
+
+TEST(ArrayList, CReverseIterator_2)
+{
+    ArrayList<String> lst1 = {"a", "b", "c"};
+    const auto &lst = lst1;
+
+    EXPECT_EQ(lst.rbegin()->Size(), 1);
+    EXPECT_EQ(lst.rbegin()->ByteAt(0), 'c');
+}
+
 TEST(ArrayList, Clear)
 {
     ArrayList<int> lst = {0, 3, 7, 0};
