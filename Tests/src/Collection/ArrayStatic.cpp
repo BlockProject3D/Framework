@@ -248,6 +248,66 @@ TEST(ArrayStatic, ReverseIterator_2)
     EXPECT_EQ(lst.rbegin()->ByteAt(0), 'c');
 }
 
+TEST(ArrayStatic, CIterator_1)
+{
+    Array<int, 4> lst1 = {0, 3, 7, 0};
+    const auto &lst = lst1;
+
+    auto it = lst.begin();
+    ++it;
+    --it;
+    EXPECT_EQ(it, lst.begin());
+    --it;
+    ++it;
+    EXPECT_EQ(it, ++lst.begin());
+    it = lst.end();
+    --it;
+    ++it;
+    EXPECT_EQ(it, lst.end());
+    ++it;
+    --it;
+    EXPECT_EQ(it, --lst.end());
+}
+
+TEST(ArrayStatic, CIterator_2)
+{
+    Array<String, 3> lst1 = {"a", "b", "c"};
+    const auto &lst = lst1;
+
+    EXPECT_EQ(lst.begin()->Size(), 1);
+    EXPECT_EQ(lst.begin()->ByteAt(0), 'a');
+}
+
+TEST(ArrayStatic, CReverseIterator_1)
+{
+    Array<int, 4> lst1 = {0, 3, 7, 0};
+    const auto &lst = lst1;
+
+    auto it = lst.rbegin();
+    ++it;
+    --it;
+    EXPECT_EQ(it, lst.rbegin());
+    --it;
+    ++it;
+    EXPECT_EQ(it, ++lst.rbegin());
+    it = lst.rend();
+    --it;
+    ++it;
+    EXPECT_EQ(it, lst.rend());
+    ++it;
+    --it;
+    EXPECT_EQ(it, --lst.rend());
+}
+
+TEST(ArrayStatic, CReverseIterator_2)
+{
+    Array<String, 3> lst1 = {"a", "b", "c"};
+    const auto &lst = lst1;
+
+    EXPECT_EQ(lst.rbegin()->Size(), 1);
+    EXPECT_EQ(lst.rbegin()->ByteAt(0), 'c');
+}
+
 TEST(ArrayStatic, IterateForward_Test1)
 {
     int res = 0;
