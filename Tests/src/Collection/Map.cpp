@@ -301,6 +301,23 @@ TEST(Map, Iterator_2)
     EXPECT_EQ(it, --lst.end());
 }
 
+TEST(Map, Iterator_3)
+{
+    Map<int, int> lst = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+
+    auto it = lst.begin();
+    it += 2;
+    EXPECT_EQ(it->Value, 0);
+    it -= 2;
+    EXPECT_EQ(it->Value, 3);
+    it = lst.begin();
+    it += 42;
+    EXPECT_EQ(it, lst.end());
+    it = lst.end();
+    it -= 42;
+    EXPECT_EQ(it->Value, 3);
+}
+
 TEST(Map, ReverseIterator_1)
 {
     Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
@@ -339,6 +356,23 @@ TEST(Map, ReverseIterator_2)
     ++it;
     --it;
     EXPECT_EQ(it, --lst.rend());
+}
+
+TEST(Map, ReverseIterator_3)
+{
+    Map<int, int> lst = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+
+    auto it = lst.rbegin();
+    it += 2;
+    EXPECT_EQ(it->Value, 3);
+    it -= 2;
+    EXPECT_EQ(it->Value, 0);
+    it = lst.rbegin();
+    it += 42;
+    EXPECT_EQ(it, lst.rend());
+    it = lst.rend();
+    it -= 42;
+    EXPECT_EQ(it->Value, 0);
 }
 
 TEST(Map, CIterator_1)
@@ -383,6 +417,24 @@ TEST(Map, CIterator_2)
     EXPECT_EQ(it, --lst.end());
 }
 
+TEST(Map, CIterator_3)
+{
+    Map<int, int> lst1 = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+    const auto &lst = lst1;
+
+    auto it = lst.begin();
+    it += 2;
+    EXPECT_EQ(it->Value, 0);
+    it -= 2;
+    EXPECT_EQ(it->Value, 3);
+    it = lst.begin();
+    it += 42;
+    EXPECT_EQ(it, lst.end());
+    it = lst.end();
+    it -= 42;
+    EXPECT_EQ(it->Value, 3);
+}
+
 TEST(Map, CReverseIterator_1)
 {
     Map<int, int> lst1 = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
@@ -423,6 +475,24 @@ TEST(Map, CReverseIterator_2)
     ++it;
     --it;
     EXPECT_EQ(it, --lst.rend());
+}
+
+TEST(Map, CReverseIterator_3)
+{
+    Map<int, int> lst1 = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+    const auto &lst = lst1;
+
+    auto it = lst.rbegin();
+    it += 2;
+    EXPECT_EQ(it->Value, 3);
+    it -= 2;
+    EXPECT_EQ(it->Value, 0);
+    it = lst.rbegin();
+    it += 42;
+    EXPECT_EQ(it, lst.rend());
+    it = lst.rend();
+    it -= 42;
+    EXPECT_EQ(it->Value, 0);
 }
 
 TEST(Map, Clear)
