@@ -296,6 +296,23 @@ TEST(HashMap, Iterator_2)
     EXPECT_EQ(it, --lst.end());
 }
 
+TEST(HashMap, Iterator_3)
+{
+    HashMap<int, int> lst = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+
+    auto it = lst.begin();
+    it += 2;
+    EXPECT_EQ(it->Value, 0);
+    it -= 2;
+    EXPECT_EQ(it->Value, 3);
+    it = lst.begin();
+    it += 42;
+    EXPECT_EQ(it, lst.end());
+    it = lst.end();
+    it -= 42;
+    EXPECT_EQ(it->Value, 3);
+}
+
 TEST(HashMap, ReverseIterator_1)
 {
     HashMap<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
@@ -334,6 +351,23 @@ TEST(HashMap, ReverseIterator_2)
     ++it;
     --it;
     EXPECT_EQ(it, --lst.rend());
+}
+
+TEST(HashMap, ReverseIterator_3)
+{
+    HashMap<int, int> lst = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+
+    auto it = lst.rbegin();
+    it += 2;
+    EXPECT_EQ(it->Value, 3);
+    it -= 2;
+    EXPECT_EQ(it->Value, 0);
+    it = lst.rbegin();
+    it += 42;
+    EXPECT_EQ(it, lst.rend());
+    it = lst.rend();
+    it -= 42;
+    EXPECT_EQ(it->Value, 0);
 }
 
 TEST(HashMap, CIterator_1)
@@ -378,6 +412,24 @@ TEST(HashMap, CIterator_2)
     EXPECT_EQ(it, --lst.end());
 }
 
+TEST(HashMap, CIterator_3)
+{
+    HashMap<int, int> lst1 = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+    const auto &lst = lst1;
+
+    auto it = lst.begin();
+    it += 2;
+    EXPECT_EQ(it->Value, 0);
+    it -= 2;
+    EXPECT_EQ(it->Value, 3);
+    it = lst.begin();
+    it += 42;
+    EXPECT_EQ(it, lst.end());
+    it = lst.end();
+    it -= 42;
+    EXPECT_EQ(it->Value, 3);
+}
+
 TEST(HashMap, CReverseIterator_1)
 {
     HashMap<int, int> lst1 = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
@@ -418,6 +470,24 @@ TEST(HashMap, CReverseIterator_2)
     ++it;
     --it;
     EXPECT_EQ(it, --lst.rend());
+}
+
+TEST(HashMap, CReverseIterator_3)
+{
+    HashMap<int, int> lst1 = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+    const auto &lst = lst1;
+
+    auto it = lst.rbegin();
+    it += 2;
+    EXPECT_EQ(it->Value, 3);
+    it -= 2;
+    EXPECT_EQ(it->Value, 0);
+    it = lst.rbegin();
+    it += 42;
+    EXPECT_EQ(it, lst.rend());
+    it = lst.rend();
+    it -= 42;
+    EXPECT_EQ(it->Value, 0);
 }
 
 TEST(HashMap, Clear)
