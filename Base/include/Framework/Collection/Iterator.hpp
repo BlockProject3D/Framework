@@ -50,7 +50,7 @@ namespace bpf
             {
                 while (i > 0)
                 {
-                    IType::operator++();
+                    static_cast<IType *>(this)->operator++();
                     --i;
                 }
             }
@@ -63,7 +63,7 @@ namespace bpf
             {
                 while (i > 0)
                 {
-                    IType::operator--();
+                    static_cast<IType *>(this)->operator--();
                     --i;
                 }
             }
@@ -124,7 +124,7 @@ namespace bpf
             {
                 while (i > 0)
                 {
-                    operator++();
+                    static_cast<IType *>(this)->operator++();
                     --i;
                 }
             }
@@ -137,7 +137,7 @@ namespace bpf
             {
                 while (i > 0)
                 {
-                    operator--();
+                    static_cast<IType *>(this)->operator--();
                     --i;
                 }
             }
