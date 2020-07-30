@@ -33,8 +33,8 @@ namespace bpf
 {
     namespace collection
     {
-        template <class HashMap, typename EntryType, typename NodeType>
-        class BP_TPL_API HashMapConstIterator : public ConstIterator<HashMapConstIterator<HashMap, EntryType, NodeType>, EntryType>
+        template <class HashMap, typename EntryType, typename NodeType, template <class, typename, typename> class IType, template <typename, typename> class Base>
+        class BP_TPL_API HashMapIteratorBase : public Base<IType<HashMap, EntryType, NodeType>, EntryType>
         {
         protected:
             NodeType *_data;
@@ -55,25 +55,54 @@ namespace bpf
             }
 
         public:
-            HashMapConstIterator(NodeType *data, fsize start, fsize size, bool reverse = false)
+            HashMapIteratorBase(NodeType *data, fsize start, fsize size)
                 : _data(data)
                 , MaxSize(size)
                 , CurID(start)
             {
-                if (reverse)
-                {
-                    SearchPrevEntry();
-                    MaxSize = CurID;
-                }
-                else
-                {
-                    fsize old = CurID;
-                    CurID = 0;
-                    SearchNextEntry();
-                    MinSize = CurID;
-                    CurID = old;
-                    SearchNextEntry();
-                }
+            }
+
+            inline const EntryType &operator*() const
+            {
+                return (_data[CurID].KeyVal);
+            }
+
+            inline const EntryType *operator->() const
+            {
+                return (&_data[CurID].KeyVal);
+            }
+
+            inline bool operator==(const HashMapIteratorBase &other) const
+            {
+                return (CurID == other.CurID);
+            }
+
+            inline bool operator!=(const HashMapIteratorBase &other) const
+            {
+                return (CurID != other.CurID);
+            }
+        };
+
+        template <class HashMap, typename EntryType, typename NodeType>
+        class BP_TPL_API HashMapConstIterator : public HashMapIteratorBase<HashMap, EntryType, NodeType, HashMapConstIterator, ConstIterator>
+        {
+        private:
+            using HashMapIteratorBase<HashMap, EntryType, NodeType, HashMapConstIterator, ConstIterator>::SearchPrevEntry;
+            using HashMapIteratorBase<HashMap, EntryType, NodeType, HashMapConstIterator, ConstIterator>::SearchNextEntry;
+            using HashMapIteratorBase<HashMap, EntryType, NodeType, HashMapConstIterator, ConstIterator>::CurID;
+            using HashMapIteratorBase<HashMap, EntryType, NodeType, HashMapConstIterator, ConstIterator>::MaxSize;
+            using HashMapIteratorBase<HashMap, EntryType, NodeType, HashMapConstIterator, ConstIterator>::MinSize;
+
+        public:
+            HashMapConstIterator(NodeType *data, fsize start, fsize size)
+                : HashMapIteratorBase<HashMap, EntryType, NodeType, HashMapConstIterator, ConstIterator>(data, start, size)
+            {
+                fsize old = CurID;
+                CurID = 0;
+                SearchNextEntry();
+                MinSize = CurID;
+                CurID = old;
+                SearchNextEntry();
             }
 
             HashMapConstIterator &operator++()
@@ -96,40 +125,24 @@ namespace bpf
                 return (*this);
             }
 
-            inline const EntryType &operator*() const
-            {
-                return (_data[CurID].KeyVal);
-            }
-
-            inline const EntryType *operator->() const
-            {
-                return (&_data[CurID].KeyVal);
-            }
-
-            inline bool operator==(const HashMapConstIterator &other) const
-            {
-                return (CurID == other.CurID);
-            }
-
-            inline bool operator!=(const HashMapConstIterator &other) const
-            {
-                return (CurID != other.CurID);
-            }
         };
 
         template <class HashMap, typename EntryType, typename NodeType>
-        class BP_TPL_API HashMapConstReverseIterator : public HashMapConstIterator<HashMap, EntryType, NodeType>
+        class BP_TPL_API HashMapConstReverseIterator : public HashMapIteratorBase<HashMap, EntryType, NodeType, HashMapConstReverseIterator, ConstIterator>
         {
         private:
-            using HashMapConstIterator<HashMap, EntryType, NodeType>::SearchPrevEntry;
-            using HashMapConstIterator<HashMap, EntryType, NodeType>::SearchNextEntry;
-            using HashMapConstIterator<HashMap, EntryType, NodeType>::CurID;
-            using HashMapConstIterator<HashMap, EntryType, NodeType>::MaxSize;
+            using HashMapIteratorBase<HashMap, EntryType, NodeType, HashMapConstReverseIterator, ConstIterator>::SearchPrevEntry;
+            using HashMapIteratorBase<HashMap, EntryType, NodeType, HashMapConstReverseIterator, ConstIterator>::SearchNextEntry;
+            using HashMapIteratorBase<HashMap, EntryType, NodeType, HashMapConstReverseIterator, ConstIterator>::CurID;
+            using HashMapIteratorBase<HashMap, EntryType, NodeType, HashMapConstReverseIterator, ConstIterator>::MaxSize;
+            using HashMapIteratorBase<HashMap, EntryType, NodeType, HashMapConstReverseIterator, ConstIterator>::MinSize;
 
         public:
-            inline HashMapConstReverseIterator(NodeType *data, fsize start, fsize size)
-                : HashMapConstIterator<HashMap, EntryType, NodeType>(data, start, size, true)
+            HashMapConstReverseIterator(NodeType *data, fsize start, fsize size)
+                : HashMapIteratorBase<HashMap, EntryType, NodeType, HashMapConstReverseIterator, ConstIterator>(data, start, size)
             {
+                SearchPrevEntry();
+                MaxSize = CurID;
             }
 
             HashMapConstReverseIterator &operator++()
@@ -144,7 +157,7 @@ namespace bpf
 
             HashMapConstReverseIterator &operator--()
             {
-                if (CurID < MaxSize)
+                if (CurID < MaxSize || CurID == (fsize)-1)
                 {
                     ++CurID;
                     SearchNextEntry();
@@ -154,46 +167,26 @@ namespace bpf
         };
 
         template <class HashMap, typename EntryType, typename NodeType>
-        class BP_TPL_API HashMapIterator : public Iterator<HashMapIterator<HashMap, EntryType, NodeType>, EntryType>
+        class BP_TPL_API HashMapIterator : public HashMapIteratorBase<HashMap, EntryType, NodeType, HashMapIterator, Iterator>
         {
-        protected:
-            NodeType *_data;
-            fsize MaxSize;
-            fsize MinSize;
-            fsize CurID;
-
-            void SearchNextEntry()
-            {
-                while (CurID < MaxSize && _data[CurID].State != HashMap::ENTRY_STATE_OCCUPIED)
-                    ++CurID;
-            }
-
-            void SearchPrevEntry()
-            {
-                while (CurID != (fsize)-1 && _data[CurID].State != HashMap::ENTRY_STATE_OCCUPIED)
-                    --CurID;
-            }
+        private:
+            using HashMapIteratorBase<HashMap, EntryType, NodeType, HashMapIterator, Iterator>::SearchPrevEntry;
+            using HashMapIteratorBase<HashMap, EntryType, NodeType, HashMapIterator, Iterator>::SearchNextEntry;
+            using HashMapIteratorBase<HashMap, EntryType, NodeType, HashMapIterator, Iterator>::CurID;
+            using HashMapIteratorBase<HashMap, EntryType, NodeType, HashMapIterator, Iterator>::MaxSize;
+            using HashMapIteratorBase<HashMap, EntryType, NodeType, HashMapIterator, Iterator>::MinSize;
+            using HashMapIteratorBase<HashMap, EntryType, NodeType, HashMapIterator, Iterator>::_data;
 
         public:
-            HashMapIterator(NodeType *data, fsize start, fsize size, bool reverse = false)
-                : _data(data)
-                , MaxSize(size)
-                , CurID(start)
+            HashMapIterator(NodeType *data, fsize start, fsize size)
+                : HashMapIteratorBase<HashMap, EntryType, NodeType, HashMapIterator, Iterator>(data, start, size)
             {
-                if (reverse)
-                {
-                    SearchPrevEntry();
-                    MaxSize = CurID;
-                }
-                else
-                {
-                    fsize old = CurID;
-                    CurID = 0;
-                    SearchNextEntry();
-                    MinSize = CurID;
-                    CurID = old;
-                    SearchNextEntry();
-                }
+                fsize old = CurID;
+                CurID = 0;
+                SearchNextEntry();
+                MinSize = CurID;
+                CurID = old;
+                SearchNextEntry();
             }
 
             HashMapIterator &operator++()
@@ -226,42 +219,26 @@ namespace bpf
                 return (&_data[CurID].KeyVal);
             }
 
-            inline const EntryType &operator*() const
-            {
-                return (_data[CurID].KeyVal);
-            }
-
-            inline const EntryType *operator->() const
-            {
-                return (&_data[CurID].KeyVal);
-            }
-
-            inline bool operator==(const HashMapIterator &other) const
-            {
-                return (CurID == other.CurID);
-            }
-
-            inline bool operator!=(const HashMapIterator &other) const
-            {
-                return (CurID != other.CurID);
-            }
-
             friend HashMap;
         };
 
         template <class HashMap, typename EntryType, typename NodeType>
-        class BP_TPL_API HashMapReverseIterator : public HashMapIterator<HashMap, EntryType, NodeType>
+        class BP_TPL_API HashMapReverseIterator : public HashMapIteratorBase<HashMap, EntryType, NodeType, HashMapReverseIterator, Iterator>
         {
         private:
-            using HashMapIterator<HashMap, EntryType, NodeType>::SearchPrevEntry;
-            using HashMapIterator<HashMap, EntryType, NodeType>::SearchNextEntry;
-            using HashMapIterator<HashMap, EntryType, NodeType>::CurID;
-            using HashMapIterator<HashMap, EntryType, NodeType>::MaxSize;
+            using HashMapIteratorBase<HashMap, EntryType, NodeType, HashMapReverseIterator, Iterator>::SearchPrevEntry;
+            using HashMapIteratorBase<HashMap, EntryType, NodeType, HashMapReverseIterator, Iterator>::SearchNextEntry;
+            using HashMapIteratorBase<HashMap, EntryType, NodeType, HashMapReverseIterator, Iterator>::CurID;
+            using HashMapIteratorBase<HashMap, EntryType, NodeType, HashMapReverseIterator, Iterator>::MaxSize;
+            using HashMapIteratorBase<HashMap, EntryType, NodeType, HashMapReverseIterator, Iterator>::MinSize;
+            using HashMapIteratorBase<HashMap, EntryType, NodeType, HashMapReverseIterator, Iterator>::_data;
 
         public:
-            inline HashMapReverseIterator(NodeType *data, fsize start, fsize size)
-                : HashMapIterator<HashMap, EntryType, NodeType>(data, start, size, true)
+            HashMapReverseIterator(NodeType *data, fsize start, fsize size)
+                : HashMapIteratorBase<HashMap, EntryType, NodeType, HashMapReverseIterator, Iterator>(data, start, size)
             {
+                SearchPrevEntry();
+                MaxSize = CurID;
             }
 
             HashMapReverseIterator &operator++()
@@ -276,12 +253,22 @@ namespace bpf
 
             HashMapReverseIterator &operator--()
             {
-                if (CurID < MaxSize)
+                if (CurID < MaxSize || CurID == (fsize)-1)
                 {
                     ++CurID;
                     SearchNextEntry();
                 }
                 return (*this);
+            }
+
+            inline EntryType &operator*()
+            {
+                return (_data[CurID].KeyVal);
+            }
+
+            inline EntryType *operator->()
+            {
+                return (&_data[CurID].KeyVal);
             }
         };
     }

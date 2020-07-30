@@ -36,17 +36,51 @@ namespace bpf
         template <typename T>
         class BP_TPL_API List;
 
-        template <typename T, typename NodeType>
-        class BP_TPL_API ListConstIterator : public ConstIterator<ListConstIterator<T, NodeType>, T>
+        template <typename T, typename NodeType, template <typename, typename> class IType, template <typename, typename> class Base>
+        class BP_TPL_API ListIteratorBase : public Base<IType<T, NodeType>, T>
         {
         protected:
             NodeType *_cur;
             NodeType *_reset;
 
         public:
-            inline ListConstIterator(NodeType *start, NodeType *reset)
+            inline ListIteratorBase(NodeType *start, NodeType *reset)
                 : _cur(start)
                 , _reset(reset)
+            {
+            }
+
+            inline const T *operator->() const
+            {
+                return (&_cur->Data);
+            }
+
+            inline const T &operator*() const
+            {
+                return (_cur->Data);
+            }
+
+            inline bool operator==(const ListIteratorBase &it) const noexcept
+            {
+                return (_cur == it._cur);
+            }
+
+            inline bool operator!=(const ListIteratorBase &it) const noexcept
+            {
+                return (_cur != it._cur);
+            }
+        };
+
+        template <typename T, typename NodeType>
+        class BP_TPL_API ListConstIterator : public ListIteratorBase<T, NodeType, ListConstIterator, ConstIterator>
+        {
+        private:
+            using ListIteratorBase<T, NodeType, ListConstIterator, ConstIterator>::_cur;
+            using ListIteratorBase<T, NodeType, ListConstIterator, ConstIterator>::_reset;
+
+        public:
+            inline ListConstIterator(NodeType *start, NodeType *reset)
+                : ListIteratorBase<T, NodeType, ListConstIterator, ConstIterator>(start, reset)
             {
             }
 
@@ -66,39 +100,19 @@ namespace bpf
                 return (*this);
             }
 
-            inline const T *operator->() const
-            {
-                return (&_cur->Data);
-            }
-
-            inline const T &operator*() const
-            {
-                return (_cur->Data);
-            }
-
-            inline bool operator==(const ListConstIterator &it) const noexcept
-            {
-                return (_cur == it._cur);
-            }
-
-            inline bool operator!=(const ListConstIterator &it) const noexcept
-            {
-                return (_cur != it._cur);
-            }
-
             friend class List<T>;
         };
 
         template <typename T, typename NodeType>
-        class BP_TPL_API ListConstReverseIterator : public ListConstIterator<T, NodeType>
+        class BP_TPL_API ListConstReverseIterator : public ListIteratorBase<T, NodeType, ListConstReverseIterator, ConstIterator>
         {
         private:
-            using ListConstIterator<T, NodeType>::_cur;
-            using ListConstIterator<T, NodeType>::_reset;
+            using ListIteratorBase<T, NodeType, ListConstReverseIterator, ConstIterator>::_cur;
+            using ListIteratorBase<T, NodeType, ListConstReverseIterator, ConstIterator>::_reset;
 
         public:
             inline ListConstReverseIterator(NodeType *start, NodeType *reset)
-                : ListConstIterator<T, NodeType>(start, reset)
+                : ListIteratorBase<T, NodeType, ListConstReverseIterator, ConstIterator>(start, reset)
             {
             }
 
@@ -120,16 +134,15 @@ namespace bpf
         };
 
         template <typename T, typename NodeType>
-        class BP_TPL_API ListIterator : public Iterator<ListIterator<T, NodeType>, T>
+        class BP_TPL_API ListIterator : public ListIteratorBase<T, NodeType, ListIterator, Iterator>
         {
-        protected:
-            NodeType *_cur;
-            NodeType *_reset;
+        private:
+            using ListIteratorBase<T, NodeType, ListIterator, Iterator>::_cur;
+            using ListIteratorBase<T, NodeType, ListIterator, Iterator>::_reset;
 
         public:
             inline ListIterator(NodeType *start, NodeType *reset)
-                : _cur(start)
-                , _reset(reset)
+                : ListIteratorBase<T, NodeType, ListIterator, Iterator>(start, reset)
             {
             }
 
@@ -159,39 +172,19 @@ namespace bpf
                 return (_cur->Data);
             }
 
-            inline const T *operator->() const
-            {
-                return (&_cur->Data);
-            }
-
-            inline const T &operator*() const
-            {
-                return (_cur->Data);
-            }
-
-            inline bool operator==(const ListIterator &it) const noexcept
-            {
-                return (_cur == it._cur);
-            }
-
-            inline bool operator!=(const ListIterator &it) const noexcept
-            {
-                return (_cur != it._cur);
-            }
-
             friend class List<T>;
         };
 
         template <typename T, typename NodeType>
-        class BP_TPL_API ListReverseIterator : public ListIterator<T, NodeType>
+        class BP_TPL_API ListReverseIterator : public ListIteratorBase<T, NodeType, ListReverseIterator, Iterator>
         {
         private:
-            using ListIterator<T, NodeType>::_cur;
-            using ListIterator<T, NodeType>::_reset;
+            using ListIteratorBase<T, NodeType, ListReverseIterator, Iterator>::_cur;
+            using ListIteratorBase<T, NodeType, ListReverseIterator, Iterator>::_reset;
 
         public:
             inline ListReverseIterator(NodeType *start, NodeType *reset)
-                : ListIterator<T, NodeType>(start, reset)
+                : ListIteratorBase<T, NodeType, ListReverseIterator, Iterator>(start, reset)
             {
             }
 
@@ -209,6 +202,16 @@ namespace bpf
                 else
                     _cur = _reset;
                 return (*this);
+            }
+
+            inline T *operator->()
+            {
+                return (&_cur->Data);
+            }
+
+            inline T &operator*()
+            {
+                return (_cur->Data);
             }
         };
     }

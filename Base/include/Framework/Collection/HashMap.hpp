@@ -52,7 +52,7 @@ namespace bpf
         template <typename K, typename V, typename HashOp = Hash<K>>
         class BP_TPL_API HashMap
         {
-        private:
+        public:
             struct Entry
             {
                 K Key;
@@ -64,6 +64,8 @@ namespace bpf
                 ENTRY_STATE_NON_EXISTANT,
                 ENTRY_STATE_OCCUPIED
             };
+
+        private:
             struct Node
             {
                 fsize Hash;
@@ -76,11 +78,6 @@ namespace bpf
             using CIterator = HashMapConstIterator<HashMap<K, V, HashOp>, Entry, Node>;
             using ReverseIterator = HashMapReverseIterator<HashMap<K, V, HashOp>, Entry, Node>;
             using CReverseIterator = HashMapConstReverseIterator<HashMap<K, V, HashOp>, Entry, Node>;
-
-            friend Iterator;
-            friend CIterator;
-            friend ReverseIterator;
-            friend CReverseIterator;
 
         private:
             Node *_data;

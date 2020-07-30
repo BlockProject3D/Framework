@@ -365,7 +365,6 @@ TEST(HashMap, ReverseIterator_3)
     it = lst.rbegin();
     it += 42;
     EXPECT_EQ(it, lst.rend());
-    it = lst.rend();
     it -= 42;
     EXPECT_EQ(it->Value, 0);
 }
@@ -485,7 +484,6 @@ TEST(HashMap, CReverseIterator_3)
     it = lst.rbegin();
     it += 42;
     EXPECT_EQ(it, lst.rend());
-    it = lst.rend();
     it -= 42;
     EXPECT_EQ(it->Value, 0);
 }

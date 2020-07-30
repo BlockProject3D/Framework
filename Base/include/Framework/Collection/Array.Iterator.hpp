@@ -33,8 +33,8 @@ namespace bpf
 {
     namespace collection
     {
-        template <typename T>
-        class BP_TPL_API ArrayConstIterator : public ConstIterator<ArrayConstIterator<T>, T>
+        template <typename IType, typename T>
+        class BP_TPL_API ArrayConstIteratorBase : public ConstIterator<IType, T>
         {
         protected:
             fsize _curid;
@@ -42,10 +42,101 @@ namespace bpf
             const T *_arr;
 
         public:
-            inline ArrayConstIterator(const T *lowlevel, const fsize size, const fsize start)
+            inline ArrayConstIteratorBase(const T *lowlevel, const fsize size, const fsize start)
                 : _curid(start)
                 , _max(size)
                 , _arr(lowlevel)
+            {
+            }
+
+            inline const T &operator*() const
+            {
+                return (_arr[_curid]);
+            }
+
+            inline const T *operator->() const
+            {
+                return (&_arr[_curid]);
+            }
+
+            inline bool operator==(const ArrayConstIteratorBase &other) const noexcept
+            {
+                return (_curid == other._curid);
+            }
+
+            inline bool operator!=(const ArrayConstIteratorBase &other) const noexcept
+            {
+                return (_curid != other._curid);
+            }
+
+            inline fsize Position() const noexcept
+            {
+                return (_curid);
+            }
+        };
+
+        template <typename IType, typename T>
+        class BP_TPL_API ArrayIteratorBase : Iterator<IType, T>
+        {
+        protected:
+            fsize _curid;
+            fsize _max;
+            T *_arr;
+
+        public:
+            inline ArrayIteratorBase(T *lowlevel, const fsize size, const fsize start)
+                : _curid(start)
+                , _max(size)
+                , _arr(lowlevel)
+            {
+            }
+
+            inline const T &operator*() const
+            {
+                return (_arr[_curid]);
+            }
+
+            inline const T *operator->() const
+            {
+                return (&_arr[_curid]);
+            }
+
+            inline T &operator*()
+            {
+                return (_arr[_curid]);
+            }
+
+            inline T *operator->()
+            {
+                return (&_arr[_curid]);
+            }
+
+            inline bool operator==(const ArrayIteratorBase &other) const noexcept
+            {
+                return (_curid == other._curid);
+            }
+
+            inline bool operator!=(const ArrayIteratorBase &other) const noexcept
+            {
+                return (_curid != other._curid);
+            }
+
+            inline fsize Position() const noexcept
+            {
+                return (_curid);
+            }
+        };
+
+        template <typename T>
+        class BP_TPL_API ArrayConstIterator : public ArrayConstIteratorBase<ArrayConstIterator<T>, T>
+        {
+        private:
+            using ArrayConstIteratorBase<ArrayConstIterator<T>,T>::_curid;
+            using ArrayConstIteratorBase<ArrayConstIterator<T>,T>::_max;
+
+        public:
+            inline ArrayConstIterator(const T *lowlevel, const fsize size, const fsize start)
+                : ArrayConstIteratorBase<ArrayConstIterator<T>,T>(lowlevel, size, start)
             {
             }
 
@@ -72,54 +163,29 @@ namespace bpf
             {
                 _curid = (_curid - i) > _max ? 0 : (_curid - i);
             }
-
-            inline const T &operator*() const
-            {
-                return (_arr[_curid]);
-            }
-
-            inline const T *operator->() const
-            {
-                return (&_arr[_curid]);
-            }
-
-            inline bool operator==(const ArrayConstIterator &other) const noexcept
-            {
-                return (_curid == other._curid);
-            }
-
-            inline bool operator!=(const ArrayConstIterator &other) const noexcept
-            {
-                return (_curid != other._curid);
-            }
-
-            inline fsize Position() const noexcept
-            {
-                return (_curid);
-            }
         };
 
         template <typename T>
-        class BP_TPL_API ArrayConstReverseIterator : public ArrayConstIterator<T>
+        class BP_TPL_API ArrayConstReverseIterator : public ArrayConstIteratorBase<ArrayConstReverseIterator<T>,T>
         {
         private:
-            using ArrayConstIterator<T>::_curid;
-            using ArrayConstIterator<T>::_max;
+            using ArrayConstIteratorBase<ArrayConstReverseIterator<T>, T>::_curid;
+            using ArrayConstIteratorBase<ArrayConstReverseIterator<T>, T>::_max;
 
         public:
             inline ArrayConstReverseIterator(const T *lowlevel, const fsize size, const fsize start)
-                : ArrayConstIterator<T>(lowlevel, size, start)
+                : ArrayConstIteratorBase<ArrayConstReverseIterator<T>, T>(lowlevel, size, start)
             {
             }
 
             inline void operator+=(fsize i)
             {
-                _curid = (_curid - i) > _max ? 0 : (_curid - i);
+                _curid = (_curid - i) > _max ? (fsize)-1 : (_curid - i);
             }
 
             inline void operator-=(fsize i)
             {
-                _curid = (_curid + i) > _max ? _max : (_curid + i);
+                _curid = (_curid + i) >= _max ? (_max - 1) : (_curid + i);
             }
 
             inline ArrayConstReverseIterator &operator++()
@@ -138,18 +204,15 @@ namespace bpf
         };
 
         template <typename T>
-        class BP_TPL_API ArrayIterator : public Iterator<ArrayIterator<T>, T>
+        class BP_TPL_API ArrayIterator : public ArrayIteratorBase<ArrayIterator<T>, T>
         {
-        protected:
-            fsize _curid;
-            fsize _max;
-            T *_arr;
+        private:
+            using ArrayIteratorBase<ArrayIterator<T>, T>::_curid;
+            using ArrayIteratorBase<ArrayIterator<T>, T>::_max;
 
         public:
             inline ArrayIterator(T *lowlevel, const fsize size, const fsize start)
-                : _curid(start)
-                , _max(size)
-                , _arr(lowlevel)
+                : ArrayIteratorBase<ArrayIterator<T>, T>(lowlevel, size, start)
             {
             }
 
@@ -176,64 +239,29 @@ namespace bpf
                     _curid--;
                 return (*this);
             }
-
-            inline T &operator*()
-            {
-                return (_arr[_curid]);
-            }
-
-            inline T *operator->()
-            {
-                return (&_arr[_curid]);
-            }
-
-            inline const T &operator*() const
-            {
-                return (_arr[_curid]);
-            }
-
-            inline const T *operator->() const
-            {
-                return (&_arr[_curid]);
-            }
-
-            inline bool operator==(const ArrayIterator &other) const noexcept
-            {
-                return (_curid == other._curid);
-            }
-
-            inline bool operator!=(const ArrayIterator &other) const noexcept
-            {
-                return (_curid != other._curid);
-            }
-
-            inline fsize Position() const noexcept
-            {
-                return (_curid);
-            }
         };
 
         template <typename T>
-        class BP_TPL_API ArrayReverseIterator : public ArrayIterator<T>
+        class BP_TPL_API ArrayReverseIterator : public ArrayIteratorBase<ArrayIterator<T>, T>
         {
         private:
-            using ArrayIterator<T>::_curid;
-            using ArrayIterator<T>::_max;
+            using ArrayIteratorBase<ArrayIterator<T>, T>::_curid;
+            using ArrayIteratorBase<ArrayIterator<T>, T>::_max;
 
         public:
             inline ArrayReverseIterator(T *lowlevel, const fsize size, const fsize start)
-                : ArrayIterator<T>(lowlevel, size, start)
+                : ArrayIteratorBase<ArrayIterator<T>, T>(lowlevel, size, start)
             {
             }
 
             inline void operator+=(fsize i)
             {
-                _curid = (_curid - i) > _max ? 0 : (_curid - i);
+                _curid = (_curid - i) > _max ? (fsize)-1 : (_curid - i);
             }
 
             inline void operator-=(fsize i)
             {
-                _curid = (_curid + i) > _max ? _max : (_curid + i);
+                _curid = (_curid + i) >= _max ? (_max - 1) : (_curid + i);
             }
 
             inline ArrayReverseIterator &operator++()
