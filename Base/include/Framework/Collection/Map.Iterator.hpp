@@ -27,8 +27,8 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Collection/Stack.hpp"
 #include "Framework/Collection/Iterator.hpp"
+#include "Framework/Collection/Stack.hpp"
 
 namespace bpf
 {
@@ -132,7 +132,8 @@ namespace bpf
         };
 
         template <typename EntryType, typename NodeType>
-        class BP_TPL_API MapConstReverseIterator : public ConstIterator<MapConstReverseIterator<EntryType, NodeType>, EntryType>
+        class BP_TPL_API MapConstReverseIterator
+            : public ConstIterator<MapConstReverseIterator<EntryType, NodeType>, EntryType>
         {
         private:
             NodeType *_root;

@@ -27,6 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/Api.hpp"
 #include "Framework/Collection/Iterator.hpp"
 
 namespace bpf
@@ -36,7 +37,8 @@ namespace bpf
         template <typename T>
         class BP_TPL_API List;
 
-        template <typename T, typename NodeType, template <typename, typename> class IType, template <typename, typename> class Base>
+        template <typename T, typename NodeType, template <typename, typename> class IType,
+                  template <typename, typename> class Base>
         class BP_TPL_API ListIteratorBase : public Base<IType<T, NodeType>, T>
         {
         protected:
@@ -74,13 +76,15 @@ namespace bpf
         template <typename T, typename NodeType>
         class BP_TPL_API ListConstIterator : public ListIteratorBase<T, NodeType, ListConstIterator, ConstIterator>
         {
+            BP_DEFINE_BASE(ListIteratorBase, ListIteratorBase<T, NodeType, ListConstIterator, ConstIterator>);
+
         private:
-            using ListIteratorBase<T, NodeType, ListConstIterator, ConstIterator>::_cur;
-            using ListIteratorBase<T, NodeType, ListConstIterator, ConstIterator>::_reset;
+            using Base::_cur;
+            using Base::_reset;
 
         public:
             inline ListConstIterator(NodeType *start, NodeType *reset)
-                : ListIteratorBase<T, NodeType, ListConstIterator, ConstIterator>(start, reset)
+                : Base(start, reset)
             {
             }
 
@@ -104,15 +108,18 @@ namespace bpf
         };
 
         template <typename T, typename NodeType>
-        class BP_TPL_API ListConstReverseIterator : public ListIteratorBase<T, NodeType, ListConstReverseIterator, ConstIterator>
+        class BP_TPL_API ListConstReverseIterator
+            : public ListIteratorBase<T, NodeType, ListConstReverseIterator, ConstIterator>
         {
+            BP_DEFINE_BASE(ListIteratorBase, ListIteratorBase<T, NodeType, ListConstReverseIterator, ConstIterator>);
+
         private:
-            using ListIteratorBase<T, NodeType, ListConstReverseIterator, ConstIterator>::_cur;
-            using ListIteratorBase<T, NodeType, ListConstReverseIterator, ConstIterator>::_reset;
+            using Base::_cur;
+            using Base::_reset;
 
         public:
             inline ListConstReverseIterator(NodeType *start, NodeType *reset)
-                : ListIteratorBase<T, NodeType, ListConstReverseIterator, ConstIterator>(start, reset)
+                : Base(start, reset)
             {
             }
 
@@ -136,13 +143,15 @@ namespace bpf
         template <typename T, typename NodeType>
         class BP_TPL_API ListIterator : public ListIteratorBase<T, NodeType, ListIterator, Iterator>
         {
+            BP_DEFINE_BASE(ListIteratorBase, ListIteratorBase<T, NodeType, ListIterator, Iterator>);
+
         private:
-            using ListIteratorBase<T, NodeType, ListIterator, Iterator>::_cur;
-            using ListIteratorBase<T, NodeType, ListIterator, Iterator>::_reset;
+            using Base::_cur;
+            using Base::_reset;
 
         public:
             inline ListIterator(NodeType *start, NodeType *reset)
-                : ListIteratorBase<T, NodeType, ListIterator, Iterator>(start, reset)
+                : Base(start, reset)
             {
             }
 
@@ -178,13 +187,15 @@ namespace bpf
         template <typename T, typename NodeType>
         class BP_TPL_API ListReverseIterator : public ListIteratorBase<T, NodeType, ListReverseIterator, Iterator>
         {
+            BP_DEFINE_BASE(ListIteratorBase, ListIteratorBase<T, NodeType, ListReverseIterator, Iterator>);
+
         private:
-            using ListIteratorBase<T, NodeType, ListReverseIterator, Iterator>::_cur;
-            using ListIteratorBase<T, NodeType, ListReverseIterator, Iterator>::_reset;
+            using Base::_cur;
+            using Base::_reset;
 
         public:
             inline ListReverseIterator(NodeType *start, NodeType *reset)
-                : ListIteratorBase<T, NodeType, ListReverseIterator, Iterator>(start, reset)
+                : Base(start, reset)
             {
             }
 

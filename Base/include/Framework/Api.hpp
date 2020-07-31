@@ -35,12 +35,30 @@
      * @param message the deprecation message
      */
     #define BP_DEPRECATED(message) __attribute__((deprecated(message)))
+
+    /**
+     * Auto generate base sortcut/alias (cross platform way to achieve CRTP)
+     * @param BaseName the name of the base class
+     * @param ... the base class declaration
+     */
+    #define BP_DEFINE_BASE(BaseName, BaseDecl)                                                                         \
+    private:                                                                                                           \
+        using Base = ##__VA_ARGS__
 #elif defined(_MSC_VER)
     /**
      * Use this macro to define a declaration as deprecated
      * @param message the deprecation message
      */
     #define BP_DEPRECATED(message) __declspec(deprecated(message))
+
+    /**
+     * Auto generate base sortcut/alias (cross platform way to achieve CRTP)
+     * @param BaseName the name of the base class
+     * @param ... the base class declaration
+     */
+    #define BP_DEFINE_BASE(BaseName, ...)                                                                         \
+    private:                                                                                                           \
+        using Base = BaseName
 #else
     #pargma message "WARNING: Your compiler is not supported"
 

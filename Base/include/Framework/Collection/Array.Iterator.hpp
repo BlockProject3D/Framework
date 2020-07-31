@@ -131,12 +131,12 @@ namespace bpf
         class BP_TPL_API ArrayConstIterator : public ArrayConstIteratorBase<ArrayConstIterator<T>, T>
         {
         private:
-            using ArrayConstIteratorBase<ArrayConstIterator<T>,T>::_curid;
-            using ArrayConstIteratorBase<ArrayConstIterator<T>,T>::_max;
+            using ArrayConstIteratorBase<ArrayConstIterator<T>, T>::_curid;
+            using ArrayConstIteratorBase<ArrayConstIterator<T>, T>::_max;
 
         public:
             inline ArrayConstIterator(const T *lowlevel, const fsize size, const fsize start)
-                : ArrayConstIteratorBase<ArrayConstIterator<T>,T>(lowlevel, size, start)
+                : ArrayConstIteratorBase<ArrayConstIterator<T>, T>(lowlevel, size, start)
             {
             }
 
@@ -166,7 +166,7 @@ namespace bpf
         };
 
         template <typename T>
-        class BP_TPL_API ArrayConstReverseIterator : public ArrayConstIteratorBase<ArrayConstReverseIterator<T>,T>
+        class BP_TPL_API ArrayConstReverseIterator : public ArrayConstIteratorBase<ArrayConstReverseIterator<T>, T>
         {
         private:
             using ArrayConstIteratorBase<ArrayConstReverseIterator<T>, T>::_curid;
