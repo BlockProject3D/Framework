@@ -43,7 +43,7 @@
      */
     #define BP_DEFINE_BASE(BaseName, ...)                                                                         \
     private:                                                                                                           \
-        using Base = ##__VA_ARGS__
+        using Base = __VA_ARGS__
 #elif defined(_MSC_VER)
     /**
      * Use this macro to define a declaration as deprecated
