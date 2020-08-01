@@ -41,7 +41,7 @@
      * @param BaseName the name of the base class
      * @param ... the base class declaration
      */
-    #define BP_DEFINE_BASE(BaseName, ...)                                                                         \
+    #define BP_DEFINE_BASE(BaseName, ...)                                                                              \
     private:                                                                                                           \
         using Base = __VA_ARGS__
 #elif defined(_MSC_VER)
@@ -56,7 +56,7 @@
      * @param BaseName the name of the base class
      * @param ... the base class declaration
      */
-    #define BP_DEFINE_BASE(BaseName, ...)                                                                         \
+    #define BP_DEFINE_BASE(BaseName, ...)                                                                              \
     private:                                                                                                           \
         using Base = BaseName
 #else
