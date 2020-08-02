@@ -424,6 +424,16 @@ namespace bpf
                 return (&_curNode->KeyVal);
             }
 
+            inline const EntryType &operator*() const
+            {
+                return (_curNode->KeyVal);
+            }
+
+            inline const EntryType *operator->() const
+            {
+                return (&_curNode->KeyVal);
+            }
+
             inline bool operator==(const MapReverseIterator &other) const
             {
                 return (_curNode == other._curNode);
