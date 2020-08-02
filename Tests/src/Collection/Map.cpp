@@ -333,6 +333,21 @@ TEST(Map, Iterator_4)
     EXPECT_EQ(it->Key, 2);
 }
 
+TEST(Map, Iterator_Special)
+{
+    Map<int, int> lst = { { 1, 3 } };
+
+    auto it = lst.rbegin();
+    EXPECT_EQ((*it).Value, 3);
+    EXPECT_EQ(it->Value, 3);
+    EXPECT_EQ(it->Key, 1);
+    const auto &map  = lst;
+    auto it1 = map.rbegin();
+    EXPECT_EQ((*it1).Value, 3);
+    EXPECT_EQ(it1->Value, 3);
+    EXPECT_EQ(it1->Key, 1);
+}
+
 TEST(Map, ReverseIterator_1)
 {
     Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
