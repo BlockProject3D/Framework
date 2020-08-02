@@ -469,6 +469,19 @@ TEST(List, Iterator_3)
     EXPECT_EQ(it->ByteAt(0), 'a');
 }
 
+TEST(List, Iterator_4)
+{
+    List<String> lst = {"a", "b", "c"};
+
+    auto it1 = lst.begin();
+    const auto &it = it1;
+    EXPECT_STREQ(**it, "a");
+    EXPECT_EQ(it->ByteAt(0), 'a');
+    ++it1;
+    EXPECT_STREQ(**it, "b");
+    EXPECT_EQ(it->ByteAt(0), 'b');
+}
+
 TEST(List, ReverseIterator_1)
 {
     List<int> lst = {0, 3, 7, 0};
@@ -511,6 +524,19 @@ TEST(List, ReverseIterator_3)
     EXPECT_EQ(it, lst.rend());
     it -= 42;
     EXPECT_EQ(it->ByteAt(0), 'c');
+}
+
+TEST(List, ReverseIterator_4)
+{
+    List<String> lst = {"a", "b", "c"};
+
+    auto it1 = lst.rbegin();
+    const auto &it = it1;
+    EXPECT_STREQ(**it, "c");
+    EXPECT_EQ(it->ByteAt(0), 'c');
+    ++it1;
+    EXPECT_STREQ(**it, "b");
+    EXPECT_EQ(it->ByteAt(0), 'b');
 }
 
 TEST(List, CIterator_1)

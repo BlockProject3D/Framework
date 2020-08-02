@@ -252,6 +252,19 @@ TEST(ArrayDynamic, Iterator_3)
     EXPECT_EQ(it->ByteAt(0), 'a');
 }
 
+TEST(ArrayDynamic, Iterator_4)
+{
+    Array<String> lst = {"a", "b", "c"};
+
+    auto it1 = lst.begin();
+    const auto &it = it1;
+    EXPECT_STREQ(**it, "a");
+    EXPECT_EQ(it->ByteAt(0), 'a');
+    ++it1;
+    EXPECT_STREQ(**it, "b");
+    EXPECT_EQ(it->ByteAt(0), 'b');
+}
+
 TEST(ArrayDynamic, ReverseIterator_1)
 {
     Array<int> lst = {0, 3, 7, 0};
@@ -294,6 +307,19 @@ TEST(ArrayDynamic, ReverseIterator_3)
     EXPECT_EQ(it, lst.rend());
     it -= 42;
     EXPECT_EQ(it->ByteAt(0), 'c');
+}
+
+TEST(ArrayDynamic, ReverseIterator_4)
+{
+    Array<String> lst = {"a", "b", "c"};
+
+    auto it1 = lst.rbegin();
+    const auto &it = it1;
+    EXPECT_STREQ(**it, "c");
+    EXPECT_EQ(it->ByteAt(0), 'c');
+    ++it1;
+    EXPECT_STREQ(**it, "b");
+    EXPECT_EQ(it->ByteAt(0), 'b');
 }
 
 TEST(ArrayDynamic, CIterator_1)

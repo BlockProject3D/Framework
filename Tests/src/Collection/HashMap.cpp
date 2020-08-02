@@ -313,6 +313,21 @@ TEST(HashMap, Iterator_3)
     EXPECT_EQ(it->Value, 3);
 }
 
+TEST(HashMap, Iterator_4)
+{
+    HashMap<int, int> lst = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+
+    auto it1 = lst.begin();
+    const auto &it = it1;
+    EXPECT_EQ((*it).Value, 3);
+    EXPECT_EQ(it->Value, 3);
+    EXPECT_EQ(it->Key, 1);
+    ++it1;
+    EXPECT_EQ((*it).Value, 7);
+    EXPECT_EQ(it->Value, 7);
+    EXPECT_EQ(it->Key, 2);
+}
+
 TEST(HashMap, ReverseIterator_1)
 {
     HashMap<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
@@ -367,6 +382,21 @@ TEST(HashMap, ReverseIterator_3)
     EXPECT_EQ(it, lst.rend());
     it -= 42;
     EXPECT_EQ(it->Value, 0);
+}
+
+TEST(HashMap, ReverseIterator_4)
+{
+    HashMap<int, int> lst = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+
+    auto it1 = lst.rbegin();
+    const auto &it = it1;
+    EXPECT_EQ((*it).Value, 0);
+    EXPECT_EQ(it->Value, 0);
+    EXPECT_EQ(it->Key, 3);
+    ++it1;
+    EXPECT_EQ((*it).Value, 7);
+    EXPECT_EQ(it->Value, 7);
+    EXPECT_EQ(it->Key, 2);
 }
 
 TEST(HashMap, CIterator_1)

@@ -318,6 +318,21 @@ TEST(Map, Iterator_3)
     EXPECT_EQ(it->Value, 3);
 }
 
+TEST(Map, Iterator_4)
+{
+    Map<int, int> lst = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+
+    auto it1 = lst.begin();
+    const auto &it = it1;
+    EXPECT_EQ((*it).Value, 3);
+    EXPECT_EQ(it->Value, 3);
+    EXPECT_EQ(it->Key, 1);
+    ++it1;
+    EXPECT_EQ((*it).Value, 7);
+    EXPECT_EQ(it->Value, 7);
+    EXPECT_EQ(it->Key, 2);
+}
+
 TEST(Map, ReverseIterator_1)
 {
     Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
@@ -373,6 +388,21 @@ TEST(Map, ReverseIterator_3)
     it = lst.rend();
     it -= 42;
     EXPECT_EQ(it->Value, 0);
+}
+
+TEST(Map, ReverseIterator_4)
+{
+    Map<int, int> lst = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+
+    auto it1 = lst.rbegin();
+    const auto &it = it1;
+    EXPECT_EQ((*it).Value, 0);
+    EXPECT_EQ(it->Value, 0);
+    EXPECT_EQ(it->Key, 3);
+    ++it1;
+    EXPECT_EQ((*it).Value, 7);
+    EXPECT_EQ(it->Value, 7);
+    EXPECT_EQ(it->Key, 2);
 }
 
 TEST(Map, CIterator_1)
