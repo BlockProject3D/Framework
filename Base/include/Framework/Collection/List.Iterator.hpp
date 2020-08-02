@@ -181,6 +181,9 @@ namespace bpf
                 return (_cur->Data);
             }
 
+            using Base::operator->;
+            using Base::operator*;
+
             friend class List<T>;
         };
 
@@ -224,6 +227,9 @@ namespace bpf
             {
                 return (_cur->Data);
             }
+
+            using Base::operator->;
+            using Base::operator*;
         };
     }
 }

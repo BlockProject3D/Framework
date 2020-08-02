@@ -233,6 +233,9 @@ namespace bpf
                 return (&_data[CurID].KeyVal);
             }
 
+            using Base::operator->;
+            using Base::operator*;
+
             friend HashMap;
         };
 
@@ -288,6 +291,9 @@ namespace bpf
             {
                 return (&_data[CurID].KeyVal);
             }
+
+            using Base::operator->;
+            using Base::operator*;
         };
     }
 }
