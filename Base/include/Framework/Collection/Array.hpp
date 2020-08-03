@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Collection/Iterator.hpp"
+#include "Framework/Collection/Array.Iterator.hpp"
 #include "Framework/Collection/Utility.hpp"
 #include "Framework/IndexException.hpp"
 #include "Framework/TypeInfo.hpp"
@@ -48,97 +48,10 @@ namespace bpf
         class BP_TPL_API Array
         {
         public:
-            class BP_TPL_API Iterator final : public IIterator<typename Array<T, I>::Iterator, T>
-            {
-            private:
-                fsize _curid;
-                const T *_arr;
-
-            public:
-                inline Iterator(const T *lowlevel, const fsize start)
-                    : _curid(start)
-                    , _arr(lowlevel)
-                {
-                }
-                inline Iterator &operator++()
-                {
-                    if (_curid != I)
-                        _curid++;
-                    return (*this);
-                }
-                inline Iterator &operator--()
-                {
-                    if (_curid > 0)
-                        _curid--;
-                    return (*this);
-                }
-                inline const T &operator*() const
-                {
-                    return (_arr[_curid]);
-                }
-                inline const T *operator->() const
-                {
-                    return (&_arr[_curid]);
-                }
-                inline bool operator==(const Iterator &other) const
-                {
-                    return (_curid == other._curid);
-                }
-                inline bool operator!=(const Iterator &other) const
-                {
-                    return (_curid != other._curid);
-                }
-                inline fsize ArrayPos() const noexcept
-                {
-                    return (_curid);
-                }
-            };
-
-            class BP_TPL_API ReverseIterator final : public IIterator<typename Array<T, I>::ReverseIterator, T>
-            {
-            private:
-                fsize _curid;
-                const T *_arr;
-
-            public:
-                inline ReverseIterator(const T *lowlevel, const fsize start)
-                    : _curid(start)
-                    , _arr(lowlevel)
-                {
-                }
-                inline ReverseIterator &operator++()
-                {
-                    if (_curid != (fsize)-1)
-                        _curid--;
-                    return (*this);
-                }
-                inline ReverseIterator &operator--()
-                {
-                    if (_curid < I - 1)
-                        _curid++;
-                    return (*this);
-                }
-                inline const T &operator*() const
-                {
-                    return (_arr[_curid]);
-                }
-                inline const T *operator->() const
-                {
-                    return (&_arr[_curid]);
-                }
-                inline bool operator==(const ReverseIterator &other) const
-                {
-                    return (_curid == other._curid);
-                }
-                inline bool operator!=(const ReverseIterator &other) const
-                {
-                    return (_curid != other._curid);
-                }
-                inline fsize ArrayPos() const noexcept
-                {
-                    return (_curid);
-                }
-            };
+            using Iterator = ArrayIterator<T>;
+            using CIterator = ArrayConstIterator<T>;
+            using ReverseIterator = ArrayReverseIterator<T>;
+            using CReverseIterator = ArrayConstReverseIterator<T>;
 
         private:
             T _arr[I];
@@ -339,36 +252,72 @@ namespace bpf
              * Returns an iterator to the begining of the array
              * @return new iterator
              */
-            inline Iterator begin() const
+            inline Iterator begin()
             {
-                return (Iterator(_arr, 0));
+                return (Iterator(_arr, I, 0));
             }
 
             /**
              * Returns an iterator to the end of the array
              * @return new iterator
              */
-            inline Iterator end() const
+            inline Iterator end()
             {
-                return (Iterator(_arr, I));
+                return (Iterator(_arr, I, I));
+            }
+
+            /**
+             * Returns an iterator to the begining of the array
+             * @return new iterator
+             */
+            inline CIterator begin() const
+            {
+                return (CIterator(_arr, I, 0));
+            }
+
+            /**
+             * Returns an iterator to the end of the array
+             * @return new iterator
+             */
+            inline CIterator end() const
+            {
+                return (CIterator(_arr, I, I));
             }
 
             /**
              * Returns a reverse iterator to the begining of the array
              * @return new iterator
              */
-            inline ReverseIterator rbegin() const
+            inline ReverseIterator rbegin()
             {
-                return (ReverseIterator(_arr, I - 1));
+                return (ReverseIterator(_arr, I, I - 1));
             }
 
             /**
              * Returns a reverse iterator to the end of the array
              * @return new iterator
              */
-            inline ReverseIterator rend() const
+            inline ReverseIterator rend()
             {
-                return (ReverseIterator(_arr, (fsize)-1));
+                return (ReverseIterator(_arr, I, (fsize)-1));
+            }
+
+            /**
+             * Returns a reverse iterator to the begining of the array
+             * @return new iterator
+             */
+            inline CReverseIterator rbegin() const
+            {
+                return (CReverseIterator(_arr, I, I - 1));
+            }
+
+            /**
+             * Returns a reverse iterator to the end of the array
+             * @return new iterator
+             */
+            inline CReverseIterator rend() const
+            {
+                return (CReverseIterator(_arr, I, (fsize)-1));
             }
         };
 
@@ -380,103 +329,10 @@ namespace bpf
         class BP_TPL_API Array<T, 0>
         {
         public:
-            class BP_TPL_API Iterator final : public IIterator<typename Array<T, 0>::Iterator, T>
-            {
-            private:
-                fsize _curid;
-                fsize _max;
-                const T *_arr;
-
-            public:
-                inline Iterator(const T *lowlevel, const fsize size, const fsize start)
-                    : _curid(start)
-                    , _max(size)
-                    , _arr(lowlevel)
-                {
-                }
-                inline Iterator &operator++()
-                {
-                    if (_curid != _max)
-                        _curid++;
-                    return (*this);
-                }
-                inline Iterator &operator--()
-                {
-                    if (_curid > 0)
-                        _curid--;
-                    return (*this);
-                }
-                inline const T &operator*() const
-                {
-                    return (_arr[_curid]);
-                }
-                inline const T *operator->() const
-                {
-                    return (&_arr[_curid]);
-                }
-                inline bool operator==(const Iterator &other) const
-                {
-                    return (_curid == other._curid);
-                }
-                inline bool operator!=(const Iterator &other) const
-                {
-                    return (_curid != other._curid);
-                }
-
-                inline fsize ArrayPos() const noexcept
-                {
-                    return (_curid);
-                }
-            };
-
-            class BP_TPL_API ReverseIterator final : public IIterator<typename Array<T, 0>::ReverseIterator, T>
-            {
-            private:
-                fsize _curid;
-                fsize _max;
-                const T *_arr;
-
-            public:
-                inline ReverseIterator(const T *lowlevel, const fsize size, const fsize start)
-                    : _curid(start)
-                    , _max(size)
-                    , _arr(lowlevel)
-                {
-                }
-                inline ReverseIterator &operator++()
-                {
-                    if (_curid != (fsize)-1)
-                        _curid--;
-                    return (*this);
-                }
-                inline ReverseIterator &operator--()
-                {
-                    if (_curid < _max - 1)
-                        _curid++;
-                    return (*this);
-                }
-                inline const T &operator*() const
-                {
-                    return (_arr[_curid]);
-                }
-                inline const T *operator->() const
-                {
-                    return (&_arr[_curid]);
-                }
-                inline bool operator==(const ReverseIterator &other) const
-                {
-                    return (_curid == other._curid);
-                }
-                inline bool operator!=(const ReverseIterator &other) const
-                {
-                    return (_curid != other._curid);
-                }
-
-                inline fsize ArrayPos() const noexcept
-                {
-                    return (_curid);
-                }
-            };
+            using Iterator = ArrayIterator<T>;
+            using CIterator = ArrayConstIterator<T>;
+            using ReverseIterator = ArrayReverseIterator<T>;
+            using CReverseIterator = ArrayConstReverseIterator<T>;
 
         private:
             fsize _size;
@@ -683,7 +539,7 @@ namespace bpf
              * Returns an iterator to the begining of the array
              * @return new iterator
              */
-            inline Iterator begin() const
+            inline Iterator begin()
             {
                 return (Iterator(_arr, _size, 0));
             }
@@ -692,16 +548,34 @@ namespace bpf
              * Returns an iterator to the end of the array
              * @return new iterator
              */
-            inline Iterator end() const
+            inline Iterator end()
             {
                 return (Iterator(_arr, _size, _size));
+            }
+
+            /**
+             * Returns an iterator to the begining of the array
+             * @return new iterator
+             */
+            inline CIterator begin() const
+            {
+                return (CIterator(_arr, _size, 0));
+            }
+
+            /**
+             * Returns an iterator to the end of the array
+             * @return new iterator
+             */
+            inline CIterator end() const
+            {
+                return (CIterator(_arr, _size, _size));
             }
 
             /**
              * Returns a reverse iterator to the begining of the array
              * @return new iterator
              */
-            inline ReverseIterator rbegin() const
+            inline ReverseIterator rbegin()
             {
                 return (ReverseIterator(_arr, _size, _size - 1));
             }
@@ -710,9 +584,27 @@ namespace bpf
              * Returns a reverse iterator to the end of the array
              * @return new iterator
              */
-            inline ReverseIterator rend() const
+            inline ReverseIterator rend()
             {
                 return (ReverseIterator(_arr, _size, (fsize)-1));
+            }
+
+            /**
+             * Returns a reverse iterator to the begining of the array
+             * @return new iterator
+             */
+            inline CReverseIterator rbegin() const
+            {
+                return (CReverseIterator(_arr, _size, _size - 1));
+            }
+
+            /**
+             * Returns a reverse iterator to the end of the array
+             * @return new iterator
+             */
+            inline CReverseIterator rend() const
+            {
+                return (CReverseIterator(_arr, _size, (fsize)-1));
             }
         };
     }

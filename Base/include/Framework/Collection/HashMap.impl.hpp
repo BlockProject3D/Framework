@@ -34,86 +34,6 @@ namespace bpf
     namespace collection
     {
         template <typename K, typename V, typename HashOp>
-        HashMap<K, V, HashOp>::Iterator::Iterator(Node *data, fsize start, fsize size, const bool reverse)
-            : _data(data)
-            , MaxSize(size)
-            , CurID(start)
-        {
-            if (reverse)
-            {
-                SearchPrevEntry();
-                MaxSize = CurID;
-            }
-            else
-            {
-                fsize old = CurID;
-                CurID = 0;
-                SearchNextEntry();
-                MinSize = CurID;
-                CurID = old;
-                SearchNextEntry();
-            }
-        }
-
-        template <typename K, typename V, typename HashOp>
-        void HashMap<K, V, HashOp>::Iterator::SearchNextEntry()
-        {
-            while (CurID < MaxSize && _data[CurID].State != ENTRY_STATE_OCCUPIED)
-                ++CurID;
-        }
-
-        template <typename K, typename V, typename HashOp>
-        void HashMap<K, V, HashOp>::Iterator::SearchPrevEntry()
-        {
-            while (CurID != (fsize)-1 && _data[CurID].State != ENTRY_STATE_OCCUPIED)
-                --CurID;
-        }
-
-        template <typename K, typename V, typename HashOp>
-        typename HashMap<K, V, HashOp>::ReverseIterator &HashMap<K, V, HashOp>::ReverseIterator::operator++()
-        {
-            if (Iterator::CurID != (fsize)-1)
-            {
-                --Iterator::CurID;
-                Iterator::SearchPrevEntry();
-            }
-            return (*this);
-        }
-
-        template <typename K, typename V, typename HashOp>
-        typename HashMap<K, V, HashOp>::ReverseIterator &HashMap<K, V, HashOp>::ReverseIterator::operator--()
-        {
-            if (Iterator::CurID < Iterator::MaxSize)
-            {
-                ++Iterator::CurID;
-                Iterator::SearchNextEntry();
-            }
-            return (*this);
-        }
-
-        template <typename K, typename V, typename HashOp>
-        typename HashMap<K, V, HashOp>::Iterator &HashMap<K, V, HashOp>::Iterator::operator++()
-        {
-            if (CurID < MaxSize)
-            {
-                ++CurID;
-                SearchNextEntry();
-            }
-            return (*this);
-        }
-
-        template <typename K, typename V, typename HashOp>
-        typename HashMap<K, V, HashOp>::Iterator &HashMap<K, V, HashOp>::Iterator::operator--()
-        {
-            if (CurID > MinSize)
-            {
-                --CurID;
-                SearchPrevEntry();
-            }
-            return (*this);
-        }
-
-        template <typename K, typename V, typename HashOp>
         HashMap<K, V, HashOp>::HashMap()
             : _data(memory::MemUtils::NewArray<Node>(HASH_MAP_INIT_BUF_SIZE))
             , CurSize(HASH_MAP_INIT_BUF_SIZE)
@@ -343,9 +263,9 @@ namespace bpf
         {
             if (a.CurID >= CurSize || b.CurID >= CurSize || _data[a.CurID].State != ENTRY_STATE_OCCUPIED || _data[b.CurID].State != ENTRY_STATE_OCCUPIED)
                 return;
-            auto v = std::move(this->operator[](a->Key));
-            this->operator[](a->Key) = std::move(this->operator[](b->Key));
-            this->operator[](b->Key) = std::move(v);
+            auto v = std::move(_data[a.CurID].KeyVal.Value);
+            _data[a.CurID].KeyVal.Value = std::move(_data[b.CurID].KeyVal.Value);
+            _data[b.CurID].KeyVal.Value = std::move(v);
         }
 
         template <typename K, typename V, typename HashOp>
@@ -408,11 +328,11 @@ namespace bpf
         }
 
         template <typename K, typename V, typename HashOp>
-        bool HashMap<K, V, HashOp>::operator==(const HashMap<K, V, HashOp> &other)
+        bool HashMap<K, V, HashOp>::operator==(const HashMap<K, V, HashOp> &other) const noexcept
         {
             if (ElemCount != other.ElemCount)
                 return (false);
-            Iterator it = begin();
+            auto it = begin();
 
             while (it != end())
             {

@@ -163,29 +163,29 @@ namespace bpf
         template <typename T, fsize I>
         void Array<T, I>::Swap(const Iterator &a, const Iterator &b)
         {
-            if (a.ArrayPos() >= I || b.ArrayPos() >= I)
+            if (a.Position() >= I || b.Position() >= I)
                 return;
-            T tmp = std::move(_arr[a.ArrayPos()]);
-            _arr[a.ArrayPos()] = std::move(_arr[b.ArrayPos()]);
-            _arr[b.ArrayPos()] = std::move(tmp);
+            T tmp = std::move(_arr[a.Position()]);
+            _arr[a.Position()] = std::move(_arr[b.Position()]);
+            _arr[b.Position()] = std::move(tmp);
         }
 
         template <typename T>
         void Array<T>::Swap(const Iterator &a, const Iterator &b)
         {
-            if (a.ArrayPos() >= _size || b.ArrayPos() >= _size)
+            if (a.Position() >= _size || b.Position() >= _size)
                 return;
-            T tmp = std::move(_arr[a.ArrayPos()]);
-            _arr[a.ArrayPos()] = std::move(_arr[b.ArrayPos()]);
-            _arr[b.ArrayPos()] = std::move(tmp);
+            T tmp = std::move(_arr[a.Position()]);
+            _arr[a.Position()] = std::move(_arr[b.Position()]);
+            _arr[b.Position()] = std::move(tmp);
         }
 
         template <typename T, fsize I>
         typename Array<T, I>::Iterator Array<T, I>::FindByKey(const fsize pos)
         {
             if (pos >= I)
-                return (Iterator(_arr, I));
-            return (Iterator(_arr, pos));
+                return (Iterator(_arr, I, I));
+            return (Iterator(_arr, I, pos));
         }
 
         template <typename T>
@@ -205,10 +205,10 @@ namespace bpf
             for (auto &elem : *this)
             {
                 if (Comparator<T>::Eval(elem, val))
-                    return (Iterator(_arr, pos));
+                    return (Iterator(_arr, I, pos));
                 ++pos;
             }
-            return (Iterator(_arr, I));
+            return (Iterator(_arr, I, I));
         }
 
         template <typename T>
@@ -234,10 +234,10 @@ namespace bpf
             for (auto &elem : *this)
             {
                 if (comparator(pos, elem))
-                    return (Iterator(_arr, pos));
+                    return (Iterator(_arr, I, pos));
                 ++pos;
             }
-            return (Iterator(_arr, I));
+            return (Iterator(_arr, I, I));
         }
 
         template <typename T>

@@ -27,8 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Collection/Iterator.hpp"
-#include "Framework/Collection/Stack.hpp"
+#include "Framework/Collection/Map.Iterator.hpp"
 #include "Framework/Collection/Utility.hpp"
 #include "Framework/IndexException.hpp"
 #include "Framework/Types.hpp"
@@ -66,71 +65,10 @@ namespace bpf
             };
 
         public:
-            class BP_TPL_API Iterator : public IIterator<typename Map<K, V, Greater, Less>::Iterator, Entry>
-            {
-            private:
-                Node *_root;
-                Node *_fixedRoot;
-                Node *_curNode;
-                Stack<Node *> _stack;
-                Stack<Node *> _backStack;
-                void ResetIterator();
-
-            public:
-                Iterator(Node *root, Node *start);
-                Iterator &operator++();
-                Iterator &operator--();
-                inline const Entry &operator*() const
-                {
-                    return (_curNode->KeyVal);
-                }
-                inline const Entry *operator->() const
-                {
-                    return (&_curNode->KeyVal);
-                }
-                inline bool operator==(const Iterator &other) const
-                {
-                    return (_curNode == other._curNode);
-                }
-                inline bool operator!=(const Iterator &other) const
-                {
-                    return (_curNode != other._curNode);
-                }
-
-                friend class Map<K, V, Greater, Less>;
-            };
-
-            class BP_TPL_API ReverseIterator : public IIterator<typename Map<K, V, Greater, Less>::ReverseIterator, Entry>
-            {
-            private:
-                Node *_root;
-                Node *_fixedRoot;
-                Node *_curNode;
-                Stack<Node *> _stack;
-                Stack<Node *> _backStack;
-                void ResetIterator();
-
-            public:
-                ReverseIterator(Node *root, Node *start);
-                ReverseIterator &operator++();
-                ReverseIterator &operator--();
-                inline const Entry &operator*() const
-                {
-                    return (_curNode->KeyVal);
-                }
-                inline const Entry *operator->() const
-                {
-                    return (&_curNode->KeyVal);
-                }
-                inline bool operator==(const ReverseIterator &other) const
-                {
-                    return (_curNode == other._curNode);
-                }
-                inline bool operator!=(const ReverseIterator &other) const
-                {
-                    return (_curNode != other._curNode);
-                }
-            };
+            using Iterator = MapIterator<Map<K, V, Greater, Less>, Entry, Node>;
+            using CIterator = MapConstIterator<Entry, Node>;
+            using ReverseIterator = MapReverseIterator<Entry, Node>;
+            using CReverseIterator = MapConstReverseIterator<Entry, Node>;
 
         private:
             Node *_root;
@@ -192,13 +130,13 @@ namespace bpf
 
             /**
              * Removes an element from the map
-             * @param pos iterator of the element to remove
+             * @param pos iterator of the element to remove, it is undefined behavior to pass a derived Iterator type
              */
             void RemoveAt(Iterator &pos);
 
             /**
              * Removes an element from the map
-             * @param pos iterator of the element to remove
+             * @param pos iterator of the element to remove, it is undefined behavior to pass a derived Iterator type
              */
             void RemoveAt(Iterator &&pos);
 
@@ -228,14 +166,14 @@ namespace bpf
              * @param other Map to compare with
              * @return true if the two maps are equal, false otherwise
              */
-            bool operator==(const Map<K, V, Greater, Less> &other);
+            bool operator==(const Map<K, V, Greater, Less> &other) const noexcept;
 
             /**
              * Compare Map by performing a per-element check
              * @param other Map to compare with
              * @return false if the two maps are equal, true otherwise
              */
-            inline bool operator!=(const Map<K, V, Greater, Less> &other)
+            inline bool operator!=(const Map<K, V, Greater, Less> &other) const noexcept
             {
                 return (!operator==(other));
             }
@@ -337,7 +275,25 @@ namespace bpf
              * Returns an iterator to the begining of the collection
              * @return new iterator
              */
-            inline Iterator begin() const
+            inline CIterator begin() const
+            {
+                return (CIterator(_root, reinterpret_cast<Node *>(1)));
+            }
+
+            /**
+             * Returns an iterator to the end of the collection
+             * @return new iterator
+             */
+            inline CIterator end() const
+            {
+                return (CIterator(_root, nullptr));
+            }
+
+            /**
+             * Returns an iterator to the begining of the collection
+             * @return new iterator
+             */
+            inline Iterator begin()
             {
                 return (Iterator(_root, reinterpret_cast<Node *>(1)));
             }
@@ -346,7 +302,7 @@ namespace bpf
              * Returns an iterator to the end of the collection
              * @return new iterator
              */
-            inline Iterator end() const
+            inline Iterator end()
             {
                 return (Iterator(_root, nullptr));
             }
@@ -355,7 +311,25 @@ namespace bpf
              * Returns a reverse iterator to the begining of the collection
              * @return new iterator
              */
-            inline ReverseIterator rbegin() const
+            inline CReverseIterator rbegin() const
+            {
+                return (CReverseIterator(_root, reinterpret_cast<Node *>(1)));
+            }
+
+            /**
+             * Returns a reverse iterator to the end of the collection
+             * @return new iterator
+             */
+            inline CReverseIterator rend() const
+            {
+                return (CReverseIterator(_root, nullptr));
+            }
+
+            /**
+             * Returns a reverse iterator to the begining of the collection
+             * @return new iterator
+             */
+            inline ReverseIterator rbegin()
             {
                 return (ReverseIterator(_root, reinterpret_cast<Node *>(1)));
             }
@@ -364,7 +338,7 @@ namespace bpf
              * Returns a reverse iterator to the end of the collection
              * @return new iterator
              */
-            inline ReverseIterator rend() const
+            inline ReverseIterator rend()
             {
                 return (ReverseIterator(_root, nullptr));
             }

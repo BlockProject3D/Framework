@@ -131,9 +131,9 @@ namespace bpf
         {
             if (_curid + 1 >= _arr.Size())
                 _arr.Resize(_arr.Size() * 2);
-            for (fsize i = _curid; i > pos.ArrayPos(); --i)
+            for (fsize i = _curid; i > pos.Position(); --i)
                 _arr[i] = _arr[i - 1];
-            _arr[pos.ArrayPos()] = elem;
+            _arr[pos.Position()] = elem;
             ++_curid;
         }
 
@@ -142,9 +142,9 @@ namespace bpf
         {
             if (_curid + 1 >= _arr.Size())
                 _arr.Resize(_arr.Size() * 2);
-            for (fsize i = _curid; i > pos.ArrayPos(); --i)
+            for (fsize i = _curid; i > pos.Position(); --i)
                 _arr[i] = _arr[i - 1];
-            _arr[pos.ArrayPos()] = std::move(elem);
+            _arr[pos.Position()] = std::move(elem);
             ++_curid;
         }
 
@@ -298,7 +298,7 @@ namespace bpf
         }
 
         template <typename T>
-        bool ArrayList<T>::operator==(const ArrayList<T> &other)
+        bool ArrayList<T>::operator==(const ArrayList<T> &other) const noexcept
         {
             if (_curid != other._curid)
                 return (false);
