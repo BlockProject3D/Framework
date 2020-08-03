@@ -12,7 +12,6 @@ on:
 
 jobs:
   setup-release:
-    if: ${{ ${GITHUB_REF##*/} == 'master' }}
     runs-on: ubuntu-latest
     steps:
     - name: Trigger automatic documentation
