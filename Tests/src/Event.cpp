@@ -80,7 +80,7 @@ TEST(Event, Safety_NonConst)
     ptr = nullptr;
     EXPECT_EQ(ev.GetEventCount(), 1u);
     ev.Invoke();
-    EXPECT_EQ(ev.GetEventCount(), 0);
+    EXPECT_EQ(ev.GetEventCount(), 0u);
 }
 
 TEST(Event, Safety_Const)
@@ -91,5 +91,5 @@ TEST(Event, Safety_Const)
     ptr = nullptr;
     EXPECT_EQ(ev.GetEventCount(), 1u);
     ev.Invoke();
-    EXPECT_EQ(ev.GetEventCount(), 0);
+    EXPECT_EQ(ev.GetEventCount(), 0u);
 }
