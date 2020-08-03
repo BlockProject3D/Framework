@@ -4,7 +4,7 @@
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
@@ -27,8 +27,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Memory/MemUtils.hpp"
 #include "Framework/Memory/ClassCastException.hpp"
+#include "Framework/Memory/MemUtils.hpp"
+#include "Framework/Memory/RawMemberFunction.hpp"
 #include "Framework/TypeInfo.hpp"
 
 namespace bpf
@@ -108,6 +109,38 @@ namespace bpf
             inline T *operator->() const noexcept
             {
                 return (RawPtr);
+            }
+
+            /**
+             * Call a pointer to a member function on this smart pointer
+             * @tparam R the function return type
+             * @tparam U the object type which must be the same as T
+             * @tparam Args the types of the function arguments
+             * @param fn the function pointer itself
+             * @return RawMemberFunction
+             */
+            template <typename R, typename U, typename... Args>
+            inline typename std::enable_if<std::is_class<U>::value && std::is_same<T, U>::value,
+                                           RawMemberFunction<U, R, R (U::*)(Args...)>>::type
+            operator->*(R (U::*fn)(Args...)) const
+            {
+                return (RawMemberFunction<U, R, R (U::*)(Args...)>(RawPtr, fn));
+            }
+
+            /**
+             * Call a pointer to a member function on this smart pointer
+             * @tparam R the function return type
+             * @tparam U the object type which must be the same as T
+             * @tparam Args the types of the function arguments
+             * @param fn the function pointer itself
+             * @return RawMemberFunction
+             */
+            template <typename R, typename U, typename... Args>
+            inline typename std::enable_if<std::is_class<U>::value && std::is_same<T, U>::value,
+                                           RawMemberFunction<U, R, R (U::*)(Args...) const>>::type
+            operator->*(R (U::*fn)(Args...) const) const
+            {
+                return (RawMemberFunction<U, R, R (U::*)(Args...) const>(RawPtr, fn));
             }
 
             /**
