@@ -1,14 +1,18 @@
-name: Release
+name: Deploy
 
 on:
-  push:
-    branches:
-      - 'release/**'
-    tags:
-      - 'v*' # Release anything that starts with letter v
+  workflow_dispatch:
+    inputs:
+      Version:
+        description: 'Version of release'
+        required: true
+      Outline:
+        description: 'An outline text for the release'
+        required: true
 
 jobs:
   setup-release:
+    if: ${{ github.actor == 'Yuri6037' }}
     runs-on: ubuntu-latest
     steps:
     - name: Trigger automatic documentation
@@ -29,11 +33,12 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ steps.get_version.outputs.VERSION }}
-        release_name: Release-${{ steps.get_version.outputs.VERSION }}
+        tag_name: v${{ github.event.inputs.Version }}
+        release_name: Release-${{ github.event.inputs.Version }}
         body: |
-          Release version: ${{ steps.get_version.outputs.VERSION }}
-          Build time: ${{ steps.current-time.outputs.time }}
+          ${{ github.event.inputs.Outline }}
+          Release version: ${{ github.event.inputs.Version }}
+          Built on: ${{ steps.current-time.outputs.time }}
         draft: false
         prerelease: false
   build:
@@ -81,12 +86,12 @@ jobs:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: BPF.zip
         asset_name: BPF-${{ matrix.osname }}-x64.zip
-        tag: ${{ github.ref }}
+        tag: v${{ github.event.inputs.Version }}
         overwrite: true
     - uses: svenstaro/upload-release-action@v1-release
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: BPF.${{ matrix.ext }}
         asset_name: BPF-${{ matrix.osname }}-x64.${{ matrix.ext }}
-        tag: ${{ github.ref }}
+        tag: v${{ github.event.inputs.Version }}
         overwrite: true
