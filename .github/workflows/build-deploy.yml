@@ -12,6 +12,7 @@ on:
 
 jobs:
   setup-release:
+    if: ${{ github.actor == 'Yuri6037' }}
     runs-on: ubuntu-latest
     steps:
     - name: Trigger automatic documentation
