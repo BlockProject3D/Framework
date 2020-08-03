@@ -222,7 +222,7 @@ TEST(Map, Move)
     EXPECT_EQ(mv[0], 0);
     EXPECT_EQ(mv[1], 3);
     EXPECT_EQ(mv[2], 7);
-    EXPECT_EQ(lst.Size(), 0U);
+    EXPECT_EQ(lst.Size(), 0u);
     EXPECT_EQ(lst.begin(), lst.end());
 }
 
@@ -301,6 +301,53 @@ TEST(Map, Iterator_2)
     EXPECT_EQ(it, --lst.end());
 }
 
+TEST(Map, Iterator_3)
+{
+    Map<int, int> lst = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+
+    auto it = lst.begin();
+    it += 2;
+    EXPECT_EQ(it->Value, 0);
+    it -= 2;
+    EXPECT_EQ(it->Value, 3);
+    it = lst.begin();
+    it += 42;
+    EXPECT_EQ(it, lst.end());
+    it = lst.end();
+    it -= 42;
+    EXPECT_EQ(it->Value, 3);
+}
+
+TEST(Map, Iterator_4)
+{
+    Map<int, int> lst = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+
+    auto it1 = lst.begin();
+    const auto &it = it1;
+    EXPECT_EQ((*it).Value, 3);
+    EXPECT_EQ(it->Value, 3);
+    EXPECT_EQ(it->Key, 1);
+    ++it1;
+    EXPECT_EQ((*it).Value, 7);
+    EXPECT_EQ(it->Value, 7);
+    EXPECT_EQ(it->Key, 2);
+}
+
+TEST(Map, Iterator_Special)
+{
+    Map<int, int> lst = { { 1, 3 } };
+
+    auto it = lst.rbegin();
+    EXPECT_EQ((*it).Value, 3);
+    EXPECT_EQ(it->Value, 3);
+    EXPECT_EQ(it->Key, 1);
+    const auto &map  = lst;
+    auto it1 = map.rbegin();
+    EXPECT_EQ((*it1).Value, 3);
+    EXPECT_EQ(it1->Value, 3);
+    EXPECT_EQ(it1->Key, 1);
+}
+
 TEST(Map, ReverseIterator_1)
 {
     Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
@@ -339,6 +386,158 @@ TEST(Map, ReverseIterator_2)
     ++it;
     --it;
     EXPECT_EQ(it, --lst.rend());
+}
+
+TEST(Map, ReverseIterator_3)
+{
+    Map<int, int> lst = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+
+    auto it = lst.rbegin();
+    it += 2;
+    EXPECT_EQ(it->Value, 3);
+    it -= 2;
+    EXPECT_EQ(it->Value, 0);
+    it = lst.rbegin();
+    it += 42;
+    EXPECT_EQ(it, lst.rend());
+    it = lst.rend();
+    it -= 42;
+    EXPECT_EQ(it->Value, 0);
+}
+
+TEST(Map, ReverseIterator_4)
+{
+    Map<int, int> lst = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+
+    auto it1 = lst.rbegin();
+    const auto &it = it1;
+    EXPECT_EQ((*it).Value, 0);
+    EXPECT_EQ(it->Value, 0);
+    EXPECT_EQ(it->Key, 3);
+    ++it1;
+    EXPECT_EQ((*it).Value, 7);
+    EXPECT_EQ(it->Value, 7);
+    EXPECT_EQ(it->Key, 2);
+}
+
+TEST(Map, CIterator_1)
+{
+    Map<int, int> lst1 = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
+    const auto &lst = lst1;
+
+    auto it = lst.begin();
+    ++it;
+    --it;
+    EXPECT_EQ(it, lst.begin());
+    --it;
+    ++it;
+    EXPECT_EQ(it, ++lst.begin());
+    it = lst.end();
+    --it;
+    ++it;
+    EXPECT_EQ(it, lst.end());
+    ++it;
+    --it;
+    EXPECT_EQ(it, --lst.end());
+}
+
+TEST(Map, CIterator_2)
+{
+    Map<int, int> lst1 = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+    const auto &lst = lst1;
+
+    auto it = lst.begin();
+    ++it;
+    --it;
+    EXPECT_EQ(it, lst.begin());
+    --it;
+    ++it;
+    EXPECT_EQ(it, ++lst.begin());
+    it = lst.end();
+    --it;
+    ++it;
+    EXPECT_EQ(it, lst.end());
+    ++it;
+    --it;
+    EXPECT_EQ(it, --lst.end());
+}
+
+TEST(Map, CIterator_3)
+{
+    Map<int, int> lst1 = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+    const auto &lst = lst1;
+
+    auto it = lst.begin();
+    it += 2;
+    EXPECT_EQ(it->Value, 0);
+    it -= 2;
+    EXPECT_EQ(it->Value, 3);
+    it = lst.begin();
+    it += 42;
+    EXPECT_EQ(it, lst.end());
+    it = lst.end();
+    it -= 42;
+    EXPECT_EQ(it->Value, 3);
+}
+
+TEST(Map, CReverseIterator_1)
+{
+    Map<int, int> lst1 = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
+    const auto &lst = lst1;
+
+    auto it = lst.rbegin();
+    ++it;
+    --it;
+    EXPECT_EQ(it, lst.rbegin());
+    --it;
+    ++it;
+    EXPECT_EQ(it, ++lst.rbegin());
+    it = lst.rend();
+    --it;
+    ++it;
+    EXPECT_EQ(it, lst.rend());
+    ++it;
+    --it;
+    EXPECT_EQ(it, --lst.rend());
+}
+
+TEST(Map, CReverseIterator_2)
+{
+    Map<int, int> lst1 = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+    const auto &lst = lst1;
+
+    auto it = lst.rbegin();
+    ++it;
+    --it;
+    EXPECT_EQ(it, lst.rbegin());
+    --it;
+    ++it;
+    EXPECT_EQ(it, ++lst.rbegin());
+    it = lst.rend();
+    --it;
+    ++it;
+    EXPECT_EQ(it, lst.rend());
+    ++it;
+    --it;
+    EXPECT_EQ(it, --lst.rend());
+}
+
+TEST(Map, CReverseIterator_3)
+{
+    Map<int, int> lst1 = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+    const auto &lst = lst1;
+
+    auto it = lst.rbegin();
+    it += 2;
+    EXPECT_EQ(it->Value, 3);
+    it -= 2;
+    EXPECT_EQ(it->Value, 0);
+    it = lst.rbegin();
+    it += 42;
+    EXPECT_EQ(it, lst.rend());
+    it = lst.rend();
+    it -= 42;
+    EXPECT_EQ(it->Value, 0);
 }
 
 TEST(Map, Clear)

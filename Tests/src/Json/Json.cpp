@@ -167,7 +167,7 @@ TEST(Json, API_1_2)
     EXPECT_EQ(cobj.Size(), 0u);
 }
 
-TEST(Json, API_2)
+TEST(Json, API_2_1)
 {
     bpf::collection::Map<bpf::String, J> vals = { {"Test", "a"}, {"Test1", "b"} };
     J::Array arr{
@@ -179,6 +179,56 @@ TEST(Json, API_2)
         J::Object(bpf::collection::Map<bpf::String, J> { {"Test", "a"}, {"Test1", "b"} }),
         J::Object(vals)
     };
+
+    const J::Object &obj = arr[0];
+    EXPECT_EQ(obj["Test"], "a");
+    EXPECT_EQ(obj["Test1"], "b");
+    EXPECT_EQ(obj["Test1"], bpf::String("b"));
+    EXPECT_STREQ(*arr[0].ToObject()["Test"].ToString(), "a");
+    EXPECT_STREQ(*arr[1].ToObject()["Test"].ToString(), "a");
+    EXPECT_STREQ(*arr[2].ToObject()["Test"].ToString(), "a");
+    EXPECT_STREQ(*arr[0].ToObject()["Test1"].ToString(), "b");
+    for (auto &json : arr)
+    {
+        EXPECT_EQ(json.Type(), J::OBJECT);
+        EXPECT_TRUE(json.Type().IsObject());
+        EXPECT_EQ(json.ToObject()["Test"], "a");
+        EXPECT_EQ(json.ToObject()["Test1"], "b");
+        J::Object &jobj = json;
+        for (auto &sjson : jobj)
+        {
+            EXPECT_TRUE(sjson.Value.Type().IsString());
+            EXPECT_EQ(sjson.Value.Type(), J::STRING);
+            EXPECT_TRUE(sjson.Key == "Test" || sjson.Key == "Test1");
+        }
+    }
+    for (auto &json : bpf::collection::Reverse(arr))
+    {
+        EXPECT_EQ(json.Type(), J::OBJECT);
+        EXPECT_EQ(json.ToObject()["Test"], "a");
+        EXPECT_EQ(json.ToObject()["Test1"], "b");
+        J::Object &jobj = json;
+        for (auto &sjson : bpf::collection::Reverse(jobj))
+        {
+            EXPECT_EQ(sjson.Value.Type(), J::STRING);
+            EXPECT_TRUE(sjson.Key == "Test" || sjson.Key == "Test1");
+        }
+    }
+}
+
+TEST(Json, API_2_2)
+{
+    bpf::collection::Map<bpf::String, J> vals = { {"Test", "a"}, {"Test1", "b"} };
+    J::Array arr1{
+        J::Object
+            {
+                {"Test", "a"},
+                {"Test1", "b"}
+            },
+        J::Object(bpf::collection::Map<bpf::String, J> { {"Test", "a"}, {"Test1", "b"} }),
+        J::Object(vals)
+    };
+    const auto &arr = arr1;
 
     const J::Object &obj = arr[0];
     EXPECT_EQ(obj["Test"], "a");

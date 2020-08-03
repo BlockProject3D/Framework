@@ -578,7 +578,7 @@ namespace bpf
         }
 
         template <typename T>
-        bool List<T>::operator==(const List<T> &other)
+        bool List<T>::operator==(const List<T> &other) const noexcept
         {
             if (_count != other._count)
                 return (false);

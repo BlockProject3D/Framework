@@ -34,5 +34,5 @@ using namespace bpf::json;
 void JsonParseException::Print() const noexcept
 {
     std::cerr << "JsonParseException:" << std::endl;
-    std::cerr << "Parse error at line " << _line << ": " << *Message() << std::endl;
+    std::cerr << "Parse error at line " << Line() << ": " << *Message() << std::endl;
 }

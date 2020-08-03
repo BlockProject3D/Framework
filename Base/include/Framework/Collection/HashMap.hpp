@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Collection/Iterator.hpp"
+#include "Framework/Collection/HashMap.Iterator.hpp"
 #include "Framework/Collection/Utility.hpp"
 #include "Framework/Hash.Base.hpp"
 #include "Framework/Hash.hpp"
@@ -52,7 +52,7 @@ namespace bpf
         template <typename K, typename V, typename HashOp = Hash<K>>
         class BP_TPL_API HashMap
         {
-        private:
+        public:
             struct Entry
             {
                 K Key;
@@ -64,6 +64,8 @@ namespace bpf
                 ENTRY_STATE_NON_EXISTANT,
                 ENTRY_STATE_OCCUPIED
             };
+
+        private:
             struct Node
             {
                 fsize Hash;
@@ -72,52 +74,10 @@ namespace bpf
             };
 
         public:
-            class BP_TPL_API Iterator : public IIterator<typename HashMap<K, V, HashOp>::Iterator, Entry>
-            {
-            protected:
-                Node *_data;
-                fsize MaxSize;
-                fsize MinSize;
-                fsize CurID;
-                void SearchNextEntry();
-                void SearchPrevEntry();
-
-            public:
-                Iterator(Node *data, fsize start, fsize size, bool reverse = false);
-                Iterator &operator++();
-                Iterator &operator--();
-                inline const Entry &operator*() const
-                {
-                    return (_data[CurID].KeyVal);
-                }
-                inline const Entry *operator->() const
-                {
-                    return (&_data[CurID].KeyVal);
-                }
-                inline bool operator==(const Iterator &other) const
-                {
-                    return (CurID == other.CurID);
-                }
-                inline bool operator!=(const Iterator &other) const
-                {
-                    return (CurID != other.CurID);
-                }
-
-                friend class HashMap<K, V, HashOp>;
-            };
-
-            class BP_TPL_API ReverseIterator final : public Iterator
-            {
-            public:
-                inline ReverseIterator(Node *data, fsize start, fsize size)
-                    : Iterator(data, start, size, true)
-                {
-                }
-                ReverseIterator &operator++();
-                ReverseIterator &operator--();
-
-                friend class HashMap<K, V, HashOp>;
-            };
+            using Iterator = HashMapIterator<HashMap<K, V, HashOp>, Entry, Node>;
+            using CIterator = HashMapConstIterator<HashMap<K, V, HashOp>, Entry, Node>;
+            using ReverseIterator = HashMapReverseIterator<HashMap<K, V, HashOp>, Entry, Node>;
+            using CReverseIterator = HashMapConstReverseIterator<HashMap<K, V, HashOp>, Entry, Node>;
 
         private:
             Node *_data;
@@ -173,13 +133,13 @@ namespace bpf
 
             /**
              * Removes an element from the hash table
-             * @param pos iterator of the element to remove
+             * @param pos iterator of the element to remove, it is undefined behavior to pass a derived Iterator type
              */
             void RemoveAt(Iterator &pos);
 
             /**
              * Removes an element from the hash table
-             * @param pos iterator of the element to remove
+             * @param pos iterator of the element to remove, it is undefined behavior to pass a derived Iterator type
              */
             void RemoveAt(Iterator &&pos);
 
@@ -210,14 +170,14 @@ namespace bpf
              * @param other HashMap to compare with
              * @return true if the two maps are equal, false otherwise
              */
-            bool operator==(const HashMap<K, V, HashOp> &other);
+            bool operator==(const HashMap<K, V, HashOp> &other) const noexcept;
 
             /**
              * Compare HashMap by performing a per-element check
              * @param other HashMap to compare with
              * @return false if the two maps are equal, true otherwise
              */
-            inline bool operator!=(const HashMap<K, V, HashOp> &other)
+            inline bool operator!=(const HashMap<K, V, HashOp> &other) const noexcept
             {
                 return (!operator==(other));
             }
@@ -304,7 +264,25 @@ namespace bpf
              * Returns an iterator to the begining of the collection
              * @return new iterator
              */
-            inline Iterator begin() const
+            inline CIterator begin() const
+            {
+                return (CIterator(_data, 0, CurSize));
+            }
+
+            /**
+             * Returns an iterator to the end of the collection
+             * @return new iterator
+             */
+            inline CIterator end() const
+            {
+                return (CIterator(_data, CurSize, CurSize));
+            }
+
+            /**
+             * Returns an iterator to the begining of the collection
+             * @return new iterator
+             */
+            inline Iterator begin()
             {
                 return (Iterator(_data, 0, CurSize));
             }
@@ -313,7 +291,7 @@ namespace bpf
              * Returns an iterator to the end of the collection
              * @return new iterator
              */
-            inline Iterator end() const
+            inline Iterator end()
             {
                 return (Iterator(_data, CurSize, CurSize));
             }
@@ -322,7 +300,25 @@ namespace bpf
              * Returns a reverse iterator to the begining of the collection
              * @return new iterator
              */
-            inline ReverseIterator rbegin() const
+            inline CReverseIterator rbegin() const
+            {
+                return (CReverseIterator(_data, CurSize - 1, CurSize));
+            }
+
+            /**
+             * Returns a reverse iterator to the end of the collection
+             * @return new iterator
+             */
+            inline CReverseIterator rend() const
+            {
+                return (CReverseIterator(_data, (fsize)-1, CurSize));
+            }
+
+            /**
+             * Returns a reverse iterator to the begining of the collection
+             * @return new iterator
+             */
+            inline ReverseIterator rbegin()
             {
                 return (ReverseIterator(_data, CurSize - 1, CurSize));
             }
@@ -331,7 +327,7 @@ namespace bpf
              * Returns a reverse iterator to the end of the collection
              * @return new iterator
              */
-            inline ReverseIterator rend() const
+            inline ReverseIterator rend()
             {
                 return (ReverseIterator(_data, (fsize)-1, CurSize));
             }

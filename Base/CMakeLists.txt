@@ -127,6 +127,10 @@ set(SOURCES
     ./include/Framework/Collection/Stringifier.Array.hpp
     ./include/Framework/Collection/Stringifier.HashMap.hpp
     ./include/Framework/Collection/Stringifier.Map.hpp
+    ./include/Framework/Collection/Array.Iterator.hpp
+    ./include/Framework/Collection/List.Iterator.hpp
+    ./include/Framework/Collection/HashMap.Iterator.hpp
+    ./include/Framework/Collection/Map.Iterator.hpp
     ./include/Framework/Collection/StackException.hpp
     ./include/Framework/Json/Json.hpp
     ./include/Framework/Json/Lexer.hpp
