@@ -1,4 +1,4 @@
-// Copyright (c) 2019, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -32,8 +32,15 @@ namespace bpf
 {
     namespace collection
     {
+        /**
+         * Usefull operators used by various collection types
+         */
         namespace ops
         {
+            /**
+             * Default less than operator
+             * @tparam T the type of value to compare
+             */
             template <typename T>
             class Less
             {
@@ -44,6 +51,10 @@ namespace bpf
                 }
             };
 
+            /**
+             * Default greater than operator
+             * @tparam T the type of value to compare
+             */
             template <typename T>
             class Greater
             {
@@ -54,6 +65,10 @@ namespace bpf
                 }
             };
 
+            /**
+             * Default less-or-equal operator
+             * @tparam T the type of value to compare
+             */
             template <typename T>
             class LessOrEqual
             {
@@ -64,6 +79,10 @@ namespace bpf
                 }
             };
 
+            /**
+             * Default greater-or-equal operator
+             * @tparam T the type of value to compare
+             */
             template <typename T>
             class GreaterOrEqual
             {
@@ -74,6 +93,10 @@ namespace bpf
                 }
             };
 
+            /**
+             * Default equal operator
+             * @tparam T the type of value to compare
+             */
             template <typename T>
             class Equal
             {
@@ -85,8 +108,17 @@ namespace bpf
             };
         }
 
+        /**
+         * Default minimizing operator for PriorityQueue
+         * @tparam T the type of value to compare
+         */
         template <typename T>
         using MinHeap = ops::LessOrEqual<T>;
+
+        /**
+         * Default maximizing operator for PriorityQueue
+         * @tparam T the type of value to compare
+         */
         template <typename T>
         using MaxHeap = ops::GreaterOrEqual<T>;
     }

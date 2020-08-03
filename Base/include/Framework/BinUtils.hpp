@@ -1,16 +1,16 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -30,14 +30,28 @@
 
 namespace bpf
 {
+    /**
+     * Sets a bit inside a variable
+     * @tparam T the type of variable
+     * @param data the variable itself
+     * @param id the bit position
+     * @param flag true if the bit should be a 1 or false if the bit should be a 0
+     */
     template <typename T>
-    inline void SetBit(T &data, fint id, bool flag)
+    inline void SetBit(T &data, uint32 id, bool flag)
     {
         flag ? (data |= 1UL << id) : (data &= ~(1UL << id));
     }
 
+    /**
+     * Returns a bit from a variable
+     * @tparam T the type of variable
+     * @param data the variable itself
+     * @param id the bit position
+     * @return true if the bit is a 1 or false if the bit is a 0
+     */
     template <typename T>
-    inline bool GetBit(T data, fint id)
+    inline bool GetBit(T data, uint32 id)
     {
         return ((data >> id) & 0x1);
     }

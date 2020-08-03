@@ -1,16 +1,16 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -171,9 +171,9 @@ TEST(ArrayStatic, Move)
     EXPECT_STREQ(*mv[0], "0");
     EXPECT_STREQ(*mv[1], "3");
     EXPECT_STREQ(*mv[2], "7");
-    EXPECT_EQ(lst[0], String::Empty);
-    EXPECT_EQ(lst[1], String::Empty);
-    EXPECT_EQ(lst[2], String::Empty);
+    EXPECT_TRUE(lst[0].IsEmpty());
+    EXPECT_TRUE(lst[1].IsEmpty());
+    EXPECT_TRUE(lst[2].IsEmpty());
 }
 
 TEST(ArrayStatic, Copy_2)
@@ -248,6 +248,66 @@ TEST(ArrayStatic, ReverseIterator_2)
     EXPECT_EQ(lst.rbegin()->ByteAt(0), 'c');
 }
 
+TEST(ArrayStatic, CIterator_1)
+{
+    Array<int, 4> lst1 = {0, 3, 7, 0};
+    const auto &lst = lst1;
+
+    auto it = lst.begin();
+    ++it;
+    --it;
+    EXPECT_EQ(it, lst.begin());
+    --it;
+    ++it;
+    EXPECT_EQ(it, ++lst.begin());
+    it = lst.end();
+    --it;
+    ++it;
+    EXPECT_EQ(it, lst.end());
+    ++it;
+    --it;
+    EXPECT_EQ(it, --lst.end());
+}
+
+TEST(ArrayStatic, CIterator_2)
+{
+    Array<String, 3> lst1 = {"a", "b", "c"};
+    const auto &lst = lst1;
+
+    EXPECT_EQ(lst.begin()->Size(), 1);
+    EXPECT_EQ(lst.begin()->ByteAt(0), 'a');
+}
+
+TEST(ArrayStatic, CReverseIterator_1)
+{
+    Array<int, 4> lst1 = {0, 3, 7, 0};
+    const auto &lst = lst1;
+
+    auto it = lst.rbegin();
+    ++it;
+    --it;
+    EXPECT_EQ(it, lst.rbegin());
+    --it;
+    ++it;
+    EXPECT_EQ(it, ++lst.rbegin());
+    it = lst.rend();
+    --it;
+    ++it;
+    EXPECT_EQ(it, lst.rend());
+    ++it;
+    --it;
+    EXPECT_EQ(it, --lst.rend());
+}
+
+TEST(ArrayStatic, CReverseIterator_2)
+{
+    Array<String, 3> lst1 = {"a", "b", "c"};
+    const auto &lst = lst1;
+
+    EXPECT_EQ(lst.rbegin()->Size(), 1);
+    EXPECT_EQ(lst.rbegin()->ByteAt(0), 'c');
+}
+
 TEST(ArrayStatic, IterateForward_Test1)
 {
     int res = 0;
@@ -260,7 +320,7 @@ TEST(ArrayStatic, IterateForward_Test1)
 
 TEST(ArrayStatic, IterateForward_Test2)
 {
-    String res = String::Empty;
+    String res = "";
     Array<String, 5> lst = {"a", "b", "c", "d", "e"};
 
     for (auto &i : lst)
@@ -280,7 +340,7 @@ TEST(ArrayStatic, IterateBackward_Test1)
 
 TEST(ArrayStatic, IterateBackward_Test2)
 {
-    String res = String::Empty;
+    String res = "";
     Array<String, 5> lst = {"a", "b", "c", "d", "e"};
 
     for (auto &i : Reverse(lst))

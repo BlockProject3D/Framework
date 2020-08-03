@@ -1,16 +1,16 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -33,6 +33,9 @@ namespace bpf
 {
     namespace json
     {
+        /**
+         * A simple Json serializer
+         */
         class BPF_API Writer
         {
         private:
@@ -44,9 +47,14 @@ namespace bpf
             String SerializeObjectPretty(const Json::Object &json);
             String SerializeArray(const Json::Array &json);
             String SerializeArrayPretty(const Json::Array &json);
-            String Indent();
+            String Indent() const;
 
         public:
+            /**
+             * Constructs a Json Writer
+             * @param pretty true to enable indenting, false otherwise
+             * @param ignoreNulls true to ommit any null value given, false otherwise
+             */
             inline Writer(const bool pretty = true, const bool ignoreNulls = false)
                 : _ignoreNulls(ignoreNulls)
                 , _pretty(pretty)
@@ -54,6 +62,11 @@ namespace bpf
             {
             }
 
+            /**
+             * Serializes the given Json value
+             * @param json the Json value to serialize
+             * @return the serialized Json value as a high-level string
+             */
             String Serialize(const Json &json);
         };
     }

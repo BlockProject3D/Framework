@@ -1,4 +1,4 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -26,62 +26,61 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <stdlib.h>
 #ifdef WINDOWS
     #include <Windows.h>
     #include <intrin.h>
     #undef ERROR
-#elif LINUX
-    #include <sys/utsname.h>
-    #include <sys/sysinfo.h>
-    #include <time.h>
-#else
-    #include <sys/types.h>
+#elif MAC
     #include <sys/sysctl.h>
+    #include <sys/types.h>
+#else
+    #include <sys/sysinfo.h>
+    #include <sys/utsname.h>
 #endif
 #ifndef WINDOWS
     #include <unistd.h>
 #endif
 
-#ifndef WINDOWS //We assume compiler supports GCC style asm
+#ifndef WINDOWS // We assume compiler supports GCC style asm
 
-#define INSTRUCTION_CPUID(val) \
-        asm("movl $"#val", %eax"); \
+    #define INSTRUCTION_CPUID(val)                                                                                     \
+        asm("movl $" #val ", %eax");                                                                                   \
         asm("cpuid")
 
-#define READ_REGISTER(name, val) \
-        asm("movl %%"#name", %0" \
-            : "=r"(val) \
-            :)
+    #define READ_REGISTER(name, val) asm("movl %%" #name ", %0" : "=r"(val) :)
 
 #endif
 
 #include "Framework/System/Platform.hpp"
+#include "Framework/System/PluginInterface.hpp"
 #include "Framework/System/TypeExpander.hpp"
-#include "Framework/System/ModuleInterface.hpp"
 
 using namespace bpf::system;
 using namespace bpf;
 
 #ifdef WINDOWS
 typedef LONG NTSTATUS, *PNTSTATUS;
-#define STATUS_SUCCESS (0x00000000)
+    #define STATUS_SUCCESS (0x00000000)
 
 typedef NTSTATUS(WINAPI *RtlGetVersionPtr)(PRTL_OSVERSIONINFOW);
 
-RTL_OSVERSIONINFOW GetRealOSVersion() {
+RTL_OSVERSIONINFOW GetRealOSVersion()
+{
     HMODULE hMod = ::GetModuleHandleW(L"ntdll.dll");
-    if (hMod) {
+    if (hMod)
+    {
         RtlGetVersionPtr fxPtr = (RtlGetVersionPtr)::GetProcAddress(hMod, "RtlGetVersion");
-        if (fxPtr != nullptr) {
-            RTL_OSVERSIONINFOW rovi = { 0 };
+        if (fxPtr != nullptr)
+        {
+            RTL_OSVERSIONINFOW rovi = {0};
             rovi.dwOSVersionInfoSize = sizeof(rovi);
-            if (STATUS_SUCCESS == fxPtr(&rovi)) {
+            if (STATUS_SUCCESS == fxPtr(&rovi))
+            {
                 return rovi;
             }
         }
     }
-    RTL_OSVERSIONINFOW rovi = { 0 };
+    RTL_OSVERSIONINFOW rovi = {0};
     return rovi;
 }
 #endif
@@ -100,7 +99,7 @@ String Platform::CPUIDIntToStr(fint data)
 String Platform::IdentifyCPUBranding()
 {
 #ifdef WINDOWS
-    fint cpuInfo[4] = { -1 };
+    fint cpuInfo[4] = {-1};
     char CPUBrandString[0x40];
     memset(CPUBrandString, 0, sizeof(CPUBrandString));
     __cpuid(cpuInfo, 0x80000002);
@@ -111,48 +110,49 @@ String Platform::IdentifyCPUBranding()
     memcpy(CPUBrandString + 32, cpuInfo, sizeof(cpuInfo));
     return (String(CPUBrandString));
 #else
-    #ifdef __arm__
-        //For getting a name here go ask ARM architecture team to provide the missing cpuid instruction or an instruction that can obtain brand name
-        return ("Generic ARM Processor");
+    #if defined(__arm__) || defined(__aarch64__)
+    // For getting a name here go ask ARM architecture team to provide the missing cpuid instruction or an instruction
+    // that can obtain brand name
+    return ("Generic ARM Processor");
     #else
-#ifdef BUILD_DEBUG
-        String res = "";
-        fint reg_eax = 0;
-        fint reg_ebx = 0;
-        fint reg_ecx = 0;
-        fint reg_edx = 0;
+        #ifdef BUILD_DEBUG
+    String res = "";
+    fint reg_eax = 0;
+    fint reg_ebx = 0;
+    fint reg_ecx = 0;
+    fint reg_edx = 0;
 
-        INSTRUCTION_CPUID(0x80000002);
-        READ_REGISTER(eax, reg_eax);
-        READ_REGISTER(ebx, reg_ebx);
-        READ_REGISTER(ecx, reg_ecx);
-        READ_REGISTER(edx, reg_edx);
-        res += CPUIDIntToStr(reg_eax);
-        res += CPUIDIntToStr(reg_ebx);
-        res += CPUIDIntToStr(reg_ecx);
-        res += CPUIDIntToStr(reg_edx);
-        INSTRUCTION_CPUID(0x80000003);
-        READ_REGISTER(eax, reg_eax);
-        READ_REGISTER(ebx, reg_ebx);
-        READ_REGISTER(ecx, reg_ecx);
-        READ_REGISTER(edx, reg_edx);
-        res += CPUIDIntToStr(reg_eax);
-        res += CPUIDIntToStr(reg_ebx);
-        res += CPUIDIntToStr(reg_ecx);
-        res += CPUIDIntToStr(reg_edx);
-        INSTRUCTION_CPUID(0x80000004);
-        READ_REGISTER(eax, reg_eax);
-        READ_REGISTER(ebx, reg_ebx);
-        READ_REGISTER(ecx, reg_ecx);
-        READ_REGISTER(edx, reg_edx);
-        res += CPUIDIntToStr(reg_eax);
-        res += CPUIDIntToStr(reg_ebx);
-        res += CPUIDIntToStr(reg_ecx);
-        res += CPUIDIntToStr(reg_edx);
-        return (res);
-#else
-        return ("Generic x86_64 CPU"); //In optimized build attempting to call cpuid crashes the application under unix
-#endif
+    INSTRUCTION_CPUID(0x80000002);
+    READ_REGISTER(eax, reg_eax);
+    READ_REGISTER(ebx, reg_ebx);
+    READ_REGISTER(ecx, reg_ecx);
+    READ_REGISTER(edx, reg_edx);
+    res += CPUIDIntToStr(reg_eax);
+    res += CPUIDIntToStr(reg_ebx);
+    res += CPUIDIntToStr(reg_ecx);
+    res += CPUIDIntToStr(reg_edx);
+    INSTRUCTION_CPUID(0x80000003);
+    READ_REGISTER(eax, reg_eax);
+    READ_REGISTER(ebx, reg_ebx);
+    READ_REGISTER(ecx, reg_ecx);
+    READ_REGISTER(edx, reg_edx);
+    res += CPUIDIntToStr(reg_eax);
+    res += CPUIDIntToStr(reg_ebx);
+    res += CPUIDIntToStr(reg_ecx);
+    res += CPUIDIntToStr(reg_edx);
+    INSTRUCTION_CPUID(0x80000004);
+    READ_REGISTER(eax, reg_eax);
+    READ_REGISTER(ebx, reg_ebx);
+    READ_REGISTER(ecx, reg_ecx);
+    READ_REGISTER(edx, reg_edx);
+    res += CPUIDIntToStr(reg_eax);
+    res += CPUIDIntToStr(reg_ebx);
+    res += CPUIDIntToStr(reg_ecx);
+    res += CPUIDIntToStr(reg_edx);
+    return (res);
+        #else
+    return ("Generic CPU"); // In optimized build attempting to call cpuid crashes the application under unix
+        #endif
     #endif
 #endif
 }
@@ -163,8 +163,8 @@ Env Platform::InitEnvInfo()
 
     ev.ShortName = "BPF";
     ev.Name = "BlockProject Framework";
-    ev.Version = "2.6";
-    ev.VersionInt = BP_MODULE_VERSION_INT;
+    ev.Version = BP_VERSION_STRING;
+    ev.VersionInt = BP_PLUGIN_VERSION_INT;
     return (ev);
 }
 
@@ -178,9 +178,15 @@ OS Platform::InitOSInfo()
     os.NewLine = "\r\n";
     os.PathSep = "\\";
     RTL_OSVERSIONINFOW ver = GetRealOSVersion();
-    os.Version = String::ValueOf(static_cast<int>(ver.dwMajorVersion))
-        + "." + String::ValueOf(static_cast<int>(ver.dwMinorVersion));
-#elif LINUX
+    os.Version = String::ValueOf(static_cast<int>(ver.dwMajorVersion)) + "." +
+                 String::ValueOf(static_cast<int>(ver.dwMinorVersion));
+#elif MAC
+    os.ModuleExt = "dylib";
+    os.Name = "Mac";
+    os.NewLine = "\n";
+    os.PathSep = "/";
+    os.Version = "Impossible - Ask Apple why they deprecate C++ APIs !";
+#else
     os.ModuleExt = "so";
     os.Name = "Linux";
     os.NewLine = "\n";
@@ -188,12 +194,6 @@ OS Platform::InitOSInfo()
     struct utsname st;
     if (uname(&st) != -1)
         os.Version = st.version;
-#else
-    os.ModuleExt = "dylib";
-    os.Name = "Mac";
-    os.NewLine = "\n";
-    os.PathSep = "/";
-    os.Version = "Impossible - Ask Apple why they deprecate C++ APIs !";
 #endif
     return (os);
 }
@@ -214,23 +214,23 @@ const OS &Platform::GetOSInfo()
 
 const CPU &Platform::GetCPUInfo()
 {
-    static CPU cpi = { IdentifyCPUBranding(), 0, 0 };
+    static CPU cpi = {IdentifyCPUBranding(), 0, 0};
 
 #ifdef WINDOWS
     SYSTEM_INFO sysInfo;
     GetSystemInfo(&sysInfo);
     cpi.NumCores = sysInfo.dwNumberOfProcessors;
-    cpi.Freq = 1; //Cannot reliably find CPU frequency
-#elif LINUX
-    cpi.NumCores = get_nprocs();
-    cpi.Freq = 1; //Cannot reliably find CPU frequency
-#else
+    cpi.Freq = 1; // Cannot reliably find CPU frequency
+#elif MAC
     fint ncores = 1;
     size_t sz = sizeof(fint);
-    if (sysctlbyname("hw.activecpu", &ncores, &sz, Null, 0))
-        sysctlbyname("hw.ncpu", &ncores, &sz, Null, 0);
+    if (sysctlbyname("hw.activecpu", &ncores, &sz, nullptr, 0))
+        sysctlbyname("hw.ncpu", &ncores, &sz, nullptr, 0);
     cpi.NumCores = ncores;
-    cpi.Freq = 1; //Cannot reliably find CPU frequency
+    cpi.Freq = 1; // Cannot reliably find CPU frequency
+#else
+    cpi.NumCores = get_nprocs();
+    cpi.Freq = 1; // Cannot reliably find CPU frequency
 #endif
     return (cpi);
 }
@@ -247,8 +247,8 @@ RAM Platform::GetRAMInfo()
 #else
     auto pages = sysconf(_SC_PHYS_PAGES);
     auto page_size = sysconf(_SC_PAGE_SIZE);
-    rami.MaxPhysical = static_cast<uint64>(pages * page_size);
-    rami.MaxVirtual = static_cast<uint64>(pages * page_size);
+    rami.MaxPhysical = pages * page_size;
+    rami.MaxVirtual = pages * page_size;
 #endif
     return (rami);
 }
@@ -264,7 +264,7 @@ EPlatformEndianess Platform::GetEndianess()
 
 void Platform::ReverseBuffer(void *buf, const fsize size)
 {
-    uint8 *out = reinterpret_cast<uint8 *>(buf);
+    auto *out = reinterpret_cast<uint8 *>(buf);
     fsize i = 0;
     fsize j = size - 1;
     uint8 temp;
@@ -280,7 +280,7 @@ void Platform::ReverseBuffer(void *buf, const fsize size)
 
 void Platform::ReverseBuffer(void *buf, const fsize size, const fsize groupsize)
 {
-    uint8 *out = reinterpret_cast<uint8 *>(buf);
+    auto *out = reinterpret_cast<uint8 *>(buf);
     fsize i = 0;
     fsize j = size - groupsize;
     uint8 temp;
@@ -298,4 +298,65 @@ void Platform::ReverseBuffer(void *buf, const fsize size, const fsize groupsize)
         i += groupsize;
         j -= groupsize;
     }
+}
+
+#ifdef WINDOWS
+// Reimplement missing WinAPI functionality
+// See https://docs.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-checktokenmembership
+static BOOL __internal_IsUserAdmin()
+{
+    BOOL b;
+    SID_IDENTIFIER_AUTHORITY NtAuthority = SECURITY_NT_AUTHORITY;
+    PSID AdministratorsGroup;
+
+    if (!AllocateAndInitializeSid(&NtAuthority, 2, SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS, 0, 0, 0, 0, 0,
+                                  0, &AdministratorsGroup))
+        return (FALSE);
+    if (!CheckTokenMembership(nullptr, AdministratorsGroup, &b))
+    {
+        FreeSid(AdministratorsGroup);
+        return (FALSE);
+    }
+    else
+    {
+        FreeSid(AdministratorsGroup);
+        return (TRUE);
+    }
+}
+
+// Check if process is running with elevated privileges
+static BOOL __internal_GetProcessElevationType(TOKEN_ELEVATION_TYPE *elevationType)
+{
+    HANDLE token = nullptr;
+    DWORD size = 0;
+
+    *elevationType = TokenElevationTypeDefault;
+    if (OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &token))
+    {
+        if (GetTokenInformation(token, TokenElevationType, elevationType, sizeof(TOKEN_ELEVATION_TYPE), &size) &&
+            size == sizeof(TOKEN_ELEVATION_TYPE))
+        {
+            CloseHandle(token);
+            return (TRUE);
+        }
+        CloseHandle(token);
+    }
+    return (FALSE);
+}
+#endif
+
+bool Platform::IsRunningAsAdmin()
+{
+#ifdef WINDOWS
+    TOKEN_ELEVATION_TYPE type;
+
+    if (!__internal_IsUserAdmin())
+        return (false);
+    if (!__internal_GetProcessElevationType(&type))
+        return (false);
+    return (type == TokenElevationTypeFull);
+#else
+    auto me = getuid();
+    return (me == 0);
+#endif
 }

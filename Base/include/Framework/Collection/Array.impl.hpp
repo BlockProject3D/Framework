@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -27,8 +27,8 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include <utility>
 #include "Framework/Memory/MemUtils.hpp"
+#include <utility>
 
 namespace bpf
 {
@@ -37,23 +37,23 @@ namespace bpf
         template <typename T>
         inline Array<T>::Array()
             : _size(0)
-            , _arr(Null)
+            , _arr(nullptr)
         {
         }
 
         template <typename T>
-        inline Array<T>::Array(Array<T> &&arr)
+        inline Array<T>::Array(Array<T> &&arr) noexcept
             : _size(arr._size)
             , _arr(arr._arr)
         {
-            arr._arr = Null;
+            arr._arr = nullptr;
             arr._size = 0;
         }
 
         template <typename T>
         Array<T>::Array(const Array<T> &arr)
             : _size(arr._size)
-            , _arr(Null)
+            , _arr(nullptr)
         {
             if (_size > 0)
             {
@@ -66,7 +66,7 @@ namespace bpf
         template <typename T>
         Array<T>::Array(const fsize size)
             : _size(size)
-            , _arr(Null)
+            , _arr(nullptr)
         {
             if (size > 0)
             {
@@ -77,7 +77,7 @@ namespace bpf
         template <typename T>
         Array<T>::Array(const std::initializer_list<T> &lst)
             : _size(lst.size())
-            , _arr(Null)
+            , _arr(nullptr)
         {
             if (_size > 0)
             {
@@ -106,12 +106,12 @@ namespace bpf
         }
 
         template <typename T>
-        Array<T> &Array<T>::operator=(Array<T> &&arr)
+        Array<T> &Array<T>::operator=(Array<T> &&arr) noexcept
         {
             memory::MemUtils::DeleteArray(_arr, _size);
             _size = arr._size;
             _arr = arr._arr;
-            arr._arr = Null;
+            arr._arr = nullptr;
             arr._size = 0;
             return (*this);
         }
@@ -119,6 +119,8 @@ namespace bpf
         template <typename T>
         Array<T> &Array<T>::operator=(const Array<T> &arr)
         {
+            if (this == &arr)
+                return (*this);
             memory::MemUtils::DeleteArray(_arr, _size);
             _size = arr._size;
             _arr = memory::MemUtils::NewArray<T>(_size);
@@ -161,29 +163,29 @@ namespace bpf
         template <typename T, fsize I>
         void Array<T, I>::Swap(const Iterator &a, const Iterator &b)
         {
-            if (a.ArrayPos() >= I || b.ArrayPos() >= I)
+            if (a.Position() >= I || b.Position() >= I)
                 return;
-            T tmp = std::move(_arr[a.ArrayPos()]);
-            _arr[a.ArrayPos()] = std::move(_arr[b.ArrayPos()]);
-            _arr[b.ArrayPos()] = std::move(tmp);
+            T tmp = std::move(_arr[a.Position()]);
+            _arr[a.Position()] = std::move(_arr[b.Position()]);
+            _arr[b.Position()] = std::move(tmp);
         }
 
         template <typename T>
         void Array<T>::Swap(const Iterator &a, const Iterator &b)
         {
-            if (a.ArrayPos() >= _size || b.ArrayPos() >= _size)
+            if (a.Position() >= _size || b.Position() >= _size)
                 return;
-            T tmp = std::move(_arr[a.ArrayPos()]);
-            _arr[a.ArrayPos()] = std::move(_arr[b.ArrayPos()]);
-            _arr[b.ArrayPos()] = std::move(tmp);
+            T tmp = std::move(_arr[a.Position()]);
+            _arr[a.Position()] = std::move(_arr[b.Position()]);
+            _arr[b.Position()] = std::move(tmp);
         }
 
         template <typename T, fsize I>
         typename Array<T, I>::Iterator Array<T, I>::FindByKey(const fsize pos)
         {
             if (pos >= I)
-                return (Iterator(_arr, I));
-            return (Iterator(_arr, pos));
+                return (Iterator(_arr, I, I));
+            return (Iterator(_arr, I, pos));
         }
 
         template <typename T>
@@ -203,10 +205,10 @@ namespace bpf
             for (auto &elem : *this)
             {
                 if (Comparator<T>::Eval(elem, val))
-                    return (Iterator(_arr, pos));
+                    return (Iterator(_arr, I, pos));
                 ++pos;
             }
-            return (Iterator(_arr, I));
+            return (Iterator(_arr, I, I));
         }
 
         template <typename T>
@@ -225,21 +227,21 @@ namespace bpf
         }
 
         template <typename T, fsize I>
-        typename Array<T, I>::Iterator Array<T, I>::Find(const std::function<bool(const fsize pos, const T & val)> &comparator)
+        typename Array<T, I>::Iterator Array<T, I>::Find(const std::function<bool(const fsize pos, const T &val)> &comparator)
         {
             fsize pos = 0;
 
             for (auto &elem : *this)
             {
                 if (comparator(pos, elem))
-                    return (Iterator(_arr, pos));
+                    return (Iterator(_arr, I, pos));
                 ++pos;
             }
-            return (Iterator(_arr, I));
+            return (Iterator(_arr, I, I));
         }
 
         template <typename T>
-        typename Array<T>::Iterator Array<T>::Find(const std::function<bool(const fsize pos, const T & val)> &comparator)
+        typename Array<T>::Iterator Array<T>::Find(const std::function<bool(const fsize pos, const T &val)> &comparator)
         {
             fsize pos = 0;
 

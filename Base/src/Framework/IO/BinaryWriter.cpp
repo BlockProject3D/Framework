@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -49,7 +49,7 @@ void BinaryWriter::WriteByte(uint8 byte)
 
 void BinaryWriter::WriteSubBuf(void *out, const fsize size)
 {
-    uint8 *res = reinterpret_cast<uint8 *>(out);
+    auto *res = reinterpret_cast<uint8 *>(out);
 
     if (system::Platform::GetEndianess() != _targetorder)
         system::Platform::ReverseBuffer(res, size);
@@ -123,7 +123,7 @@ fsize BinaryWriter::Write(const void *buf, fsize bufsize)
 {
     if (_buffered)
     {
-        const uint8 *data = reinterpret_cast<const uint8 *>(buf);
+        auto *data = reinterpret_cast<const uint8 *>(buf);
         for (fsize i = 0; i != bufsize; ++i)
             WriteByte(data[i]);
         return (bufsize);
@@ -136,8 +136,10 @@ void BinaryWriter::Flush()
 {
     if (_buffered)
     {
-        _stream.Write(*_buf, _buf.GetWrittenBytes());
+        // Inverse logic to avoid re-throwing the same exception
+        auto size = _buf.GetWrittenBytes();
         _buf.Reset();
+        _stream.Write(*_buf, size);
     }
 }
 

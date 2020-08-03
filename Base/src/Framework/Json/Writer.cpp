@@ -1,16 +1,16 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -38,7 +38,7 @@ String Writer::SerializeObject(const Json::Object &json)
 
     for (auto &prop : json)
     {
-        if (!_ignoreNulls || prop.Value.Type() != Json::NONE)
+        if (!_ignoreNulls || !prop.Value.Type().IsNull())
             res += String('"') + prop.Key + "\":" + Serialize(prop.Value) + ',';
     }
     res = res.Sub(0, res.Len() - 1);
@@ -57,7 +57,7 @@ String Writer::SerializeArray(const Json::Array &json)
     return (res);
 }
 
-String Writer::Indent()
+String Writer::Indent() const
 {
     String res;
 
@@ -74,7 +74,7 @@ String Writer::SerializeObjectPretty(const Json::Object &json)
     String prefix = Indent();
     for (auto &prop : json)
     {
-        if (!_ignoreNulls || prop.Value.Type() != Json::NONE)
+        if (!_ignoreNulls || !prop.Value.Type().IsNull())
             res += prefix + '"' + prop.Key + "\": " + Serialize(prop.Value) + ",\n";
     }
     --_stack;
@@ -102,12 +102,14 @@ String Writer::Serialize(const Json &json)
         return (_pretty ? SerializeArrayPretty(json) : SerializeArray(json));
     case Json::OBJECT:
         return (_pretty ? SerializeObjectPretty(json) : SerializeObject(json));
-    case Json::NUMBER:
-        return (String::ValueOf(json.AsNumber()));
+    case Json::DOUBLE:
+        return (String::ValueOf(json.ToDouble()));
+    case Json::INTEGER:
+        return (String::ValueOf(json.ToInteger()));
     case Json::BOOLEAN:
         return (json == true ? "true" : "false");
     case Json::STRING:
-        return (String('"') + json.AsString() + '"');
+        return (String('"') + json.ToString() + '"');
     case Json::NONE:
         return ("null");
     }

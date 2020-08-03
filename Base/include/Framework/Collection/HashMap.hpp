@@ -1,4 +1,4 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -27,14 +27,14 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/Collection/HashMap.Iterator.hpp"
+#include "Framework/Collection/Utility.hpp"
+#include "Framework/Hash.Base.hpp"
+#include "Framework/Hash.hpp"
+#include "Framework/IndexException.hpp"
+#include "Framework/Types.hpp"
 #include <functional>
 #include <initializer_list>
-#include "Framework/Types.hpp"
-#include "Framework/Collection/Iterator.hpp"
-#include "Framework/IndexException.hpp"
-#include "Framework/Hash.hpp"
-#include "Framework/Hash.Base.hpp"
-#include "Framework/Collection/Utility.hpp"
 
 namespace bpf
 {
@@ -43,10 +43,16 @@ namespace bpf
         constexpr fint HASH_MAP_INIT_BUF_SIZE = 2;
         constexpr float HASH_MAP_LIMIT_UNTIL_EXTEND = 0.5f;
 
+        /**
+         * Hash table using open-hashing algorithm
+         * @tparam K the key type
+         * @tparam V the value type
+         * @tparam HashOp the hash operator
+         */
         template <typename K, typename V, typename HashOp = Hash<K>>
         class BP_TPL_API HashMap
         {
-        private:
+        public:
             struct Entry
             {
                 K Key;
@@ -58,6 +64,8 @@ namespace bpf
                 ENTRY_STATE_NON_EXISTANT,
                 ENTRY_STATE_OCCUPIED
             };
+
+        private:
             struct Node
             {
                 fsize Hash;
@@ -66,52 +74,10 @@ namespace bpf
             };
 
         public:
-            class BP_TPL_API Iterator : public IIterator<typename HashMap<K, V, HashOp>::Iterator, Entry>
-            {
-            protected:
-                Node *_data;
-                fsize MaxSize;
-                fsize MinSize;
-                fsize CurID;
-                void SearchNextEntry();
-                void SearchPrevEntry();
-
-            public:
-                Iterator(Node *data, fsize start, fsize size, const bool reverse = false);
-                Iterator &operator++();
-                Iterator &operator--();
-                inline const Entry &operator*() const
-                {
-                    return (_data[CurID].KeyVal);
-                }
-                inline const Entry *operator->() const
-                {
-                    return (&_data[CurID].KeyVal);
-                }
-                inline bool operator==(const Iterator &other) const
-                {
-                    return (CurID == other.CurID);
-                }
-                inline bool operator!=(const Iterator &other) const
-                {
-                    return (CurID != other.CurID);
-                }
-
-                friend class HashMap<K, V, HashOp>;
-            };
-
-            class BP_TPL_API ReverseIterator final : public Iterator
-            {
-            public:
-                inline ReverseIterator(Node * data, fsize start, fsize size)
-                    : Iterator(data, start, size, true)
-                {
-                }
-                ReverseIterator & operator++();
-                ReverseIterator &operator--();
-
-                friend class HashMap<K, V, HashOp>;
-            };
+            using Iterator = HashMapIterator<HashMap<K, V, HashOp>, Entry, Node>;
+            using CIterator = HashMapConstIterator<HashMap<K, V, HashOp>, Entry, Node>;
+            using ReverseIterator = HashMapReverseIterator<HashMap<K, V, HashOp>, Entry, Node>;
+            using CReverseIterator = HashMapConstReverseIterator<HashMap<K, V, HashOp>, Entry, Node>;
 
         private:
             Node *_data;
@@ -123,9 +89,25 @@ namespace bpf
             fsize QuadraticInsert(fsize hkey);
 
         public:
+            /**
+             * Constructs an empty HashMap
+             */
             HashMap();
+
+            /**
+             * Copy constructor
+             */
             HashMap(const HashMap &other);
-            HashMap(HashMap &&other);
+
+            /**
+             * Move constructor
+             */
+            HashMap(HashMap &&other) noexcept;
+
+            /**
+             * Constructs a HashMap from an existing initializer list
+             * @param entries the initial list of key-value pairs to add to this new HashMap
+             */
             HashMap(const std::initializer_list<Entry> &entries);
             ~HashMap();
 
@@ -136,6 +118,11 @@ namespace bpf
              */
             void Add(const K &key, const V &value);
 
+            /**
+             * Adds a new element in this hash map, replaces if key already exists
+             * @param key the key of the element
+             * @param value the value to insert
+             */
             void Add(const K &key, V &&value);
 
             /**
@@ -143,11 +130,30 @@ namespace bpf
              * @param key the key of the element to remove
              */
             void RemoveAt(const K &key);
+
+            /**
+             * Removes an element from the hash table
+             * @param pos iterator of the element to remove, it is undefined behavior to pass a derived Iterator type
+             */
             void RemoveAt(Iterator &pos);
+
+            /**
+             * Removes an element from the hash table
+             * @param pos iterator of the element to remove, it is undefined behavior to pass a derived Iterator type
+             */
             void RemoveAt(Iterator &&pos);
 
+            /**
+             * Swap two elements by iterator in the HashMap
+             * @param a first element
+             * @param b second element
+             */
             void Swap(const Iterator &a, const Iterator &b);
 
+            /**
+             * Clears the content of this HashMap
+             * WARNING: Does not automatically deallocate existing items in this map
+             */
             void Clear();
 
             /**
@@ -157,70 +163,176 @@ namespace bpf
              * @tparam Comparator the comparision operator to use for comparing values
              */
             template <template <typename> class Comparator = ops::Equal>
-            void Remove(const V &value, const bool all = true);
+            void Remove(const V &value, bool all = true);
 
-            bool operator==(const HashMap<K, V, HashOp> &other);
+            /**
+             * Compare HashMap by performing a per-element check
+             * @param other HashMap to compare with
+             * @return true if the two maps are equal, false otherwise
+             */
+            bool operator==(const HashMap<K, V, HashOp> &other) const noexcept;
 
-            inline bool operator!=(const HashMap<K, V, HashOp> &other)
+            /**
+             * Compare HashMap by performing a per-element check
+             * @param other HashMap to compare with
+             * @return false if the two maps are equal, true otherwise
+             */
+            inline bool operator!=(const HashMap<K, V, HashOp> &other) const noexcept
             {
                 return (!operator==(other));
             }
 
+            /**
+             * Locate an item by key inside this map
+             * @param key the key of the item to search for
+             * @return iterator to the found item or end() if none
+             */
             Iterator FindByKey(const K &key);
 
+            /**
+             * Locate an item by performing per-element check
+             * @tparam Comparator comparision operator to use
+             * @param val the value to search for
+             * @return iterator to the found item or end() if none
+             */
             template <template <typename> class Comparator = ops::Equal>
             Iterator FindByValue(const V &val);
 
+            /**
+             * Locate an item by performing per-element check
+             * @param comparator the comparision function to use
+             * @return iterator to the found item or end() if none
+             */
             Iterator Find(const std::function<bool(Iterator it)> &comparator);
 
             /**
-             * Returns the element at the specified key, if no key exists in this hash table, throws
-             * @param key the key of the element to return
+             * Returns an element const mode
+             * @param key the key of the element
+             * @throw IndexException if key is not in this map
+             * @return immutable item
              */
             const V &operator[](const K &key) const;
 
+            /**
+             * Returns an element non-const mode
+             * @param key the key of the element
+             * @throw IndexException if key is not in this map and cannot be created
+             * @return mutable item
+             */
             V &operator[](const K &key);
 
+            /**
+             * Copy assignment operator
+             */
             HashMap &operator=(const HashMap &other);
-            HashMap &operator=(HashMap &&other);
 
+            /**
+             * Move assignment operator
+             */
+            HashMap &operator=(HashMap &&other) noexcept;
+
+            /**
+             * Create a new HashMap from concatenation of two maps
+             * @param other map to concatenate with
+             * @return new HashMap
+             */
             HashMap operator+(const HashMap &other) const;
 
+            /**
+             * Appends the content of a HashMap at the end of this map
+             * @param other map to append
+             */
             void operator+=(const HashMap &other);
 
             /**
-             * Returns true if the specified key exists, false otherwise
+             * Check if a particular key exists
              * @param key the key to check
+             * @return true if the specified key exists, false otherwise
              */
             bool HasKey(const K &key) const;
 
             /**
-             * Returns the size of this hash table, that means the element count
+             * Returns the number of items in this map
+             * @return number of items as unsigned
              */
             inline fsize Size() const
             {
                 return (ElemCount);
             }
 
-            inline Iterator begin() const
+            /**
+             * Returns an iterator to the begining of the collection
+             * @return new iterator
+             */
+            inline CIterator begin() const
+            {
+                return (CIterator(_data, 0, CurSize));
+            }
+
+            /**
+             * Returns an iterator to the end of the collection
+             * @return new iterator
+             */
+            inline CIterator end() const
+            {
+                return (CIterator(_data, CurSize, CurSize));
+            }
+
+            /**
+             * Returns an iterator to the begining of the collection
+             * @return new iterator
+             */
+            inline Iterator begin()
             {
                 return (Iterator(_data, 0, CurSize));
             }
-            inline Iterator end() const
+
+            /**
+             * Returns an iterator to the end of the collection
+             * @return new iterator
+             */
+            inline Iterator end()
             {
                 return (Iterator(_data, CurSize, CurSize));
             }
 
-            inline ReverseIterator rbegin() const
+            /**
+             * Returns a reverse iterator to the begining of the collection
+             * @return new iterator
+             */
+            inline CReverseIterator rbegin() const
+            {
+                return (CReverseIterator(_data, CurSize - 1, CurSize));
+            }
+
+            /**
+             * Returns a reverse iterator to the end of the collection
+             * @return new iterator
+             */
+            inline CReverseIterator rend() const
+            {
+                return (CReverseIterator(_data, (fsize)-1, CurSize));
+            }
+
+            /**
+             * Returns a reverse iterator to the begining of the collection
+             * @return new iterator
+             */
+            inline ReverseIterator rbegin()
             {
                 return (ReverseIterator(_data, CurSize - 1, CurSize));
             }
-            inline ReverseIterator rend() const
+
+            /**
+             * Returns a reverse iterator to the end of the collection
+             * @return new iterator
+             */
+            inline ReverseIterator rend()
             {
                 return (ReverseIterator(_data, (fsize)-1, CurSize));
             }
         };
     }
-};
+}
 
 #include "Framework/Collection/HashMap.impl.hpp"

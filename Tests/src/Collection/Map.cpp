@@ -1,16 +1,16 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -205,6 +205,10 @@ TEST(Map, Copy)
     EXPECT_EQ(copy[0], 0);
     EXPECT_EQ(copy[1], 3);
     EXPECT_EQ(copy[2], 7);
+    copy = lst;
+    EXPECT_EQ(copy[0], 0);
+    EXPECT_EQ(copy[1], 3);
+    EXPECT_EQ(copy[2], 7);
 }
 
 TEST(Map, Move)
@@ -218,7 +222,7 @@ TEST(Map, Move)
     EXPECT_EQ(mv[0], 0);
     EXPECT_EQ(mv[1], 3);
     EXPECT_EQ(mv[2], 7);
-    EXPECT_EQ(lst.Size(), 0U);
+    EXPECT_EQ(lst.Size(), 0u);
     EXPECT_EQ(lst.begin(), lst.end());
 }
 
@@ -297,6 +301,53 @@ TEST(Map, Iterator_2)
     EXPECT_EQ(it, --lst.end());
 }
 
+TEST(Map, Iterator_3)
+{
+    Map<int, int> lst = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+
+    auto it = lst.begin();
+    it += 2;
+    EXPECT_EQ(it->Value, 0);
+    it -= 2;
+    EXPECT_EQ(it->Value, 3);
+    it = lst.begin();
+    it += 42;
+    EXPECT_EQ(it, lst.end());
+    it = lst.end();
+    it -= 42;
+    EXPECT_EQ(it->Value, 3);
+}
+
+TEST(Map, Iterator_4)
+{
+    Map<int, int> lst = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+
+    auto it1 = lst.begin();
+    const auto &it = it1;
+    EXPECT_EQ((*it).Value, 3);
+    EXPECT_EQ(it->Value, 3);
+    EXPECT_EQ(it->Key, 1);
+    ++it1;
+    EXPECT_EQ((*it).Value, 7);
+    EXPECT_EQ(it->Value, 7);
+    EXPECT_EQ(it->Key, 2);
+}
+
+TEST(Map, Iterator_Special)
+{
+    Map<int, int> lst = { { 1, 3 } };
+
+    auto it = lst.rbegin();
+    EXPECT_EQ((*it).Value, 3);
+    EXPECT_EQ(it->Value, 3);
+    EXPECT_EQ(it->Key, 1);
+    const auto &map  = lst;
+    auto it1 = map.rbegin();
+    EXPECT_EQ((*it1).Value, 3);
+    EXPECT_EQ(it1->Value, 3);
+    EXPECT_EQ(it1->Key, 1);
+}
+
 TEST(Map, ReverseIterator_1)
 {
     Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
@@ -337,6 +388,158 @@ TEST(Map, ReverseIterator_2)
     EXPECT_EQ(it, --lst.rend());
 }
 
+TEST(Map, ReverseIterator_3)
+{
+    Map<int, int> lst = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+
+    auto it = lst.rbegin();
+    it += 2;
+    EXPECT_EQ(it->Value, 3);
+    it -= 2;
+    EXPECT_EQ(it->Value, 0);
+    it = lst.rbegin();
+    it += 42;
+    EXPECT_EQ(it, lst.rend());
+    it = lst.rend();
+    it -= 42;
+    EXPECT_EQ(it->Value, 0);
+}
+
+TEST(Map, ReverseIterator_4)
+{
+    Map<int, int> lst = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+
+    auto it1 = lst.rbegin();
+    const auto &it = it1;
+    EXPECT_EQ((*it).Value, 0);
+    EXPECT_EQ(it->Value, 0);
+    EXPECT_EQ(it->Key, 3);
+    ++it1;
+    EXPECT_EQ((*it).Value, 7);
+    EXPECT_EQ(it->Value, 7);
+    EXPECT_EQ(it->Key, 2);
+}
+
+TEST(Map, CIterator_1)
+{
+    Map<int, int> lst1 = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
+    const auto &lst = lst1;
+
+    auto it = lst.begin();
+    ++it;
+    --it;
+    EXPECT_EQ(it, lst.begin());
+    --it;
+    ++it;
+    EXPECT_EQ(it, ++lst.begin());
+    it = lst.end();
+    --it;
+    ++it;
+    EXPECT_EQ(it, lst.end());
+    ++it;
+    --it;
+    EXPECT_EQ(it, --lst.end());
+}
+
+TEST(Map, CIterator_2)
+{
+    Map<int, int> lst1 = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+    const auto &lst = lst1;
+
+    auto it = lst.begin();
+    ++it;
+    --it;
+    EXPECT_EQ(it, lst.begin());
+    --it;
+    ++it;
+    EXPECT_EQ(it, ++lst.begin());
+    it = lst.end();
+    --it;
+    ++it;
+    EXPECT_EQ(it, lst.end());
+    ++it;
+    --it;
+    EXPECT_EQ(it, --lst.end());
+}
+
+TEST(Map, CIterator_3)
+{
+    Map<int, int> lst1 = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+    const auto &lst = lst1;
+
+    auto it = lst.begin();
+    it += 2;
+    EXPECT_EQ(it->Value, 0);
+    it -= 2;
+    EXPECT_EQ(it->Value, 3);
+    it = lst.begin();
+    it += 42;
+    EXPECT_EQ(it, lst.end());
+    it = lst.end();
+    it -= 42;
+    EXPECT_EQ(it->Value, 3);
+}
+
+TEST(Map, CReverseIterator_1)
+{
+    Map<int, int> lst1 = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
+    const auto &lst = lst1;
+
+    auto it = lst.rbegin();
+    ++it;
+    --it;
+    EXPECT_EQ(it, lst.rbegin());
+    --it;
+    ++it;
+    EXPECT_EQ(it, ++lst.rbegin());
+    it = lst.rend();
+    --it;
+    ++it;
+    EXPECT_EQ(it, lst.rend());
+    ++it;
+    --it;
+    EXPECT_EQ(it, --lst.rend());
+}
+
+TEST(Map, CReverseIterator_2)
+{
+    Map<int, int> lst1 = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+    const auto &lst = lst1;
+
+    auto it = lst.rbegin();
+    ++it;
+    --it;
+    EXPECT_EQ(it, lst.rbegin());
+    --it;
+    ++it;
+    EXPECT_EQ(it, ++lst.rbegin());
+    it = lst.rend();
+    --it;
+    ++it;
+    EXPECT_EQ(it, lst.rend());
+    ++it;
+    --it;
+    EXPECT_EQ(it, --lst.rend());
+}
+
+TEST(Map, CReverseIterator_3)
+{
+    Map<int, int> lst1 = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+    const auto &lst = lst1;
+
+    auto it = lst.rbegin();
+    it += 2;
+    EXPECT_EQ(it->Value, 3);
+    it -= 2;
+    EXPECT_EQ(it->Value, 0);
+    it = lst.rbegin();
+    it += 42;
+    EXPECT_EQ(it, lst.rend());
+    it = lst.rend();
+    it -= 42;
+    EXPECT_EQ(it->Value, 0);
+}
+
 TEST(Map, Clear)
 {
     Map<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
@@ -362,7 +565,7 @@ TEST(Map, IterateForward_Test1)
 
 TEST(Map, IterateForward_Test2)
 {
-    String res = String::Empty;
+    String res = "";
     Map<String, int> map;
 
     map["test1"] = 0;
@@ -388,7 +591,7 @@ TEST(Map, IterateBackward_Test1)
 
 TEST(Map, IterateBackward_Test2)
 {
-    String res = String::Empty;
+    String res = "";
     Map<String, int> map;
 
     map["test1"] = 0;
@@ -415,12 +618,12 @@ TEST(Map, ReadWrite_NonCopy)
 {
     Map<String, UniquePtr<int>> map;
 
-    map["test1"] = Null;
-    map["test2"] = Null;
-    map["test3"] = Null;
-    EXPECT_EQ(map["test1"], Null);
-    EXPECT_EQ(map["test2"], Null);
-    EXPECT_EQ(map["test3"], Null);
+    map["test1"] = nullptr;
+    map["test2"] = nullptr;
+    map["test3"] = nullptr;
+    EXPECT_EQ(map["test1"], nullptr);
+    EXPECT_EQ(map["test2"], nullptr);
+    EXPECT_EQ(map["test3"], nullptr);
     map["test1"] = MakeUnique<int>(0);
     map["test2"] = MakeUnique<int>(5);
     map["test3"] = MakeUnique<int>(9);
@@ -434,19 +637,19 @@ static void RunLeakCheckBody()
 {
     Map<String, UniquePtr<int>> map;
 
-    map["test1"] = Null;
-    map["test2"] = Null;
-    map["test3"] = Null;
-    EXPECT_EQ(map["test1"], Null);
-    EXPECT_EQ(map["test2"], Null);
-    EXPECT_EQ(map["test3"], Null);
+    map["test1"] = nullptr;
+    map["test2"] = nullptr;
+    map["test3"] = nullptr;
+    EXPECT_EQ(map["test1"], nullptr);
+    EXPECT_EQ(map["test2"], nullptr);
+    EXPECT_EQ(map["test3"], nullptr);
     map["test1"] = MakeUnique<int>(0);
     map["test2"] = MakeUnique<int>(5);
     map["test3"] = MakeUnique<int>(9);
     EXPECT_EQ(*map["test1"], 0);
     EXPECT_EQ(*map["test2"], 5);
     EXPECT_EQ(*map["test3"], 9);
-    map["test3"] = Null;
+    map["test3"] = nullptr;
 }
 
 TEST(Map, ReadWrite_LeakCheck)

@@ -1,16 +1,16 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -34,11 +34,14 @@ namespace bpf
 {
     namespace json
     {
+        /**
+         * A simple Json Parser
+         */
         class BPF_API Parser
         {
         private:
             collection::Queue<Lexer::Token> _tokens;
-            int _line; //Keep track of last line
+            fsize _line; //Keep track of last line
             bool _ignoreNulls;
 
             bool CheckObject(Json &j);
@@ -50,13 +53,22 @@ namespace bpf
             void CheckComa();
             Json CheckJson();
         public:
+            /**
+             * Constructs a Parser
+             * @param lexer the lexer instance to extract tokens from
+             */
             explicit inline Parser(Lexer &&lexer)
-                : _tokens(std::move(lexer.ReadTokens()))
+                : _tokens(lexer.ReadTokens())
                 , _line(1)
                 , _ignoreNulls(lexer.IgnoreNulls())
             {
             }
 
+            /**
+             * Parses all tokens into a Json value and returns it
+             * @throw JsonParseException when the parser could not interpret a token sequence
+             * @return new Json value from all parsed tokens
+             */
             Json Parse();
         };
     }

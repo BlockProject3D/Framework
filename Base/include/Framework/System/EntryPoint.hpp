@@ -1,16 +1,16 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -28,37 +28,51 @@
 
 #pragma once
 
-#define BP_DECLARE_HIGH_MAIN int Main(bpf::system::IApplication &app, const bpf::collection::Array<bpf::String> &args, const bpf::system::Paths &paths)
+/**
+ * Generates the declaration for the high-level Main function
+ */
+#define BP_DECLARE_HIGH_MAIN int Main(bpf::system::Application &app, const bpf::collection::Array<bpf::String> &args)
 
 #ifdef WINDOWS
     #include "Framework/System/WindowsApp.hpp"
     #include <Windows.h>
 
     #ifdef CONSOLE
+
+        /**
+         * Generates a low-level that will just redirect code execution to the high-level main
+         */
         #define BP_SETUP_ENTRY_POINT() \
         BP_DECLARE_HIGH_MAIN; \
         int main() \
         { \
-            bpf::system::WindowsApp app(reinterpret_cast<void *>(GetModuleHandle(Null)), true); \
-            return (Main(app, app.GetArguments(), app.GetPaths())); \
+            bpf::system::WindowsApp app(reinterpret_cast<void *>(GetModuleHandle(nullptr)), true); \
+            return (Main(app, app.GetArguments())); \
         }
     #else
+
+        /**
+         * Generates a low-level that will just redirect code execution to the high-level main
+         */
         #define BP_SETUP_ENTRY_POINT() \
         BP_DECLARE_HIGH_MAIN; \
         int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) \
         { \
             bpf::system::WindowsApp app(reinterpret_cast<void *>(hInstance), false); \
-            return (Main(app, app.GetArguments(), app.GetPaths())); \
+            return (Main(app, app.GetArguments())); \
         }
     #endif
 #else
     #include "Framework/System/UnixApp.hpp"
 
+    /**
+     * Generates a low-level that will just redirect code execution to the high-level main
+     */
     #define BP_SETUP_ENTRY_POINT() \
     BP_DECLARE_HIGH_MAIN; \
     int main(int argc, char **argv, char **env) \
     { \
-        bpf::system::UnixApp app(argv, argc, env); \
-        return (Main(app, app.GetArguments(), app.GetPaths())); \
+        bpf::system::UnixApp app(argv, env); \
+        return (Main(app, app.GetArguments(argv, argc))); \
     }
 #endif

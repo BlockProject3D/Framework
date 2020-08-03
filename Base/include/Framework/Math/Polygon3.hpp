@@ -1,16 +1,16 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -35,29 +35,63 @@ namespace bpf
 {
     namespace math
     {
+        /**
+         * Utility to represent a 3D polygon
+         * @tparam T the number type
+         */
         template <typename T>
         class BP_TPL_API Polygon3
         {
         public:
+            /**
+             * Polygon vertices
+             */
             collection::ArrayList<Vector3<T>> Vertices;
 
+            /**
+             * Constructs a polygon from a set of vertices
+             * @param verts the vertices to copy from
+             */
             explicit inline Polygon3(const collection::ArrayList<Vector3<T>> &verts)
                 : Vertices(verts)
             {
             }
 
+            /**
+             * Constructs a polygon from a set of vertices
+             * @param verts the vertices to move from
+             */
             explicit inline Polygon3(collection::ArrayList<Vector3<T>> &&verts)
                 : Vertices(std::move(verts))
             {
             }
 
+            /**
+             * Apply a 3D transform to each vertex sequentially
+             * @param transform the transform to apply
+             */
             inline void Transform(const Transform3<T> &transform)
             {
                 Transform(transform.ToMatrix());
             }
 
+            /**
+             * Computes a normal of this polygon.
+             * If this polygon is more than 3 points, the first 3 points are chosen
+             * @return 3D vector
+             */
             Vector3<T> GetNormal() const noexcept;
+
+            /**
+             * Computes the barycenter of this polygon
+             * @return 3D vector
+             */
             Vector3<T> GetBarycenter() const noexcept;
+
+            /**
+             * Apply a matrix to each vertex sequentially
+             * @param matrix the matrix to apply
+             */
             void Transform(const Matrix4<T> &matrix);
         };
 

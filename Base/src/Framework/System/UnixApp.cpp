@@ -1,4 +1,4 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -26,32 +26,126 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <iostream>
 #include "Framework/System/UnixApp.hpp"
+#include "Framework/System/OSException.hpp"
+#include "Framework/IO/IOException.hpp"
+#include <climits>
+#include <unistd.h>
+#include <cstdlib>
+
+#ifndef LINUX
+    #include <mach-o/dyld.h>
+#endif
 
 using namespace bpf::system;
 using namespace bpf::collection;
 using namespace bpf::io;
 using namespace bpf;
 
-UnixApp::UnixApp(char **argv, int argc, char **env)
-    : _paths(File(), File(), File(), File())
-    , _args(argc)
+UnixApp::UnixApp(char **argv, char **env)
+    : Application(_env, _fileName, _props)
+    , _env(SetupEnvironment(env))
     , _fileName(String(argv[0]))
+    , _props(SetupPaths())
 {
-    for (int i = 0; i != argc; ++i)
-        _args[i] = String(argv[i]);
+}
+
+HashMap<String, String> UnixApp::SetupEnvironment(char **env)
+{
+    auto menv = HashMap<String, String>();
+
     for (int i = 0; env[i]; ++i)
     {
         String str(env[i]);
         auto key = str.Sub(0, str.IndexOf('='));
+        if (key.IsEmpty())
+            continue;
         auto value = str.Sub(str.IndexOf('=') + 1);
-        if (key != String::Empty && value != String::Empty)
-            _env.Add(key, value);
+        if (*value == nullptr)
+            value = ""; // Attempt to fix Linux bug of having null vars...
+        menv.Add(key, value);
     }
-    File home = File(_env["HOME"]);
-    File root = File(_fileName.Sub(0, _fileName.LastIndexOf('/')));
-    File cache = root + "Cache";
+    return (menv);
+}
+
+Array<String> UnixApp::GetArguments(char **argv, int argc)
+{
+    auto args = Array<String>(argc);
+    for (int i = 0; i != argc; ++i)
+        args[i] = String(argv[i]);
+    return (args);
+}
+
+Paths UnixApp::SetupPaths()
+{
+    char path[PATH_MAX];
+    auto root = File(_fileName.Sub(0, _fileName.LastIndexOf('/')));
+    auto home = File("./");
+    if (_env.HasKey("HOME"))
+        home = File(_env["HOME"]);
+#ifdef LINUX
+    int res = readlink("/proc/self/exe", path, PATH_MAX);
+    if (res != -1)
+    {
+        path[res] = 0; // Apparently readlink is unsafe so make it safe
+        _fileName = String(path);
+        root = File(_fileName.Sub(0, _fileName.LastIndexOf('/')));
+    }
+#else
+    uint32_t len;
+    if (_NSGetExecutablePath(path, &len) == -1)
+    {
+        Array<char> buf((fsize)len);
+        if (_NSGetExecutablePath(*buf, &len) != -1)
+        {
+            _fileName = File(String(*buf)).GetAbsolutePath().Path();
+            root = File(_fileName.Sub(0, _fileName.LastIndexOf('/')));
+        }
+    }
+    else
+    {
+        _fileName = File(String(path)).GetAbsolutePath().Path();
+        root = File(_fileName.Sub(0, _fileName.LastIndexOf('/')));
+    }
+#endif
     File tmp = _env.HasKey("TMPDIR") ? File(_env["TMPDIR"]) : File("/tmp");
-    _paths = Paths(root, home, tmp, cache);
+    if (root.HasAccess(FILE_MODE_READ | FILE_MODE_WRITE))
+        return (Paths(root, root, home, tmp));
+    else
+        return (Paths(root, home + File(_fileName).Name(), home, tmp));
+}
+
+File UnixApp::GetWorkingDirectory() const
+{
+    char path[PATH_MAX];
+    if (getcwd(path, PATH_MAX) != nullptr)
+        return (File(path));
+    else
+        return (File(".").GetAbsolutePath());
+}
+
+bool UnixApp::SetWorkingDirectory(const File &file)
+{
+    return (chdir(*file.PlatformPath()) != -1);
+}
+
+void UnixApp::SetModuleDirectories(const collection::Array<io::File> &directories)
+{
+    for (auto &dir : directories)
+    {
+        if (!dir.IsDirectory())
+            throw io::IOException(String("Path '") + dir.Path() + "' is not a directory");
+    }
+#ifdef MAC
+    const char *VNAME = "DYLD_LIBRARY_PATH";
+#else
+    const char *VNAME = "LD_LIBRARY_PATH";
+#endif
+    auto cur = _env[VNAME];
+    if (!cur.EndsWith(';'))
+        cur += ';';
+    for (auto &dir : directories)
+        cur += dir.PlatformPath() + ';';
+    if (setenv(VNAME, *cur, 1) != 0)
+        throw OSException("Failed to set module directories");
 }

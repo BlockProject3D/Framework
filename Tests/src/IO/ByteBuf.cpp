@@ -1,16 +1,16 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -26,17 +26,60 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <cassert>
 #include <iostream>
 #include <gtest/gtest.h>
 #include <Framework/IO/ByteBuf.hpp>
 
 TEST(ByteBuf, Construct)
 {
+    bpf::io::ByteBuf buf(1);
+    bpf::io::ByteBuf buf1(0);
+
+    EXPECT_EQ(buf.Size(), 1U);
+    EXPECT_EQ(buf1.Size(), 0U);
+}
+
+TEST(ByteBuf, Index)
+{
+    bpf::io::ByteBuf buf(1);
+    const auto &b = buf;
+    EXPECT_THROW(buf[1], bpf::IndexException);
+    EXPECT_THROW(b[1], bpf::IndexException);
+    buf[0] = 0;
+    EXPECT_EQ(buf[0], 0);
+    buf[0] = 5;
+    EXPECT_EQ(buf[0], 5);
+}
+
+TEST(ByteBuf, Move)
+{
     bpf::io::ByteBuf buf(128);
     bpf::io::ByteBuf buf1(std::move(buf));
-    
+
     buf1.Clear();
+    EXPECT_EQ(buf1.Size(), 128U);
+    EXPECT_EQ(buf.Size(), 0U);
+    buf = std::move(buf1);
+    EXPECT_EQ(buf.Size(), 128U);
+    EXPECT_EQ(buf1.Size(), 0U);
+}
+
+TEST(ByteBuf, Copy)
+{
+    bpf::io::ByteBuf buf(128);
+    bpf::io::ByteBuf buf1(buf);
+
+    buf1.Clear();
+    EXPECT_EQ(buf1.Size(), 128U);
+    EXPECT_EQ(buf.Size(), 128U);
+    buf = buf1;
+    EXPECT_EQ(buf1.Size(), 128U);
+    EXPECT_EQ(buf.Size(), 128U);
+
+    auto buf2 = &buf;
+    buf = *buf2;
+    EXPECT_EQ(buf1.Size(), 128U);
+    EXPECT_EQ(buf.Size(), 128U);
 }
 
 TEST(ByteBuf, Clear)
@@ -66,7 +109,7 @@ TEST(ByteBuf, ReadWrite_Test2)
 {
     bpf::io::ByteBuf buf(4);
     char res[15];
-    
+
     EXPECT_EQ(buf.Size(), (bpf::fsize)4);
     buf.Clear();
     for (bpf::fsize i = 0 ; i < buf.Size() ; ++i)
@@ -82,7 +125,7 @@ TEST(ByteBuf, ReadWrite_Test3)
 {
     bpf::io::ByteBuf buf(128);
     char res[15];
-    
+
     EXPECT_EQ(buf.Size(), (bpf::fsize)128);
     buf.Clear();
     for (bpf::fsize i = 0 ; i < buf.Size() ; ++i)
@@ -116,10 +159,20 @@ TEST(ByteBuf, ReadWrite_Test4)
     EXPECT_EQ(buf.GetCursor(), (bpf::fsize)0);
     EXPECT_EQ(buf.GetWrittenBytes(), (bpf::fsize)0);
     EXPECT_EQ(buf.Size(), (bpf::fsize)128);
-    EXPECT_EQ(buf.Write(Null, 0), (bpf::fsize)0);
+    EXPECT_EQ(buf.Write(nullptr, 0), (bpf::fsize)0);
     EXPECT_EQ(buf.GetCursor(), (bpf::fsize)0);
     EXPECT_EQ(buf.GetWrittenBytes(), (bpf::fsize)0);
-    EXPECT_EQ(buf.Read(Null, 0), (bpf::fsize)0);
+    EXPECT_EQ(buf.Read(nullptr, 0), (bpf::fsize)0);
     EXPECT_EQ(buf.GetCursor(), (bpf::fsize)0);
     EXPECT_EQ(buf.GetWrittenBytes(), (bpf::fsize)0);
+}
+
+TEST(ByteBuf, Shift)
+{
+    bpf::io::ByteBuf buf(5);
+    buf.Write("TEST", 5);
+    EXPECT_STREQ(reinterpret_cast<const char *>(*buf), "TEST");
+    buf.Shift(2);
+    buf[4] = '\0';
+    EXPECT_STREQ(reinterpret_cast<const char *>(*buf), "ST");
 }

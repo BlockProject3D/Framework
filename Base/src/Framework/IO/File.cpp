@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -26,7 +26,6 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <climits>
 #include <cstring>
 #include <iostream>
 #ifdef WINDOWS
@@ -34,9 +33,8 @@
     #define PATH_MAX MAX_PATH
 #else
     #include <dirent.h>
-    #include <stdlib.h>
+    #include <cstdlib>
     #include <sys/stat.h>
-    #include <sys/types.h>
     #include <unistd.h>
 #endif
 #include "./OSPrivate.hpp"
@@ -53,9 +51,11 @@ File::File(const bpf::String &path)
     , FileName("")
     , FileExt("")
 {
+    if (FullPath.Size() == 0)
+        return;
 #ifdef WINDOWS
     FullPath = FullPath.Replace('/', '\\');
-    String result = String::Empty;
+    String result = "";
     char old = '\0';
     for (fisize i = 0; i < FullPath.Size(); ++i)
     {
@@ -69,10 +69,10 @@ File::File(const bpf::String &path)
         result = result.Sub(0, result.Len() - 1);
     FullPath = std::move(result);
     UserPath = FullPath.Replace('\\', '/');
-    FileName = path.Sub(path.LastIndexOf('\\') + 1);
-    FileExt = path.Sub(path.LastIndexOf('.') + 1);
+    FileName = FullPath.Sub(FullPath.LastIndexOf('\\') + 1);
+    FileExt = FullPath.Sub(FullPath.LastIndexOf('.') + 1);
 #else
-    String result = String::Empty;
+    String result = "";
     char old = '\0';
     for (fisize i = 0; i < FullPath.Size(); ++i)
     {
@@ -93,13 +93,33 @@ File::File(const bpf::String &path)
 
 File::File()
     : FullPath("")
+    , UserPath("")
     , FileName(FullPath.Sub(FullPath.LastIndexOf('/') + 1))
     , FileExt(FullPath.Sub(FullPath.LastIndexOf('.') + 1))
 {
 }
 
-File::~File()
+bool File::HasAccess(const int type) const
 {
+#ifdef WINDOWS
+    int acs = 0;
+    if (type & FILE_MODE_READ && type & FILE_MODE_WRITE)
+        acs = 06;
+    else if (type & FILE_MODE_READ)
+        acs = 04;
+    else if (type & FILE_MODE_WRITE)
+        acs = 02;
+    if (_waccess(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), acs) != 0)
+        return (false);
+    return (true);
+#else
+    int md = F_OK;
+    if (type & FILE_MODE_READ)
+        md |= R_OK;
+    if (type & FILE_MODE_WRITE)
+        md |= W_OK;
+    return (access(*FullPath, md) == 0);
+#endif
 }
 
 File File::GetAbsolutePath() const
@@ -109,12 +129,13 @@ File File::GetAbsolutePath() const
 #ifdef WINDOWS
     WCHAR buf[PATH_MAX];
     std::memset(buf, 0, PATH_MAX);
-    GetFullPathNameW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), PATH_MAX, buf, Null);
+    if (GetFullPathNameW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), PATH_MAX, buf, nullptr) == 0)
+        throw IOException(String("Could not read absolute path: ") + OSPrivate::ObtainLastErrorString());
     str = String::FromUTF16(reinterpret_cast<const bpf::fchar16 *>(buf));
 #else
     char buf[PATH_MAX];
     std::memset(buf, 0, PATH_MAX);
-    if (realpath(*FullPath, buf) == Null)
+    if (realpath(*FullPath, buf) == nullptr)
         throw IOException(String("Could not read absolute path: ") + OSPrivate::ObtainLastErrorString());
     str = String(buf);
 #endif
@@ -123,10 +144,12 @@ File File::GetAbsolutePath() const
 
 File File::GetParent() const
 {
+    if (FullPath.LastIndexOf('/') == -1)
+        return (File());
     return (File(FullPath.Sub(0, FullPath.LastIndexOf('/'))));
 }
 
-bool File::CopyTo(const File &dst, bool overwrite)
+bool File::CopyTo(const File &dst, bool overwrite) //NOLINT (False-positive / not yet implemented)
 {
 #ifdef WINDOWS
     BOOL val = CopyFileW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), reinterpret_cast<LPCWSTR>(*dst.FullPath.ToUTF16()), !overwrite);
@@ -156,7 +179,7 @@ bool File::MoveTo(const File &dst)
     return (val == TRUE ? true : false);
 #else
     int val = rename(*FullPath, *dst.FullPath);
-    return (val == 0 ? true : false);
+    return (val == 0);
 #endif
 }
 
@@ -164,13 +187,9 @@ bool File::Exists() const
 {
 #ifdef WINDOWS
     DWORD attr = GetFileAttributesW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()));
-    if (attr == INVALID_FILE_ATTRIBUTES)
-        return (false);
-    return (true);
+    return (attr != INVALID_FILE_ATTRIBUTES);
 #else
-    if (access(*FullPath, F_OK) != -1)
-        return (true);
-    return (false);
+    return (access(*FullPath, F_OK) != -1);
 #endif
 }
 
@@ -186,7 +205,7 @@ bool File::IsHidden() const
 #endif
 }
 
-void File::Hide(const bool flag)
+bool File::Hide(const bool flag)
 {
 #ifdef WINDOWS
     DWORD attr = GetFileAttributesW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()));
@@ -194,12 +213,13 @@ void File::Hide(const bool flag)
         attr |= FILE_ATTRIBUTE_HIDDEN;
     else
         attr &= ~FILE_ATTRIBUTE_HIDDEN;
-    SetFileAttributesW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), attr);
+    return (SetFileAttributesW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), attr) == TRUE);
 #else
     if (flag && !IsHidden())
     {
         File f = File(GetParent().Path() + "/" + "." + Name());
-        rename(*FullPath, *f.Path());
+        if (rename(*FullPath, *f.Path()) != 0)
+            return (false);
         FileName = f.Name();
         FullPath = f.PlatformPath();
         UserPath = f.Path();
@@ -208,12 +228,14 @@ void File::Hide(const bool flag)
     else if (IsHidden())
     {
         File f = File(GetParent().Path() + "/" + Name().Sub(1));
-        rename(*FullPath, *f.Path());
+        if (rename(*FullPath, *f.Path()) != 0)
+            return (false);
         FileName = f.Name();
         FullPath = f.PlatformPath();
         UserPath = f.Path();
         FileExt = f.Extension();
     }
+    return (true);
 #endif
 }
 
@@ -253,20 +275,20 @@ uint64 File::GetSizeBytes() const
 #endif
 }
 
-void File::Delete()
+bool File::Delete()
 {
     if (!Exists())
-        return;
+        return (false);
 #ifdef WINDOWS
     if (IsDirectory())
-        RemoveDirectoryW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()));
+        return (RemoveDirectoryW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16())) == TRUE);
     else
-        DeleteFileW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()));
+        return (DeleteFileW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16())) == TRUE);
 #else
     if (IsDirectory())
-        rmdir(*FullPath);
+        return (rmdir(*FullPath) == 0);
     else
-        unlink(*FullPath);
+        return (unlink(*FullPath) == 0);
 #endif
 }
 
@@ -293,7 +315,7 @@ List<File> File::ListFiles()
     if (d)
     {
         struct dirent *dir;
-        while ((dir = readdir(d)) != Null)
+        while ((dir = readdir(d)) != nullptr)
             flns.Add(File(FullPath + "/" + String(dir->d_name)));
     }
     closedir(d);
@@ -301,13 +323,13 @@ List<File> File::ListFiles()
     return (flns);
 }
 
-void File::CreateDir()
+bool File::CreateDir()
 {
     if (Exists())
-        return;
+        return (false);
 #ifdef WINDOWS
-    CreateDirectoryW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), Null);
+    return (CreateDirectoryW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), nullptr) == TRUE);
 #else
-    mkdir(*FullPath, 0755);
+    return (mkdir(*FullPath, 0755) == 0);
 #endif
 }

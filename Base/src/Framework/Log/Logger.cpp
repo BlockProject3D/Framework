@@ -1,16 +1,16 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -32,12 +32,33 @@ using namespace bpf::memory;
 using namespace bpf::log;
 using namespace bpf;
 
-Logger::Logger(const String &name)
-    : _name(name)
+Logger::Logger(String name)
+    : _name(std::move(name))
+#ifdef BUILD_DEBUG
+    , _level(ELogLevel::DEBUG)
+#else
+    , _level(ELogLevel::INFO)
+#endif
 {
 }
 
-void Logger::AddHandler(UniquePtr<ILogHandler> &&ptr)
+Logger::Logger(Logger &&other) noexcept
+    : _handlers(std::move(other._handlers))
+    , _name(std::move(other._name))
+    , _level(other._level)
+{
+}
+
+Logger &Logger::operator=(Logger &&other) noexcept
+{
+    _handlers.Clear();
+    _handlers = std::move(other._handlers);
+    _name = std::move(other._name);
+    _level = other._level;
+    return (*this);
+}
+
+void Logger::AddHandler(UniquePtr<ILogAdapter> &&ptr)
 {
     _handlers.Add(std::move(ptr));
 }

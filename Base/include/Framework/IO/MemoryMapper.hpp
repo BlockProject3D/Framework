@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -53,9 +53,15 @@ namespace bpf
              * Creates a new MemoryMapper from the given file and mode
              * @param file file to open
              * @param mode file mode
-             * @throws IOException
+             * @throw IOException in case of system error
              */
             MemoryMapper(const File &file, fint mode);
+
+            /**
+             * Move constructor
+             */
+            MemoryMapper(MemoryMapper &&other) noexcept;
+
             ~MemoryMapper();
 
             /**
@@ -69,20 +75,41 @@ namespace bpf
             MemoryMapper operator=(const MemoryMapper &other) = delete;
 
             /**
+             * Move assignment operator
+             */
+            MemoryMapper &operator=(MemoryMapper &&other) noexcept;
+
+            /**
              * Map or re-map the file in virtual memory
              * @param pos position in bytes in the file to start mapping
-             * @param size the size in bytes to map,
-             *        if the size is greater than the size of the file,
-             *        this function throws
-             * @throws IOException
+             * @param size the size in bytes to map
+             * @throw IOException in case of system error or if the size is greater than the size of the mapped file
              */
             void Map(uint64 pos, fsize size);
 
+            /**
+             * Unmaps any previous mappings of the file
+             */
+            void Unmap();
+
+            /**
+             * Closes this MemoryMapper
+             */
+            void Close();
+
+            /**
+             * Returns the mapped file
+             * @return immutable File reference
+             */
             const File &GetFile() const noexcept
             {
                 return (_file);
             }
 
+            /**
+             * Returns a pointer to the mapped file memory
+             * @return raw pointer to the mapped file memory
+             */
             inline void *operator*()
             {
                 return (_memoff);

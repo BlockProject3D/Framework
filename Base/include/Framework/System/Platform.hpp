@@ -1,4 +1,4 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -34,42 +34,116 @@ namespace bpf
 {
     namespace system
     {
+        /**
+         * Enumeration for endianess, used with Platform::GetEndianess
+         */
         enum EPlatformEndianess
         {
             PLATFORM_BIGENDIAN,
             PLATFORM_LITTLEENDIAN
         };
 
+        /**
+         * OS specs structure
+         */
         struct OS
         {
+            /**
+             * Name of operating system
+             */
             String Name;
+
+            /**
+             * Version of operating system
+             */
             String Version;
+
+            /**
+             * Extension of a dynamic library
+             */
             String ModuleExt;
+
+            /**
+             * File path separator character
+             */
             String PathSep;
+
+            /**
+             * New-line character
+             */
             String NewLine;
         };
 
+        /**
+         * CPU specs structure
+         */
         struct CPU
         {
+            /**
+             * Brand name.
+             * In release builds, a generic brand name is populated under Linux and OSX to prevent a bug in GCC itself
+             * On ARM based architectures, a generic brand name is populated as ARM instruction set does not provide any
+             * way to know the CPU brand name
+             */
             String Name;
+
+            /**
+             * Number of cores (may not be accurate on all systems)
+             */
             fint NumCores;
+
+            /**
+             * CPU frequency (may not be accurate on all systems)
+             */
             fint Freq;
         };
 
+        /**
+         * RAM specs structure
+         */
         struct RAM
         {
+            /**
+             * Maximum physical RAM installed (may not be accurate on all systems)
+             */
             uint64 MaxPhysical;
+
+            /**
+             * Maximum virtual RAM usable
+             */
             uint64 MaxVirtual;
         };
 
+        /**
+         * Environment specs structure
+         */
         struct Env
         {
+            /**
+             * Short name of the Framework
+             */
             String ShortName;
+
+            /**
+             * Long name of the Framework
+             */
             String Name;
+
+            /**
+             * Version string of the Framework (used for display)
+             */
             String Version;
+
+            /**
+             * Version integer of the Framework (used for lading plugins)
+             */
             fint VersionInt;
         };
 
+        /**
+         * Utility class to represent the current system specs and environment specs.
+         * Also provides access to various low-level platform-dependent utilities
+         */
         class BPF_API Platform
         {
         private:
@@ -79,14 +153,44 @@ namespace bpf
             static String CPUIDIntToStr(fint data);
 
         public:
+            /**
+             * Returns environment specs
+             * @return Env structure reference
+             */
             static const Env &GetEnvInfo();
+
+            /**
+             * Returns OS specs
+             * @return OS structure reference
+             */
             static const OS &GetOSInfo();
+
+            /**
+             * Returns CPU specs
+             * @return CPU structure reference
+             */
             static const CPU &GetCPUInfo();
+
+            /**
+             * Returns current RAM specs
+             * @return RAM structure reference
+             */
             static RAM GetRAMInfo();
+
+            /**
+             * Returns the current platform endianess
+             * @return enum value (see EPlatformEndianess)
+             */
             static EPlatformEndianess GetEndianess();
 
             /**
-             * Reverse a buffer byte per byte
+             * Check if this application is running as administrator
+             * @return true if the application is currently running as administrator, false otherwise
+             */
+            static bool IsRunningAsAdmin();
+
+            /**
+             * Reverse a buffer byte per byte.
              * WARNING : This function modifies the input buffer
              * @param buf the buffer to reverse
              * @param size the size of the buffer to reverse
@@ -94,7 +198,7 @@ namespace bpf
             static void ReverseBuffer(void *buf, const fsize size);
 
             /**
-             * Reverse a buffer group per group
+             * Reverse a buffer group per group.
              * WARNING : This function modifies the input buffer
              * @param buf the buffer to reverse
              * @param size the size of the buffer to reverse

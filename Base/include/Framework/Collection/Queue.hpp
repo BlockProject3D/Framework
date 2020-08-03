@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -44,9 +44,21 @@ namespace bpf
             Array<T> _data;
 
         public:
-            explicit Queue(const fsize maxsize = 0);
+            /**
+             * Constructs an empty Queue
+             * @param maxsize maximum size of queue (0 = infinity/unlimited)
+             */
+            explicit Queue(fsize maxsize = 0);
+
+            /**
+             * Constructs a Queue from an existing initializer list
+             * @param lst the initial list of items to push to this new queue
+             */
             Queue(const std::initializer_list<T> &lst);
 
+            /**
+             * Copy constructor
+             */
             inline Queue(const Queue<T> &other)
                 : _maxSize(other._maxSize)
                 , _headPtr(other._headPtr)
@@ -56,7 +68,10 @@ namespace bpf
             {
             }
 
-            inline Queue(Queue<T> &&other)
+            /**
+             * Move constructor
+             */
+            inline Queue(Queue<T> &&other) noexcept
                 : _maxSize(other._maxSize)
                 , _headPtr(other._headPtr)
                 , _tailPtr(other._tailPtr)
@@ -68,8 +83,13 @@ namespace bpf
                 other._count = 0;
             }
 
+            /**
+             * Copy assignment operator
+             */
             inline Queue<T> &operator=(const Queue<T> &other)
             {
+                if (this == &other)
+                    return (*this);
                 _maxSize = other._maxSize;
                 _headPtr = other._headPtr;
                 _tailPtr = other._tailPtr;
@@ -78,7 +98,10 @@ namespace bpf
                 return (*this);
             }
 
-            inline Queue<T> &operator=(Queue<T> &&other)
+            /**
+             * Move assignment operator
+             */
+            inline Queue<T> &operator=(Queue<T> &&other) noexcept
             {
                 _maxSize = other._maxSize;
                 _headPtr = other._headPtr;
@@ -91,25 +114,34 @@ namespace bpf
                 return (*this);
             }
 
+            /**
+             * Clears this queue
+             */
             void Clear();
 
             /**
              * Pushes an element on the queue
+             * @param element the element to push
              */
             void Push(const T &element);
 
             /**
              * Pushes an element on the queue
+             * @param element the element to push
              */
             void Push(T &&element);
 
             /**
              * Extracts the top of the queue
+             * @throw IndexException if the queue is empty
+             * @return the extracted/removed item
              */
             T Pop();
 
             /**
              * Returns the top of the queue
+             * @throw IndexException if the queue is empty
+             * @return mutable item
              */
             inline T &Top()
             {
@@ -120,6 +152,8 @@ namespace bpf
 
             /**
              * Returns the top of the queue
+             * @throw IndexException if the queue is empty
+             * @return immutable item
              */
             inline const T &Top() const
             {
@@ -128,12 +162,16 @@ namespace bpf
                 return (_data[_headPtr]);
             }
 
+            /**
+             * Returns the number of items in this queue
+             * @return number of items as unsigned
+             */
             inline fsize Size() const
             {
                 return (_count);
             }
         };
     }
-};
+}
 
 #include "Framework/Collection/Queue.impl.hpp"

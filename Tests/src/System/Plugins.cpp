@@ -1,4 +1,4 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -26,40 +26,11 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-#include "Framework/Types.hpp"
-#include "Framework/Memory/Utility.hpp"
+#include <gtest/gtest.h>
+#include <Framework/System/PluginLoader.hpp>
 
-#ifdef BUILD_DEBUG
-    #define BP_MODULE_VERSION_INT 0x1 * 0x42
-#else
-    #define BP_MODULE_VERSION_INT 0x1
-#endif
-
-#ifdef WINDOWS
-    #define BP_IMPLEMENT_MODULE(Name, BaseClass, Class) \
-    extern "C" \
-    { \
-        __declspec(dllexport) bpf::memory::UniquePtr<BaseClass> Name##_Link() \
-        { \
-            return (bpf::memory::MakeUnique<Class>()); \
-        } \
-        bpf::fint Name##_Version() \
-        { \
-            return (BP_MODULE_VERSION_INT); \
-        } \
-    }
-#else
-    #define BP_IMPLEMENT_MODULE(Name, BaseClass, Class) \
-    extern "C" \
-    { \
-        bpf::memory::UniquePtr<BaseClass> Name##_Link() \
-        { \
-            return (bpf::memory::MakeUnique<Class>()); \
-        } \
-        bpf::fint Name##_Version() \
-        { \
-            return (BP_MODULE_VERSION_INT); \
-        } \
-    }
-#endif
+TEST(PluginLoader, Basic)
+{
+    bpf::system::PluginLoader loader(bpf::io::File("."));
+    EXPECT_THROW(loader.Load<int>("Test"), bpf::system::ModuleException);
+}

@@ -1,4 +1,4 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -26,11 +26,11 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <cassert>
-#include <iostream>
-#include <gtest/gtest.h>
 #include <Framework/System/Platform.hpp>
-#include <Framework/System/ModuleInterface.hpp>
+#include <Framework/System/PluginInterface.hpp>
+#include <cassert>
+#include <gtest/gtest.h>
+#include <iostream>
 
 TEST(Platform, OS)
 {
@@ -68,9 +68,8 @@ TEST(Platform, Env)
 
     EXPECT_STREQ(*var.ShortName, "BPF");
     EXPECT_STREQ(*var.Name, "BlockProject Framework");
-    EXPECT_STREQ(*var.Version, "2.6");
-    EXPECT_EQ(var.VersionInt, BP_MODULE_VERSION_INT);
-
+    EXPECT_STREQ(*var.Version, BP_VERSION_STRING);
+    EXPECT_EQ(var.VersionInt, BP_PLUGIN_VERSION_INT);
 }
 
 TEST(Platform, CPU)
@@ -78,8 +77,8 @@ TEST(Platform, CPU)
     auto var = bpf::system::Platform::GetCPUInfo();
 
     EXPECT_GT(var.Name.Len(), 0);
-    EXPECT_GT(var.NumCores, 0); //There has to be at least 1 core
-    EXPECT_GT(var.Freq, 0); //Frequency has to be at least greater than 0Mhz
+    EXPECT_GT(var.NumCores, 0); // There has to be at least 1 core
+    EXPECT_GT(var.Freq, 0);     // Frequency has to be at least greater than 0Mhz
 }
 
 TEST(Platform, RAM)
@@ -104,4 +103,9 @@ TEST(Platform, ReverseBuffer_2)
 
     bpf::system::Platform::ReverseBuffer(data, 16, 4);
     EXPECT_STREQ(data, "mnopijklefghabcd");
+}
+
+TEST(Platform, IsAdmin)
+{
+    EXPECT_FALSE(bpf::system::Platform::IsRunningAsAdmin());
 }

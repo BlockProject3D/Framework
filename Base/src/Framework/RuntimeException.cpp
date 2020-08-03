@@ -1,16 +1,16 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -27,17 +27,57 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Framework/RuntimeException.hpp"
+#include "Framework/Memory/MemUtils.hpp"
 #include <iostream>
 
 using namespace bpf;
 
-RuntimeException::RuntimeException(const String &type, const String &message) noexcept
-    : _type(type + "Exception")
-    , _message(message)
+RuntimeException::RuntimeException(const String &type, const String &message)
+    : _type(memory::MemUtils::New<String>(type + "Exception"))
+    , _message(memory::MemUtils::New<String>(message))
+    , _refs(reinterpret_cast<int *>(memory::Memory::Malloc(sizeof(int))))
 {
+    *_refs = 1;
 }
 
-void RuntimeException::Print() const
+RuntimeException::~RuntimeException()
+{
+    *_refs -= 1;
+    if (*_refs <= 0)
+    {
+        memory::MemUtils::Delete(_type);
+        memory::MemUtils::Delete(_message);
+        memory::Memory::Free(_refs);
+    }
+}
+
+RuntimeException::RuntimeException(const RuntimeException &other) noexcept
+    : _type(other._type)
+    , _message(other._message)
+    , _refs(other._refs)
+{
+    *_refs += 1;
+}
+
+RuntimeException &RuntimeException::operator=(const RuntimeException &other) noexcept
+{
+    if (this == &other)
+        return (*this);
+    *other._refs += 1;
+    *_refs -= 1;
+    if (*_refs <= 0)
+    {
+        memory::MemUtils::Delete(_type);
+        memory::MemUtils::Delete(_message);
+        memory::Memory::Free(_refs);
+    }
+    _type = other._type;
+    _message = other._message;
+    _refs = other._refs;
+    return (*this);
+}
+
+void RuntimeException::Print() const noexcept
 {
     std::cerr << Type() << " thrown: " << std::endl;
     std::cerr << *Message() << std::endl;

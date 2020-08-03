@@ -1,4 +1,4 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -26,17 +26,42 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
+#include "Framework/Dynamic.hpp"
 
-namespace bpf
+using namespace bpf;
+
+Dynamic::~Dynamic()
 {
-    namespace io
-    {
-        enum class EStringEncoder
-        {
-            UTF8,
-            UTF16,
-            UTF32
-        };
-    }
+    memory::MemUtils::Delete(_storage);
+}
+
+Dynamic &Dynamic::operator=(const Dynamic &other)
+{
+    if (this == &other)
+        return (*this);
+    memory::MemUtils::Delete(_storage);
+    _storage = other._storage == nullptr ? nullptr : other._storage->Clone();
+    return (*this);
+}
+
+Dynamic &Dynamic::operator=(Dynamic &&other) noexcept
+{
+    memory::MemUtils::Delete(_storage);
+    _storage = other._storage;
+    other._storage = nullptr;
+    return (*this);
+}
+
+bool Dynamic::operator==(const Dynamic &other) const
+{
+    if (_storage == nullptr || other._storage == nullptr)
+        return (_storage == other._storage);
+    return (_storage->Equals(other._storage));
+}
+
+bool Dynamic::operator!=(const Dynamic &other) const
+{
+    if (_storage == nullptr || other._storage == nullptr)
+        return (_storage != other._storage);
+    return (!_storage->Equals(other._storage));
 }

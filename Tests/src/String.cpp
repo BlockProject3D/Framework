@@ -1,16 +1,16 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -31,7 +31,6 @@
 #include <Framework/Collection/Stringifier.List.hpp>
 #include <Framework/String.hpp>
 #include <Framework/TypeInfo.hpp>
-#include <cassert>
 #include <gtest/gtest.h>
 #include <iostream>
 
@@ -39,7 +38,17 @@ TEST(String, Create)
 {
     bpf::String str = "This is a test !";
     bpf::String str1;
-    bpf::String str2 = Null;
+    bpf::String str2 = nullptr;
+}
+
+TEST(String, Empty)
+{
+    bpf::String str;
+    bpf::String str1 = "";
+    bpf::String str2 = "This is a test";
+    EXPECT_TRUE(str.IsEmpty());
+    EXPECT_TRUE(str1.IsEmpty());
+    EXPECT_FALSE(str2.IsEmpty());
 }
 
 TEST(String, CreateUnicode)
@@ -52,8 +61,11 @@ TEST(String, Copy)
     bpf::String str = " é è à ù € This is a test !";
 
     bpf::String ss = str;
+    bpf::String *ss1 = &ss;
+    ss = *ss1;
     for (int i = 0; i < 100; ++i)
         ss = str;
+    EXPECT_STREQ(*ss, " é è à ù € This is a test !");
 }
 
 TEST(String, From_TypeName)
@@ -646,32 +658,12 @@ TEST(String, ValueOf)
 TEST(String, Safety)
 {
     bpf::String str = "this is a test";
-    try
-    {
-        str += str[-1];
-    }
-    catch (const bpf::IndexException &)
-    {
-        ASSERT_TRUE(true);
-    }
-    try
-    {
-        str += str[9999];
-    }
-    catch (const bpf::IndexException &)
-    {
-        ASSERT_TRUE(true);
-    }
-    try
-    {
-        str += str[15];
-    }
-    catch (const bpf::IndexException &)
-    {
-        ASSERT_TRUE(true);
-        return;
-    }
-    ASSERT_TRUE(false);
+    bpf::String str1 = "this is a test1";
+    EXPECT_EQ(str[-1], bpf::String::UTF32("t")); //MSVC wants slow unoptimized code; fine!
+    EXPECT_EQ(str1[-1], bpf::String::UTF32("1")); //MSVC wants slow unoptimized code; fine!
+    EXPECT_EQ(str1[-2], bpf::String::UTF32("t")); //MSVC wants slow unoptimized code; fine!
+    EXPECT_THROW(str += str[9999], bpf::IndexException);
+    EXPECT_THROW(str += str[15], bpf::IndexException);
 }
 
 TEST(String, Iterate)
@@ -747,7 +739,7 @@ TEST(String, Chinese_2)
 TEST(String, Chinese_3)
 {
     bpf::String str = "你好，我是清华大学的留学生";
-    const bpf::fchar16 *expected = reinterpret_cast<const bpf::fchar16 *>(u"你好，我是清华大学的留学生");
+    auto *expected = reinterpret_cast<const bpf::fchar16 *>(u"你好，我是清华大学的留学生");
     auto arr = str.ToUTF16();
     auto recover = bpf::String::FromUTF16(*arr);
 

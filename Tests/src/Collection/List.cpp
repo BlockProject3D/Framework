@@ -1,16 +1,16 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -452,6 +452,36 @@ TEST(List, Iterator_2)
     EXPECT_EQ(lst.begin()->ByteAt(0), 'a');
 }
 
+TEST(List, Iterator_3)
+{
+    List<String> lst = {"a", "b", "c"};
+
+    auto it = lst.begin();
+    it += 2;
+    EXPECT_EQ(it->ByteAt(0), 'c');
+    it -= 2;
+    EXPECT_EQ(it->ByteAt(0), 'a');
+    it = lst.begin();
+    it += 42;
+    EXPECT_EQ(it, lst.end());
+    it = lst.end();
+    it -= 42;
+    EXPECT_EQ(it->ByteAt(0), 'a');
+}
+
+TEST(List, Iterator_4)
+{
+    List<String> lst = {"a", "b", "c"};
+
+    auto it1 = lst.begin();
+    const auto &it = it1;
+    EXPECT_STREQ(**it, "a");
+    EXPECT_EQ(it->ByteAt(0), 'a');
+    ++it1;
+    EXPECT_STREQ(**it, "b");
+    EXPECT_EQ(it->ByteAt(0), 'b');
+}
+
 TEST(List, ReverseIterator_1)
 {
     List<int> lst = {0, 3, 7, 0};
@@ -480,6 +510,130 @@ TEST(List, ReverseIterator_2)
     EXPECT_EQ(lst.rbegin()->ByteAt(0), 'c');
 }
 
+TEST(List, ReverseIterator_3)
+{
+    List<String> lst = {"a", "b", "c"};
+
+    auto it = lst.rbegin();
+    it += 2;
+    EXPECT_EQ(it->ByteAt(0), 'a');
+    it -= 2;
+    EXPECT_EQ(it->ByteAt(0), 'c');
+    it = lst.rbegin();
+    it += 42;
+    EXPECT_EQ(it, lst.rend());
+    it -= 42;
+    EXPECT_EQ(it->ByteAt(0), 'c');
+}
+
+TEST(List, ReverseIterator_4)
+{
+    List<String> lst = {"a", "b", "c"};
+
+    auto it1 = lst.rbegin();
+    const auto &it = it1;
+    EXPECT_STREQ(**it, "c");
+    EXPECT_EQ(it->ByteAt(0), 'c');
+    ++it1;
+    EXPECT_STREQ(**it, "b");
+    EXPECT_EQ(it->ByteAt(0), 'b');
+}
+
+TEST(List, CIterator_1)
+{
+    List<int> lst1 = {0, 3, 7, 0};
+    const auto &lst = lst1;
+
+    auto it = lst.begin();
+    ++it;
+    --it;
+    EXPECT_EQ(it, lst.begin());
+    --it;
+    ++it;
+    EXPECT_EQ(it, ++lst.begin());
+    it = lst.end();
+    --it;
+    ++it;
+    EXPECT_EQ(it, lst.end());
+    ++it;
+    --it;
+    EXPECT_EQ(it, --lst.end());
+}
+
+TEST(List, CIterator_2)
+{
+    List<String> lst1 = {"a", "b", "c"};
+    const auto &lst = lst1;
+
+    EXPECT_EQ(lst.begin()->Size(), 1);
+    EXPECT_EQ(lst.begin()->ByteAt(0), 'a');
+}
+
+TEST(List, CIterator_3)
+{
+    List<String> lst1 = {"a", "b", "c"};
+    const auto &lst = lst1;
+
+    auto it = lst.begin();
+    it += 2;
+    EXPECT_EQ(it->ByteAt(0), 'c');
+    it -= 2;
+    EXPECT_EQ(it->ByteAt(0), 'a');
+    it = lst.begin();
+    it += 42;
+    EXPECT_EQ(it, lst.end());
+    it = lst.end();
+    it -= 42;
+    EXPECT_EQ(it->ByteAt(0), 'a');
+}
+
+TEST(List, CReverseIterator_1)
+{
+    List<int> lst1 = {0, 3, 7, 0};
+    const auto &lst = lst1;
+
+    auto it = lst.rbegin();
+    ++it;
+    --it;
+    EXPECT_EQ(it, lst.rbegin());
+    --it;
+    ++it;
+    EXPECT_EQ(it, ++lst.rbegin());
+    it = lst.rend();
+    --it;
+    ++it;
+    EXPECT_EQ(it, lst.rend());
+    ++it;
+    --it;
+    EXPECT_EQ(it, --lst.rend());
+}
+
+TEST(List, CReverseIterator_2)
+{
+    List<String> lst1 = {"a", "b", "c"};
+    const auto &lst = lst1;
+
+    EXPECT_EQ(lst.rbegin()->Size(), 1);
+    EXPECT_EQ(lst.rbegin()->ByteAt(0), 'c');
+}
+
+TEST(List, CReverseIterator_3)
+{
+    List<String> lst1 = {"a", "b", "c"};
+    const auto &lst = lst1;
+
+    auto it = lst.rbegin();
+    it += 2;
+    EXPECT_EQ(it->ByteAt(0), 'a');
+    it -= 2;
+    EXPECT_EQ(it->ByteAt(0), 'c');
+    it = lst.rbegin();
+    it += 42;
+    EXPECT_EQ(it, lst.rend());
+    it -= 42;
+    EXPECT_EQ(it->ByteAt(0), 'c');
+}
+
 TEST(List, Clear)
 {
     List<int> lst = {0, 3, 7, 0};
@@ -505,7 +659,7 @@ TEST(List, IterateForward_Test1)
 
 TEST(List, IterateForward_Test2)
 {
-    String res = String::Empty;
+    String res = "";
     List<String> lst;
 
     lst.Add("a");
@@ -533,7 +687,7 @@ TEST(List, IterateBackward_Test1)
 
 TEST(List, IterateBackward_Test2)
 {
-    String res = String::Empty;
+    String res = "";
     List<String> lst;
 
     lst.Add("a");

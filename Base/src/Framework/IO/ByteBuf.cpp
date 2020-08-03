@@ -1,16 +1,16 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -35,23 +35,62 @@ using namespace bpf::io;
 using namespace bpf;
 
 ByteBuf::ByteBuf(const fsize size)
-    : _buf((uint8 *)Memory::Malloc(size))
+    : _buf(static_cast<uint8 *>(Memory::Malloc(size)))
     , _cursor(0)
     , _size(size)
     , _written(0)
 {
 }
 
-ByteBuf::ByteBuf(ByteBuf &&other)
+ByteBuf::ByteBuf(ByteBuf &&other) noexcept
     : _buf(other._buf)
     , _cursor(other._cursor)
     , _size(other._size)
     , _written(other._written)
 {
-    other._buf = Null;
+    other._buf = nullptr;
     other._cursor = 0;
     other._size = 0;
     other._written = 0;
+}
+
+ByteBuf::ByteBuf(const ByteBuf &other)
+    : _buf(static_cast<uint8 *>(Memory::Malloc(other._size)))
+    , _cursor(other._cursor)
+    , _size(other._size)
+    , _written(other._written)
+{
+    std::memcpy(_buf, other._buf, _size);
+}
+
+ByteBuf &ByteBuf::operator=(const ByteBuf &other)
+{
+    if (this == &other)
+        return (*this);
+    if (_buf != nullptr)
+        Memory::Free(_buf);
+    _size = other._size;
+    _cursor = other._cursor;
+    _written = other._written;
+    _buf = static_cast<uint8 *>(Memory::Malloc(other._size));
+    std::memcpy(_buf, other._buf, _size);
+    return (*this);
+}
+
+ByteBuf &ByteBuf::operator=(ByteBuf &&other) noexcept
+{
+    if (_buf != nullptr)
+        Memory::Free(_buf);
+    _size = other._size;
+    _cursor = other._cursor;
+    _written = other._written;
+    _buf = other._buf;
+    other._buf = nullptr;
+    other._size = 0;
+    other._cursor = 0;
+    other._written = 0;
+    return (*this);
+    
 }
 
 ByteBuf::~ByteBuf()

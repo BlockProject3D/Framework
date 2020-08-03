@@ -1,16 +1,16 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -56,10 +56,10 @@ void Lexer::LoadString(const String &input)
         if (CheckString(token)
             || CheckBasic(token, _cursor < input.Len() ? input[_cursor + 1] : '\0')
             || CheckNumber(token, _cursor < input.Len() ? input[_cursor + 1] : '\0'))
-            token = String::Empty;
+            token = "";
         ++_cursor;
     }
-    if (token != String::Empty)
+    if (!token.IsEmpty())
         throw JsonParseException(_line, String("Unexpected token '") + token + "'");
 }
 
@@ -68,10 +68,10 @@ Queue<Lexer::Token> Lexer::ReadTokens()
     return (std::move(_tokens));
 }
 
-fchar Lexer::ProcessUnicode(const String &str, int &pos)
+fchar Lexer::ProcessUnicode(const String &str, fisize &pos)
 {
-    String nbr = String::Empty;
-    int i = pos + 2;
+    String nbr = "";
+    fisize i = pos + 2;
 
     for (; i != str.Len(); ++i)
     {
@@ -82,7 +82,7 @@ fchar Lexer::ProcessUnicode(const String &str, int &pos)
     return (UInt::Parse(nbr));
 }
 
-fchar Lexer::ProcessStandard(const String &str, int &pos)
+fchar Lexer::ProcessStandard(const String &str, fisize &pos)
 {
     if (pos + 1 >= str.Len())
     {
@@ -104,9 +104,9 @@ fchar Lexer::ProcessStandard(const String &str, int &pos)
 String Lexer::ReProcessString(const String &str)
 {
     String copy = str.Sub(1, str.Len() - 1);
-    String res = String::Empty;
+    String res = "";
 
-    for (int i = 0; i < copy.Len(); ++i)
+    for (fisize i = 0; i < copy.Len(); ++i)
     {
         if (copy[i] == '\\')
         {
@@ -157,7 +157,7 @@ bool Lexer::CheckNumber(const String &token, const fchar next)
             _curNbr += '-';
         return (true);
     }
-    else if (token.IsNumeric() && _curExponent == String::Empty)
+    else if (token.IsNumeric() && _curExponent.IsEmpty())
     {
         _curNbr += token;
         if ((next < 48 || next > 57) && next != 'e' && next != 'E' && next != '.')
@@ -167,8 +167,8 @@ bool Lexer::CheckNumber(const String &token, const fchar next)
             tok.Line = _line;
             tok.Type = ETokenType::NUMBER;
             _tokens.Push(std::move(tok));
-            _curNbr = String::Empty;
-            _curExponent = String::Empty;
+            _curNbr = "";
+            _curExponent = "";
         }
         return (true);
     }
@@ -189,8 +189,8 @@ bool Lexer::CheckNumber(const String &token, const fchar next)
             tok.Line = _line;
             tok.Type = ETokenType::NUMBER;
             _tokens.Push(std::move(tok));
-            _curNbr = String::Empty;
-            _curExponent = String::Empty;
+            _curNbr = "";
+            _curExponent = "";
         }
         return (true);
     }

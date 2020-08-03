@@ -1,16 +1,16 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -30,7 +30,7 @@
     #include <Windows.h>
 #else
     #include <cstring>
-    #include <errno.h>
+    #include <cerrno>
 #endif
 #include "OSPrivate.hpp"
 
@@ -40,12 +40,12 @@ using namespace bpf;
 String OSPrivate::ObtainLastErrorString()
 {
     String res = "Unknown";
-    LPTSTR errtxt = Null;
+    LPTSTR errtxt = nullptr;
 
     FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                  Null, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                  reinterpret_cast<LPTSTR>(&errtxt), 0, Null);
-    if (errtxt != Null)
+                  nullptr, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                  reinterpret_cast<LPTSTR>(&errtxt), 0, nullptr);
+    if (errtxt != nullptr)
     {
         res = errtxt;
         LocalFree(errtxt);

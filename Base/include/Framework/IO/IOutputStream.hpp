@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -33,10 +33,22 @@ namespace bpf
 {
     namespace io
     {
+        /**
+         * Represents an arbitary stream with write capacity
+         */
         class BPF_API IOutputStream
         {
         public:
             virtual ~IOutputStream() {}
+
+            /**
+             * Writes bytes to this stream
+             * WARNING: When possible the implementation should not buffer
+             * @param buf the buffer with the bytes to write
+             * @param bufsize the size of the buffer
+             * @throw IOException in case of system error
+             * @return number of bytes written
+             */
             virtual fsize Write(const void *buf, fsize bufsize) = 0;
         };
     }

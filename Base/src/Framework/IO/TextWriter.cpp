@@ -1,4 +1,4 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -49,7 +49,7 @@ void TextWriter::WriteByte(uint8 byte)
 
 void TextWriter::WriteSubBuf(const void *out, const fsize size)
 {
-    const uint8 *res = reinterpret_cast<const uint8 *>(out);
+    auto *res = reinterpret_cast<const uint8 *>(out);
 
     for (fsize i = 0; i != size; ++i)
         WriteByte(res[i]);
@@ -59,16 +59,16 @@ void TextWriter::Write(const String &str)
 {
     switch (_encoder)
     {
-    case EStringEncoder::UTF8:
+    case ECharacterEncoding::UTF8:
         WriteSubBuf(*str, str.Size());
         break;
-    case EStringEncoder::UTF16:
+    case ECharacterEncoding::UTF16:
     {
         auto buf = str.ToUTF16();
         WriteSubBuf(*buf, sizeof(bpf::fchar16) * (buf.Size() - 1));
         break;
     }
-    case EStringEncoder::UTF32:
+    case ECharacterEncoding::UTF32:
     {
         auto buf = str.ToUTF32();
         WriteSubBuf(*buf, sizeof(bpf::fchar) * (buf.Size() - 1));
@@ -96,7 +96,7 @@ fsize TextWriter::Write(const void *buf, fsize bufsize)
 {
     if (_buffered)
     {
-        const uint8 *data = reinterpret_cast<const uint8 *>(buf);
+        auto *data = reinterpret_cast<const uint8 *>(buf);
         for (fsize i = 0; i != bufsize; ++i)
             WriteByte(data[i]);
         return (bufsize);
@@ -109,8 +109,10 @@ void TextWriter::Flush()
 {
     if (_buffered)
     {
-        _stream.Write(*_buf, _buf.GetWrittenBytes());
+        // Inverse logic to avoid re-throwing the same exception
+        auto size = _buf.GetWrittenBytes();
         _buf.Reset();
+        _stream.Write(*_buf, size);
     }
 }
 

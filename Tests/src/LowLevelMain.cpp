@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -38,12 +38,15 @@ int main(int argc, char **argv, char **envp)
 #endif
 {
 #ifdef WINDOWS
-    bpf::system::WindowsApp app(Null, true);
+    bpf::system::WindowsApp app(nullptr, true);
+    if (Main(app, app.GetArguments()))
+        return (2);
 #else
-    bpf::system::UnixApp app(argv, argc, envp);
+    bpf::system::UnixApp app(argv, envp);
+    if (Main(app, app.GetArguments(argv, argc)))
+        return (2);
 #endif
 
-    Main(app, app.GetArguments(), app.GetPaths());
     ::testing::InitGoogleTest(&argc, argv);
     int val = RUN_ALL_TESTS();
     return (val);

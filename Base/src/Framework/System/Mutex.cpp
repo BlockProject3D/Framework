@@ -1,16 +1,16 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -26,7 +26,7 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <stdlib.h>
+#include <cstdlib>
 #ifdef WINDOWS
     #include <Windows.h>
     using MutexType = CRITICAL_SECTION;
@@ -36,6 +36,7 @@
 #endif
 #include "Framework/Memory/Memory.hpp"
 #include "Framework/System/Mutex.hpp"
+#include "Framework/System/OSException.hpp"
 
 using namespace bpf::memory;
 using namespace bpf::system;
@@ -44,17 +45,20 @@ using namespace bpf;
 Mutex::Mutex()
     : _handle(malloc(sizeof(MutexType)))
 {
-    if (_handle == Null)
+    if (_handle == nullptr)
         throw MemoryException();
 #ifdef WINDOWS
     InitializeCriticalSection(reinterpret_cast<MutexType *>(_handle));
 #else
-    pthread_mutex_init(reinterpret_cast<MutexType *>(_handle), Null);
+    if (pthread_mutex_init(reinterpret_cast<MutexType *>(_handle), nullptr) != 0)
+        throw OSException("Could not create mutex");
 #endif
 }
 
 Mutex::~Mutex()
 {
+    if (_handle == nullptr)
+        return;
 #ifdef WINDOWS
     DeleteCriticalSection(reinterpret_cast<MutexType *>(_handle));
 #else
@@ -63,22 +67,25 @@ Mutex::~Mutex()
     free(_handle);
 }
 
-Mutex::Mutex(Mutex &&other)
+Mutex::Mutex(Mutex &&other) noexcept
     : _handle(other._handle)
 {
-    other._handle = Null;
+    other._handle = nullptr;
 }
 
-Mutex &Mutex::operator=(Mutex &&other)
+Mutex &Mutex::operator=(Mutex &&other) noexcept
 {
+    if (_handle != nullptr)
+    {
 #ifdef WINDOWS
-    DeleteCriticalSection(reinterpret_cast<MutexType *>(_handle));
+        DeleteCriticalSection(reinterpret_cast<MutexType *>(_handle));
 #else
-    pthread_mutex_destroy(reinterpret_cast<MutexType *>(_handle));
+        pthread_mutex_destroy(reinterpret_cast<MutexType *>(_handle));
 #endif
-    free(_handle);
+        free(_handle);
+    }
     _handle = other._handle;
-    other._handle = Null;
+    other._handle = nullptr;
     return (*this);
 }
 
@@ -87,7 +94,8 @@ void Mutex::Lock() const
 #ifdef WINDOWS
     EnterCriticalSection(reinterpret_cast<MutexType *>(_handle));
 #else
-    pthread_mutex_lock(reinterpret_cast<MutexType *>(_handle));
+    if (pthread_mutex_lock(reinterpret_cast<MutexType *>(_handle)) != 0)
+        throw OSException("Could not lock mutex");
 #endif
 }
 
@@ -96,6 +104,7 @@ void Mutex::Unlock() const
 #ifdef WINDOWS
     LeaveCriticalSection(reinterpret_cast<MutexType *>(_handle));
 #else
-    pthread_mutex_unlock(reinterpret_cast<MutexType *>(_handle));
+    if (pthread_mutex_unlock(reinterpret_cast<MutexType *>(_handle)) != 0)
+        throw OSException("Could not unlock mutex");
 #endif
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -33,10 +33,22 @@ namespace bpf
 {
     namespace io
     {
+        /**
+         * Represents an arbitary stream with read capacity
+         */
         class BPF_API IInputStream
         {
         public:
             virtual ~IInputStream() {}
+
+            /**
+             * Reads bytes from this stream
+             * WARNING: When possible the implementation should not buffer
+             * @param buf buffer to receive the read bytes
+             * @param bufsize the size of the receiving buffer
+             * @throw IOException in case of system error
+             * @return number of bytes read
+             */
             virtual fsize Read(void *buf, fsize bufsize) = 0;
         };
     }

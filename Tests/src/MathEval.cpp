@@ -1,16 +1,16 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -98,11 +98,16 @@ TEST(MathEval, EvalNbr)
 	res = calc.EvalNbr("-1", ptr);
 	EXPECT_EQ(res, -1);
 	EXPECT_EQ(ptr, 2U);
+	res = calc.EvalNbr("-1", 1, ptr);
+	EXPECT_EQ(res, 1);
+	EXPECT_EQ(ptr, 2U);
 }
 
 TEST(MathEval, EvaluateErr)
 {
 	bpf::MathEval<double> calc;
+	bpf::fsize ptr;
 	EXPECT_THROW(calc.Evaluate("8 ff 2"), bpf::EvalException);
 	EXPECT_THROW(calc.Evaluate(" 0 / 0 "), bpf::EvalException);
+	EXPECT_THROW(calc.EvalNbr("12", 4, ptr), bpf::IndexException);
 }

@@ -1,16 +1,16 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -39,19 +39,25 @@ namespace bpf
             fsize i = 0;
 
             for (auto &elem : lst)
+            {
+                if (i >= I)
+                    break;
                 _arr[i++] = elem;
+            }
         }
 
         template <typename T, fsize I>
         Vector<T, I> &Vector<T, I>::operator=(const Vector &other)
         {
+            if (this == &other)
+                return (*this);
             for (fsize i = 0; i != I; ++i)
                 _arr[i] = other._arr[i];
             return (*this);
         }
 
         template <typename T, fsize I>
-        Vector<T, I> &Vector<T, I>::operator=(Vector &&other)
+        Vector<T, I> &Vector<T, I>::operator=(Vector &&other) noexcept
         {
             for (fsize i = 0; i != I; ++i)
                 _arr[i] = std::move(other._arr[i]);
@@ -307,6 +313,8 @@ namespace bpf
         template <typename T>
         Vector<T> &Vector<T>::operator=(const Vector &other)
         {
+            if (this == &other)
+                return (*this);
             memory::MemUtils::DeleteArray(_arr, _l);
             _l = other._l;
             _arr = memory::MemUtils::NewArray<T>(_l);
@@ -316,12 +324,12 @@ namespace bpf
         }
 
         template <typename T>
-        Vector<T> &Vector<T>::operator=(Vector &&other)
+        Vector<T> &Vector<T>::operator=(Vector &&other) noexcept
         {
             memory::MemUtils::DeleteArray(_arr, _l);
             _arr = other._arr;
             _l = other._l;
-            other._arr = Null;
+            other._arr = nullptr;
             other._l = 0;
             return (*this);
         }
@@ -458,7 +466,7 @@ namespace bpf
         bool Vector<T>::operator==(const Vector &other) const
         {
             if (_l != other._l)
-                throw IncompatibleMatrixSizeException((fisize)_l, (fisize)other._l);
+                return (false);
             for (fsize i = 0; i != _l; ++i)
             {
                 T diff = Math<T>::Abs(_arr[i] - other(i));

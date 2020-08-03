@@ -1,4 +1,4 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -27,23 +27,48 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/String.hpp"
-#include "Framework/System/Paths.hpp"
-#include "Framework/Collection/HashMap.hpp"
+#include <utility>
 
 namespace bpf
 {
-    namespace system
+    namespace memory
     {
-        class BPF_API IApplication
+        /**
+         * Helper class for implementing operator->* on smart pointer classes
+         * @tparam T the type of this pointer
+         * @tparam R the member function return type
+         * @tparam Fn the member function type
+         */
+        template <typename T, typename R, typename Fn>
+        class RawMemberFunction
         {
+        private:
+            T *_raw;
+            Fn _funcptr;
+
         public:
-            virtual ~IApplication() {}
-            virtual void CreateConsole(const fint rows = 32, const fint columns = 80) = 0; //Only usefull when the system do not create a console
-            virtual const String &GetExeFileName() const noexcept = 0;
-            virtual const collection::HashMap<String, String> &GetEnvironment() const noexcept = 0;
-            virtual const collection::Array<String> &GetArguments() const noexcept = 0;
-            virtual const Paths &GetPaths() const noexcept = 0;
+            /**
+             * Constructs a RawMemberFunction
+             * @param raw the raw this pointer
+             * @param funcptr the raw member function pointer
+             */
+            inline RawMemberFunction(T *raw, Fn funcptr)
+                : _raw(raw)
+                , _funcptr(funcptr)
+            {
+            }
+
+            /**
+             * Calls this member function
+             * @tparam Args the type of arguments
+             * @param args the arguments to forward
+             * @return the return value of the function
+             */
+            template <typename ...Args>
+            inline R operator()(Args &&... args)
+            {
+                return ((_raw->*_funcptr)(std::forward<Args>(args)...));
+            }
         };
     }
-};
+}

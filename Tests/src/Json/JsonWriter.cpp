@@ -1,16 +1,16 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -26,7 +26,6 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <cassert>
 #include <iostream>
 #include <gtest/gtest.h>
 #include <Framework/Json/Writer.hpp>
@@ -38,7 +37,7 @@ TEST(JsonWriter, Basic)
     J::Object obj{
         {"Test", 0.0},
         {"Test1", true},
-        {"Test2", Null},
+        {"Test2", nullptr},
         {"TestArray", J::Array {"A", "B", "TrouDuCul"}},
         {"TestObject", J::Object
             {
@@ -61,12 +60,40 @@ TEST(JsonWriter, Basic)
     EXPECT_STREQ(*writer.Serialize(obj), expected);
 }
 
+TEST(JsonWriter, Basic_1)
+{
+    J::Object obj{
+        {"Test", bpf::i64(42)},
+        {"Test1", true},
+        {"Test2", nullptr},
+        {"TestArray", J::Array {"A", "B", "TrouDuCul"}},
+        {"TestObject", J::Object
+                     {
+                         {"a", 0.0},
+                         {"b", 0.1},
+                         {"c", true}
+                     }
+        }
+    };
+    bpf::json::Writer writer(false);
+    const char *expected =
+        "{"
+        "\"Test\":42,"
+        "\"Test1\":true,"
+        "\"Test2\":null,"
+        "\"TestArray\":[\"A\",\"B\",\"TrouDuCul\"],"
+        "\"TestObject\":{\"a\":0,\"b\":0.1,\"c\":true}"
+        "}";
+
+    EXPECT_STREQ(*writer.Serialize(obj), expected);
+}
+
 TEST(JsonWriter, Basic_IgnoreNulls)
 {
     J::Object obj{
         {"Test", 0.0},
         {"Test1", true},
-        {"Test2", Null},
+        {"Test2", nullptr},
         {"TestArray", J::Array {"A", "B", "TrouDuCul"}},
         {"TestObject", J::Object
             {
@@ -93,7 +120,7 @@ TEST(JsonWriter, Pretty)
     J::Object obj{
         {"Test", 0.0},
         {"Test1", true},
-        {"Test2", Null},
+        {"Test2", nullptr},
         {"TestArray", J::Array {"A", "B", "TrouDuCul"}},
         {"TestObject", J::Object
             {

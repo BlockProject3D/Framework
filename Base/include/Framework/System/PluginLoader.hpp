@@ -1,4 +1,4 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -27,65 +27,57 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/System/Module.hpp"
-#include "Framework/Collection/HashMap.hpp"
-#include "Framework/Memory/Utility.hpp"
-#include "Framework/Name.hpp"
+#include "Framework/IO/File.hpp"
+#include "Framework/System/Plugin.hpp"
 
 namespace bpf
 {
     namespace system
     {
-        template <typename BaseClass>
-        class BP_TPL_API ModuleManager
+        /**
+         * Utility class to allow easy loading of plugins
+         */
+        class BP_TPL_API PluginLoader
         {
         private:
-            typedef memory::UniquePtr<BaseClass> (*ModuleLinkFunc)();
-            typedef fint(*ModuleDescribeFunc)();
+            io::File _modulePath;
 
-            struct Entry
-            {
-                memory::UniquePtr<BaseClass> Interface;
-                Module Handle;
-            };
-
-            String _modulePath;
-            collection::HashMap<String, Entry> _map;
+            template <class BaseClass>
+            using ModuleLinkFunc = BaseClass *(*)();
+            using ModuleDescribeFunc = fint(*)();
 
         public:
-            explicit inline ModuleManager(const String &modulePath)
+            /**
+             * Constructs a PluginLoader
+             * @param modulePath the path to the folder in which all plugins are located
+             */
+            explicit inline PluginLoader(const io::File &modulePath)
                 : _modulePath(modulePath)
             {
             }
 
-            ModuleManager(const ModuleManager &other) = delete;
-            ModuleManager &operator=(const ModuleManager &other) = delete;
+            /**
+             * Load a plugin with a file name; virtual name is deduced from file name
+             * @tparam BaseClass the interface class type
+             * @param fileName the file name without extension, prefixed with modulePath
+             * @throw ModuleException in case of system error or plugin incompatibility
+             * @return new plugin
+             */
+            template <class BaseClass>
+            Plugin<BaseClass> Load(const String &fileName);
 
             /**
-             * Loads the given module name
-             * @throws ModuleException
+             * Load a plugin with a file name
+             * @tparam BaseClass the interface class type
+             * @param fileName the file name without extension, prefixed with modulePath
+             * @param virtualName the module name
+             * @throw ModuleException in case of system error or plugin incompatibility
+             * @return new plugin
              */
-            void LoadModule(const Name &virtualName, const String &fileName);
-
-            /**
-             * Unloads the given module name
-             */
-            void UnloadModule(const Name &virtualName);
-
-            inline bool HasModule(const Name &virtualName) const noexcept
-            {
-                return (_map.HasKey(virtualName));
-            }
-
-            inline const memory::UniquePtr<BaseClass> &GetModule(const Name &virtualName) const noexcept
-            {
-                if (!HasModule(virtualName))
-                    return (memory::UniquePtr<BaseClass>::NullPtr);
-                else
-                    return (_map[virtualName].Interface);
-            }
+            template <class BaseClass>
+            Plugin<BaseClass> Load(const String &virtualName, const String &fileName);
         };
     }
-};
+}
 
-#include "Framework/System/ModuleManager.impl.hpp"
+#include "Framework/System/PluginLoader.impl.hpp"

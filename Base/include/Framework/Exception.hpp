@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -30,12 +30,15 @@
 
 namespace bpf
 {
+    /**
+     * Low-level exception
+     */
     class BPF_API Exception
     {
     private:
     public:
-        virtual ~Exception() {}
-        Exception() noexcept {}
+        virtual ~Exception(){};
+        Exception() {};
 
         /**
          * Returns exception type
@@ -48,6 +51,6 @@ namespace bpf
         /**
          * Print the exception to the console
          */
-        virtual void Print() const;
+        virtual void Print() const noexcept;
     };
-};
+}

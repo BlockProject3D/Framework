@@ -1,16 +1,16 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -179,6 +179,8 @@ TEST(HashMap, Copy)
     EXPECT_EQ(lst[0], 0);
     EXPECT_EQ(lst[1], 3);
     EXPECT_EQ(lst[2], 7);
+    auto cc = &copy;
+    copy = *cc;
     EXPECT_EQ(copy[0], 0);
     EXPECT_EQ(copy[1], 3);
     EXPECT_EQ(copy[2], 7);
@@ -294,6 +296,38 @@ TEST(HashMap, Iterator_2)
     EXPECT_EQ(it, --lst.end());
 }
 
+TEST(HashMap, Iterator_3)
+{
+    HashMap<int, int> lst = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+
+    auto it = lst.begin();
+    it += 2;
+    EXPECT_EQ(it->Value, 0);
+    it -= 2;
+    EXPECT_EQ(it->Value, 3);
+    it = lst.begin();
+    it += 42;
+    EXPECT_EQ(it, lst.end());
+    it = lst.end();
+    it -= 42;
+    EXPECT_EQ(it->Value, 3);
+}
+
+TEST(HashMap, Iterator_4)
+{
+    HashMap<int, int> lst = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+
+    auto it1 = lst.begin();
+    const auto &it = it1;
+    EXPECT_EQ((*it).Value, 3);
+    EXPECT_EQ(it->Value, 3);
+    EXPECT_EQ(it->Key, 1);
+    ++it1;
+    EXPECT_EQ((*it).Value, 7);
+    EXPECT_EQ(it->Value, 7);
+    EXPECT_EQ(it->Key, 2);
+}
+
 TEST(HashMap, ReverseIterator_1)
 {
     HashMap<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
@@ -334,6 +368,156 @@ TEST(HashMap, ReverseIterator_2)
     EXPECT_EQ(it, --lst.rend());
 }
 
+TEST(HashMap, ReverseIterator_3)
+{
+    HashMap<int, int> lst = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+
+    auto it = lst.rbegin();
+    it += 2;
+    EXPECT_EQ(it->Value, 3);
+    it -= 2;
+    EXPECT_EQ(it->Value, 0);
+    it = lst.rbegin();
+    it += 42;
+    EXPECT_EQ(it, lst.rend());
+    it -= 42;
+    EXPECT_EQ(it->Value, 0);
+}
+
+TEST(HashMap, ReverseIterator_4)
+{
+    HashMap<int, int> lst = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+
+    auto it1 = lst.rbegin();
+    const auto &it = it1;
+    EXPECT_EQ((*it).Value, 0);
+    EXPECT_EQ(it->Value, 0);
+    EXPECT_EQ(it->Key, 3);
+    ++it1;
+    EXPECT_EQ((*it).Value, 7);
+    EXPECT_EQ(it->Value, 7);
+    EXPECT_EQ(it->Key, 2);
+}
+
+TEST(HashMap, CIterator_1)
+{
+    HashMap<int, int> lst1 = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
+    const auto &lst = lst1;
+
+    auto it = lst.begin();
+    ++it;
+    --it;
+    EXPECT_EQ(it, lst.begin());
+    --it;
+    ++it;
+    EXPECT_EQ(it, ++lst.begin());
+    it = lst.end();
+    --it;
+    ++it;
+    EXPECT_EQ(it, lst.end());
+    ++it;
+    --it;
+    EXPECT_EQ(it, --lst.end());
+}
+
+TEST(HashMap, CIterator_2)
+{
+    HashMap<int, int> lst1 = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+    const auto &lst = lst1;
+
+    auto it = lst.begin();
+    ++it;
+    --it;
+    EXPECT_EQ(it, lst.begin());
+    --it;
+    ++it;
+    EXPECT_EQ(it, ++lst.begin());
+    it = lst.end();
+    --it;
+    ++it;
+    EXPECT_EQ(it, lst.end());
+    ++it;
+    --it;
+    EXPECT_EQ(it, --lst.end());
+}
+
+TEST(HashMap, CIterator_3)
+{
+    HashMap<int, int> lst1 = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+    const auto &lst = lst1;
+
+    auto it = lst.begin();
+    it += 2;
+    EXPECT_EQ(it->Value, 0);
+    it -= 2;
+    EXPECT_EQ(it->Value, 3);
+    it = lst.begin();
+    it += 42;
+    EXPECT_EQ(it, lst.end());
+    it = lst.end();
+    it -= 42;
+    EXPECT_EQ(it->Value, 3);
+}
+
+TEST(HashMap, CReverseIterator_1)
+{
+    HashMap<int, int> lst1 = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
+    const auto &lst = lst1;
+
+    auto it = lst.rbegin();
+    ++it;
+    --it;
+    EXPECT_EQ(it, lst.rbegin());
+    --it;
+    ++it;
+    EXPECT_EQ(it, ++lst.rbegin());
+    it = lst.rend();
+    --it;
+    ++it;
+    EXPECT_EQ(it, lst.rend());
+    ++it;
+    --it;
+    EXPECT_EQ(it, --lst.rend());
+}
+
+TEST(HashMap, CReverseIterator_2)
+{
+    HashMap<int, int> lst1 = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+    const auto &lst = lst1;
+
+    auto it = lst.rbegin();
+    ++it;
+    --it;
+    EXPECT_EQ(it, lst.rbegin());
+    --it;
+    ++it;
+    EXPECT_EQ(it, ++lst.rbegin());
+    it = lst.rend();
+    --it;
+    ++it;
+    EXPECT_EQ(it, lst.rend());
+    ++it;
+    --it;
+    EXPECT_EQ(it, --lst.rend());
+}
+
+TEST(HashMap, CReverseIterator_3)
+{
+    HashMap<int, int> lst1 = { { 1, 3 }, { 2, 7 }, { 3, 0 } };
+    const auto &lst = lst1;
+
+    auto it = lst.rbegin();
+    it += 2;
+    EXPECT_EQ(it->Value, 3);
+    it -= 2;
+    EXPECT_EQ(it->Value, 0);
+    it = lst.rbegin();
+    it += 42;
+    EXPECT_EQ(it, lst.rend());
+    it -= 42;
+    EXPECT_EQ(it->Value, 0);
+}
+
 TEST(HashMap, Clear)
 {
     HashMap<int, int> lst = { { 0, 0 }, { 1, 3 }, { 2, 7 }, { 3, 0 } };
@@ -359,7 +543,7 @@ TEST(HashMap, IterateForward_Test1)
 
 TEST(HashMap, IterateForward_Test2)
 {
-    String res = String::Empty;
+    String res = "";
     HashMap<String, int> map;
 
     map["test1"] = 0;
@@ -385,7 +569,7 @@ TEST(HashMap, IterateBackward_Test1)
 
 TEST(HashMap, IterateBackward_Test2)
 {
-    String res = String::Empty;
+    String res = "";
     HashMap<String, int> map;
 
     map["test1"] = 0;
@@ -412,12 +596,12 @@ TEST(HashMap, ReadWrite_NonCopy)
 {
     HashMap<String, UniquePtr<int>> map;
 
-    map["test1"] = Null;
-    map["test2"] = Null;
-    map["test3"] = Null;
-    EXPECT_EQ(map["test1"], Null);
-    EXPECT_EQ(map["test2"], Null);
-    EXPECT_EQ(map["test3"], Null);
+    map["test1"] = nullptr;
+    map["test2"] = nullptr;
+    map["test3"] = nullptr;
+    EXPECT_EQ(map["test1"], nullptr);
+    EXPECT_EQ(map["test2"], nullptr);
+    EXPECT_EQ(map["test3"], nullptr);
     map["test1"] = MakeUnique<int>(0);
     map["test2"] = MakeUnique<int>(5);
     map["test3"] = MakeUnique<int>(9);
@@ -430,12 +614,12 @@ TEST(HashMap, ReadWrite_NonCopy_1)
 {
     HashMap<Name, UniquePtr<int>> map;
 
-    map[bpf::Name("test1")] = Null;
-    map[bpf::Name("test2")] = Null;
-    map[bpf::Name("test3")] = Null;
-    EXPECT_EQ(map[bpf::Name("test1")], Null);
-    EXPECT_EQ(map[bpf::Name("test2")], Null);
-    EXPECT_EQ(map[bpf::Name("test3")], Null);
+    map[bpf::Name("test1")] = nullptr;
+    map[bpf::Name("test2")] = nullptr;
+    map[bpf::Name("test3")] = nullptr;
+    EXPECT_EQ(map[bpf::Name("test1")], nullptr);
+    EXPECT_EQ(map[bpf::Name("test2")], nullptr);
+    EXPECT_EQ(map[bpf::Name("test3")], nullptr);
     map[bpf::Name("test1")] = MakeUnique<int>(0);
     map[bpf::Name("test2")] = MakeUnique<int>(5);
     map[bpf::Name("test3")] = MakeUnique<int>(9);
@@ -449,19 +633,19 @@ static void RunLeakCheckBody()
 {
     HashMap<String, UniquePtr<int>> map;
 
-    map["test1"] = Null;
-    map["test2"] = Null;
-    map["test3"] = Null;
-    EXPECT_EQ(map["test1"], Null);
-    EXPECT_EQ(map["test2"], Null);
-    EXPECT_EQ(map["test3"], Null);
+    map["test1"] = nullptr;
+    map["test2"] = nullptr;
+    map["test3"] = nullptr;
+    EXPECT_EQ(map["test1"], nullptr);
+    EXPECT_EQ(map["test2"], nullptr);
+    EXPECT_EQ(map["test3"], nullptr);
     map["test1"] = MakeUnique<int>(0);
     map["test2"] = MakeUnique<int>(5);
     map["test3"] = MakeUnique<int>(9);
     EXPECT_EQ(*map["test1"], 0);
     EXPECT_EQ(*map["test2"], 5);
     EXPECT_EQ(*map["test3"], 9);
-    map["test3"] = Null;
+    map["test3"] = nullptr;
 }
 
 TEST(HashMap, ReadWrite_LeakCheck)

@@ -1,16 +1,16 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -37,6 +37,8 @@ TEST(Int, Parse)
 	EXPECT_EQ(bpf::Int::Parse("0"), 0);
 	EXPECT_EQ(bpf::Int::Parse("-1"), -1);
 	EXPECT_EQ(bpf::Int::Parse("-42"), -42);
+	EXPECT_STREQ(*bpf::String::ValueOf(bpf::Int::MaxValue), "2147483647");
+	EXPECT_STREQ(*bpf::String::ValueOf(bpf::Int::MinValue), "-2147483648");
 	EXPECT_EQ(bpf::Int::Parse(bpf::String::ValueOf(bpf::Int::MaxValue)), bpf::Int::MaxValue);
 	EXPECT_EQ(bpf::Int::Parse(bpf::String::ValueOf(bpf::Int::MinValue)), bpf::Int::MinValue);
 	EXPECT_THROW(bpf::Int::Parse("4.2"), bpf::ParseException);
@@ -57,6 +59,7 @@ TEST(UInt, Parse)
 	EXPECT_EQ(bpf::UInt::Parse("42"), 42U);
 	EXPECT_EQ(bpf::UInt::Parse("1"), 1U);
 	EXPECT_EQ(bpf::UInt::Parse("4268902"), 4268902U);
+	EXPECT_STREQ(*bpf::String::ValueOf(bpf::UInt::MaxValue), "4294967295");
 	EXPECT_EQ(bpf::UInt::Parse(bpf::String::ValueOf(bpf::UInt::MaxValue)), bpf::UInt::MaxValue);
 	EXPECT_EQ(bpf::UInt::Parse(bpf::String::ValueOf(bpf::UInt::MinValue)), bpf::UInt::MinValue);
 	EXPECT_THROW(bpf::UInt::Parse("4.2"), bpf::ParseException);

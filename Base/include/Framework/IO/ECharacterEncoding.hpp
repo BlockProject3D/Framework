@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -27,18 +27,31 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/String.hpp"
-#include "Framework/Log/ELogLevel.hpp"
 
 namespace bpf
 {
-    namespace log
+    namespace io
     {
-        class BPF_API ILogHandler
+        /**
+         * Enumeration for character encodings
+         * Currently only supports unicode based encodings
+         */
+        enum class ECharacterEncoding
         {
-        public:
-            virtual ~ILogHandler() {}
-            virtual void LogMessage(ELogLevel level, const String &category, const String &msg) = 0;
+            /**
+             * UTF-8 encoding
+             */
+            UTF8,
+
+            /**
+             * UTF-16 encoding
+             */
+            UTF16,
+
+            /**
+             * UTF-32 encoding
+             */
+            UTF32
         };
     }
 }

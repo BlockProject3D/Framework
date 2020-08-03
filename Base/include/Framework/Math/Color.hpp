@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -27,14 +27,17 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Types.hpp"
-#include "Framework/String.hpp"
 #include "Framework/Math/Vector.hpp"
+#include "Framework/String.hpp"
+#include "Framework/Types.hpp"
 
 namespace bpf
 {
     namespace math
     {
+        /**
+         * Represents a color
+         */
         class BPF_API Color
         {
         public:
@@ -59,120 +62,152 @@ namespace bpf
             uint8 A;
 
             /**
-             * Initializes a FColor at BLACK
+             * Constructs a Black Color
              */
             inline Color()
-                : R(0), G(0), B(0), A(255)
+                : R(0)
+                , G(0)
+                , B(0)
+                , A(255)
             {
             }
 
             /**
-             * Initializes a FColor from individual components
-             * @param r the r component
-             * @param g the g component
-             * @param b the b component
-             * @param a the a component
+             * Constructs a Color from individual RGBA components
+             * @param r the red component
+             * @param g the green component
+             * @param b the blue component
+             * @param a the alpha component
              */
             inline Color(const uint8 r, const uint8 g, const uint8 b, const uint8 a = 255)
-                : R(r), G(g), B(b), A(a)
+                : R(r)
+                , G(g)
+                , B(b)
+                , A(a)
             {
             }
 
             /**
-             * Initializes a FColor from an RGB and an alpha
-             * @param other the other FColor to copy RGB from
+             * Constructs a Color
+             * @param other the other Color to copy RGB components from
              * @param a the new alpha value
              */
             inline Color(const Color &other, const uint8 a)
-                : R(other.R), G(other.G), B(other.B), A(a)
+                : R(other.R)
+                , G(other.G)
+                , B(other.B)
+                , A(a)
             {
             }
 
             /**
-             * Initializes a FColor from a grey scale value
+             * Constructs a grey scale Color
              * @param grey the grey scale value
              */
             explicit inline Color(const uint8 grey)
-                : R(grey), G(grey), B(grey), A(255)
+                : R(grey)
+                , G(grey)
+                , B(grey)
+                , A(255)
             {
             }
 
             /**
-             * Initializes a FColor from a packed rgb int
+             * Constructs a Color from a packed rgb int
              * @param rgb the packed rgb integer
              */
-            explicit Color(const fint rgb); //TODO : Implement
+            explicit Color(fint rgb);
 
-            fint GetCode() const noexcept;
+            /**
+             * Pack this color into a single integer
+             * @return the packed color as integer
+             */
+            fint Pack() const noexcept;
 
             /**
              * Blends two colors by addition
+             * @param other the color to blend with
+             * @return new Color
              */
             Color operator+(const Color &other) const;
 
             /**
              * Blends two colors by multiplication
+             * @param other the color to blend with
+             * @return new Color
              */
             Color operator*(const Color &other) const;
 
-            inline bool operator==(const Color &other)
+            /**
+             * Compare two colors
+             * @param other the color to compare with
+             * @return true if the two colors are equal, false otherwise
+             */
+            inline bool operator==(const Color &other) const
             {
                 return (R == other.R && G == other.G && B == other.B && A == other.A);
             }
 
-            inline bool operator!=(const Color &other)
+            /**
+             * Compare two colors
+             * @param other the color to compare with
+             * @return false if the two colors are equal, true otherwise
+             */
+            inline bool operator!=(const Color &other) const
             {
                 return (!(R == other.R && G == other.G && B == other.B && A == other.A));
             }
 
             /**
              * Normalizes this color taking only R, G and B channels
+             * @return normalized RGB color as an order 3 float vector
              */
             inline Vector3f Normalize() const noexcept
             {
-                return (Vector3f(R / 255.0f, G / 255.0f, B / 255.0f));
+                return (Vector3f((float)R / 255.0f, (float)G / 255.0f, (float)B / 255.0f));
             }
 
             /**
              * Normalizes this color taking all channels (supports alpha)
+             * @return normalized RGBA color as an order 4 float vector
              */
             inline Vector4f NormalizeAlpha() const noexcept
             {
-                return (Vector4f(R / 255.0f, G / 255.0f, B / 255.0f, A / 255.0f));
+                return (Vector4f((float)R / 255.0f, (float)G / 255.0f, (float)B / 255.0f, (float)A / 255.0f));
             }
 
             /**
-             * RED constant
+             * The Red color
              */
             static const Color Red;
 
             /**
-             * GREEN constant
+             * The Green color
              */
             static const Color Green;
 
             /**
-             * BLUE constant
+             * The Blue color
              */
             static const Color Blue;
 
             /**
-             * WHITE constant
+             * The White color
              */
             static const Color White;
 
             /**
-             * BLACK constant
+             * The Black color
              */
             static const Color Black;
 
             /**
-             * YELLOW constant
+             * The Yellow color
              */
             static const Color Yellow;
 
             /**
-             * CYAN constant
+             * The Cyan color
              */
             static const Color Cyan;
         };

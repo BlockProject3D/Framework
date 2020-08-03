@@ -1,4 +1,4 @@
-// Copyright (c) 2019, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -34,153 +34,15 @@ namespace bpf
     namespace collection
     {
         template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
-        Map<K, V, Greater, Less>::Iterator::Iterator(Node *root, Node *start)
-            : _root(root)
-        {
-            ResetIterator();
-            if (start != reinterpret_cast<Node *>(1))
-            {
-                while (_curNode != start)
-                    operator++();
-            }
-        }
-
-        template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
-        void Map<K, V, Greater, Less>::Iterator::ResetIterator()
-        {
-            _fixedRoot = Null;
-            _curNode = Null;
-            _stack.Clear();
-            _backStack.Clear();
-            Node *nd = _root;
-            while (nd != Null)
-            {
-                _stack.Push(nd);
-                nd = nd->Left;
-            }
-            operator++();
-            if (_curNode == _root)
-                _fixedRoot = _curNode;
-            else
-                _fixedRoot = _curNode->Parent;
-        }
-
-        template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
-        typename Map<K, V, Greater, Less>::Iterator &Map<K, V, Greater, Less>::Iterator::operator++()
-        {
-            if (_curNode != Null)
-                _backStack.Push(_curNode);
-            if (_stack.Size() == 0)
-            {
-                _curNode = Null;
-                return (*this);
-            }
-            Node *cpy = _stack.Pop();
-            _curNode = cpy;
-            cpy = cpy->Right;
-            while (cpy != Null)
-            {
-                _stack.Push(cpy);
-                cpy = cpy->Left;
-            }
-            return (*this);
-        }
-
-        template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
-        typename Map<K, V, Greater, Less>::Iterator &Map<K, V, Greater, Less>::Iterator::operator--()
-        {
-            if (_backStack.Size() == 0)
-                return (*this);
-            if (_curNode == _fixedRoot)
-            {
-                ResetIterator();
-                return (*this);
-            }
-            if (_curNode != Null)
-                _stack.Push(_curNode);
-            _curNode = _backStack.Pop();
-            return (*this);
-        }
-
-        template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
-        Map<K, V, Greater, Less>::ReverseIterator::ReverseIterator(Node *root, Node *start)
-            : _root(root)
-        {
-            ResetIterator();
-            if (start != reinterpret_cast<Node *>(1))
-            {
-                while (_curNode != start)
-                    operator++();
-            }
-        }
-
-        template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
-        void Map<K, V, Greater, Less>::ReverseIterator::ResetIterator()
-        {
-            _fixedRoot = Null;
-            _curNode = Null;
-            _stack.Clear();
-            _backStack.Clear();
-            Node *nd = _root;
-            while (nd != Null)
-            {
-                _stack.Push(nd);
-                nd = nd->Right;
-            }
-            operator++();
-            if (_curNode == _root)
-                _fixedRoot = _curNode;
-            else
-                _fixedRoot = _curNode->Parent;
-        }
-
-        template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
-        typename Map<K, V, Greater, Less>::ReverseIterator &Map<K, V, Greater, Less>::ReverseIterator::operator++()
-        {
-            if (_curNode != Null)
-                _backStack.Push(_curNode);
-            if (_stack.Size() == 0)
-            {
-                _curNode = Null;
-                return (*this);
-            }
-            Node *cpy = _stack.Pop();
-            _curNode = cpy;
-            cpy = cpy->Left;
-            while (cpy != Null)
-            {
-                _stack.Push(cpy);
-                cpy = cpy->Right;
-            }
-            return (*this);
-        }
-
-        template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
-        typename Map<K, V, Greater, Less>::ReverseIterator &Map<K, V, Greater, Less>::ReverseIterator::operator--()
-        {
-            if (_backStack.Size() == 0)
-                return (*this);
-            if (_curNode == _fixedRoot)
-            {
-                ResetIterator();
-                return (*this);
-            }
-            if (_curNode != Null)
-                _stack.Push(_curNode);
-            _curNode = _backStack.Pop();
-            return (*this);
-        }
-
-        template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
         Map<K, V, Greater, Less>::Map()
-            : _root(Null)
+            : _root(nullptr)
             , _count(0)
         {
         }
 
         template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
         Map<K, V, Greater, Less>::Map(const Map &other)
-            : _root(Null)
+            : _root(nullptr)
             , _count(0)
         {
             for (auto &entry : other)
@@ -188,17 +50,17 @@ namespace bpf
         }
 
         template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
-        Map<K, V, Greater, Less>::Map(Map &&other)
+        Map<K, V, Greater, Less>::Map(Map &&other) noexcept
             : _root(other._root)
             , _count(other._count)
         {
-            other._root = Null;
+            other._root = nullptr;
             other._count = 0;
         }
 
         template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
         Map<K, V, Greater, Less>::Map(const std::initializer_list<Entry> &entries)
-            : _root(Null)
+            : _root(nullptr)
             , _count(0)
         {
             for (auto &entry : entries)
@@ -214,27 +76,29 @@ namespace bpf
         template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
         void Map<K, V, Greater, Less>::Clear()
         {
-            if (_root == Null)
+            if (_root == nullptr)
                 return;
-            Stack<Node *> stack = { _root };
+            Stack<Node *> stack = {_root};
 
             while (stack.Size() > 0)
             {
                 Node *elem = stack.Pop();
 
-                if (elem->Left != Null)
+                if (elem->Left != nullptr)
                     stack.Push(elem->Left);
-                if (elem->Right != Null)
+                if (elem->Right != nullptr)
                     stack.Push(elem->Right);
                 memory::MemUtils::Delete(elem);
             }
-            _root = Null;
+            _root = nullptr;
             _count = 0;
         }
 
         template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
         Map<K, V, Greater, Less> &Map<K, V, Greater, Less>::operator=(const Map &other)
         {
+            if (this == &other)
+                return (*this);
             Clear();
             for (auto &entry : other)
                 Add(entry.Key, entry.Value);
@@ -242,12 +106,12 @@ namespace bpf
         }
 
         template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
-        Map<K, V, Greater, Less> &Map<K, V, Greater, Less>::operator=(Map &&other)
+        Map<K, V, Greater, Less> &Map<K, V, Greater, Less>::operator=(Map &&other) noexcept
         {
             Clear();
             _root = other._root;
             _count = other._count;
-            other._root = Null;
+            other._root = nullptr;
             other._count = 0;
             return (*this);
         }
@@ -272,13 +136,13 @@ namespace bpf
         template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
         fisize Map<K, V, Greater, Less>::Height(Node *node)
         {
-            return (node != Null ? node->Height : 0);
+            return (node != nullptr ? node->Height : 0);
         }
 
         template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
         fisize Map<K, V, Greater, Less>::Balance(Node *node)
         {
-            return (node != Null ? Height(node->Left) - Height(node->Right) : 0);
+            return (node != nullptr ? Height(node->Left) - Height(node->Right) : 0);
         }
 
         template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
@@ -286,10 +150,10 @@ namespace bpf
         {
             Node *nd = node->Right;
             node->Right = nd->Left;
-            if (nd->Left != Null)
+            if (nd->Left != nullptr)
                 nd->Left->Parent = node;
             nd->Parent = node->Parent;
-            if (node->Parent == Null)
+            if (node->Parent == nullptr)
                 _root = nd;
             else if (node->Parent->Left == node)
                 node->Parent->Left = nd;
@@ -312,10 +176,10 @@ namespace bpf
         {
             Node *nd = node->Left;
             node->Left = nd->Right;
-            if (nd->Right != Null)
+            if (nd->Right != nullptr)
                 nd->Right->Parent = node;
             nd->Parent = node->Parent;
-            if (node->Parent == Null)
+            if (node->Parent == nullptr)
                 _root = nd;
             else if (node->Parent->Right == node)
                 node->Parent->Right = nd;
@@ -339,23 +203,23 @@ namespace bpf
             Node *newNode;
 
             /* BST standard add */
-            if (_root == Null)
+            if (_root == nullptr)
             {
                 newNode = memory::MemUtils::New<Node>();
                 newNode->KeyVal.Key = key;
                 /* Data structure augmentation */
                 newNode->Height = 1; //Every new node is a leaf
-                newNode->Left = Null;
-                newNode->Right = Null;
-                newNode->Parent = Null;
+                newNode->Left = nullptr;
+                newNode->Right = nullptr;
+                newNode->Parent = nullptr;
                 _root = newNode;
                 ++_count;
                 return (newNode);
             }
             Node *cur = _root;
             int lastdir = 0; //0 is left 1 is right
-            Node *parent = Null;
-            while (cur != Null)
+            Node *parent = nullptr;
+            while (cur != nullptr)
             {
                 parent = cur;
                 if (Greater<K>::Eval(key, cur->KeyVal.Key))
@@ -383,7 +247,7 @@ namespace bpf
                 parent->Left = newNode;
 
             /* AVL Tree property */
-            while (parent != Null)
+            while (parent != nullptr)
             {
                 if (Height(parent->Left) > Height(parent->Right))
                     parent->Height = 1 + Height(parent->Left);
@@ -411,7 +275,7 @@ namespace bpf
         template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
         typename Map<K, V, Greater, Less>::Node *Map<K, V, Greater, Less>::FindMin(Node *node)
         {
-            while (node != Null && node->Left != Null)
+            while (node != nullptr && node->Left != nullptr)
                 node = node->Left;
             return (node);
         }
@@ -444,36 +308,36 @@ namespace bpf
             Node *parent = node;
 
             /* BST standard remove */
-            if (node->Left == Null && node->Right == Null) // Case 1 node has no children, delete the node
+            if (node->Left == nullptr && node->Right == nullptr) // Case 1 node has no children, delete the node
             {
                 if (node == _root)
                 {
                     memory::MemUtils::Delete(node);
-                    _root = Null;
+                    _root = nullptr;
                     return;
                 }
                 if (node->Parent->Left == node)
-                    node->Parent->Left = Null;
+                    node->Parent->Left = nullptr;
                 else
-                    node->Parent->Right = Null;
+                    node->Parent->Right = nullptr;
                 parent = parent->Parent;
                 memory::MemUtils::Delete(node);
             }
-            else if (node->Left != Null && node->Right != Null) // Case 3 node has two children, find min in right sub tree then swap and finally remove
+            else if (node->Left != nullptr && node->Right != nullptr) // Case 3 node has two children, find min in right sub tree then swap and finally remove
             {
                 Node *nd = FindMin(node->Right);
                 SwapKeyVal(nd, node);
                 if (nd->Parent->Left == nd)
-                    nd->Parent->Left = Null;
+                    nd->Parent->Left = nullptr;
                 else
-                    nd->Parent->Right = Null;
+                    nd->Parent->Right = nullptr;
                 memory::MemUtils::Delete(nd);
             }
             else // Case 2 node has one child
             {
                 if (node == _root)
                 {
-                    if (_root->Left != Null)
+                    if (_root->Left != nullptr)
                         _root = _root->Left;
                     else
                         _root = _root->Right;
@@ -481,7 +345,7 @@ namespace bpf
                 }
                 else if (node->Parent->Left == node)
                 {
-                    if (node->Left != Null)
+                    if (node->Left != nullptr)
                     {
                         node->Parent->Left = node->Left;
                         node->Left->Parent = node->Parent;
@@ -496,7 +360,7 @@ namespace bpf
                 }
                 else
                 {
-                    if (node->Left != Null)
+                    if (node->Left != nullptr)
                     {
                         node->Parent->Right = node->Left;
                         node->Left->Parent = node->Parent;
@@ -513,7 +377,7 @@ namespace bpf
             }
 
             /* AVL Tree property */
-            while (parent != Null)
+            while (parent != nullptr)
             {
                 if (Height(parent->Left) > Height(parent->Right))
                     parent->Height = 1 + Height(parent->Left);
@@ -558,7 +422,7 @@ namespace bpf
         {
             Node *nd = _root;
 
-            while (nd != Null)
+            while (nd != nullptr)
             {
                 if (Greater<K>::Eval(key, nd->KeyVal.Key))
                     nd = nd->Right;
@@ -575,7 +439,7 @@ namespace bpf
         {
             Node *nd = FindNode(key);
 
-            if (nd != Null)
+            if (nd != nullptr)
             {
                 RemoveNode(nd);
                 --_count;
@@ -587,15 +451,15 @@ namespace bpf
         {
             Iterator cpy = pos;
 
-            if (cpy._curNode != Null)
+            if (cpy._curNode != nullptr)
             {
                 if (cpy._curNode == _root)
-                    pos = Iterator(Null, Null);
+                    pos = Iterator(nullptr, nullptr);
                 else
                     ++pos;
                 RemoveNode(cpy._curNode);
                 --_count;
-                if (pos._root != Null)
+                if (pos._root != nullptr)
                     pos = Iterator(_root, pos._curNode);
             }
         }
@@ -606,15 +470,15 @@ namespace bpf
             Iterator cpy = pos;
 
             ++pos;
-            if (cpy._curNode != Null)
+            if (cpy._curNode != nullptr)
             {
                 if (cpy._curNode == _root)
-                    pos = Iterator(Null, Null);
+                    pos = Iterator(nullptr, nullptr);
                 else
                     ++pos;
                 RemoveNode(cpy._curNode);
                 --_count;
-                if (pos._root != Null)
+                if (pos._root != nullptr)
                     pos = Iterator(_root, pos._curNode);
             }
         }
@@ -622,7 +486,7 @@ namespace bpf
         template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
         void Map<K, V, Greater, Less>::Swap(const Iterator &a, const Iterator &b)
         {
-            if (a._curNode == Null || b._curNode == Null)
+            if (a._curNode == nullptr || b._curNode == nullptr)
                 return;
             SwapVal(a._curNode, b._curNode);
         }
@@ -647,7 +511,7 @@ namespace bpf
         {
             Node *nd = FindNode(key);
 
-            if (nd == Null)
+            if (nd == nullptr)
                 throw bpf::IndexException(0);
             return (nd->KeyVal.Value);
         }
@@ -657,7 +521,7 @@ namespace bpf
         {
             Node *nd = FindNode(key);
 
-            if (nd == Null)
+            if (nd == nullptr)
             {
                 Node *newNode = InsertNode(key);
                 return (newNode->KeyVal.Value);
@@ -682,15 +546,15 @@ namespace bpf
                 if (Comparator<V>::Eval(it->Value, val))
                     return (it);
             }
-            return (Iterator(_root, Null));
+            return (Iterator(_root, nullptr));
         }
 
         template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
-        typename Map<K, V, Greater, Less>::Iterator Map<K, V, Greater, Less>::Find(const std::function<int(const Node & node)> &comparator)
+        typename Map<K, V, Greater, Less>::Iterator Map<K, V, Greater, Less>::Find(const std::function<int(const Node &node)> &comparator)
         {
             Node *nd = _root;
 
-            while (nd != Null)
+            while (nd != nullptr)
             {
                 int res = comparator(*nd);
                 if (res < 0)
@@ -708,7 +572,7 @@ namespace bpf
         {
             Node *node = _root;
 
-            while (node != Null && node->Left != Null)
+            while (node != nullptr && node->Left != nullptr)
                 node = node->Left;
             return (Iterator(_root, node));
         }
@@ -718,17 +582,17 @@ namespace bpf
         {
             Node *node = _root;
 
-            while (node != Null && node->Right != Null)
+            while (node != nullptr && node->Right != nullptr)
                 node = node->Right;
             return (Iterator(_root, node));
         }
 
         template <typename K, typename V, template <typename T> class Greater, template <typename T> class Less>
-        bool Map<K, V, Greater, Less>::operator==(const Map<K, V, Greater, Less> &other)
+        bool Map<K, V, Greater, Less>::operator==(const Map<K, V, Greater, Less> &other) const noexcept
         {
             if (_count != other._count)
                 return (false);
-            Iterator it = begin();
+            auto it = begin();
 
             while (it != end())
             {

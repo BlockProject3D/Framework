@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -26,36 +26,66 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <cassert>
-#include <Framework/System/IApplication.hpp>
 #include <Framework/Collection/Stringifier.Array.hpp>
+#include <Framework/IO/ConsoleReader.hpp>
 #include <Framework/IO/ConsoleWriter.hpp>
+#include <Framework/System/Application.hpp>
 #include <Framework/System/Platform.hpp>
+#include <cassert>
 
-int Main(bpf::system::IApplication &app, const bpf::collection::Array<bpf::String> &args, const bpf::system::Paths &paths)
+bpf::system::Application *g_app;
+
+int Main(bpf::system::Application &app, const bpf::collection::Array<bpf::String> &args)
 {
+    app.DisableErrorDialogs();
+    if (bpf::system::Platform::IsRunningAsAdmin())
+    {
+        bpf::io::Console::WriteLine("You should not run this testing program as root user as it relies on non writeable system files", bpf::io::EConsoleStream::ERROR);
+        return (1); // Do not run testing app as admin
+    }
+    bpf::io::Console::SetTitle("BPF Unit Tests");
+    bpf::io::Console::ResetTextStyle(bpf::io::EConsoleStream::OUTPUT);
+    bpf::io::Console::ResetTextStyle(bpf::io::EConsoleStream::ERROR);
+    bpf::io::Console::ResetTextStyle();
+    if (app.Environment.HasKey("__BPF_PARSE__"))
+    {
+        bpf::io::ConsoleReader reader;
+        bpf::String str;
+        reader.ReadLine(str);
+        bpf::io::Console::WriteLine(str);
+        bpf::io::Console::WriteLine(bpf::String("TestError: ") + str, bpf::io::EConsoleStream::ERROR);
+        return (1);
+    }
+#ifndef WINDOWS
+    app.CreateConsole(); // Dummy call for coverage
+#endif
+    g_app = &app;
     bpf::io::ConsoleWriter console;
     const auto &newLine = bpf::system::Platform::GetOSInfo().NewLine;
-    assert(app.GetEnvironment().Size() > 0);
-    assert(app.GetArguments().Size() > 0); //At least we need the file name passed to our arguments
-    assert(app.GetExeFileName().Len() > 0);
-    assert(paths.AppRoot().Path().Len() > 0);
-    assert(paths.ThirdParty().Path().Len() > 0);
-    assert(paths.CacheDir().Path().Len() > 0);
-    assert(paths.TempDir().Path().Len() > 0);
-    assert(paths.UserHome().Path().Len() > 0);
-    console << bpf::io::Console::TextStyle(bpf::io::EConsoleColor::CYAN) << "<==== Initializing high-level main ====>" << bpf::io::Console::ClearTextStyle() << newLine;
+    assert(app.Environment.Size() > 0);
+    assert(args.Size() > 0); // At least we need the file name passed to our arguments
+    assert(app.FileName.Len() > 0);
+    assert(app.Props.AppRoot.Path().Len() > 0);
+    assert(app.Props.ThirdParty.Path().Len() > 0);
+    assert(app.Props.CacheDir.Path().Len() > 0);
+    assert(app.Props.TempDir.Path().Len() > 0);
+    assert(app.Props.UserHome.Path().Len() > 0);
+    assert(app.Props.DataDir.Path().Len() > 0);
+    console << bpf::io::Console::TextStyle(bpf::io::EConsoleColor::CYAN) << "<==== Initializing high-level main ====>"
+            << bpf::io::Console::ClearTextStyle() << newLine;
     console.WriteLine("您好!");
-    console << "WorkDir: " << bpf::io::File(".").GetAbsolutePath().PlatformPath() << newLine;
-    console << "AppRoot: " << paths.AppRoot().Path() << newLine;
-    console << "ThirdParty: " << paths.ThirdParty().Path() << newLine;
-    console << "CacheDir: " << paths.CacheDir().Path() << newLine;
-    console << "TempDir: " << paths.TempDir().Path() << newLine;
-    console << "UserHome: " << paths.UserHome().Path() << newLine;
+    console << "WorkDir: " << app.GetWorkingDirectory().Path() << newLine;
+    console << "AppRoot: " << app.Props.AppRoot.Path() << newLine;
+    console << "DataDir: " << app.Props.DataDir.Path() << newLine;
+    console << "ThirdParty: " << app.Props.ThirdParty.Path() << newLine;
+    console << "CacheDir: " << app.Props.CacheDir.Path() << newLine;
+    console << "TempDir: " << app.Props.TempDir.Path() << newLine;
+    console << "UserHome: " << app.Props.UserHome.Path() << newLine;
     console << "Program args: " << bpf::String::ValueOf(args) << newLine;
-    console << "Program file name: " << app.GetExeFileName() << newLine;
-    console << "Number of environment variables: " << app.GetEnvironment().Size() << newLine;
-    console << bpf::io::Console::TextStyle(bpf::io::EConsoleColor::CYAN) << "<======================================>" << bpf::io::Console::ClearTextStyle() << newLine;
+    console << "Program file name: " << app.FileName << newLine;
+    console << "Number of environment variables: " << app.Environment.Size() << newLine;
+    console << bpf::io::Console::TextStyle(bpf::io::EConsoleColor::CYAN) << "<======================================>"
+            << bpf::io::Console::ClearTextStyle() << newLine;
     console.NewLine();
     console << "<==== Initializing GoogleTest ====>" << newLine;
     return (0);

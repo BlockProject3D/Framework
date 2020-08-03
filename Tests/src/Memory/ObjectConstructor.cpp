@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -26,15 +26,46 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef API_H_
-#define API_H_
+#include <Framework/Memory/ObjectConstructor.hpp>
+#include <gtest/gtest.h>
 
-#if defined(__GNUC__) || defined(__clang__)
-    #define DEPRECATED(func) func __attribute__((deprecated))
-#elif defined(_MSC_VER)
-    #define DEPRECATED(func) __declspec(deprecated) func
-#endif
+class MyClass
+{
+public:
+    int Val;
 
-#define ENGINE_API BPF_API
+    explicit MyClass(int a)
+        : Val(a)
+    {
+    }
 
-#endif /* !API_H_ */
+    MyClass()
+        : Val(0)
+    {
+    }
+
+    BP_USE_CONSTRUCTOR(MyClass, MyClass);
+};
+
+BP_MAP_CONSTRUCTOR(MyClass, MyClass, int)
+BP_MAP_CONSTRUCTOR(MyClass, MyClass)
+
+TEST(ObjectConstructor, Basic)
+{
+    EXPECT_NE(MyClass::GetConstructor(), nullptr);
+    EXPECT_NE(MyClass::GetConstructor<int>(), nullptr);
+}
+
+TEST(ObjectConstructor, Instantiate_1)
+{
+    auto ptr = MyClass::GetConstructor()->MakeUnique();
+    EXPECT_EQ(ptr->Val, 0);
+    EXPECT_EQ((*ptr).Val, 0);
+}
+
+TEST(ObjectConstructor, Instantiate_2)
+{
+    auto ptr = MyClass::GetConstructor<int>()->MakeUnique(42);
+    EXPECT_EQ(ptr->Val, 42);
+    EXPECT_EQ((*ptr).Val, 42);
+}

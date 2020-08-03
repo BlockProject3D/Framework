@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -32,11 +32,29 @@ namespace bpf
 {
     namespace io
     {
+        /**
+         * Enumeration for string serializing functions
+         */
         enum class EStringSerializer
         {
+            /**
+             * Serialize string as &lt;set of characters&gt;&lt;32 bits 4 bytes unsigned&gt;
+             */
             VARCHAR_32,
+
+            /**
+             * Serialize string as &lt;set of characters&gt;&lt;16 bits 2 bytes unsigned&gt;
+             */
             VARCHAR_16,
+
+            /**
+             * Serialize string as &lt;set of characters&gt;&lt;8 bits 1 bytes unsigned&gt;
+             */
             VARCHAR_8,
+
+            /**
+             * Serialize string as low-level null-terminated c-like string
+             */
             CSTYLE
         };
     }

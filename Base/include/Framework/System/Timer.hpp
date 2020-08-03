@@ -1,16 +1,16 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -36,6 +36,9 @@ namespace bpf
 {
     namespace system
     {
+        /**
+         * Represents a cross-platform high-precision fast timer
+         */
         class BPF_API Timer
         {
         private:
@@ -48,10 +51,14 @@ namespace bpf
 #endif
 
         public:
+            /**
+             * Constructs a timer
+             */
             Timer();
 
             /**
              * Returns the time in seconds since last call to Reset
+             * @return number
              */
             double Reset();
         };

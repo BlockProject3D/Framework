@@ -1,4 +1,4 @@
-// Copyright (c) 2019, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -27,18 +27,24 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include <functional>
-#include <initializer_list>
-#include "Framework/Types.hpp"
-#include "Framework/Collection/Stack.hpp"
-#include "Framework/Collection/Iterator.hpp"
+#include "Framework/Collection/Map.Iterator.hpp"
 #include "Framework/Collection/Utility.hpp"
 #include "Framework/IndexException.hpp"
+#include "Framework/Types.hpp"
+#include <functional>
+#include <initializer_list>
 
 namespace bpf
 {
     namespace collection
     {
+        /**
+         * AVL tree based map
+         * @tparam K the key type
+         * @tparam V the value type
+         * @tparam Greater the greater than operator
+         * @tparam Less the less than operator
+         */
         template <typename K, typename V, template <typename T> class Greater = ops::Greater, template <typename T> class Less = ops::Less>
         class BP_TPL_API Map
         {
@@ -59,71 +65,10 @@ namespace bpf
             };
 
         public:
-            class BP_TPL_API Iterator : public IIterator<typename Map<K, V, Greater, Less>::Iterator, Entry>
-            {
-            private:
-                Node *_root;
-                Node *_fixedRoot;
-                Node *_curNode;
-                Stack<Node *> _stack;
-                Stack<Node *> _backStack;
-                void ResetIterator();
-
-            public:
-                Iterator(Node *root, Node *start);
-                Iterator &operator++();
-                Iterator &operator--();
-                inline const Entry &operator*() const
-                {
-                    return (_curNode->KeyVal);
-                }
-                inline const Entry *operator->() const
-                {
-                    return (&_curNode->KeyVal);
-                }
-                inline bool operator==(const Iterator &other) const
-                {
-                    return (_curNode == other._curNode);
-                }
-                inline bool operator!=(const Iterator &other) const
-                {
-                    return (_curNode != other._curNode);
-                }
-
-                friend class Map<K, V, Greater, Less>;
-            };
-
-            class BP_TPL_API ReverseIterator : public IIterator<typename Map<K, V, Greater, Less>::ReverseIterator, Entry>
-            {
-            private:
-                Node *_root;
-                Node *_fixedRoot;
-                Node *_curNode;
-                Stack<Node *> _stack;
-                Stack<Node *> _backStack;
-                void ResetIterator();
-
-            public:
-                ReverseIterator(Node *root, Node *start);
-                ReverseIterator &operator++();
-                ReverseIterator &operator--();
-                inline const Entry &operator*() const
-                {
-                    return (_curNode->KeyVal);
-                }
-                inline const Entry *operator->() const
-                {
-                    return (&_curNode->KeyVal);
-                }
-                inline bool operator==(const ReverseIterator &other) const
-                {
-                    return (_curNode == other._curNode);
-                }
-                inline bool operator!=(const ReverseIterator &other) const
-                {
-                    return (_curNode != other._curNode);
-                }
-            };
+            using Iterator = MapIterator<Map<K, V, Greater, Less>, Entry, Node>;
+            using CIterator = MapConstIterator<Entry, Node>;
+            using ReverseIterator = MapReverseIterator<Entry, Node>;
+            using CReverseIterator = MapConstReverseIterator<Entry, Node>;
 
         private:
             Node *_root;
@@ -140,31 +85,71 @@ namespace bpf
             Node *FindNode(const K &key) const;
 
         public:
+            /**
+             * Constructs an empty Map
+             */
             Map();
+
+            /**
+             * Copy constructor
+             */
             Map(const Map &other);
-            Map(Map &&other);
+
+            /**
+             * Move constructor
+             */
+            Map(Map &&other) noexcept;
+
+            /**
+             * Constructs a HashMap from an existing initializer list
+             * @param entries the initial list of key-value pairs to add to this new HashMap
+             */
             Map(const std::initializer_list<Entry> &entries);
+
             ~Map();
 
             /**
-             * Adds a new element in this hash map, replaces if key already exists
+             * Adds a new element in this map, replaces if key already exists
              * @param key the key of the element
              * @param value the value to insert
              */
             void Add(const K &key, const V &value);
 
+            /**
+             * Adds a new element in this map, replaces if key already exists
+             * @param key the key of the element
+             * @param value the value to insert
+             */
             void Add(const K &key, V &&value);
 
             /**
-             * Removes an element from the hash table
+             * Removes an element from the map
              * @param key the key of the element to remove
              */
             void RemoveAt(const K &key);
+
+            /**
+             * Removes an element from the map
+             * @param pos iterator of the element to remove, it is undefined behavior to pass a derived Iterator type
+             */
             void RemoveAt(Iterator &pos);
+
+            /**
+             * Removes an element from the map
+             * @param pos iterator of the element to remove, it is undefined behavior to pass a derived Iterator type
+             */
             void RemoveAt(Iterator &&pos);
 
+            /**
+             * Swap two elements by iterator in the Map
+             * @param a first element
+             * @param b second element
+             */
             void Swap(const Iterator &a, const Iterator &b);
 
+            /**
+             * Clears the content of this Map
+             */
             void Clear();
 
             /**
@@ -174,73 +159,188 @@ namespace bpf
              * @tparam Comparator the comparision operator to use for comparing values
              */
             template <template <typename> class Comparator = ops::Equal>
-            void Remove(const V &value, const bool all = true);
+            void Remove(const V &value, bool all = true);
 
-            bool operator==(const Map<K, V, Greater, Less> &other);
+            /**
+             * Compare Map by performing a per-element check
+             * @param other Map to compare with
+             * @return true if the two maps are equal, false otherwise
+             */
+            bool operator==(const Map<K, V, Greater, Less> &other) const noexcept;
 
-            inline bool operator!=(const Map<K, V, Greater, Less> &other)
+            /**
+             * Compare Map by performing a per-element check
+             * @param other Map to compare with
+             * @return false if the two maps are equal, true otherwise
+             */
+            inline bool operator!=(const Map<K, V, Greater, Less> &other) const noexcept
             {
                 return (!operator==(other));
             }
 
+            /**
+             * Locate an item by key inside this map
+             * @param key the key of the item to search for
+             * @return iterator to the found item or end() if none
+             */
             Iterator FindByKey(const K &key);
 
+            /**
+             * Locate an item by performing per-element check
+             * @tparam Comparator comparision operator to use
+             * @param val the value to search for
+             * @return iterator to the found item or end() if none
+             */
             template <template <typename> class Comparator = ops::Equal>
             Iterator FindByValue(const V &val);
 
-            Iterator Find(const std::function<int(const Node & node)> &comparator);
+            /**
+             * Locate an item by performing per-element check
+             * @param comparator the comparision function to use: return Z- for less than, Z+ for greater than and 0 for equal
+             * @return iterator to the found item or end() if none
+             */
+            Iterator Find(const std::function<int(const Node &node)> &comparator);
 
             /**
-             * Returns the element at the specified key, if no key exists in this hash table, throws
-             * @param key the key of the element to return
+             * Returns an element const mode
+             * @param key the key of the element
+             * @throw IndexException if key is not in this map
+             * @return immutable item
              */
             const V &operator[](const K &key) const;
 
+            /**
+             * Returns the element with the minimum key value
+             * @return iterator to the minimum element
+             */
             Iterator FindMin();
+
+            /**
+             * Returns the element with the maximum key value
+             * @return iterator to the maximum element
+             */
             Iterator FindMax();
 
+            /**
+             * Returns an element non-const mode
+             * @param key the key of the element
+             * @throw IndexException if key is not in this map and cannot be created
+             * @return mutable item
+             */
             V &operator[](const K &key);
 
+            /**
+             * Copy assignment operator
+             */
             Map &operator=(const Map &other);
-            Map &operator=(Map &&other);
 
+            /**
+             * Move assignment operator
+             */
+            Map &operator=(Map &&other) noexcept;
+
+            /**
+             * Create a new Map from concatenation of two maps
+             * @param other map to concatenate with
+             * @return new Map
+             */
             Map operator+(const Map &other) const;
 
+            /**
+             * Appends the content of a Map at the end of this map
+             * @param other map to append
+             */
             void operator+=(const Map &other);
 
             /**
-             * Returns true if the specified key exists, false otherwise
+             * Check if a particular key exists
              * @param key the key to check
+             * @return true if the specified key exists, false otherwise
              */
             inline bool HasKey(const K &key) const
             {
-                return (FindNode(key) == Null ? false : true);
+                return (FindNode(key) != nullptr);
             }
 
             /**
-             * Returns the size of this hash table, that means the element count
+             * Returns the number of items in this map
+             * @return number of items as unsigned
              */
             inline fsize Size() const
             {
                 return (_count);
             }
 
-            inline Iterator begin() const
+            /**
+             * Returns an iterator to the begining of the collection
+             * @return new iterator
+             */
+            inline CIterator begin() const
+            {
+                return (CIterator(_root, reinterpret_cast<Node *>(1)));
+            }
+
+            /**
+             * Returns an iterator to the end of the collection
+             * @return new iterator
+             */
+            inline CIterator end() const
+            {
+                return (CIterator(_root, nullptr));
+            }
+
+            /**
+             * Returns an iterator to the begining of the collection
+             * @return new iterator
+             */
+            inline Iterator begin()
             {
                 return (Iterator(_root, reinterpret_cast<Node *>(1)));
             }
-            inline Iterator end() const
+
+            /**
+             * Returns an iterator to the end of the collection
+             * @return new iterator
+             */
+            inline Iterator end()
             {
-                return (Iterator(_root, Null));
+                return (Iterator(_root, nullptr));
             }
 
-            inline ReverseIterator rbegin() const
+            /**
+             * Returns a reverse iterator to the begining of the collection
+             * @return new iterator
+             */
+            inline CReverseIterator rbegin() const
+            {
+                return (CReverseIterator(_root, reinterpret_cast<Node *>(1)));
+            }
+
+            /**
+             * Returns a reverse iterator to the end of the collection
+             * @return new iterator
+             */
+            inline CReverseIterator rend() const
+            {
+                return (CReverseIterator(_root, nullptr));
+            }
+
+            /**
+             * Returns a reverse iterator to the begining of the collection
+             * @return new iterator
+             */
+            inline ReverseIterator rbegin()
             {
                 return (ReverseIterator(_root, reinterpret_cast<Node *>(1)));
             }
-            inline ReverseIterator rend() const
+
+            /**
+             * Returns a reverse iterator to the end of the collection
+             * @return new iterator
+             */
+            inline ReverseIterator rend()
             {
-                return (ReverseIterator(_root, Null));
+                return (ReverseIterator(_root, nullptr));
             }
         };
     }

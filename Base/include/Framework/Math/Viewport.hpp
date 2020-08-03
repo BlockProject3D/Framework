@@ -1,16 +1,16 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -35,6 +35,10 @@ namespace bpf
 {
     namespace math
     {
+        /**
+         * Represents a viewport for 2D/3D rendering
+         * @tparam T the number type
+         */
         template <typename T>
         class BP_TPL_API Viewport
         {
@@ -69,8 +73,26 @@ namespace bpf
              */
             Matrix4<T> Projection;
 
+            /**
+             * Computes the projection of a 3D point on this viewport using the given view matrix
+             * @param view the view matrix to use
+             * @param pt the 3D point to project
+             * @return 2D projected point
+             */
             Vector2<T> Project(const Matrix4<T> &view, const Vector3<T> &pt);
 
+            /**
+             * Returns the size of this viewport as a vector
+             * @return 2D vector storing pixel size in X and Y directions
+             */
+            inline Vector2<T> GetSize() const
+            {
+                return (Vector2<T>((T)Width, (T)Height));
+            }
+
+            /**
+             * Constructs a default viewport
+             */
             inline Viewport()
                 : FOV(0.0f)
                 , NearPlane(0.0f)
@@ -84,6 +106,6 @@ namespace bpf
 
         using Viewportf = Viewport<float>;
     }
-};
+}
 
 #include "Framework/Math/Viewport.impl.hpp"

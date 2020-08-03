@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -28,50 +28,127 @@
 
 #pragma once
 
-#define Null nullptr
+#ifdef BP_COMPAT_2_X
+    #if defined(__GNUC__) || defined(__clang__)
+        #warning Use of compatibility layer for Framework 2.X; compatibility layer only lasts single versions
+    #else
+        #pragma message "Use of compatibility layer for Framework 2.X; compatibility layer only lasts single versions"
+    #endif
+
+    /**
+     * Shortcut to C++ nullptr.
+     * Deprecated: Use nullptr directly
+     */
+    #define Null nullptr
+#endif
 
 // Check windows
 #ifdef WINDOWS
     #if _WIN64
-        #define X86_64
+        #define PLATFORM_64
     #else
-        #define X86
+        #define PLATFORM_32
     #endif
 #else
-    #if __x86_64__ || __ppc64__
-        #define X86_64
+    #if __x86_64__ || __ppc64__ || __aarch64__
+        #define PLATFORM_64
     #else
-        #define X86
+        #define PLATFORM_32
     #endif
 #endif
 
 namespace bpf
 {
+    /**
+     * 32 bits unsigned integer
+     */
     using uint32 = unsigned int;
+
+    /**
+     * 8 bits unsigned integer
+     */
     using uint8 = unsigned char;
+
+    /**
+     * 32 bits signed integer
+     */
     using int32 = int;
+
+    /**
+     * 64 bits signed integer
+     */
     using int64 = long long signed int;
+
+    /**
+     * 64 bits unsigned integer
+     */
     using uint64 = long long unsigned int;
+
+    /**
+     * 8 bits signed integer
+     */
     using int8 = signed char;
+
+    /**
+     * 16 bits signed integer
+     */
     using int16 = signed short;
+
+    /**
+     * 16 bits unsigned integer
+     */
     using uint16 = unsigned short;
 
+    /**
+     * UTF32 character type
+     */
     using fchar = uint32;
+
+    /**
+     * UTF16 character type
+     */
     using fchar16 = uint16;
 
     /**
-     * Custom int type guarenteed to be ALWAYS 32bits no matter the platform
+     * Custom int type guarenteed to be ALWAYS 32bits no matter the platform/architecture combination
      */
     using fint = int32;
 
-#ifdef X86_64
+#ifdef PLATFORM_64
+    /**
+     * Unsigned type variant of the size of a register on the current system
+     */
     using uintptr = uint64;
+
+    /**
+     * Signed type variant of the size of a register on the current system
+     */
     using intptr = int64;
 #else
+    /**
+     * Unsigned type variant of the size of a register on the current system
+     */
     using uintptr = uint32;
+
+    /**
+     * Signed type variant of the size of a register on the current system
+     */
     using intptr = int32;
 #endif
 
+    /**
+     * Unsigned type variant used for collections and hash values
+     */
     using fsize = uintptr;
-	using fisize = intptr;
+
+    /**
+     * Signed type variant used for certain collections
+     */
+    using fisize = intptr;
+
+    template <typename T>
+    inline int64 i64(T t)
+    {
+        return (static_cast<int64>(t));
+    }
 }

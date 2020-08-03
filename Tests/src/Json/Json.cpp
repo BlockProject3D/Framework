@@ -1,4 +1,4 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -26,7 +26,6 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <cassert>
 #include <iostream>
 #include <gtest/gtest.h>
 #include <Framework/Json/Json.hpp>
@@ -36,7 +35,7 @@
 
 using J = bpf::json::Json;
 
-TEST(Json, API_1)
+TEST(Json, API_1_1)
 {
     J::Object obj{
         {"Test", 0.0},
@@ -55,12 +54,15 @@ TEST(Json, API_1)
     EXPECT_FALSE(obj["Test"] == true);
     EXPECT_FALSE(obj["Test"] == "test");
     EXPECT_FALSE(obj["Test"] == bpf::String("test"));
+    EXPECT_FALSE(obj["Test"] == bpf::i64(42));
     EXPECT_EQ(obj["Test1"], true);
     EXPECT_FALSE(obj["Test1"] == 0.0);
+    EXPECT_FALSE(obj["Test1"] == bpf::i64(0));
     const J::Object &objConst = obj;
+    EXPECT_TRUE(objConst["TestArray"].Type().IsArray());
     const J::Array &carr = objConst["TestArray"];
     EXPECT_EQ(carr[0], "A");
-    EXPECT_STREQ(*carr[0].AsString(), "A");
+    EXPECT_STREQ(*carr[0].ToString(), "A");
     J::Array &arr = obj["TestArray"];
     J v = 42.42;
     arr.Add(42.42);
@@ -69,11 +71,11 @@ TEST(Json, API_1)
     EXPECT_EQ(carr[4], 42.42);
     arr.RemoveAt(4);
     arr.RemoveAt(0);
-    EXPECT_EQ(carr.Size(), 3U);
-    EXPECT_EQ(arr.Size(), 3U);
-    arr.Items().Clear();
-    EXPECT_EQ(carr.Size(), 0U);
-    EXPECT_EQ(arr.Size(), 0U);
+    EXPECT_EQ(carr.Size(), 3u);
+    EXPECT_EQ(arr.Size(), 3u);
+    arr.Items.Clear();
+    EXPECT_EQ(carr.Size(), 0u);
+    EXPECT_EQ(arr.Size(), 0u);
     const J::Object &cobj = objConst["TestObject"];
     EXPECT_EQ(cobj["a"], 0.0);
     EXPECT_EQ(cobj["b"], 0.1);
@@ -81,20 +83,91 @@ TEST(Json, API_1)
     J::Object &mobj = obj["TestObject"];
     mobj.Add("test", 42.42);
     mobj.Add("test1", v);
+    EXPECT_TRUE(cobj["test"].Type().IsNumber());
+    EXPECT_TRUE(cobj["test"].Type().IsDouble());
+    EXPECT_FALSE(cobj["test"].Type().IsInteger());
     EXPECT_EQ(cobj["test"], 42.42);
     EXPECT_EQ(mobj["test"], 42.42);
     EXPECT_EQ(cobj["test1"], 42.42);
     EXPECT_EQ(mobj["test1"], 42.42);
     mobj.RemoveAt("test1");
     mobj.RemoveAt("a");
-    EXPECT_EQ(mobj.Size(), 3U);
-    EXPECT_EQ(cobj.Size(), 3U);
-    mobj.Properties().Clear();
-    EXPECT_EQ(mobj.Size(), 0U);
-    EXPECT_EQ(cobj.Size(), 0U);
+    EXPECT_EQ(mobj.Size(), 3u);
+    EXPECT_EQ(cobj.Size(), 3u);
+    mobj.Properties.Clear();
+    EXPECT_EQ(mobj.Size(), 0u);
+    EXPECT_EQ(cobj.Size(), 0u);
 }
 
-TEST(Json, API_2)
+TEST(Json, API_1_2)
+{
+    J::Object obj{
+        {"Test", 0.0},
+        {"Test1", true},
+        {"TestArray", J::Array {"A", "B", "TrouDuCul"}},
+        {"TestObject", J::Object
+            {
+                {"a", 0.0},
+                {"b", 0.1},
+                {"c", true},
+                {"d", bpf::i64(42)},
+            }
+        }
+    };
+
+    EXPECT_EQ(obj["Test"], 0.0);
+    EXPECT_FALSE(obj["Test"] == true);
+    EXPECT_FALSE(obj["Test"] == "test");
+    EXPECT_FALSE(obj["Test"] == bpf::String("test"));
+    EXPECT_FALSE(obj["Test"] == bpf::i64(42));
+    EXPECT_EQ(obj["Test1"], true);
+    EXPECT_FALSE(obj["Test1"] == 0.0);
+    EXPECT_FALSE(obj["Test1"] == bpf::i64(0));
+    const J::Object &objConst = obj;
+    EXPECT_TRUE(objConst["TestArray"].Type().IsArray());
+    const J::Array &carr = objConst["TestArray"];
+    EXPECT_EQ(carr[0], "A");
+    EXPECT_STREQ(*carr[0].ToString(), "A");
+    J::Array &arr = obj["TestArray"];
+    J v = 42.42;
+    arr.Add(42.42);
+    arr.Add(v);
+    EXPECT_EQ(carr[3], 42.42);
+    EXPECT_EQ(carr[4], 42.42);
+    arr.RemoveAt(4);
+    arr.RemoveAt(0);
+    EXPECT_EQ(carr.Size(), 3u);
+    EXPECT_EQ(arr.Size(), 3u);
+    arr.Items.Clear();
+    EXPECT_EQ(carr.Size(), 0u);
+    EXPECT_EQ(arr.Size(), 0u);
+    const J::Object &cobj = objConst["TestObject"];
+    EXPECT_EQ(cobj["a"], 0.0);
+    EXPECT_EQ(cobj["b"], 0.1);
+    EXPECT_EQ(cobj["c"], true);
+    EXPECT_EQ(cobj["d"], bpf::i64(42));
+    EXPECT_TRUE(cobj["d"].Type().IsNumber());
+    EXPECT_TRUE(cobj["d"].Type().IsInteger());
+    J::Object &mobj = obj["TestObject"];
+    mobj.Add("test", 42.42);
+    mobj.Add("test1", v);
+    EXPECT_TRUE(cobj["test"].Type().IsNumber());
+    EXPECT_TRUE(cobj["test"].Type().IsDouble());
+    EXPECT_FALSE(cobj["test"].Type().IsInteger());
+    EXPECT_EQ(cobj["test"], 42.42);
+    EXPECT_EQ(mobj["test"], 42.42);
+    EXPECT_EQ(cobj["test1"], 42.42);
+    EXPECT_EQ(mobj["test1"], 42.42);
+    mobj.RemoveAt("test1");
+    mobj.RemoveAt("a");
+    EXPECT_EQ(mobj.Size(), 4u);
+    EXPECT_EQ(cobj.Size(), 4u);
+    mobj.Properties.Clear();
+    EXPECT_EQ(mobj.Size(), 0u);
+    EXPECT_EQ(cobj.Size(), 0u);
+}
+
+TEST(Json, API_2_1)
 {
     bpf::collection::Map<bpf::String, J> vals = { {"Test", "a"}, {"Test1", "b"} };
     J::Array arr{
@@ -111,18 +184,20 @@ TEST(Json, API_2)
     EXPECT_EQ(obj["Test"], "a");
     EXPECT_EQ(obj["Test1"], "b");
     EXPECT_EQ(obj["Test1"], bpf::String("b"));
-    EXPECT_STREQ(*arr[0].AsObject()["Test"].AsString(), "a");
-    EXPECT_STREQ(*arr[1].AsObject()["Test"].AsString(), "a");
-    EXPECT_STREQ(*arr[2].AsObject()["Test"].AsString(), "a");
-    EXPECT_STREQ(*arr[0].AsObject()["Test1"].AsString(), "b");
+    EXPECT_STREQ(*arr[0].ToObject()["Test"].ToString(), "a");
+    EXPECT_STREQ(*arr[1].ToObject()["Test"].ToString(), "a");
+    EXPECT_STREQ(*arr[2].ToObject()["Test"].ToString(), "a");
+    EXPECT_STREQ(*arr[0].ToObject()["Test1"].ToString(), "b");
     for (auto &json : arr)
     {
         EXPECT_EQ(json.Type(), J::OBJECT);
-        EXPECT_EQ(json.AsObject()["Test"], "a");
-        EXPECT_EQ(json.AsObject()["Test1"], "b");
-        const J::Object &jobj = json;
+        EXPECT_TRUE(json.Type().IsObject());
+        EXPECT_EQ(json.ToObject()["Test"], "a");
+        EXPECT_EQ(json.ToObject()["Test1"], "b");
+        J::Object &jobj = json;
         for (auto &sjson : jobj)
         {
+            EXPECT_TRUE(sjson.Value.Type().IsString());
             EXPECT_EQ(sjson.Value.Type(), J::STRING);
             EXPECT_TRUE(sjson.Key == "Test" || sjson.Key == "Test1");
         }
@@ -130,8 +205,58 @@ TEST(Json, API_2)
     for (auto &json : bpf::collection::Reverse(arr))
     {
         EXPECT_EQ(json.Type(), J::OBJECT);
-        EXPECT_EQ(json.AsObject()["Test"], "a");
-        EXPECT_EQ(json.AsObject()["Test1"], "b");
+        EXPECT_EQ(json.ToObject()["Test"], "a");
+        EXPECT_EQ(json.ToObject()["Test1"], "b");
+        J::Object &jobj = json;
+        for (auto &sjson : bpf::collection::Reverse(jobj))
+        {
+            EXPECT_EQ(sjson.Value.Type(), J::STRING);
+            EXPECT_TRUE(sjson.Key == "Test" || sjson.Key == "Test1");
+        }
+    }
+}
+
+TEST(Json, API_2_2)
+{
+    bpf::collection::Map<bpf::String, J> vals = { {"Test", "a"}, {"Test1", "b"} };
+    J::Array arr1{
+        J::Object
+            {
+                {"Test", "a"},
+                {"Test1", "b"}
+            },
+        J::Object(bpf::collection::Map<bpf::String, J> { {"Test", "a"}, {"Test1", "b"} }),
+        J::Object(vals)
+    };
+    const auto &arr = arr1;
+
+    const J::Object &obj = arr[0];
+    EXPECT_EQ(obj["Test"], "a");
+    EXPECT_EQ(obj["Test1"], "b");
+    EXPECT_EQ(obj["Test1"], bpf::String("b"));
+    EXPECT_STREQ(*arr[0].ToObject()["Test"].ToString(), "a");
+    EXPECT_STREQ(*arr[1].ToObject()["Test"].ToString(), "a");
+    EXPECT_STREQ(*arr[2].ToObject()["Test"].ToString(), "a");
+    EXPECT_STREQ(*arr[0].ToObject()["Test1"].ToString(), "b");
+    for (auto &json : arr)
+    {
+        EXPECT_EQ(json.Type(), J::OBJECT);
+        EXPECT_TRUE(json.Type().IsObject());
+        EXPECT_EQ(json.ToObject()["Test"], "a");
+        EXPECT_EQ(json.ToObject()["Test1"], "b");
+        const J::Object &jobj = json;
+        for (auto &sjson : jobj)
+        {
+            EXPECT_TRUE(sjson.Value.Type().IsString());
+            EXPECT_EQ(sjson.Value.Type(), J::STRING);
+            EXPECT_TRUE(sjson.Key == "Test" || sjson.Key == "Test1");
+        }
+    }
+    for (auto &json : bpf::collection::Reverse(arr))
+    {
+        EXPECT_EQ(json.Type(), J::OBJECT);
+        EXPECT_EQ(json.ToObject()["Test"], "a");
+        EXPECT_EQ(json.ToObject()["Test1"], "b");
         const J::Object &jobj = json;
         for (auto &sjson : bpf::collection::Reverse(jobj))
         {
@@ -163,9 +288,9 @@ TEST(Json, API_4_1)
     };
 
     EXPECT_EQ(myObj["MyBool"], true);
-    EXPECT_EQ(myObj["MyVec"].AsArray()[0], 0.0);
-    EXPECT_EQ(myObj["MyVec"].AsArray()[1], 1.0);
-    EXPECT_EQ(myObj["MyVec"].AsArray()[2], 0.0);
+    EXPECT_EQ(myObj["MyVec"].ToArray()[0], 0.0);
+    EXPECT_EQ(myObj["MyVec"].ToArray()[1], 1.0);
+    EXPECT_EQ(myObj["MyVec"].ToArray()[2], 0.0);
 }
 
 TEST(Json, API_4_2)
@@ -175,9 +300,9 @@ TEST(Json, API_4_2)
         {"MyVec", J::Array(bpf::collection::List<J> { 0.0, 1.0, 0.0})}
     };
 
-    EXPECT_EQ(myObj["MyVec"].AsArray()[0], 0.0);
-    EXPECT_EQ(myObj["MyVec"].AsArray()[1], 1.0);
-    EXPECT_EQ(myObj["MyVec"].AsArray()[2], 0.0);
+    EXPECT_EQ(myObj["MyVec"].ToArray()[0], 0.0);
+    EXPECT_EQ(myObj["MyVec"].ToArray()[1], 1.0);
+    EXPECT_EQ(myObj["MyVec"].ToArray()[2], 0.0);
 }
 
 TEST(Json, API_4_3)
@@ -188,9 +313,9 @@ TEST(Json, API_4_3)
         {"MyVec", J::Array(lst)}
     };
 
-    EXPECT_EQ(myObj["MyVec"].AsArray()[0], 0.0);
-    EXPECT_EQ(myObj["MyVec"].AsArray()[1], 1.0);
-    EXPECT_EQ(myObj["MyVec"].AsArray()[2], 0.0);
+    EXPECT_EQ(myObj["MyVec"].ToArray()[0], 0.0);
+    EXPECT_EQ(myObj["MyVec"].ToArray()[1], 1.0);
+    EXPECT_EQ(myObj["MyVec"].ToArray()[2], 0.0);
 }
 
 TEST(Json, API_5)
@@ -202,8 +327,8 @@ TEST(Json, API_5)
         {"MyStr1", s}
     };
 
-    EXPECT_STREQ(*myObj["MyStr"].AsString(), "Test");
-    EXPECT_STREQ(*myObj["MyStr1"].AsString(), "Test");
+    EXPECT_STREQ(*myObj["MyStr"].ToString(), "Test");
+    EXPECT_STREQ(*myObj["MyStr1"].ToString(), "Test");
 }
 
 TEST(Json, API_6)
@@ -212,32 +337,38 @@ TEST(Json, API_6)
     {
         {"MyStr", "Test"},
     };
-    J::Array myArr = J::Array{ 1.0, true };
+    J::Array myArr = J::Array{ 1.0, true, bpf::i64(42) };
     J val = myObj;
     J val1 = myArr;
+    auto obj1 = &val;
+    val = *obj1;
     const J &valConst = val;
     const J &val1Const = val1;
 
     EXPECT_THROW((void)((const bpf::String &)val), bpf::json::JsonException);
-    EXPECT_THROW(val.AsString(), bpf::json::JsonException);
+    EXPECT_THROW(val.ToString(), bpf::json::JsonException);
     EXPECT_THROW((void)((const J::Array &)valConst), bpf::json::JsonException);
-    EXPECT_THROW(val.AsArray(), bpf::json::JsonException);
+    EXPECT_THROW(val.ToArray(), bpf::json::JsonException);
     EXPECT_THROW((void)((J::Array &)val), bpf::json::JsonException);
     EXPECT_THROW((void)((const J::Object &)val1Const), bpf::json::JsonException);
     EXPECT_THROW((void)((J::Object &)val1), bpf::json::JsonException);
-    EXPECT_THROW(val1.AsObject(), bpf::json::JsonException);
+    EXPECT_THROW(val1.ToObject(), bpf::json::JsonException);
     EXPECT_THROW((void)((double)val), bpf::json::JsonException);
-    EXPECT_THROW(val.AsNumber(), bpf::json::JsonException);
+    EXPECT_THROW((void)((bpf::int64)val), bpf::json::JsonException);
+    EXPECT_THROW(val.ToDouble(), bpf::json::JsonException);
+    EXPECT_THROW(val.ToInteger(), bpf::json::JsonException);
     EXPECT_THROW((void)((bool)val), bpf::json::JsonException);
-    EXPECT_THROW(val.AsBool(), bpf::json::JsonException);
-    EXPECT_STREQ(*val.AsObject()["MyStr"].AsString(), "Test");
-    EXPECT_EQ(val1.AsArray()[0], 1.0);
+    EXPECT_THROW(val.ToBoolean(), bpf::json::JsonException);
+    EXPECT_STREQ(*val.ToObject()["MyStr"].ToString(), "Test");
+    EXPECT_EQ(val1.ToArray()[0], 1.0);
     val = "this is a test";
-    EXPECT_STREQ(*val.AsString(), "this is a test");
+    EXPECT_STREQ(*val.ToString(), "this is a test");
     double d = myArr[0];
     EXPECT_EQ(d, 1.0);
     bool b = myArr[1];
     EXPECT_EQ(b, true);
+    bpf::int64 i = myArr[2];
+    EXPECT_EQ(i, 42);
 }
 
 TEST(Json, LexerParser)
@@ -262,17 +393,17 @@ TEST(Json, LexerParser)
     J::Object testObject = testObj;
     EXPECT_EQ(testObject["test"], true);
     EXPECT_EQ(testObject["test"], true);
-    EXPECT_EQ(testObject["-42"], -42.0);
-    EXPECT_EQ(testObject["TheNull"], Null);
-    EXPECT_EQ(testObject["TheNull"], Null);
-    EXPECT_EQ(testObject["TheNull"], Null);
-    EXPECT_EQ(testObject["TheNull"], Null);
-    EXPECT_EQ(testObject["TheNull"], Null);
+    EXPECT_EQ(testObject["-42"], bpf::i64(-42));
+    EXPECT_EQ(testObject["TheNull"], nullptr);
+    EXPECT_EQ(testObject["TheNull"], nullptr);
+    EXPECT_EQ(testObject["TheNull"], nullptr);
+    EXPECT_EQ(testObject["TheNull"], nullptr);
+    EXPECT_EQ(testObject["TheNull"], nullptr);
     bpf::String str1 = testObject["MyString"];
     EXPECT_STREQ(*str1, "This is a true test of false and null containing 0.1 42.42 numbers and even \"strings\"");
-    EXPECT_STREQ(*testObject["MyString"].AsString(), "This is a true test of false and null containing 0.1 42.42 numbers and even \"strings\"");
-    EXPECT_STREQ(*bpf::String::ValueOf(testObject["Array"].AsArray()), "[TRUE, FALSE, null, 0.1, 1, 42, 4242, 0.4242]");
-    EXPECT_STREQ(*bpf::String::ValueOf(testObject["StrArray"].AsArray()), "[test, test1, test2]");
+    EXPECT_STREQ(*testObject["MyString"].ToString(), "This is a true test of false and null containing 0.1 42.42 numbers and even \"strings\"");
+    EXPECT_STREQ(*bpf::String::ValueOf(testObject["Array"].ToArray()), "[TRUE, FALSE, null, 0.1, 1, 42, 4242, 0.4242]");
+    EXPECT_STREQ(*bpf::String::ValueOf(testObject["StrArray"].ToArray()), "[test, test1, test2]");
     EXPECT_STREQ(*bpf::String::ValueOf(testObject["AdvTestStr"]), "String with special \b\t characters\b\t.");
     EXPECT_STREQ(*bpf::String::ValueOf(testObject["Unicode"]), "é");
     EXPECT_STREQ(*bpf::String::ValueOf(testObject["Special"]), "\t\b");
@@ -307,19 +438,19 @@ TEST(Json, LexerParser_Comments)
     J::Object testObject = testObj;
     EXPECT_EQ(testObject["test"], true);
     EXPECT_EQ(testObject["test"], true);
-    EXPECT_EQ(testObject["-42"], -42.0);
-    EXPECT_EQ(testObject["TheNull"], Null);
-    EXPECT_EQ(testObject["TheNull"], Null);
-    EXPECT_EQ(testObject["TheNull"], Null);
-    EXPECT_EQ(testObject["TheNull"], Null);
-    EXPECT_EQ(testObject["TheNull"], Null);
+    EXPECT_EQ(testObject["-42"], bpf::i64(-42));
+    EXPECT_EQ(testObject["TheNull"], nullptr);
+    EXPECT_EQ(testObject["TheNull"], nullptr);
+    EXPECT_EQ(testObject["TheNull"], nullptr);
+    EXPECT_EQ(testObject["TheNull"], nullptr);
+    EXPECT_EQ(testObject["TheNull"], nullptr);
     bpf::String str1 = testObject["MyString"];
     EXPECT_STREQ(*str1, "This is a true test of false and /*comments*/ with null containing 0.1 42.42 numbers and even \"strings\"");
-    EXPECT_STREQ(*testObject["MyString"].AsString(), "This is a true test of false and /*comments*/ with null containing 0.1 42.42 numbers and even \"strings\"");
-    EXPECT_STREQ(*bpf::String::ValueOf(testObject["Array"].AsArray()), "[TRUE, FALSE, null, 0.1, 1, 42, 4242, 0.4242]");
-    EXPECT_STREQ(*bpf::String::ValueOf(testObject["StrArray"].AsArray()), "[test, test1]");
+    EXPECT_STREQ(*testObject["MyString"].ToString(), "This is a true test of false and /*comments*/ with null containing 0.1 42.42 numbers and even \"strings\"");
+    EXPECT_STREQ(*bpf::String::ValueOf(testObject["Array"].ToArray()), "[TRUE, FALSE, null, 0.1, 1, 42, 4242, 0.4242]");
+    EXPECT_STREQ(*bpf::String::ValueOf(testObject["StrArray"].ToArray()), "[test, test1]");
     EXPECT_STREQ(*bpf::String::ValueOf(testObject["AdvTestStr"]), "String with special \b\t characters\b\t.");
-    EXPECT_FALSE(testObject.Properties().HasKey("Unicode"));
+    EXPECT_FALSE(testObject.Properties.HasKey("Unicode"));
     EXPECT_STREQ(*bpf::String::ValueOf(testObject["Special"]), "\t\b");
 }
 
@@ -334,7 +465,7 @@ TEST(Json, LexerParser_MultiLoadString)
     lexer.LoadString("  //A commented number");
     lexer.LoadString("  /*\"test\": 42,*/");
     lexer.LoadString("  //A string");
-    lexer.LoadString("  \"testStr\": \"this is the end\"");
+    lexer.LoadString(R"(  "testStr": "this is the end")");
     lexer.LoadString("}");
 
     J testObj = bpf::json::Parser(std::move(lexer)).Parse();
@@ -357,7 +488,7 @@ TEST(Json, LexerParser_IgnoreNulls)
     EXPECT_EQ(testObj.Type(), bpf::json::Json::OBJECT);
     J::Object testObject = std::move(testObj);
     EXPECT_EQ(testObject["test"], 1.0);
-    EXPECT_FALSE(testObject.Properties().HasKey("testStr"));
+    EXPECT_FALSE(testObject.Properties.HasKey("testStr"));
 }
 
 TEST(Json, Lexer_Err)

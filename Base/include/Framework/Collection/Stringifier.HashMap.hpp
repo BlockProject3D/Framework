@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -27,11 +27,17 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/String.hpp"
 #include "Framework/Collection/HashMap.hpp"
+#include "Framework/String.hpp"
 
 namespace bpf
 {
+    /**
+     * Provides string representation to all HashMap types
+     * @tparam K the key type
+     * @tparam V the value type
+     * @tparam HashOp the hash operator
+     */
     template <typename K, typename V, typename HashOp>
     class String::Stringifier<collection::HashMap<K, V, HashOp>>
     {

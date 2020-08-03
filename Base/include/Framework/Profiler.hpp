@@ -1,16 +1,16 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -32,6 +32,11 @@
 #include "Framework/Collection/Stack.hpp"
 #include "Framework/Collection/Array.hpp"
 #include "Framework/Collection/HashMap.hpp"
+
+/**
+ * OLD FRAMEWORK START / UNSUPPORTED
+ * Old Framework utilities are unsupported and may be removed in a future release
+ */
 
 # ifdef BUILD_DEBUG
 #  define PROFILER_PUSH_SECTION(name) Framework::FProfiler::PushSection(name)
@@ -64,16 +69,24 @@ namespace bpf
 
     public:
         static Profiler &Instance();
+
+        BP_DEPRECATED("Old Framework utilities are unsupported and may be removed in a future release")
         collection::Array<ProfilerSection> GenDisplayList();
-        
+
+        BP_DEPRECATED("Old Framework utilities are unsupported and may be removed in a future release")
         inline static void PushSection(const String &name)
         {
             Instance().Push(name);
         }
 
+        BP_DEPRECATED("Old Framework utilities are unsupported and may be removed in a future release")
         inline static void PopSection()
         {
             Instance().Pop();
         }
     };
-};
+}
+
+/**
+ * OLD FRAMEWORK END
+ */

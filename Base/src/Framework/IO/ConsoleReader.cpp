@@ -1,4 +1,4 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -42,10 +42,10 @@ ConsoleReader::ConsoleReader()
 #ifdef WINDOWS
     : _handle(GetStdHandle(STD_INPUT_HANDLE))
     , _file(GetFileType(reinterpret_cast<HANDLE>(_handle)) != FILE_TYPE_CHAR ? true : false)
-    , _reader(*this, _file ? EStringEncoder::UTF8 : EStringEncoder::UTF16)
+    , _reader(*this, _file ? ECharacterEncoding::UTF8 : ECharacterEncoding::UTF16)
 #else
     : _handle(0)
-    , _reader(*this, EStringEncoder::UTF8)
+    , _reader(*this, ECharacterEncoding::UTF8)
 #endif
 {
 }
@@ -56,14 +56,15 @@ fsize ConsoleReader::Read(void *buf, fsize bufsize)
     if (_file)
     {
         DWORD out;
-        if (!ReadFile(reinterpret_cast<HANDLE>(_handle), reinterpret_cast<LPVOID>(buf), (DWORD)bufsize, &out, NULL))
-            throw IOException(String("Console write error: ") + OSPrivate::ObtainLastErrorString());
+        if (!ReadFile(reinterpret_cast<HANDLE>(_handle), reinterpret_cast<LPVOID>(buf), (DWORD)bufsize, &out, nullptr))
+            throw IOException(String("Console read error: ") + OSPrivate::ObtainLastErrorString());
         return ((fsize)out);
     }
     else
     {
         DWORD out;
-        if (!ReadConsoleW(reinterpret_cast<HANDLE>(_handle), reinterpret_cast<LPVOID>(buf), (DWORD)(bufsize / 2), &out, NULL))
+        if (!ReadConsoleW(reinterpret_cast<HANDLE>(_handle), reinterpret_cast<LPVOID>(buf), (DWORD)(bufsize / 2), &out,
+                          nullptr))
             throw IOException(String("Console read error: ") + OSPrivate::ObtainLastErrorString());
         return ((fsize)(out * 2));
     }

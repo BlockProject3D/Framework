@@ -1,4 +1,4 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -33,86 +33,6 @@ namespace bpf
 {
     namespace collection
     {
-        template <typename K, typename V, typename HashOp>
-        HashMap<K, V, HashOp>::Iterator::Iterator(Node *data, fsize start, fsize size, const bool reverse)
-            : _data(data)
-            , MaxSize(size)
-            , CurID(start)
-        {
-            if (reverse)
-            {
-                SearchPrevEntry();
-                MaxSize = CurID;
-            }
-            else
-            {
-                fsize old = CurID;
-                CurID = 0;
-                SearchNextEntry();
-                MinSize = CurID;
-                CurID = old;
-                SearchNextEntry();
-            }
-        }
-
-        template <typename K, typename V, typename HashOp>
-        void HashMap<K, V, HashOp>::Iterator::SearchNextEntry()
-        {
-            while (CurID < MaxSize && _data[CurID].State != ENTRY_STATE_OCCUPIED)
-                ++CurID;
-        }
-
-        template <typename K, typename V, typename HashOp>
-        void HashMap<K, V, HashOp>::Iterator::SearchPrevEntry()
-        {
-            while (CurID != (fsize)-1 && _data[CurID].State != ENTRY_STATE_OCCUPIED)
-                --CurID;
-        }
-
-        template <typename K, typename V, typename HashOp>
-        typename HashMap<K, V, HashOp>::ReverseIterator &HashMap<K, V, HashOp>::ReverseIterator::operator++()
-        {
-            if (Iterator::CurID != (fsize)-1)
-            {
-                --Iterator::CurID;
-                Iterator::SearchPrevEntry();
-            }
-            return (*this);
-        }
-
-        template <typename K, typename V, typename HashOp>
-        typename HashMap<K, V, HashOp>::ReverseIterator &HashMap<K, V, HashOp>::ReverseIterator::operator--()
-        {
-            if (Iterator::CurID < Iterator::MaxSize)
-            {
-                ++Iterator::CurID;
-                Iterator::SearchNextEntry();
-            }
-            return (*this);
-        }
-
-        template <typename K, typename V, typename HashOp>
-        typename HashMap<K, V, HashOp>::Iterator &HashMap<K, V, HashOp>::Iterator::operator++()
-        {
-            if (CurID < MaxSize)
-            {
-                ++CurID;
-                SearchNextEntry();
-            }
-            return (*this);
-        }
-
-        template <typename K, typename V, typename HashOp>
-        typename HashMap<K, V, HashOp>::Iterator &HashMap<K, V, HashOp>::Iterator::operator--()
-        {
-            if (CurID > MinSize)
-            {
-                --CurID;
-                SearchPrevEntry();
-            }
-            return (*this);
-        }
-
         template <typename K, typename V, typename HashOp>
         HashMap<K, V, HashOp>::HashMap()
             : _data(memory::MemUtils::NewArray<Node>(HASH_MAP_INIT_BUF_SIZE))
@@ -150,6 +70,8 @@ namespace bpf
         template <typename K, typename V, typename HashOp>
         HashMap<K, V, HashOp> &HashMap<K, V, HashOp>::operator=(const HashMap &other)
         {
+            if (this == &other)
+                return (*this);
             memory::MemUtils::DeleteArray(_data, CurSize);
             _data = memory::MemUtils::NewArray<Node>(HASH_MAP_INIT_BUF_SIZE);
             _data[0].State = ENTRY_STATE_NON_EXISTANT;
@@ -179,24 +101,24 @@ namespace bpf
         }
 
         template <typename K, typename V, typename HashOp>
-        HashMap<K, V, HashOp>::HashMap(HashMap &&other)
+        HashMap<K, V, HashOp>::HashMap(HashMap &&other) noexcept
             : _data(other._data)
             , CurSize(other.CurSize)
             , ElemCount(other.ElemCount)
         {
-            other._data = Null;
+            other._data = nullptr;
             other.CurSize = 0;
             other.ElemCount = 0;
         }
 
         template <typename K, typename V, typename HashOp>
-        HashMap<K, V, HashOp> &HashMap<K, V, HashOp>::operator=(HashMap &&other)
+        HashMap<K, V, HashOp> &HashMap<K, V, HashOp>::operator=(HashMap &&other) noexcept
         {
             memory::MemUtils::DeleteArray(_data, CurSize);
             _data = other._data;
             CurSize = other.CurSize;
             ElemCount = other.ElemCount;
-            other._data = Null;
+            other._data = nullptr;
             other.CurSize = 0;
             other.ElemCount = 0;
             return (*this);
@@ -218,7 +140,7 @@ namespace bpf
                 _data = memory::MemUtils::NewArray<Node>(CurSize);
                 for (fsize i = 0; i < CurSize; ++i)
                     _data[i].State = ENTRY_STATE_NON_EXISTANT;
-                for (fsize i = 0; i < CurSize >> 1; ++i)
+                for (fsize i = 0; i<CurSize>> 1; ++i)
                 {
                     if (olddata[i].State == ENTRY_STATE_OCCUPIED)
                     {
@@ -254,8 +176,7 @@ namespace bpf
             for (fsize i = 0; i < CurSize; ++i)
             {
                 fsize index = (hkey + ((i * i + i) / 2)) % CurSize;
-                if (_data[index].State == ENTRY_STATE_NON_EXISTANT
-                    || _data[index].State == ENTRY_STATE_INSTANCE_DELETE)
+                if (_data[index].State == ENTRY_STATE_NON_EXISTANT || _data[index].State == ENTRY_STATE_INSTANCE_DELETE)
                 {
                     _data[index].Hash = hkey;
                     _data[index].State = ENTRY_STATE_OCCUPIED;
@@ -340,13 +261,11 @@ namespace bpf
         template <typename K, typename V, typename HashOp>
         void HashMap<K, V, HashOp>::Swap(const Iterator &a, const Iterator &b)
         {
-            if (a.CurID >= CurSize || b.CurID >= CurSize
-                || _data[a.CurID].State != ENTRY_STATE_OCCUPIED
-                || _data[b.CurID].State != ENTRY_STATE_OCCUPIED)
+            if (a.CurID >= CurSize || b.CurID >= CurSize || _data[a.CurID].State != ENTRY_STATE_OCCUPIED || _data[b.CurID].State != ENTRY_STATE_OCCUPIED)
                 return;
-            auto v = std::move(this->operator[](a->Key));
-            this->operator[](a->Key) = std::move(this->operator[](b->Key));
-            this->operator[](b->Key) = std::move(v);
+            auto v = std::move(_data[a.CurID].KeyVal.Value);
+            _data[a.CurID].KeyVal.Value = std::move(_data[b.CurID].KeyVal.Value);
+            _data[b.CurID].KeyVal.Value = std::move(v);
         }
 
         template <typename K, typename V, typename HashOp>
@@ -409,11 +328,11 @@ namespace bpf
         }
 
         template <typename K, typename V, typename HashOp>
-        bool HashMap<K, V, HashOp>::operator==(const HashMap<K, V, HashOp> &other)
+        bool HashMap<K, V, HashOp>::operator==(const HashMap<K, V, HashOp> &other) const noexcept
         {
             if (ElemCount != other.ElemCount)
                 return (false);
-            Iterator it = begin();
+            auto it = begin();
 
             while (it != end())
             {

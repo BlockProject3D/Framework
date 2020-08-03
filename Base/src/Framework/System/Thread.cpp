@@ -1,4 +1,4 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -26,18 +26,27 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <iostream>
 #include "Framework/System/Thread.hpp"
 #include "Framework/Exception.hpp"
+#include "Framework/Memory/Memory.hpp"
 #include "Framework/System/OSException.hpp"
+#include <iostream>
 
-#include <stdlib.h>
+#include <cstdlib>
 #ifdef WINDOWS
     #include <Windows.h>
 #else
-    #include <time.h>
+    #include <ctime>
     #include <pthread.h>
-    using ThreadType = pthread_t;
+using ThreadType = pthread_t;
+#endif
+
+// Attempt at re-implementing what Google is apparently unable to implement
+#ifdef ANDROID
+int pthread_cancel(pthread_t h)
+{
+    return pthread_kill(h, 0);
+}
 #endif
 
 using namespace bpf::system;
@@ -47,9 +56,13 @@ namespace bpf
 {
     namespace system
     {
-        void __internalstate(Thread &ptr, Thread::EState state)
+        void _bpf_internal_state(Thread &ptr, Thread::EState state)
         {
             ptr._state = state;
+        }
+        bool _bpf_internal_special(Thread &ptr)
+        {
+            return (ptr._special);
         }
     }
 }
@@ -60,13 +73,15 @@ DWORD WINAPI ThreadRoutine(void *ptr)
     auto thread = reinterpret_cast<bpf::system::Thread *>(ptr);
     try
     {
-        thread->Run();
-        __internalstate(*thread, Thread::FINISHED);
+        //Hack in order to prevent a C++ defect: virtual methods are incorrectly called from destructors
+        if (!_bpf_internal_special(*thread))
+            thread->Run();
+        _bpf_internal_state(*thread, Thread::FINISHED);
     }
-    catch (const bpf::Exception &)
+    catch (const bpf::Exception &ex)
     {
-        //TODO: print ex
-        __internalstate(*thread, Thread::STOPPED);
+        ex.Print();
+        _bpf_internal_state(*thread, Thread::STOPPED);
     }
     return (0);
 }
@@ -76,47 +91,47 @@ void *ThreadRoutine(void *ptr)
     auto thread = reinterpret_cast<bpf::system::Thread *>(ptr);
     try
     {
-        thread->Run();
-        __internalstate(*thread, Thread::FINISHED);
+        //Hack in order to prevent a C++ defect: virtual methods are incorrectly called from destructors
+        if (!_bpf_internal_special(*thread))
+            thread->Run();
+        _bpf_internal_state(*thread, Thread::FINISHED);
     }
-    catch (const bpf::Exception &)
+    catch (const bpf::Exception &ex)
     {
-        //TODO: print ex
-        __internalstate(*thread, Thread::STOPPED);
+        ex.Print();
+        _bpf_internal_state(*thread, Thread::STOPPED);
     }
-    return (Null);
+    return (nullptr);
 }
 #endif
 
 Thread::Thread(const String &name)
     : _state(PENDING)
-    , _handle(Null)
     , _name(name)
+    , _handle(nullptr)
+    , _special(false)
 {
 }
 
-Thread::Thread(Thread &&other)
-    : _state(other._state)
-    , _handle(other._handle)
+Thread::Thread(Thread &&other) noexcept
 {
-    if (_state == RUNNING || _state == EXITING)
-        throw OSException("Cannot move a running thread");
-    other._name = std::move(other._name);
-    other._handle = Null;
+    other.Join();
+    _state = other._state;
+    _name = std::move(other._name);
+    _handle = other._handle;
+    _special = false;
+    other._handle = nullptr;
 }
 
 Thread::~Thread()
 {
-    Join();
-#ifndef WINDOWS
-    free(_handle);
-#endif
+    _special = true; //Trigger the special flag that prevents the Thread from calling any virtual function while destructing
+    Join(); //Join the thread will essentially cause the C++ virtual function to be broken
 }
 
-Thread &Thread::operator=(Thread &&other)
+Thread &Thread::operator=(Thread &&other) noexcept
 {
-    if (_state == RUNNING || _state == EXITING || other._state == RUNNING || other._state == EXITING)
-        throw OSException("Cannot move a running thread");
+    other.Join();
     Join();
 #ifndef WINDOWS
     free(_handle);
@@ -124,43 +139,50 @@ Thread &Thread::operator=(Thread &&other)
     _state = other._state;
     _handle = other._handle;
     _name = std::move(other._name);
-    other._handle = Null;
+    _special = false;
+    other._handle = nullptr;
     return (*this);
 }
 
 void Thread::Start()
 {
-    if (_handle != Null)
+    if (_state == RUNNING)
         return;
-    __internalstate(*this, RUNNING);
+    if (_handle != nullptr)
+        Join();
+    _bpf_internal_state(*this, RUNNING);
 #ifdef WINDOWS
-    _handle = CreateThread(Null, 0, &ThreadRoutine, this, 0, Null);
+    _handle = CreateThread(nullptr, 0, &ThreadRoutine, this, 0, nullptr);
+    if (_handle == nullptr)
+        throw OSException("Failed to create thread");
 #else
     _handle = malloc(sizeof(ThreadType));
-    pthread_create(reinterpret_cast<ThreadType *>(_handle), Null,
-                   &ThreadRoutine, this);
+    if (_handle == nullptr)
+        throw memory::MemoryException();
+    if (pthread_create(reinterpret_cast<ThreadType *>(_handle), nullptr, &ThreadRoutine, this) != 0)
+        throw OSException("Failed to create thread");
 #endif
 }
 
-void Thread::Join()
+void Thread::Join() noexcept
 {
-    if (_handle == Null)
+    if (_handle == nullptr)
         return;
 #ifdef WINDOWS
     WaitForSingleObject(_handle, INFINITE);
 #else
-    pthread_join(*reinterpret_cast<ThreadType *>(_handle), Null);
+    pthread_join(*reinterpret_cast<ThreadType *>(_handle), nullptr);
     free(_handle);
 #endif
-    _handle = Null;
+    _handle = nullptr;
 }
 
 void Thread::Kill(const bool force)
 {
-    if (_handle == Null)
+    if (_handle == nullptr)
         return;
     if (!force)
-        __internalstate(*this, EXITING);
+        _bpf_internal_state(*this, EXITING);
     else
     {
 #ifdef WINDOWS
@@ -168,7 +190,7 @@ void Thread::Kill(const bool force)
 #else
         pthread_cancel(*reinterpret_cast<ThreadType *>(_handle));
 #endif
-        __internalstate(*this, STOPPED);
+        _bpf_internal_state(*this, STOPPED);
     }
 }
 
@@ -180,6 +202,6 @@ void Thread::Sleep(const uint32 milliseconds)
     struct timespec ts;
     ts.tv_sec = milliseconds / 1000;
     ts.tv_nsec = (milliseconds % 1000) * 1000000;
-    nanosleep(&ts, NULL);
+    nanosleep(&ts, nullptr);
 #endif
 }

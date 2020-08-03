@@ -1,16 +1,16 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -35,12 +35,20 @@ namespace bpf
 {
     namespace io
     {
-        constexpr fint FILE_MODE_READ = 0x10;
-        constexpr fint FILE_MODE_WRITE = 0x20;
+        /**
+         * Open a file for always appending data at the end
+         */
         constexpr fint FILE_MODE_APPEND = 0x40;
+
+        /**
+         * If this flag is specified when opening a file, the file is always emptied
+         */
         constexpr fint FILE_MODE_TRUNCATE = 0x80;
 
-        class BPF_API FileStream : public IInputStream, public IOutputStream
+        /**
+         * Class to represent a file stream open as read, write or random access
+         */
+        class BPF_API FileStream final : public IInputStream, public IOutputStream
         {
         private:
             fint _mode;
@@ -54,11 +62,17 @@ namespace bpf
             /**
              * Creates a new FileStream from the given file and mode
              * @param file file to open
-             * @param mode file mode ored (ex : FILE_MODE_READ | FILE_MODE_WRITE)
-             * @throws IOException
+             * @param mode file mode and flags or'ed (ex : FILE_MODE_READ | FILE_MODE_WRITE)
+             * @throw IOException in case of system error
              */
             FileStream(const File &file, fint mode);
-            ~FileStream();
+
+            /**
+             * Move constructor
+             */
+            FileStream(FileStream &&other) noexcept;
+
+            ~FileStream() final;
 
             /**
              * Cannot copy a FileStream
@@ -68,21 +82,26 @@ namespace bpf
             /**
              * Cannot copy a FileStream
              */
-            FileStream operator=(const FileStream &other) = delete;
+            FileStream &operator=(const FileStream &other) = delete;
+
+            /**
+             * Move assignment operator
+             */
+            FileStream &operator=(FileStream &&other) noexcept;
 
             /**
              * Sets the file cursor position to an offset relative to the current position
              * @param offset relative offset
-             * @throws IOException
+             * @throw IOException in case of system error
              */
-            void SeekOffset(int64 offset);
+            void SeekOffset(int64 offset) const;
 
             /**
              * Sets the file cursor position to pos
              * @param pos new cursor position
-             * @throws IOException
+             * @throw IOException in case of system error
              */
-            void Seek(uint64 pos);
+            void Seek(uint64 pos) const;
 
             /**
              * Closes this FileStream, calling any more IO functions will throw IOException
@@ -90,14 +109,22 @@ namespace bpf
             void Close();
 
             /**
-             * @throws IOException
+             * Reads bytes from this stream, no buffering is performed
+             * @param buf buffer to receive the read bytes
+             * @param bufsize the size of the receiving buffer
+             * @throw IOException in case of system error
+             * @return number of bytes read
              */
-            fsize Read(void *buf, fsize bufsize);
+            fsize Read(void *buf, fsize bufsize) final;
 
             /**
-             * @throws IOException
+             * Writes bytes to this stream, no buffering is performed
+             * @param buf the buffer with the bytes to write
+             * @param bufsize the size of the buffer
+             * @throw IOException in case of system error
+             * @return number of bytes written
              */
-            fsize Write(const void *buf, fsize bufsize);
+            fsize Write(const void *buf, fsize bufsize) final;
         };
     }
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -27,34 +27,49 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include <typeinfo>
+#include "Framework/Types.hpp"
 
 namespace bpf
 {
     /**
-     * Returns the type name as a string of a given type
+     * Returns the cross-platform type name of a given type.
+     * Defaults to implementation defined typeid
      * @tparam T the type to search the name of
+     * @return low-level null-terminated c-string
      */
     template <typename T>
     inline const char *TypeName() noexcept
     {
-        return ("Unknown");
+        return (typeid(T).name());
+    }
+
+    /**
+     * Returns a type hash in order to compare two types
+     * @tparam T type to find hash for
+     * @return unsigned hash code
+     */
+    template <typename T>
+    inline fsize TypeIndex() noexcept
+    {
+        return (typeid(T).hash_code());
     }
 }
 
 /**
  * Defines the type name for a given type
+ * @param T the type to define the cross platform type name for
  */
-#define BP_DEFINE_TYPENAME(T) \
-    namespace bpf \
-    { \
-        template <> \
-        inline const char *TypeName<T>() noexcept \
-        { \
-            return (#T); \
-        } \
+#define BP_DEFINE_TYPENAME(T)                                                                                          \
+    namespace bpf                                                                                                      \
+    {                                                                                                                  \
+        template <>                                                                                                    \
+        inline const char *TypeName<T>() noexcept                                                                      \
+        {                                                                                                              \
+            return (#T);                                                                                               \
+        }                                                                                                              \
     }
 
-
-BP_DEFINE_TYPENAME(int);
-BP_DEFINE_TYPENAME(float);
-BP_DEFINE_TYPENAME(double);
+BP_DEFINE_TYPENAME(int)
+BP_DEFINE_TYPENAME(float)
+BP_DEFINE_TYPENAME(double)

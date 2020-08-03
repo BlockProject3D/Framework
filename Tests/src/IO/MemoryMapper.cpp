@@ -1,16 +1,16 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -30,35 +30,18 @@
 #include <Framework/IO/IOException.hpp>
 #include <Framework/IO/MemoryMapper.hpp>
 #include <Framework/Memory/Memory.hpp>
-#include <cassert>
 #include <gtest/gtest.h>
 #include <iostream>
 
 TEST(MemoryMapper, OpenExcept)
 {
-    try
-    {
-        bpf::io::MemoryMapper mapper(bpf::io::File("./doesnotexist.txt"), bpf::io::FILE_MODE_READ);
-    }
-    catch (const bpf::io::IOException &)
-    {
-        return;
-    }
-    ASSERT_TRUE(false);
+    EXPECT_THROW(bpf::io::MemoryMapper mapper(bpf::io::File("./doesnotexist.txt"), bpf::io::FILE_MODE_READ), bpf::io::IOException);
 }
 
 #ifdef BUILD_DEBUG
 static void Test_OpenExcept_MemLeak()
 {
-    try
-    {
-        bpf::io::MemoryMapper mapper(bpf::io::File("./doesnotexist.txt"), bpf::io::FILE_MODE_READ);
-    }
-    catch (const bpf::io::IOException &)
-    {
-        return;
-    }
-    ASSERT_TRUE(false);
+    EXPECT_THROW(bpf::io::MemoryMapper mapper(bpf::io::File("./doesnotexist.txt"), bpf::io::FILE_MODE_READ), bpf::io::IOException);
 }
 
 TEST(MemoryMapper, OpenExcept_MemLeak)
@@ -75,6 +58,43 @@ static void SetupTestFile(bpf::io::File &f)
     bpf::io::FileStream stream(f, bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
     EXPECT_EQ(stream.Write("This is a test", 14), (bpf::fsize)14);
     stream.Close();
+}
+
+TEST(MemoryMapper, Move_1)
+{
+    bpf::io::File f("./doesnotexist.txt");
+    bpf::io::File f1("./doesnotexist1.txt");
+    SetupTestFile(f);
+    SetupTestFile(f1);
+    bpf::io::MemoryMapper mapper(f, bpf::io::FILE_MODE_READ | bpf::io::FILE_MODE_WRITE);
+    auto mapper1 = std::move(mapper);
+    mapper1 = bpf::io::MemoryMapper(f1, bpf::io::FILE_MODE_READ | bpf::io::FILE_MODE_WRITE);
+    mapper = std::move(mapper1);
+    mapper.Map(0, 14);
+    char *txt = reinterpret_cast<char *>(*mapper);
+    txt[0] = ' ';
+    mapper.Unmap();
+    mapper.Close();
+    f.Delete();
+    f1.Delete();
+}
+
+TEST(MemoryMapper, Move_2)
+{
+    bpf::io::File f("./doesnotexist.txt");
+    bpf::io::File f1("./doesnotexist1.txt");
+    SetupTestFile(f);
+    SetupTestFile(f1);
+    bpf::io::MemoryMapper mapper(f, bpf::io::FILE_MODE_READ | bpf::io::FILE_MODE_WRITE);
+    auto mapper1 = std::move(mapper);
+    mapper1 = bpf::io::MemoryMapper(f1, bpf::io::FILE_MODE_READ | bpf::io::FILE_MODE_WRITE);
+    mapper = std::move(mapper1);
+    mapper.Map(0, 14);
+    char *txt = reinterpret_cast<char *>(*mapper);
+    txt[0] = ' ';
+    mapper.Close();
+    f.Delete();
+    f1.Delete();
 }
 
 TEST(MemoryMapper, Map_Test1)

@@ -1,4 +1,4 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -27,224 +27,553 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Memory/Utility.hpp"
-#include "Framework/Collection/Map.hpp"
 #include "Framework/Collection/List.hpp"
-#include "Framework/String.hpp"
+#include "Framework/Collection/Map.hpp"
 #include "Framework/Json/JsonException.hpp"
+#include "Framework/Memory/Utility.hpp"
+#include "Framework/String.hpp"
 
 namespace bpf
 {
     namespace json
     {
+        /**
+         * Represents an arbitary Json value
+         */
         class BPF_API Json
         {
         public:
+            /**
+             * Enumeration to represent the type of a Json value
+             */
             enum EType
             {
-                NUMBER,
+                /**
+                 * Indicates a Json number that stores doubles
+                 */
+                DOUBLE,
+
+                /**
+                 * Indicates a Json number that stores integers
+                 */
+                INTEGER,
+
+                /**
+                 * Indicates a Json boolean
+                 */
                 BOOLEAN,
+
+                /**
+                 * Indicates a Json string
+                 */
                 STRING,
+
+                /**
+                 * Indicates a Json array
+                 */
                 ARRAY,
+
+                /**
+                 * Indicates a Json object
+                 */
                 OBJECT,
+
+                /**
+                 * Indicates Json null
+                 */
                 NONE
             };
 
-            class BPF_API Object
+            class BPF_API Type
             {
             private:
-                collection::Map<String, Json> _data;
+                EType _internal;
 
+                explicit inline Type(EType t) noexcept
+                    : _internal(t)
+                {
+                }
+
+            public:
+                /**
+                 * Checks if this Json Type is a number
+                 * @return true if this is either a double or an integer, false otherwise
+                 */
+                inline bool IsNumber() const noexcept
+                {
+                    return (_internal == DOUBLE || _internal == INTEGER);
+                }
+
+                /**
+                 * Checks if this Json Type is a number
+                 * @return true if this is a double, false otherwise
+                 */
+                inline bool IsDouble() const noexcept
+                {
+                    return (_internal == DOUBLE);
+                }
+
+                /**
+                 * Checks if this Json Type is a number
+                 * @return true if this is an integer, false otherwise
+                 */
+                inline bool IsInteger() const noexcept
+                {
+                    return (_internal == INTEGER);
+                }
+
+                /**
+                 * Checks if this Json Type is an object
+                 * @return true if this is an object, false otherwise
+                 */
+                inline bool IsObject() const noexcept
+                {
+                    return (_internal == OBJECT);
+                }
+
+                /**
+                 * Checks if this Json Type is an array
+                 * @return true if this is an array, false otherwise
+                 */
+                inline bool IsArray() const noexcept
+                {
+                    return (_internal == ARRAY);
+                }
+
+                /**
+                 * Checks if this Json Type is a string
+                 * @return true if this is a string, false otherwise
+                 */
+                inline bool IsString() const noexcept
+                {
+                    return (_internal == STRING);
+                }
+
+                /**
+                 * Checks if this Json Type is null
+                 * @return true if this is null, false otherwise
+                 */
+                inline bool IsNull() const noexcept
+                {
+                    return (_internal == NONE);
+                }
+
+                /**
+                 * Conversion operator
+                 * @return internal EType
+                 */
+                inline operator EType() const noexcept
+                {
+                    return (_internal);
+                }
+
+                friend class Json;
+            };
+
+        private:
+            using _bpf_internal_json_type = Type;
+
+        public:
+            /**
+             * Represents a Json Object
+             */
+            class BPF_API Object
+            {
             public:
                 using Iterator = collection::Map<String, Json>::Iterator;
                 using ReverseIterator = collection::Map<String, Json>::ReverseIterator;
+                using CIterator = collection::Map<String, Json>::CIterator;
+                using CReverseIterator = collection::Map<String, Json>::CReverseIterator;
 
+                /**
+                 * Object properties
+                 */
+                collection::Map<String, Json> Properties;
+
+                /**
+                 * Constructs an empty object
+                 */
                 Object()
                 {
                 }
+
+                /**
+                 * Constructs an Object from an existing initializer list
+                 * @param lst the initial list of key-value pairs to add to this new Object
+                 */
                 explicit Object(const std::initializer_list<std::pair<String, Json>> &lst);
+
+                /**
+                 * Constructs an Object from an existing Map
+                 * @param map the map to construct from
+                 */
                 explicit inline Object(const collection::Map<String, Json> &map)
-                    : _data(map)
-                {
-                }
-                explicit inline Object(collection::Map<String, Json> &&map)
-                    : _data(std::move(map))
+                    : Properties(map)
                 {
                 }
 
+                /**
+                 * Constructs an Object from an existing Map
+                 * @param map the map to construct from
+                 */
+                explicit inline Object(collection::Map<String, Json> &&map)
+                    : Properties(std::move(map))
+                {
+                }
+
+                /**
+                 * Returns an element non-const mode
+                 * @param name the property name
+                 * @throw IndexException if key is not in this map
+                 * @return mutable item
+                 */
                 inline Json &operator[](const String &name)
                 {
-                    return (_data[name]);
+                    return (Properties[name]);
                 }
 
+                /**
+                 * Returns an element const mode
+                 * @param name the property name
+                 * @throw IndexException if key is not in this map
+                 * @return immutable item
+                 */
                 inline const Json &operator[](const String &name) const
                 {
-                    return (_data[name]);
+                    return (Properties[name]);
                 }
 
+                /**
+                 * Adds a new property in this object, replaces if the property already exists
+                 * @param name the property name
+                 * @param json the value to insert
+                 */
                 inline void Add(const String &name, const Json &json)
                 {
-                    _data.Add(name, json);
+                    Properties.Add(name, json);
                 }
 
-                inline void Add(const String &name, Json &&data)
+                /**
+                 * Adds a new property in this object, replaces if the property already exists
+                 * @param name the property name
+                 * @param json the value to insert
+                 */
+                inline void Add(const String &name, Json &&json)
                 {
-                    _data.Add(name, std::move(data));
+                    Properties.Add(name, std::move(json));
                 }
 
+                /**
+                 * Removes a property from this object
+                 * @param name the property name
+                 */
                 inline void RemoveAt(const String &name)
                 {
-                    _data.RemoveAt(name);
+                    Properties.RemoveAt(name);
                 }
 
+                /**
+                 * Returns the number of properties in this object
+                 * @return number of properties as unsigned
+                 */
                 inline fsize Size() const noexcept
                 {
-                    return (_data.Size());
+                    return (Properties.Size());
                 }
 
-                inline Iterator begin() const
+                /**
+                 * Returns an iterator to the begining of the collection
+                 * @return new iterator
+                 */
+                inline CIterator begin() const
                 {
-                    return (_data.begin());
+                    return (Properties.begin());
                 }
 
-                inline Iterator end() const
+                /**
+                 * Returns an iterator to the end of the collection
+                 * @return new iterator
+                 */
+                inline CIterator end() const
                 {
-                    return (_data.end());
+                    return (Properties.end());
                 }
 
-                inline ReverseIterator rbegin() const
+                /**
+                 * Returns an iterator to the begining of the collection
+                 * @return new iterator
+                 */
+                inline Iterator begin()
                 {
-                    return (_data.rbegin());
+                    return (Properties.begin());
                 }
 
-                inline ReverseIterator rend() const
+                /**
+                 * Returns an iterator to the end of the collection
+                 * @return new iterator
+                 */
+                inline Iterator end()
                 {
-                    return (_data.rend());
+                    return (Properties.end());
                 }
 
-                inline const collection::Map<String, Json> &Properties() const noexcept
+                /**
+                 * Returns a reverse iterator to the begining of the collection
+                 * @return new iterator
+                 */
+                inline CReverseIterator rbegin() const
                 {
-                    return (_data);
+                    return (Properties.rbegin());
                 }
 
-                inline collection::Map<String, Json> &Properties() noexcept
+                /**
+                 * Returns a reverse iterator to the end of the collection
+                 * @return new iterator
+                 */
+                inline CReverseIterator rend() const
                 {
-                    return (_data);
+                    return (Properties.rend());
+                }
+
+                /**
+                 * Returns a reverse iterator to the begining of the collection
+                 * @return new iterator
+                 */
+                inline ReverseIterator rbegin()
+                {
+                    return (Properties.rbegin());
+                }
+
+                /**
+                 * Returns a reverse iterator to the end of the collection
+                 * @return new iterator
+                 */
+                inline ReverseIterator rend()
+                {
+                    return (Properties.rend());
                 }
             };
 
+            /**
+             * Represents a Json Array
+             */
             class BPF_API Array
             {
-            private:
-                collection::List<Json> _data;
-
             public:
                 using Iterator = collection::List<Json>::Iterator;
                 using ReverseIterator = collection::List<Json>::ReverseIterator;
+                using CIterator = collection::List<Json>::CIterator;
+                using CReverseIterator = collection::List<Json>::CReverseIterator;
 
+                /**
+                 * Array content
+                 */
+                collection::List<Json> Items;
+
+                /**
+                 * Constructs an empty array
+                 */
                 Array()
                 {
                 }
+
+                /**
+                 * Constructs an Array from an existing initializer list
+                 * @param vals the initial list of items to add to this new Array
+                 */
                 explicit Array(const std::initializer_list<Json> &vals);
+
+                /**
+                 * Constructs an Array from an existing List
+                 * @param vals the list to construct from
+                 */
                 explicit inline Array(const collection::List<Json> &vals)
-                    : _data(vals)
-                {
-                }
-                explicit inline Array(collection::List<Json> &&vals)
-                    : _data(std::move(vals))
+                    : Items(vals)
                 {
                 }
 
+                /**
+                 * Constructs an Array from an existing List
+                 * @param vals the list to construct from
+                 */
+                explicit inline Array(collection::List<Json> &&vals)
+                    : Items(std::move(vals))
+                {
+                }
+
+                /**
+                 * Adds a new item at the end of the array
+                 * @param json the new value to append
+                 */
                 inline void Add(const Json &json)
                 {
-                    _data.Add(json);
+                    Items.Add(json);
                 }
 
+                /**
+                 * Adds a new item at the end of the array
+                 * @param data the new value to append
+                 */
                 inline void Add(Json &&data)
                 {
-                    _data.Add(std::move(data));
+                    Items.Add(std::move(data));
                 }
 
-                inline void RemoveAt(const uint32 id)
+                /**
+                 * Remove an item at a given index
+                 * @param id the index of the item to remove
+                 */
+                inline void RemoveAt(const fsize id)
                 {
-                    _data.RemoveAt(id);
+                    Items.RemoveAt(id);
                 }
 
-                inline Json &operator[](const uint32 id)
+                /**
+                 * Returns an element non-const mode
+                 * @param id the index of the element, in case of out of bounds, throws
+                 * @throw IndexException if id is out of bounds
+                 * @return mutable item at index id
+                 */
+                inline Json &operator[](const fsize id)
                 {
-                    return (_data[id]);
+                    return (Items[id]);
                 }
 
-                inline const Json &operator[](const uint32 id) const
+                /**
+                 * Returns an element const mode
+                 * @param id the index of the element, in case of out of bounds, throws
+                 * @throw IndexException if id is out of bounds
+                 * @return immutable item at index id
+                 */
+                inline const Json &operator[](const fsize id) const
                 {
-                    return (_data[id]);
+                    return (Items[id]);
                 }
 
+                /**
+                 * Returns the number of items in this list
+                 * @return number of items as unsigned
+                 */
                 inline fsize Size() const noexcept
                 {
-                    return (_data.Size());
+                    return (Items.Size());
                 }
 
-                inline Iterator begin() const
+                /**
+                 * Returns an iterator to the begining of the collection
+                 * @return new iterator
+                 */
+                inline CIterator begin() const
                 {
-                    return (_data.begin());
+                    return (Items.begin());
                 }
 
-                inline Iterator end() const
+                /**
+                 * Returns an iterator to the end of the collection
+                 * @return new iterator
+                 */
+                inline CIterator end() const
                 {
-                    return (_data.end());
+                    return (Items.end());
                 }
 
-                inline ReverseIterator rbegin() const
+                /**
+                 * Returns an iterator to the begining of the collection
+                 * @return new iterator
+                 */
+                inline Iterator begin()
                 {
-                    return (_data.rbegin());
+                    return (Items.begin());
                 }
 
-                inline ReverseIterator rend() const
+                /**
+                 * Returns an iterator to the end of the collection
+                 * @return new iterator
+                 */
+                inline Iterator end()
                 {
-                    return (_data.rend());
+                    return (Items.end());
                 }
 
-                inline const collection::List<Json> &Items() const noexcept
+                /**
+                 * Returns a reverse iterator to the begining of the collection
+                 * @return new iterator
+                 */
+                inline CReverseIterator rbegin() const
                 {
-                    return (_data);
+                    return (Items.rbegin());
                 }
 
-                inline collection::List<Json> &Items() noexcept
+                /**
+                 * Returns a reverse iterator to the end of the collection
+                 * @return new iterator
+                 */
+                inline CReverseIterator rend() const
                 {
-                    return (_data);
+                    return (Items.rend());
+                }
+
+                /**
+                 * Returns a reverse iterator to the begining of the collection
+                 * @return new iterator
+                 */
+                inline ReverseIterator rbegin()
+                {
+                    return (Items.rbegin());
+                }
+
+                /**
+                 * Returns a reverse iterator to the end of the collection
+                 * @return new iterator
+                 */
+                inline ReverseIterator rend()
+                {
+                    return (Items.rend());
                 }
             };
 
         private:
             EType _type;
-            double _number;
+            double _double;
+            int64 _integer;
             bool _bool;
             String _string;
             memory::UniquePtr<Object> _object;
             memory::UniquePtr<Array> _array;
 
         public:
+            /**
+             * Constructs a null Json value
+             */
             inline Json()
                 : _type(EType::NONE)
-                , _number(0.0)
+                , _double(0.0)
+                , _integer(0)
                 , _bool(false)
             {
             }
 
+            /**
+             * Copy constructor
+             */
             inline Json(const Json &other)
                 : _type(other._type)
-                , _number(other._number)
+                , _double(other._double)
+                , _integer(other._integer)
                 , _bool(other._bool)
                 , _string(other._string)
-                , _object(other._object != Null ? memory::MakeUnique<Object>(*other._object) : Null)
-                , _array(other._array != Null ? memory::MakeUnique<Array>(*other._array) : Null)
+                , _object(other._object != nullptr ? memory::MakeUnique<Object>(*other._object) : nullptr)
+                , _array(other._array != nullptr ? memory::MakeUnique<Array>(*other._array) : nullptr)
             {
             }
 
-            inline Json(Json &&other)
+            /**
+             * Move constructor
+             */
+            inline Json(Json &&other) noexcept
                 : _type(other._type)
-                , _number(other._number)
+                , _double(other._double)
+                , _integer(other._integer)
                 , _bool(other._bool)
                 , _string(std::move(other._string))
                 , _object(std::move(other._object))
@@ -252,93 +581,180 @@ namespace bpf
             {
             }
 
+            /**
+             * Constructs a Json number value
+             * @param val the number to store
+             */
             inline Json(const double val)
-                : _type(EType::NUMBER)
-                , _number(val)
+                : _type(EType::DOUBLE)
+                , _double(val)
+                , _integer((int64)val)
                 , _bool(false)
             {
             }
 
+            /**
+             * Constructs a Json number value
+             * @param val the number to store
+             */
+            inline Json(const int64 val)
+                : _type(EType::INTEGER)
+                , _double((double)val)
+                , _integer(val)
+                , _bool(false)
+            {
+            }
+
+            /**
+             * Constructs a Json boolean value
+             * @param val the boolean to store
+             */
             inline Json(const bool val)
                 : _type(EType::BOOLEAN)
-                , _number(0.0)
+                , _double(0.0)
+                , _integer(0)
                 , _bool(val)
             {
             }
 
+            /**
+             * Constructs a Json string value
+             * @param val the string to store
+             */
             inline Json(const String &val)
                 : _type(EType::STRING)
-                , _number(0.0)
+                , _double(0.0)
+                , _integer(0)
                 , _bool(false)
                 , _string(val)
             {
             }
 
+            /**
+             * Constructs a Json string value
+             * @param val the string to store
+             */
             inline Json(const char *val)
-                : _type(val != Null ? EType::STRING : EType::NONE)
-                , _number(0.0)
+                : _type(val != nullptr ? EType::STRING : EType::NONE)
+                , _double(0.0)
+                , _integer(0)
                 , _bool(false)
                 , _string(val)
             {
             }
 
+            /**
+             * Constructs a Json string value
+             * @param val the string to store
+             */
             inline Json(String &&val)
                 : _type(EType::STRING)
-                , _number(0.0)
+                , _double(0.0)
+                , _integer(0)
                 , _bool(false)
                 , _string(std::move(val))
             {
             }
 
+            /**
+             * Constructs a Json object value
+             * @param val the object to store
+             */
             inline Json(const Object &val)
                 : _type(EType::OBJECT)
-                , _number(0.0)
+                , _double(0.0)
+                , _integer(0)
                 , _bool(false)
-                , _string(String::Empty)
+                , _string("")
                 , _object(memory::MakeUnique<Object>(val))
             {
             }
 
+            /**
+             * Constructs a Json object value
+             * @param val the object to store
+             */
             inline Json(Object &&val)
                 : _type(EType::OBJECT)
-                , _number(0.0)
+                , _double(0.0)
+                , _integer(0)
                 , _bool(false)
-                , _string(String::Empty)
+                , _string("")
                 , _object(memory::MakeUnique<Object>(std::move(val)))
             {
             }
 
+            /**
+             * Constructs a Json array value
+             * @param arr the array to store
+             */
             inline Json(const Array &arr)
                 : _type(EType::ARRAY)
-                , _number(0.0)
+                , _double(0.0)
+                , _integer(0)
                 , _bool(false)
-                , _string(String::Empty)
-                , _object(Null)
+                , _string("")
+                , _object(nullptr)
                 , _array(memory::MakeUnique<Array>(arr))
             {
             }
 
+            /**
+             * Constructs a Json array value
+             * @param arr the array to store
+             */
             inline Json(Array &&arr)
                 : _type(EType::ARRAY)
-                , _number(0.0)
+                , _double(0.0)
+                , _integer(0)
                 , _bool(false)
-                , _string(String::Empty)
-                , _object(Null)
+                , _string("")
+                , _object(nullptr)
                 , _array(memory::MakeUnique<Array>(std::move(arr)))
             {
             }
 
+            /**
+             * Copy assignment operator
+             */
             Json &operator=(const Json &other);
 
-            Json &operator=(Json &&other);
+            /**
+             * Move assignment operator
+             */
+            Json &operator=(Json &&other) noexcept;
 
+            /**
+             * Assigns this Json value to a number
+             * @param val new value
+             * @return Json&
+             */
             inline Json &operator=(const double val)
             {
-                _type = EType::NUMBER;
-                _number = val;
+                _type = EType::DOUBLE;
+                _double = val;
+                _integer = (int64)val;
                 return (*this);
             }
 
+            /**
+             * Assigns this Json value to a number
+             * @param val new value
+             * @return Json&
+             */
+            inline Json &operator=(const int64 val)
+            {
+                _type = EType::INTEGER;
+                _double = (double)val;
+                _integer = val;
+                return (*this);
+            }
+
+            /**
+             * Assigns this Json value to a boolean
+             * @param val new value
+             * @return Json&
+             */
             inline Json &operator=(const bool val)
             {
                 _type = EType::BOOLEAN;
@@ -346,6 +762,11 @@ namespace bpf
                 return (*this);
             }
 
+            /**
+             * Assigns this Json value to a string
+             * @param val new value
+             * @return Json&
+             */
             inline Json &operator=(const String &val)
             {
                 _type = EType::STRING;
@@ -353,6 +774,11 @@ namespace bpf
                 return (*this);
             }
 
+            /**
+             * Assigns this Json value to a string
+             * @param val new value
+             * @return Json&
+             */
             inline Json &operator=(const char *val)
             {
                 _type = EType::STRING;
@@ -360,6 +786,11 @@ namespace bpf
                 return (*this);
             }
 
+            /**
+             * Assigns this Json value to an object
+             * @param val new value
+             * @return Json&
+             */
             inline Json &operator=(const Object &val)
             {
                 _type = EType::OBJECT;
@@ -367,6 +798,11 @@ namespace bpf
                 return (*this);
             }
 
+            /**
+             * Assigns this Json value to an array
+             * @param val new value
+             * @return Json&
+             */
             inline Json &operator=(const Array &val)
             {
                 _type = EType::ARRAY;
@@ -374,18 +810,44 @@ namespace bpf
                 return (*this);
             }
 
-            inline EType Type() const noexcept
+            /**
+             * Returns the type of this Json value
+             * @return Json::Type object
+             */
+            inline _bpf_internal_json_type Type() const noexcept
             {
-                return (_type);
+                return (_bpf_internal_json_type(_type));
             }
 
+            /**
+             * Compares a Json value with a number
+             * @param other value to compare with
+             * @return true if this is equal to other, false otherwise
+             */
             inline bool operator==(double other) const
             {
-                if (_type != EType::NUMBER)
+                if (_type != EType::DOUBLE && _type != EType::INTEGER)
                     return (false);
-                return (_number == other);
+                return (_double == other);
             }
 
+            /**
+             * Compares a Json value with a number
+             * @param other value to compare with
+             * @return true if this is equal to other, false otherwise
+             */
+            inline bool operator==(int64 other) const
+            {
+                if (_type != EType::DOUBLE && _type != EType::INTEGER)
+                    return (false);
+                return (_integer == other);
+            }
+
+            /**
+             * Compares a Json value with a boolean
+             * @param other value to compare with
+             * @return true if this is equal to other, false otherwise
+             */
             inline bool operator==(bool other) const
             {
                 if (_type != EType::BOOLEAN)
@@ -393,6 +855,11 @@ namespace bpf
                 return (_bool == other);
             }
 
+            /**
+             * Compares a Json value with a string
+             * @param other value to compare with
+             * @return true if this is equal to other, false otherwise
+             */
             inline bool operator==(const String &other) const
             {
                 if (_type != EType::STRING)
@@ -400,22 +867,49 @@ namespace bpf
                 return (_string == other);
             }
 
+            /**
+             * Compares a Json value with a string
+             * @param other value to compare with
+             * @return true if this is equal to other, false otherwise
+             */
             inline bool operator==(const char *other) const
             {
-                if (_type == EType::NONE && other == Null)
+                if (_type == EType::NONE && other == nullptr)
                     return (true);
                 if (_type != EType::STRING)
                     return (false);
                 return (_string == String(other));
             }
 
+            /**
+             * Converts this value to a number
+             * @throw JsonException if the value type is not compatible
+             * @return double
+             */
             inline operator double() const
             {
-                if (_type != EType::NUMBER)
+                if (_type != EType::DOUBLE && _type != EType::INTEGER)
                     throw JsonException("Incompatible value type");
-                return (_number);
+                return (_double);
             }
 
+            /**
+             * Converts this value to a number
+             * @throw JsonException if the value type is not compatible
+             * @return integer 64 bits
+             */
+            inline operator int64() const
+            {
+                if (_type != EType::DOUBLE && _type != EType::INTEGER)
+                    throw JsonException("Incompatible value type");
+                return (_integer);
+            }
+
+            /**
+             * Converts this value to a boolean
+             * @throw JsonException if the value type is not compatible
+             * @return bool
+             */
             inline operator bool() const
             {
                 if (_type != EType::BOOLEAN)
@@ -423,6 +917,11 @@ namespace bpf
                 return (_bool);
             }
 
+            /**
+             * Converts this value to a string
+             * @throw JsonException if the value type is not compatible
+             * @return immutable high-level string reference
+             */
             inline operator const String &() const
             {
                 if (_type != EType::STRING)
@@ -430,6 +929,11 @@ namespace bpf
                 return (_string);
             }
 
+            /**
+             * Converts this value to a Json Array
+             * @throw JsonException if the value type is not compatible
+             * @return immutable Array reference
+             */
             inline operator const Array &() const
             {
                 if (_type != EType::ARRAY)
@@ -437,6 +941,11 @@ namespace bpf
                 return (*_array);
             }
 
+            /**
+             * Converts this value to a Json Object
+             * @throw JsonException if the value type is not compatible
+             * @return immutable Object reference
+             */
             inline operator const Object &() const
             {
                 if (_type != EType::OBJECT)
@@ -444,6 +953,11 @@ namespace bpf
                 return (*_object);
             }
 
+            /**
+             * Converts this value to a Json Array
+             * @throw JsonException if the value type is not compatible
+             * @return mutable Array reference
+             */
             inline operator Array &()
             {
                 if (_type != EType::ARRAY)
@@ -451,6 +965,11 @@ namespace bpf
                 return (*_array);
             }
 
+            /**
+             * Converts this value to a Json Object
+             * @throw JsonException if the value type is not compatible
+             * @return mutable Object reference
+             */
             inline operator Object &()
             {
                 if (_type != EType::OBJECT)
@@ -458,35 +977,72 @@ namespace bpf
                 return (*_object);
             }
 
-            inline double AsNumber() const
+            /**
+             * Converts this value to a number
+             * @throw JsonException if the value type is not compatible
+             * @return double
+             */
+            inline double ToDouble() const
             {
-                if (_type != EType::NUMBER)
+                if (_type != EType::DOUBLE && _type != EType::INTEGER)
                     throw JsonException("Incompatible value type");
-                return (_number);
+                return (_double);
             }
 
-            inline bool AsBool() const
+            /**
+             * Converts this value to a number
+             * @throw JsonException if the value type is not compatible
+             * @return integer 64 bits
+             */
+            inline int64 ToInteger() const
+            {
+                if (_type != EType::DOUBLE && _type != EType::INTEGER)
+                    throw JsonException("Incompatible value type");
+                return (_integer);
+            }
+
+            /**
+             * Converts this value to a boolean
+             * @throw JsonException if the value type is not compatible
+             * @return bool
+             */
+            inline bool ToBoolean() const
             {
                 if (_type != EType::BOOLEAN)
                     throw JsonException("Incompatible value type");
                 return (_bool);
             }
 
-            inline const String &AsString() const
+            /**
+             * Converts this value to a string
+             * @throw JsonException if the value type is not compatible
+             * @return immutable high-level string reference
+             */
+            inline const String &ToString() const
             {
                 if (_type != EType::STRING)
                     throw JsonException("Incompatible value type");
                 return (_string);
             }
 
-            inline const Array &AsArray() const
+            /**
+             * Converts this value to a Json Array
+             * @throw JsonException if the value type is not compatible
+             * @return immutable Array reference
+             */
+            inline const Array &ToArray() const
             {
                 if (_type != EType::ARRAY)
                     throw JsonException("Incompatible value type");
                 return (*_array);
             }
 
-            inline const Object &AsObject() const
+            /**
+             * Converts this value to a Json Object
+             * @throw JsonException if the value type is not compatible
+             * @return immutable Object reference
+             */
+            inline const Object &ToObject() const
             {
                 if (_type != EType::OBJECT)
                     throw JsonException("Incompatible value type");

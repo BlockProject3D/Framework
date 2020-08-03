@@ -1,16 +1,16 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -34,25 +34,47 @@ namespace bpf
 {
     namespace system
     {
+        /**
+         * Helper union to expand any type into a byte array
+         * @tparam T the type to expand
+         */
         template <typename T>
         union TypeExpander
         {
+            /**
+             * The value to expand
+             */
             T Data;
+
+            /**
+             * The byte content
+             */
             uint8 Bytes[sizeof(T)];
 
+            /**
+             * Constructs a TypeExpander from a value
+             * @param d the value to expand
+             */
             inline TypeExpander(T d)
                 : Data(d)
             {
             }
 
+            /**
+             * Constructs a TypeExpander from a byte array
+             * @param d the byte array to copy bytes from
+             */
             inline TypeExpander(std::initializer_list<uint8> d)
             {
                 fsize i = 0;
 
-                for (auto it = d.begin(); it != d.end(); ++it)
-                    Bytes[i++] = *it;
+                for (unsigned char it : d)
+                    Bytes[i++] = it;
             }
 
+            /**
+             * Constructs an empty TypeExpander
+             */
             inline TypeExpander()
                 : Data(0)
             {

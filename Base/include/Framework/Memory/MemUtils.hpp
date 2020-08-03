@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -36,7 +36,16 @@ namespace bpf
         class MemUtils
         {
         public:
-            template <typename T, typename ...Args>
+            /**
+             * Allocates a new C++ object.
+             * WARNING: Never mix allocators
+             * @tparam T type of object to allocate
+             * @tparam Args argument types to the constructor
+             * @param args arguments to the constructor
+             * @throw MemoryException in case allocation is impossible
+             * @return pointer to new allocated object
+             */
+            template <typename T, typename... Args>
             inline static T *New(Args &&... args)
             {
                 T *obj = static_cast<T *>(Memory::Malloc(sizeof(T)));
@@ -45,16 +54,32 @@ namespace bpf
                 return (obj);
             }
 
+            /**
+             * Frees a C++ object.
+             * WARNING: Never mix allocators
+             * @tparam T type of object to free
+             * @param obj pointer to object
+             */
             template <typename T>
-            inline static void Delete(T *obj)
+            inline static void Delete(T *obj) noexcept
             {
-                if (obj == Null)
+                if (obj == nullptr)
                     return;
                 obj->~T();
                 Memory::Free(obj);
             }
 
-            template <typename T, typename ...Args>
+            /**
+             * Allocates an array of C++ objects.
+             * WARNING: Never mix allocators
+             * @tparam T type of object to allocate
+             * @tparam Args argument types to the constructor
+             * @param count number of objects to store in the array
+             * @param args arguments to the constructor
+             * @throw MemoryException in case allocation is impossible
+             * @return pointer to new allocated array
+             */
+            template <typename T, typename... Args>
             inline static T *NewArray(const fsize count, Args &&... args)
             {
                 T *mem = static_cast<T *>(Memory::Malloc(count * sizeof(T)));
@@ -63,15 +88,34 @@ namespace bpf
                 return (mem);
             }
 
+            /**
+             * Frees an array of C++ objects.
+             * WARNING: Never mix allocators
+             * @tparam T type of object to free
+             * @param mem pointer to allocated array
+             * @param count number of objects stored in the array
+             */
             template <typename T>
-            inline static void DeleteArray(T *mem, const fsize count)
+            inline static void DeleteArray(T *mem, const fsize count) noexcept
             {
                 for (fsize i = 0; i != count; ++i)
                     mem[i].~T();
                 Memory::Free(mem);
             }
 
-            template <typename T, typename ...Args>
+            /**
+             * Resize an array of C++ objects.
+             * WARNING: Never mix allocators
+             * @tparam T type of object stored in the array
+             * @tparam Args argument types to the constructor
+             * @param mem pointer to allocated array
+             * @param oldCount current number of objects stored in the array
+             * @param newCount new wanted number objects to store in the array
+             * @param args arguments to the constructor
+             * @throw MemoryException in case allocation is impossible
+             * @return pointer same array pointer or pointer to a newly allocated array
+             */
+            template <typename T, typename... Args>
             inline static T *ResizeArray(T *mem, const fsize oldCount, const fsize newCount, Args &&... args)
             {
                 if (newCount == oldCount)
@@ -80,7 +124,8 @@ namespace bpf
                 {
                     for (fsize i = newCount; i != oldCount; ++i)
                         mem[i].~T();
-                    return (reinterpret_cast<T *>(Memory::Realloc(reinterpret_cast<void *>(mem), (newCount + 1) * sizeof(T))));
+                    return (reinterpret_cast<T *>(
+                        Memory::Realloc(reinterpret_cast<void *>(mem), (newCount + 1) * sizeof(T))));
                 }
                 else
                 {

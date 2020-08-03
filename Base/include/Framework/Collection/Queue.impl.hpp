@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -125,7 +125,11 @@ namespace bpf
             --_count;
             if (_maxSize > 0 && _headPtr >= _maxSize)
                 _headPtr = 0;
+#ifdef WINDOWS
             return (std::move(elem));
+#else
+            return (elem); //Unix wants to be potentially slower (copy instead of move)
+#endif
         }
     }
 }

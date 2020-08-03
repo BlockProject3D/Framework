@@ -1,16 +1,16 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -104,6 +104,21 @@ TEST(Quat, Invert_Test2)
     bpf::Quatld expected = bpf::Quatld::Identity;
 
     EXPECT_EQ(res, expected);
+}
+
+TEST(Quat, Interpolation)
+{
+    bpf::Quatld q = bpf::Quatld(bpf::Vector3ld(bpf::math::Mathld::Pi / 2.0, bpf::math::Mathld::Pi / 2.0, bpf::math::Mathld::Pi / 4.0));
+    bpf::Quatld q1 = bpf::Quatld(bpf::Vector3ld(1, 0, 0), bpf::math::Mathld::Pi / 2.0);
+    bpf::Quatld q2 = bpf::Quatld(bpf::Vector3ld(-1, -1, 1), bpf::math::Mathld::Pi / 2.0);
+
+    EXPECT_EQ(bpf::Quatld::Lerp(q, q, 1.0f), q);
+    EXPECT_EQ(bpf::Quatld::Lerp(q, q, 0.1f), q);
+    EXPECT_EQ(bpf::Quatld::Slerp(q, q, 1.0f), q);
+    EXPECT_EQ(bpf::Quatld::Slerp(q, q, 0.1f), q);
+    EXPECT_EQ(bpf::Quatld::Slerp(q, q1, 1.0f), q1);
+    EXPECT_EQ(bpf::Quatld::Slerp(q, q2, 1.0f), q2);
+    EXPECT_NE(bpf::Quatld::Slerp(q, q2, 1.0f), q);
 }
 
 TEST(Quat, Norm)

@@ -1,16 +1,16 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -29,9 +29,7 @@
 #include <Framework/Memory/Utility.hpp>
 #include <Framework/String.hpp>
 #include <Framework/Tuple.hpp>
-#include <cassert>
 #include <gtest/gtest.h>
-#include <iostream>
 
 TEST(Tuple, Basic)
 {
@@ -98,7 +96,7 @@ TEST(Tuple, Move)
     EXPECT_EQ(tp.Get<float>(), 42.42f);
     EXPECT_EQ(tp.Get<double>(), 423.423);
 
-    auto mv = std::move(tp);
+    auto mv = std::move(tp); //NOLINT (Unit testing)
 
     EXPECT_EQ(mv.Size(), 3U);
     EXPECT_EQ(mv.Get<int>(), 42);
@@ -141,7 +139,7 @@ TEST(Tuple, Move_1)
     EXPECT_EQ(mv.Get<double>(), 423.423);
     EXPECT_STREQ(*mv.Get<3>(), "test");
 
-    EXPECT_EQ(tp.Get<3>().Len(), 0);
+    EXPECT_EQ(tp.Get<3>().Len(), 0); //NOLINT (Unit testing)
 }
 
 TEST(Tuple, String)
@@ -195,7 +193,7 @@ TEST(Tuple, Move_NonCopy_Types)
     EXPECT_EQ(*tp.Get<1>(), -1);
 
     auto mv = std::move(tp);
-    EXPECT_EQ(tp.Get<0>(), Null);
+    EXPECT_EQ(tp.Get<0>(), nullptr); //NOLINT (Unit testing)
     EXPECT_EQ(mv.Size(), 2U);
     EXPECT_EQ(*mv.Get<bpf::memory::UniquePtr<int>>(), 1);
     EXPECT_EQ(*mv.Get<0>(), 1);
@@ -228,9 +226,9 @@ public:
 
 TEST(Tuple, Special_Preliminary)
 {
-    auto t = bpf::__internal_tp::IsAllDefaultConstructible<int, float, double>::Value;
-    auto t1 = bpf::__internal_tp::IsAllDefaultConstructible<Test1, Test2, int>::Value;
-    auto t2 = bpf::__internal_tp::IsAllDefaultConstructible<float, Test1, Test2, int>::Value;
+    auto t = bpf::_bpf_internal_tp::IsAllDefaultConstructible<int, float, double>::Value;
+    auto t1 = bpf::_bpf_internal_tp::IsAllDefaultConstructible<Test1, Test2, int>::Value;
+    auto t2 = bpf::_bpf_internal_tp::IsAllDefaultConstructible<float, Test1, Test2, int>::Value;
 
     EXPECT_TRUE(t);
     EXPECT_FALSE(t1);

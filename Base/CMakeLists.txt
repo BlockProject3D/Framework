@@ -2,11 +2,12 @@ cmake_minimum_required(VERSION 3.10)
 project(BPF)
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/../CMakes/Framework.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/../Version.cmake")
 
 set(SOURCES
     ./include/Framework/IO/File.hpp
     ./include/Framework/IO/EStringSerializer.hpp
-    ./include/Framework/IO/EStringEncoder.hpp
+    ./include/Framework/IO/ECharacterEncoding.hpp
     ./include/Framework/IO/FileStream.hpp
     ./include/Framework/IO/MemoryMapper.hpp
     ./include/Framework/IO/IOException.hpp
@@ -58,8 +59,9 @@ set(SOURCES
     ./include/Framework/Math/NonSquareMatrixException.hpp
     ./include/Framework/Math/NonInvertibleMatrixException.hpp
     ./include/Framework/Math/Color.hpp
+    ./include/Framework/Math/Random.hpp
     ./include/Framework/Log/Logger.hpp
-    ./include/Framework/Log/ILogHandler.hpp
+    ./include/Framework/Log/ILogAdapter.hpp
     ./include/Framework/Log/ELogLevel.hpp
     ./include/Framework/Log/DefaultLogger.hpp
     ./include/Framework/Log/FileLogger.hpp
@@ -77,14 +79,16 @@ set(SOURCES
     ./include/Framework/Memory/WeakPtr.impl.hpp
     ./include/Framework/Memory/Object.hpp
     ./include/Framework/Memory/ObjectFactory.hpp
-    ./include/Framework/Memory/IObjectConstructor.hpp
+    ./include/Framework/Memory/ObjectConstructor.hpp
     ./include/Framework/Memory/ObjectPtr.hpp
+    ./include/Framework/Memory/RawMemberFunction.hpp
     ./include/Framework/Network/Network.hpp
     ./include/Framework/System/Module.hpp
     ./include/Framework/System/ModuleException.hpp
     ./include/Framework/System/OSException.hpp
-    ./include/Framework/System/ModuleManager.hpp
-    ./include/Framework/System/ModuleManager.impl.hpp
+    ./include/Framework/System/PluginLoader.hpp
+    ./include/Framework/System/PluginLoader.impl.hpp
+    ./include/Framework/System/Plugin.hpp
     ./include/Framework/System/Platform.hpp
     ./include/Framework/System/TypeExpander.hpp
     ./include/Framework/System/DateTime.hpp
@@ -92,11 +96,12 @@ set(SOURCES
     ./include/Framework/System/Timer.hpp
     ./include/Framework/System/Thread.hpp
     ./include/Framework/System/Mutex.hpp
-    ./include/Framework/System/ThreadManager.hpp
-    ./include/Framework/System/ModuleInterface.hpp
-    ./include/Framework/System/IApplication.hpp
+    ./include/Framework/System/ThreadPool.hpp
+    ./include/Framework/System/PluginInterface.hpp
+    ./include/Framework/System/Application.hpp
     ./include/Framework/System/ScopeLock.hpp
     ./include/Framework/System/Paths.hpp
+    ./include/Framework/System/Process.hpp
     ./include/Framework/System/Stringifier.DateTime.hpp
     ./include/Framework/System/EntryPoint.hpp
     ./include/Framework/Collection/Iterator.hpp
@@ -122,6 +127,10 @@ set(SOURCES
     ./include/Framework/Collection/Stringifier.Array.hpp
     ./include/Framework/Collection/Stringifier.HashMap.hpp
     ./include/Framework/Collection/Stringifier.Map.hpp
+    ./include/Framework/Collection/Array.Iterator.hpp
+    ./include/Framework/Collection/List.Iterator.hpp
+    ./include/Framework/Collection/HashMap.Iterator.hpp
+    ./include/Framework/Collection/Map.Iterator.hpp
     ./include/Framework/Collection/StackException.hpp
     ./include/Framework/Json/Json.hpp
     ./include/Framework/Json/Lexer.hpp
@@ -129,16 +138,14 @@ set(SOURCES
     ./include/Framework/Json/Writer.hpp
     ./include/Framework/Json/JsonException.hpp
     ./include/Framework/Json/JsonParseException.hpp
-    ./include/Framework/API.hpp
+    ./include/Framework/Api.hpp
     ./include/Framework/BinUtils.hpp
     ./include/Framework/Types.hpp
     ./include/Framework/Tuple.hpp
     ./include/Framework/TypeInfo.hpp
-    ./include/Framework/Delegate.hpp
     ./include/Framework/Hash.hpp
     ./include/Framework/Hash.Base.hpp
     ./include/Framework/Profiler.hpp
-    ./include/Framework/Math/Random.hpp
     ./include/Framework/Exception.hpp
     ./include/Framework/RuntimeException.hpp
     ./include/Framework/IndexException.hpp
@@ -151,6 +158,9 @@ set(SOURCES
     ./include/Framework/BaseConvert.impl.hpp
     ./include/Framework/Scalar.hpp
     ./include/Framework/ParseException.hpp
+    ./include/Framework/Dynamic.hpp
+    ./include/Framework/Delegate.hpp
+    ./include/Framework/Event.hpp
     ./src/Framework/IO/File.cpp
     ./src/Framework/IO/OSPrivate.hpp
     ./src/Framework/IO/OSPrivate.cpp
@@ -164,7 +174,7 @@ set(SOURCES
     ./src/Framework/IO/TextWriter.cpp
     ./src/Framework/IO/Console.cpp
     ./src/Framework/IO/ConsoleReader.cpp
-    ./src/Framework/IO/ConsoleWriter.cpp    
+    ./src/Framework/IO/ConsoleWriter.cpp
     ./src/Framework/Log/DefaultLogger.cpp
     ./src/Framework/Log/FileLogger.cpp
     ./src/Framework/Log/Logger.cpp
@@ -179,12 +189,13 @@ set(SOURCES
     ./src/Framework/System/Platform.cpp
     ./src/Framework/System/Module.cpp
     ./src/Framework/System/Paths.cpp
+    ./src/Framework/System/Process.cpp
     ./src/Framework/System/DateTime.cpp
     ./src/Framework/System/TimeSpan.cpp
     ./src/Framework/System/Thread.cpp
     ./src/Framework/System/Timer.cpp
     ./src/Framework/System/Mutex.cpp
-    ./src/Framework/System/ThreadManager.cpp
+    ./src/Framework/System/ThreadPool.cpp
     ./src/Framework/Json/Json.cpp
     ./src/Framework/Json/Lexer.cpp
     ./src/Framework/Json/Parser.cpp
@@ -197,6 +208,7 @@ set(SOURCES
     ./src/Framework/String.cpp
     ./src/Framework/Name.cpp
     ./src/Framework/Scalar.cpp
+    ./src/Framework/Dynamic.cpp
 )
 
 if (PLATFORM STREQUAL "Windows")
@@ -208,12 +220,13 @@ else (PLATFORM STREQUAL "Windows")
 endif (PLATFORM STREQUAL "Windows")
 
 bp_product_properties(BPF
-    VERSION_MAJOR 2
-    VERSION_MINOR 6
+    VERSION_MAJOR ${BP_VERSION_MAJOR}
+    VERSION_MINOR ${BP_VERSION_MINOR}
     DESCRIPTION "BlockProject 3D Framework"
 )
 
-bp_setup_module(BPF BPF_API)
+bp_setup_module(BPF API_MACRO BPF_API PACKAGE)
+target_compile_definitions(BPF PRIVATE "BP_VERSION_STRING=\"${BP_VERSION_STRING}\"")
 if (NOT WIN32)
 	target_link_libraries(BPF PRIVATE pthread)
 	target_link_libraries(BPF PRIVATE ${CMAKE_DL_LIBS})

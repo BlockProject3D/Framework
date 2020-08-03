@@ -1,4 +1,4 @@
-// Copyright (c) 2019, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -30,34 +30,34 @@
 
 namespace bpf
 {
-	template <typename T>
-	T BaseConvert<T>::FromString(const String &nbr)
-	{
-		T res = 0;
-		T cb = 1;
+    template <typename T>
+    T BaseConvert<T>::FromString(const String &nbr)
+    {
+        T res = 0;
+        T cb = 1;
 
-		for (fisize i = nbr.Len() - 1; i >= 0; --i)
-		{
-			if (!_base.Contains(nbr[i]))
-				throw ParseException("Invalid string");
-			res += (T)(_base.IndexOf(nbr[i])) * cb;
-			cb *= (T)_base.Len();
-		}
-		return (res);
-	}
+        for (fisize i = nbr.Len() - 1; i >= 0; --i)
+        {
+            if (!_base.Contains(nbr[i]))
+                throw ParseException("Invalid string");
+            res += (T)(_base.IndexOf(nbr[i])) * cb;
+            cb *= (T)_base.Len();
+        }
+        return (res);
+    }
 
-	template <typename T>
-	String BaseConvert<T>::ToString(T nbr)
-	{
-		String res = String::Empty;
+    template <typename T>
+    String BaseConvert<T>::ToString(T nbr)
+    {
+        String res = "";
 
-		if (nbr == 0)
-			return ("0");
-		while (nbr > 0)
-		{
-			res += _base[nbr % _base.Len()];
-			nbr /= (T)_base.Len();
-		}
-		return (res.Reverse());
-	}
+        if (nbr == 0)
+            return ("0");
+        while (nbr > 0)
+        {
+            res += _base[nbr % _base.Len()];
+            nbr /= (T)_base.Len();
+        }
+        return (res.Reverse());
+    }
 }

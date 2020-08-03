@@ -1,16 +1,16 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -35,30 +35,34 @@ using namespace bpf;
 Json::Array::Array(const std::initializer_list<Json> &vals)
 {
     for (auto &it : vals)
-        _data.Add(it);
+        Items.Add(it);
 }
 
 Json::Object::Object(const std::initializer_list<std::pair<String, Json>> &lst)
 {
     for (auto &it : lst)
-        _data[it.first] = it.second;
+        Properties[it.first] = it.second;
 }
 
 Json &Json::operator=(const Json &other)
 {
+    if (this == &other)
+        return (*this);
     _type = other._type;
-    _number = other._number;
+    _double = other._double;
+    _integer = other._integer;
     _bool = other._bool;
     _string = other._string;
-    _array = other._array != Null ? MakeUnique<Array>(*other._array) : Null;
-    _object = other._object != Null ? MakeUnique<Object>(*other._object) : Null;
+    _array = other._array != nullptr ? MakeUnique<Array>(*other._array) : nullptr;
+    _object = other._object != nullptr ? MakeUnique<Object>(*other._object) : nullptr;
     return (*this);
 }
 
-Json &Json::operator=(Json &&other)
+Json &Json::operator=(Json &&other) noexcept
 {
     _type = other._type;
-    _number = other._number;
+    _double = other._double;
+    _integer = other._integer;
     _bool = other._bool;
     _string = std::move(other._string);
     _array = std::move(other._array);

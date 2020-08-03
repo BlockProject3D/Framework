@@ -1,16 +1,16 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -30,21 +30,38 @@
 
 using namespace bpf;
 
-Name::Name(const char *str) noexcept
-    : _hash(5381)
+uint32 Name::Hash32(const char *str) noexcept
 {
+    uint32 hash = 5381;
+
     for (fsize i = 0; str[i]; ++i)
-        _hash = ((_hash << 5) + _hash) + str[i];
+        hash = ((hash << 5) + hash) + str[i];
+    return (hash);
 }
 
-Name::Name(const String &str) noexcept
-    : _hash(5381)
+uint32 Name::Hash32(const String &str) noexcept
 {
+    uint32 hash = 5381;
+
     for (fisize i = 0; i != str.Size(); ++i)
-        _hash = ((_hash << 5) + _hash) + str.ByteAt(i);
+        hash = ((hash << 5) + hash) + str.ByteAt(i);
+    return (hash);
 }
 
-Name::Name(const fsize hash) noexcept
-    : _hash(hash)
+uint64 Name::Hash64(const char *str) noexcept
 {
+    uint64 hash = 5381;
+
+    for (fsize i = 0; str[i]; ++i)
+        hash = ((hash << 5) + hash) + str[i];
+    return (hash);
+}
+
+uint64 Name::Hash64(const String &str) noexcept
+{
+    uint64 hash = 5381;
+
+    for (fisize i = 0; i != str.Size(); ++i)
+        hash = ((hash << 5) + hash) + str.ByteAt(i);
+    return (hash);
 }

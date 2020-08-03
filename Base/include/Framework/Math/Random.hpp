@@ -1,16 +1,16 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -27,37 +27,90 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include <limits.h>
+#include "Framework/Scalar.hpp"
 #include "Framework/Types.hpp"
 
 namespace bpf
 {
     namespace math
     {
+        /**
+         * Random number generator utility
+         */
         class BPF_API Random
         {
         private:
-            fint IntBounds(const fint min, const fint max);
+            static fint IntBounds(fint min, fint max);
 
         public:
-            Random();
-            explicit Random(const long seed);
-            fint NextInt(const fint max = INT_MAX);
-            fint NextInt(const fint min, const fint max);
-            uint8 NextByte(const uint8 max = 255);
-            uint8 NextByte(const uint8 min, const uint8 max);
-            uint16 NextShort(const uint16 max = 65535);
-            uint16 NextShort(const uint16 min, const uint16 max);
-
             /**
-             * Returns random float between 0 and 1
+             * Constructs a random with a default seed
              */
-            float NextFloat(const float min = 0);
+            Random();
 
             /**
-             * Returns random double between 0 and 1
+             * Constructs a random from a custom seed
+             * @param seed random seed to use
+             */
+            explicit Random(long seed);
+
+            /**
+             * Generate a new random integer
+             * @param max maximum value
+             * @return new 32 bit integer
+             */
+            fint NextInt(fint max = bpf::Int::MaxValue);
+
+            /**
+             * Generate a new random integer
+             * @param min minimum value
+             * @param max maximum value
+             * @return new 32 bit integer
+             */
+            fint NextInt(fint min, fint max);
+
+            /**
+             * Generate a new random integer
+             * @param max maximum value
+             * @return new 8 bit integer
+             */
+            uint8 NextByte(uint8 max = bpf::UInt8::MaxValue);
+
+            /**
+             * Generate a new random integer
+             * @param min minimum value
+             * @param max maximum value
+             * @return new 8 bit integer
+             */
+            uint8 NextByte(uint8 min, uint8 max);
+
+            /**
+             * Generate a new random integer
+             * @param max maximum value
+             * @return new 16 bit integer
+             */
+            uint16 NextShort(uint16 max = bpf::UInt16::MaxValue);
+
+            /**
+             * Generate a new random integer
+             * @param min minimum value
+             * @param max maximum value
+             * @return new 16 bit integer
+             */
+            uint16 NextShort(uint16 min, uint16 max);
+
+            /**
+             * Generate a new random float
+             * @param min minimum value
+             * @return random float between 0 and 1 added with min
+             */
+            float NextFloat(float min = 0);
+
+            /**
+             * Generate a new random double
+             * @return random double between 0 and 1
              */
             double NextDouble();
         };
     }
-};
+}

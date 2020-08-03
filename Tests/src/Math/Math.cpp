@@ -1,16 +1,16 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -26,18 +26,24 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <cassert>
 #include <iostream>
 #include <gtest/gtest.h>
 #include <Framework/Math/MathUtils.hpp>
 #include <Framework/Math/Math.hpp>
+#include <Framework/String.hpp>
+
+TEST(Math, Inifinity)
+{
+    EXPECT_STREQ(*bpf::String::ValueOf(bpf::math::inf), "inf");
+    EXPECT_STREQ(*bpf::String::ValueOf(-bpf::math::inf), "-inf");
+}
 
 TEST(Math, Epislon)
 {
-    EXPECT_EQ(bpf::math::__internal_math::GetEpsilon<float>(), bpf::math::Mathf::Epsilon);
-    EXPECT_EQ(bpf::math::__internal_math::GetEpsilon<double>(), bpf::math::Mathd::Epsilon);
-    EXPECT_EQ(bpf::math::__internal_math::GetEpsilon<long double>(), bpf::math::Mathld::Epsilon);
-    EXPECT_EQ(bpf::math::__internal_math::GetEpsilon<int>(), bpf::math::Math<int>::Epsilon);
+    EXPECT_EQ(bpf::math::_bpf_internal_math::GetEpsilon<float>(), bpf::math::Mathf::Epsilon);
+    EXPECT_EQ(bpf::math::_bpf_internal_math::GetEpsilon<double>(), bpf::math::Mathd::Epsilon);
+    EXPECT_EQ(bpf::math::_bpf_internal_math::GetEpsilon<long double>(), bpf::math::Mathld::Epsilon);
+    EXPECT_EQ(bpf::math::_bpf_internal_math::GetEpsilon<int>(), bpf::math::Math<int>::Epsilon);
     EXPECT_EQ(bpf::math::Math<int>::Epsilon, 0);
 }
 

@@ -1,16 +1,16 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -106,7 +106,7 @@ TEST(VectorDynamic, Operators)
     EXPECT_THROW(identity -= Vectorf(4), bpf::math::IncompatibleMatrixSizeException);
     identity += zero;
     EXPECT_THROW(identity += Vectorf(4), bpf::math::IncompatibleMatrixSizeException);
-    identity /= identity;
+    identity /= Vectorf::Identity(5);
     EXPECT_THROW(identity /= Vectorf(4), bpf::math::IncompatibleMatrixSizeException);
     EXPECT_EQ(identity, Vectorf::Identity(5));
     identity *= zero;
@@ -122,7 +122,7 @@ TEST(VectorDynamic, Operators)
     EXPECT_EQ(-identity, Vectorf(5, -2));
     EXPECT_FALSE(Vectorf::Identity(5) == Vectorf::Zero(5));
     EXPECT_NE(Vectorf::Identity(5), Vectorf::Zero(5));
-    EXPECT_THROW((void)(identity == Vectorf(4)), bpf::math::IncompatibleMatrixSizeException);
+    EXPECT_FALSE(identity == Vectorf(4));
 }
 
 TEST(VectorDynamic, Comparision)

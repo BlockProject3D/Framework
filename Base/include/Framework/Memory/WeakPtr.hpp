@@ -1,16 +1,16 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -35,6 +35,10 @@ namespace bpf
 {
     namespace memory
     {
+        /**
+         * Weak smart pointer
+         * @tparam T the type of the underlying instance
+         */
         template <typename T>
         class BP_TPL_API WeakPtr
         {
@@ -46,39 +50,56 @@ namespace bpf
             inline WeakPtr(fint *c, T *raw, fint *w)
                 : Count(c), WCount(w), RawPtr(raw)
             {
-                if (Count != Null)
+                if (Count != nullptr)
                     ++ *WCount;
             }
 
         public:
+            /**
+             * Constructs a WeakPtr from a SharedPtr
+             * @param other shared ptr to build from
+             */
             inline WeakPtr(const SharedPtr<T> &other) noexcept
                 : Count(other.Count), WCount(other.WCount), RawPtr(other.RawPtr)
             {
-                if (Count != Null)
+                if (Count != nullptr)
                     ++ *WCount;
             }
 
+            /**
+             * Copy constructor
+             */
             inline WeakPtr(const WeakPtr<T> &other) noexcept
                 : Count(other.Count), WCount(other.WCount), RawPtr(other.RawPtr)
             {
-                if (Count != Null)
+                if (Count != nullptr)
                     ++ *WCount;
             }
 
             ~WeakPtr();
 
+            /**
+             * Obtains a shared pointer from this weak pointer
+             * @return new SharedPtr
+             */
             SharedPtr<T> Lock() noexcept;
 
+            /**
+             * Quick casting function
+             * @tparam T1 the type to cast to
+             * @throw ClassCastException in debug only if the class cannot be casted
+             * @return new casted WeakPtr
+             */
             template <typename T1>
             inline WeakPtr<T1> Cast() const
             {
 #ifdef BUILD_DEBUG
-                if (RawPtr == Null)
-                    return (Null);
+                if (RawPtr == nullptr)
+                    return (nullptr);
                 else
                 {
                     auto ptr = dynamic_cast<T1 *>(RawPtr);
-                    if (ptr == Null)
+                    if (ptr == nullptr)
                         throw ClassCastException(String("Cannot cast from ") + TypeName<T>() + " to " + TypeName<T1>());
                     return (WeakPtr<T1>(Count, ptr, WCount));
                 }

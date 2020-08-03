@@ -1,16 +1,16 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -44,9 +44,9 @@ using namespace bpf;
 
 MemoryMapper::MemoryMapper(const File &file, fint mode)
     : _file(file)
-    , _mem(Null)
+    , _mem(nullptr)
     , _mode(mode)
-    , _memoff(Null)
+    , _memoff(nullptr)
 {
 #ifdef WINDOWS
     DWORD md = 0;
@@ -70,17 +70,17 @@ MemoryMapper::MemoryMapper(const File &file, fint mode)
         md2 = PAGE_READWRITE;
     else
         md2 = PAGE_READONLY;
-    _handle = CreateFileW(reinterpret_cast<LPCWSTR>(*file.PlatformPath().ToUTF16()), md, FILE_SHARE_READ, Null, md1, FILE_ATTRIBUTE_NORMAL, Null);
+    _handle = CreateFileW(reinterpret_cast<LPCWSTR>(*file.PlatformPath().ToUTF16()), md, FILE_SHARE_READ, nullptr, md1, FILE_ATTRIBUTE_NORMAL, nullptr);
     if (_handle == INVALID_HANDLE_VALUE)
         throw IOException(String("Could not open file '") + file.PlatformPath() + "' : " + OSPrivate::ObtainLastErrorString());
-    _mapper = CreateFileMappingW(_handle, Null, md2, 0, 0, Null);
-    if (_mapper == Null)
+    _mapper = CreateFileMappingW(_handle, nullptr, md2, 0, 0, nullptr);
+    if (_mapper == nullptr)
     {
         CloseHandle(_handle);
         throw IOException(String("Could not create mapper for file '") + file.PlatformPath() + "' : " + OSPrivate::ObtainLastErrorString());
     }
 #else
-    int md = 0;
+    int md;
     if ((mode & FILE_MODE_READ) && (mode & FILE_MODE_WRITE))
         md = O_RDWR | O_CREAT;
     else if (mode & FILE_MODE_READ)
@@ -95,18 +95,76 @@ MemoryMapper::MemoryMapper(const File &file, fint mode)
 #endif
 }
 
+MemoryMapper::MemoryMapper(MemoryMapper &&other) noexcept
+    : _file(std::move(other._file))
+    , _mem(other._mem)
+    , _mode(other._mode)
+    , _memoff(other._memoff)
+#ifdef WINDOWS
+    , _handle(other._handle)
+    , _mapper(other._mapper)
+#else
+    , _handle(other._handle)
+    , _size(other._size)
+#endif
+{
+    other._mem = nullptr;
+    other._memoff = nullptr;
+#ifdef WINDOWS
+    other._handle = INVALID_HANDLE_VALUE;
+    other._mapper = nullptr;
+#else
+    other._handle = -1;
+    other._size = 0;
+#endif
+}
+
 MemoryMapper::~MemoryMapper()
 {
+    Close();
+}
+
+void MemoryMapper::Close()
+{
 #ifdef WINDOWS
-    if (_mem != Null)
+    if (_mem != nullptr)
         UnmapViewOfFile(_mem);
-    CloseHandle(_mapper);
-    CloseHandle(_handle);
+    if (_mapper != nullptr)
+        CloseHandle(_mapper);
+    if (_handle != INVALID_HANDLE_VALUE)
+        CloseHandle(_handle);
+    _handle = INVALID_HANDLE_VALUE;
+    _mapper = nullptr;
 #else
-    if (_mem != Null)
+    if (_mem != nullptr)
         munmap(_mem, _size);
-    close(_handle);
+    if (_handle != -1)
+        close(_handle);
+    _handle = -1;
 #endif
+    _mem = nullptr;
+    _memoff = nullptr;
+}
+
+MemoryMapper &MemoryMapper::operator=(MemoryMapper &&other) noexcept
+{
+    Close();
+    _file = std::move(other._file);
+    _mem = other._mem;
+    _mode = other._mode;
+    _memoff = other._memoff;
+#ifdef WINDOWS
+    _handle = other._handle;
+    _mapper = other._mapper;
+    other._handle = INVALID_HANDLE_VALUE;
+    other._mapper = nullptr;
+#else
+    _handle = other._handle;
+    _size = other._size;
+    other._handle = -1;
+    other._size = 0;
+#endif
+    return (*this);
 }
 
 #ifdef WINDOWS
@@ -125,8 +183,8 @@ void MemoryMapper::Map(uint64 pos, fsize size)
     GetSystemInfo(&inf);
     DWORD psize = inf.dwAllocationGranularity;
     uint64 nearestpsize = (pos / psize) * psize;
-    _memoff = Null;
-    if (_mem != Null)
+    _memoff = nullptr;
+    if (_mem != nullptr)
         UnmapViewOfFile(_mem);
     DWORD md = 0;
     if (_mode & FILE_MODE_WRITE)
@@ -140,7 +198,7 @@ void MemoryMapper::Map(uint64 pos, fsize size)
     offsetLow = up._parts[0];
     offsetHeigh = up._parts[1];
     _mem = MapViewOfFile(_mapper, md, offsetHeigh, offsetLow, size);
-    if (_mem == Null)
+    if (_mem == nullptr)
         throw IOException(String("Could not map file '") + _file.PlatformPath() + "' : " + OSPrivate::ObtainLastErrorString());
     uint8 *addr = reinterpret_cast<uint8 *>(_mem);
     addr += pos - nearestpsize;
@@ -148,20 +206,32 @@ void MemoryMapper::Map(uint64 pos, fsize size)
 #else
     long psize = sysconf(_SC_PAGE_SIZE);
     uint64 nearestpsize = (pos / psize) * psize;
-    _memoff = Null;
-    if (_mem != Null)
+    _memoff = nullptr;
+    if (_mem != nullptr)
         munmap(_mem, _size);
     int md = 0;
     if (_mode & FILE_MODE_WRITE)
         md |= PROT_WRITE;
     if (_mode & FILE_MODE_READ)
         md |= PROT_READ;
-    _mem = mmap(Null, size, md, MAP_SHARED, _handle, nearestpsize);
+    _mem = mmap(nullptr, size, md, MAP_SHARED, _handle, nearestpsize);
     _size = size;
     if (_mem == MAP_FAILED)
         throw IOException(String("Could not map file '") + _file.PlatformPath() + "' : " + OSPrivate::ObtainLastErrorString());
-    uint8 *addr = reinterpret_cast<uint8 *>(_mem);
+    auto *addr = reinterpret_cast<uint8 *>(_mem);
     addr += pos - nearestpsize;
     _memoff = addr;
 #endif
+}
+
+void MemoryMapper::Unmap()
+{
+#ifdef WINDOWS
+    if (_mem != nullptr)
+        UnmapViewOfFile(_mem);
+#else
+    if (_mem != nullptr)
+        munmap(_mem, _size);
+#endif
+    _mem = nullptr;
 }

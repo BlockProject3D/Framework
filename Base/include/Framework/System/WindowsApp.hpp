@@ -1,4 +1,4 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -27,51 +27,43 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/System/IApplication.hpp"
+#include "Framework/System/Application.hpp"
+#include "Framework/Collection/List.hpp"
 
 namespace bpf
 {
     namespace system
     {
-        class BPF_API WindowsApp final : public IApplication
+        class BPF_API WindowsApp final : public Application
         {
         private:
             void *_hInstance;
             bool _hasConsole;
-            Paths _paths;
-            collection::HashMap<String, String> _env;
-            collection::Array<String> _args;
-            String _fileName;
 
-            void SetupEnvironment();
-            void SetupArgs();
-            void SetupFileName();
-            void SetupPaths();
+            collection::HashMap<String, String> _env;
+            String _fileName;
+            Paths _props;
+            void *_addDllDir;
+            void *_rmDllDir;
+            void *_kernel;
+            collection::List<void *> _dlls;
+
+            static collection::HashMap<String, String> SetupEnvironment();
+            String SetupFileName();
+            Paths SetupPaths();
 
         public:
             WindowsApp(void *hinstance, bool hasConsole);
+            ~WindowsApp();
 
-            void CreateConsole(const fint rows, const fint columns);
+            void CreateConsole(fint rows, fint columns) final;
 
-            const String &GetExeFileName() const noexcept
-            {
-                return (_fileName);
-            }
+            static collection::Array<String> GetArguments();
 
-            const collection::HashMap<String, String> &GetEnvironment() const noexcept
-            {
-                return (_env);
-            }
-
-            const collection::Array<String> &GetArguments() const noexcept
-            {
-                return (_args);
-            }
-
-            const Paths &GetPaths() const noexcept
-            {
-                return (_paths);
-            }
+            io::File GetWorkingDirectory() const final;
+            bool SetWorkingDirectory(const io::File &file) final;
+            void DisableErrorDialogs() noexcept final;
+            void SetModuleDirectories(const collection::Array<io::File> &directories);
         };
     }
 };

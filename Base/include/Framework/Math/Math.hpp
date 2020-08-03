@@ -1,16 +1,16 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -34,7 +34,7 @@ namespace bpf
 {
     namespace math
     {
-        namespace __internal_math
+        namespace _bpf_internal_math
         {
             template <typename T>
             inline constexpr T GetEpsilon()
@@ -61,6 +61,12 @@ namespace bpf
             }
         }
 
+        constexpr auto inf = INFINITY;
+
+        /**
+         * Core math functions
+         * @tparam T type of number to perform operations on
+         */
         template <typename T>
         class BP_TPL_API Math
         {
@@ -86,13 +92,14 @@ namespace bpf
             static constexpr T TwoPi = T(2) * Pi;
 
             /**
-             * Returns a very small value to represent acceptable rounding errors for various types
+             * Very small value to represent acceptable rounding errors for type T
              */
-            static constexpr T Epsilon = __internal_math::GetEpsilon<T>();
+            static constexpr T Epsilon = _bpf_internal_math::GetEpsilon<T>();
 
             /**
              * Absolute value
              * @param val value to convert to absolute value
+             * @return the absolute value of val
              */
             inline static T Abs(T val)
             {
@@ -104,6 +111,7 @@ namespace bpf
              * @param a the initial value
              * @param b the target value
              * @param alpha interpolation float
+             * @return interpolated value
              */
             inline static T Lerp(const T a, const T b, const T alpha)
             {
@@ -117,6 +125,7 @@ namespace bpf
              * @param srcmax the source maximum
              * @param dstmin the target minimum
              * @param dstmax the target maximum
+             * @return mapped value
              */
             inline static T Map(const T val, const T srcmin, const T srcmax, const T dstmin, const T dstmax)
             {
@@ -128,6 +137,7 @@ namespace bpf
              * @param val the value to map
              * @param min the minimum
              * @param max the maximum
+             * @return clamped value
              */
             inline static T Clamp(const T val, const T min, const T max)
             {
@@ -138,6 +148,7 @@ namespace bpf
              * Rounds a value at a defined precision
              * @param val the value to round
              * @param prec the number of decimals
+             * @return rounded value
              */
             inline static T Round(const T val, const fsize prec = 0)
             {
@@ -147,6 +158,7 @@ namespace bpf
             /**
              * Shortcut to the system's square root function
              * @param val number to calculate square root of
+             * @return square root of val
              */
             inline static T Sqrt(const T val)
             {
@@ -156,6 +168,7 @@ namespace bpf
             /**
              * Shortcut to the system's exponential function
              * @param val number for e power val
+             * @return exponential of val
              */
             inline static T Exp(const T val)
             {
@@ -165,6 +178,7 @@ namespace bpf
             /**
              * Shortcut to the system's natural logarithm function
              * @param val number for Ln(val)
+             * @return natural logarithm of val
              */
             inline static T Log(const T val)
             {
@@ -174,6 +188,7 @@ namespace bpf
             /**
              * Shortcut to the system's logarithm base 10 function
              * @param val number for Log(val)
+             * @return logarithm base 10 of val
              */
             inline static T Log10(const T val)
             {
@@ -184,42 +199,79 @@ namespace bpf
              * Shortcut to calculate log base n
              * @param val number for Log(val)
              * @param base the logarythm base to use
+             * @return logarithm of val in any base
              */
             inline static T Log(const T base, const T val)
             {
                 return (Log(val) / Log(base));
             }
 
+            /**
+             * Shortcut to the system's cos function
+             * @param val number for cos(val)
+             * @return T the cosine of val
+             */
             inline static T Cos(const T val)
             {
                 return ((T)::cos(val));
             }
 
+            /**
+             * Shortcut to the system's sin function
+             * @param val number for sin(val)
+             * @return T the sine of val
+             */
             inline static T Sin(const T val)
             {
                 return ((T)::sin(val));
             }
 
+            /**
+             * Shortcut to the system's tan function
+             * @param val number for tan(val)
+             * @return T the tangent of val
+             */
             inline static T Tan(const T val)
             {
                 return ((T)::tan(val));
             }
 
+            /**
+             * Shortcut to the system's acos function
+             * @param val number for acos(val)
+             * @return T the arc-cosine of val
+             */
             inline static T ArcCos(const T val)
             {
                 return ((T)::acos(val));
             }
 
+            /**
+             * Shortcut to the system's asin function
+             * @param val number for asin(val)
+             * @return T the arc-sine of val
+             */
             inline static T ArcSin(const T val)
             {
                 return ((T)::asin(val));
             }
 
+            /**
+             * Shortcut to the system's atan function
+             * @param val number for atan(val)
+             * @return T the arc-tangent of val
+             */
             inline static T ArcTan(const T val)
             {
                 return ((T)::atan(val));
             }
 
+            /**
+             * Shortcut to the system's atan2 function
+             * @param x x value for atan2(x, y)
+             * @param y y value for atan2(x, y)
+             * @return T the arc-tangent of (x, y)
+             */
             inline static T ArcTan2(const T y, const T x)
             {
                 return ((T)::atan2(y, x));

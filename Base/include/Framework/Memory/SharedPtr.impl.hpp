@@ -1,16 +1,16 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -35,7 +35,7 @@ namespace bpf
         template <typename T>
         SharedPtr<T>::~SharedPtr()
         {
-            if (Count == Null)
+            if (Count == nullptr)
                 return;
             -- *Count;
             if (*Count <= 0)
@@ -50,9 +50,9 @@ namespace bpf
         }
 
         template <typename T>
-        SharedPtr<T> &SharedPtr<T>::operator=(SharedPtr<T> &&other)
+        SharedPtr<T> &SharedPtr<T>::operator=(SharedPtr<T> &&other) noexcept
         {
-            if (Count != Null)
+            if (Count != nullptr)
             {
                 -- *Count;
                 if (*Count <= 0)
@@ -68,16 +68,18 @@ namespace bpf
             Count = other.Count;
             WCount = other.WCount;
             RawPtr = other.RawPtr;
-            other.Count = Null;
-            other.WCount = Null;
-            other.RawPtr = Null;
+            other.Count = nullptr;
+            other.WCount = nullptr;
+            other.RawPtr = nullptr;
             return (*this);
         }
 
         template <typename T>
         SharedPtr<T> &SharedPtr<T>::operator=(const SharedPtr<T> &other)
         {
-            if (Count != Null)
+            if (this == &other)
+                return (*this);
+            if (Count != nullptr)
             {
                 -- *Count;
                 if (*Count <= 0)
@@ -93,7 +95,7 @@ namespace bpf
             Count = other.Count;
             WCount = other.WCount;
             RawPtr = other.RawPtr;
-            if (Count != Null)
+            if (Count != nullptr)
                 ++ *Count;
             return (*this);
         }

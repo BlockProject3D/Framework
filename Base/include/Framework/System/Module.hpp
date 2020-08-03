@@ -1,16 +1,16 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -33,6 +33,9 @@ namespace bpf
 {
     namespace system
     {
+        /**
+         * Represents a module or dynamically loaded library
+         */
         class BPF_API Module
         {
         private:
@@ -46,38 +49,56 @@ namespace bpf
             /**
              * Opens a module binary at a specified path, file extension omitted.
              * @param path the path to the binary module without file extension
-             * @throws ModuleException
+             * @throw ModuleException in case of system error
              */
             explicit Module(const bpf::String &path);
+
+            /**
+             * Constructs an empty module
+             */
             inline Module() noexcept
-                : _path(String::Empty)
-                , _handle(Null)
+                : _path("")
+                , _handle(nullptr)
             {
             }
             ~Module();
 
-            inline Module(Module &&other)
+            /**
+             * Move constructor
+             */
+            inline Module(Module &&other) noexcept
                 : _path(std::move(other._path))
                 , _handle(other._handle)
             {
-                other._handle = Null;
+                other._handle = nullptr;
             }
 
+            /**
+             * Deleted copy constructor
+             */
             Module(const Module &other) = delete;
 
-            Module &operator=(Module &&other);
+            /**
+             * Move assignment operator
+             */
+            Module &operator=(Module &&other) noexcept;
 
+            /**
+             * Deleted copy assignment operator
+             */
             Module &operator=(const Module &other) = delete;
 
             /**
              * Loads a symbol from the module
              * @param name the symbol name
-             * @throws ModuleException
+             * @throw ModuleException in case of system error
+             * @return pointer to loaded symbol
              */
             void *LoadSymbol(const bpf::String &name);
 
             /**
              * Returns the path to this module
+             * @return high-level string
              */
             inline const bpf::String &Path() const noexcept
             {

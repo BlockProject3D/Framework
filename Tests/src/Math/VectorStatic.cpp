@@ -1,16 +1,16 @@
-// Copyright (c) 2020, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
-//
+// 
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -26,7 +26,6 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <cassert>
 #include <iostream>
 #include <gtest/gtest.h>
 #include <Framework/Math/Vector.hpp>
@@ -45,6 +44,10 @@ TEST(VectorStatic, Create_1)
     EXPECT_EQ(v.X, 0);
     EXPECT_EQ(v.Y, 0);
 
+    v = { 0, 0, 0 };
+    EXPECT_EQ(v.X, 0);
+    EXPECT_EQ(v.Y, 0);
+
     v = bpf::math::Vector2f(0);
     EXPECT_EQ(v.X, 0);
     EXPECT_EQ(v.Y, 0);
@@ -58,6 +61,11 @@ TEST(VectorStatic, Create_1)
     EXPECT_EQ(v.Y, 1);
 
     EXPECT_EQ(v.Dim(), 2U);
+
+    auto v1 = &v;
+    v = *v1;
+    EXPECT_EQ(v.X, 1);
+    EXPECT_EQ(v.Y, 1);
 }
 
 TEST(VectorStatic, Indexer_1)
@@ -86,7 +94,7 @@ TEST(VectorStatic, Operators_1)
     EXPECT_EQ(zero / identity, zero);
     identity -= zero;
     identity += zero;
-    identity /= identity;
+    identity /= bpf::math::Vector2f::Identity;
     EXPECT_EQ(identity, bpf::math::Vector2f::Identity);
     identity *= zero;
     EXPECT_EQ(identity, bpf::math::Vector2f::Zero);
@@ -201,6 +209,11 @@ TEST(VectorStatic, Create_2)
     EXPECT_EQ(v.Y, 0);
     EXPECT_EQ(v.Z, 0);
 
+    v = { 0, 0, 0, 0 };
+    EXPECT_EQ(v.X, 0);
+    EXPECT_EQ(v.Y, 0);
+    EXPECT_EQ(v.Z, 0);
+
     v = bpf::math::Vector3f(0);
     EXPECT_EQ(v.X, 0);
     EXPECT_EQ(v.Y, 0);
@@ -222,6 +235,12 @@ TEST(VectorStatic, Create_2)
     EXPECT_EQ(v.Z, 1);
 
     EXPECT_EQ(v.Dim(), 3U);
+
+    auto v1 = &v;
+    v = *v1;
+    EXPECT_EQ(v.X, 1);
+    EXPECT_EQ(v.Y, 1);
+    EXPECT_EQ(v.Z, 1);
 }
 
 TEST(VectorStatic, Indexer_2)
@@ -250,7 +269,7 @@ TEST(VectorStatic, Operators_2)
     EXPECT_EQ(zero / identity, zero);
     identity -= zero;
     identity += zero;
-    identity /= identity;
+    identity /= bpf::math::Vector3f::Identity;
     EXPECT_EQ(identity, bpf::math::Vector3f::Identity);
     identity *= zero;
     EXPECT_EQ(identity, bpf::math::Vector3f::Zero);
@@ -380,6 +399,12 @@ TEST(VectorStatic, Create_3)
     EXPECT_EQ(v.Z, 0);
     EXPECT_EQ(v.W, 0);
 
+    v = { 0, 0, 0, 0, 0 };
+    EXPECT_EQ(v.X, 0);
+    EXPECT_EQ(v.Y, 0);
+    EXPECT_EQ(v.Z, 0);
+    EXPECT_EQ(v.W, 0);
+
     v = bpf::math::Vector4f(0);
     EXPECT_EQ(v.X, 0);
     EXPECT_EQ(v.Y, 0);
@@ -405,6 +430,13 @@ TEST(VectorStatic, Create_3)
     EXPECT_EQ(v.W, 1);
 
     EXPECT_EQ(v.Dim(), 4U);
+
+    auto v1 = &v;
+    v = *v1;
+    EXPECT_EQ(v.X, 1);
+    EXPECT_EQ(v.Y, 1);
+    EXPECT_EQ(v.Z, 1);
+    EXPECT_EQ(v.W, 1);
 }
 
 TEST(VectorStatic, Indexer_3)
@@ -433,7 +465,7 @@ TEST(VectorStatic, Operators_3)
     EXPECT_EQ(zero / identity, zero);
     identity -= zero;
     identity += zero;
-    identity /= identity;
+    identity /= bpf::math::Vector4f::Identity;
     EXPECT_EQ(identity, bpf::math::Vector4f::Identity);
     identity *= zero;
     EXPECT_EQ(identity, bpf::math::Vector4f::Zero);
@@ -552,6 +584,13 @@ TEST(VectorStatic, Create_4)
     EXPECT_EQ(v(3), 0);
     EXPECT_EQ(v(4), 0);
 
+    v = { 0, 0, 0, 0, 0, 0 };
+    EXPECT_EQ(v(0), 0);
+    EXPECT_EQ(v(1), 0);
+    EXPECT_EQ(v(2), 0);
+    EXPECT_EQ(v(3), 0);
+    EXPECT_EQ(v(4), 0);
+
     v = Vector5f(0);
     EXPECT_EQ(v(0), 0);
     EXPECT_EQ(v(1), 0);
@@ -581,6 +620,13 @@ TEST(VectorStatic, Create_4)
     EXPECT_EQ(v(4), 1);
 
     EXPECT_EQ(v.Dim(), 5U);
+
+    auto v1 = &v;
+    v = *v1;
+    EXPECT_EQ(v(0), 1);
+    EXPECT_EQ(v(1), 1);
+    EXPECT_EQ(v(2), 1);
+    EXPECT_EQ(v(3), 1);
 }
 
 TEST(VectorStatic, Indexer_4)
@@ -609,7 +655,7 @@ TEST(VectorStatic, Operators_4)
     EXPECT_EQ(zero / identity, zero);
     identity -= zero;
     identity += zero;
-    identity /= identity;
+    identity /= Vector5f::Identity;
     EXPECT_EQ(identity, Vector5f::Identity);
     identity *= zero;
     EXPECT_EQ(identity, Vector5f::Zero);

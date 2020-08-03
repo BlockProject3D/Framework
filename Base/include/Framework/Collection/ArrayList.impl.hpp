@@ -1,4 +1,4 @@
-// Copyright (c) 2018, BlockProject
+// Copyright (c) 2020, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -10,7 +10,7 @@
 //     * Redistributions in binary form must reproduce the above copyright notice,
 //       this list of conditions and the following disclaimer in the documentation
 //       and/or other materials provided with the distribution.
-//     * Neither the name of BlockProject nor the names of its contributors
+//     * Neither the name of BlockProject 3D nor the names of its contributors
 //       may be used to endorse or promote products derived from this software
 //       without specific prior written permission.
 //
@@ -46,6 +46,27 @@ namespace bpf
 
         template <typename T>
         void ArrayList<T>::operator+=(const ArrayList<T> &other)
+        {
+            if (Size() + other.Size() > _arr.Size())
+                _arr.Resize(_arr.Size() + other.Size());
+            for (const auto &elem : other)
+                Add(elem);
+        }
+
+        template <typename T>
+        ArrayList<T> ArrayList<T>::operator+(const Array<T> &other) const
+        {
+            ArrayList<T> cpy = *this;
+
+            if (cpy.Size() + other.Size() > cpy._arr.Size())
+                cpy._arr.Resize(cpy._arr.Size() + other.Size());
+            for (const auto &elem : other)
+                cpy.Add(elem);
+            return (cpy);
+        }
+
+        template <typename T>
+        void ArrayList<T>::operator+=(const Array<T> &other)
         {
             if (Size() + other.Size() > _arr.Size())
                 _arr.Resize(_arr.Size() + other.Size());
@@ -110,9 +131,9 @@ namespace bpf
         {
             if (_curid + 1 >= _arr.Size())
                 _arr.Resize(_arr.Size() * 2);
-            for (fsize i = _curid; i > pos.ArrayPos(); --i)
+            for (fsize i = _curid; i > pos.Position(); --i)
                 _arr[i] = _arr[i - 1];
-            _arr[pos.ArrayPos()] = elem;
+            _arr[pos.Position()] = elem;
             ++_curid;
         }
 
@@ -121,9 +142,9 @@ namespace bpf
         {
             if (_curid + 1 >= _arr.Size())
                 _arr.Resize(_arr.Size() * 2);
-            for (fsize i = _curid; i > pos.ArrayPos(); --i)
+            for (fsize i = _curid; i > pos.Position(); --i)
                 _arr[i] = _arr[i - 1];
-            _arr[pos.ArrayPos()] = std::move(elem);
+            _arr[pos.Position()] = std::move(elem);
             ++_curid;
         }
 
@@ -263,7 +284,7 @@ namespace bpf
         }
 
         template <typename T>
-        typename ArrayList<T>::Iterator ArrayList<T>::Find(const std::function<bool(const fsize pos, const T & val)> &comparator)
+        typename ArrayList<T>::Iterator ArrayList<T>::Find(const std::function<bool(const fsize pos, const T &val)> &comparator)
         {
             fsize pos = 0;
 
@@ -277,7 +298,7 @@ namespace bpf
         }
 
         template <typename T>
-        bool ArrayList<T>::operator==(const ArrayList<T> &other)
+        bool ArrayList<T>::operator==(const ArrayList<T> &other) const noexcept
         {
             if (_curid != other._curid)
                 return (false);
