@@ -80,6 +80,8 @@ set(SOURCES
     src/MathEval.cpp
     src/Scalar.cpp
     src/RuntimeException.cpp
+    src/Delegate.cpp
+    src/Event.cpp
     src/main.cpp
     src/LowLevelMain.cpp
 )

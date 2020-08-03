@@ -81,6 +81,7 @@ set(SOURCES
     ./include/Framework/Memory/ObjectFactory.hpp
     ./include/Framework/Memory/ObjectConstructor.hpp
     ./include/Framework/Memory/ObjectPtr.hpp
+    ./include/Framework/Memory/RawMemberFunction.hpp
     ./include/Framework/Network/Network.hpp
     ./include/Framework/System/Module.hpp
     ./include/Framework/System/ModuleException.hpp
@@ -142,7 +143,6 @@ set(SOURCES
     ./include/Framework/Types.hpp
     ./include/Framework/Tuple.hpp
     ./include/Framework/TypeInfo.hpp
-    ./include/Framework/Delegate.hpp
     ./include/Framework/Hash.hpp
     ./include/Framework/Hash.Base.hpp
     ./include/Framework/Profiler.hpp
@@ -159,6 +159,8 @@ set(SOURCES
     ./include/Framework/Scalar.hpp
     ./include/Framework/ParseException.hpp
     ./include/Framework/Dynamic.hpp
+    ./include/Framework/Delegate.hpp
+    ./include/Framework/Event.hpp
     ./src/Framework/IO/File.cpp
     ./src/Framework/IO/OSPrivate.hpp
     ./src/Framework/IO/OSPrivate.cpp

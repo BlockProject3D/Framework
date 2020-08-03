@@ -29,6 +29,7 @@
 #pragma once
 #include "Framework/Memory/ClassCastException.hpp"
 #include "Framework/Memory/Object.hpp"
+#include "Framework/Memory/RawMemberFunction.hpp"
 
 namespace bpf
 {
@@ -189,6 +190,38 @@ namespace bpf
             }
 
             /**
+             * Call a pointer to a member function on this smart pointer
+             * @tparam R the function return type
+             * @tparam U the object type which must be the same as T
+             * @tparam Args the types of the function arguments
+             * @param fn the function pointer itself
+             * @return RawMemberFunction
+             */
+            template <typename R, typename U, typename... Args>
+            inline typename std::enable_if<std::is_class<U>::value && std::is_same<T, U>::value,
+                                           RawMemberFunction<U, R, R (U::*)(Args...)>>::type
+            operator->*(R (U::*fn)(Args...)) const
+            {
+                return (RawMemberFunction<U, R, R (U::*)(Args...)>(RawPtr, fn));
+            }
+
+            /**
+             * Call a pointer to a member function on this smart pointer
+             * @tparam R the function return type
+             * @tparam U the object type which must be the same as T
+             * @tparam Args the types of the function arguments
+             * @param fn the function pointer itself
+             * @return RawMemberFunction
+             */
+            template <typename R, typename U, typename... Args>
+            inline typename std::enable_if<std::is_class<U>::value && std::is_same<T, U>::value,
+                RawMemberFunction<U, R, R (U::*)(Args...) const>>::type
+            operator->*(R (U::*fn)(Args...) const) const
+            {
+                return (RawMemberFunction<U, R, R (U::*)(Args...) const>(RawPtr, fn));
+            }
+
+            /**
              * Returns the raw pointer
              * @return low-level raw pointer
              */
@@ -267,6 +300,9 @@ namespace bpf
                 return (ObjectPtr<T1>(static_cast<T1 *>(RawPtr)));
 #endif
             }
+
+            template <typename T1>
+            friend class ObjectPtr;
         };
     }
 }
