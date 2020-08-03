@@ -45,12 +45,51 @@ public:
     {
         return (_val);
     }
+
+    int TestFunc2() const
+    {
+        return (_val);
+    }
 };
 
-/*TEST(Event, Basic)
+TEST(Event, Basic_NonConst)
 {
     auto ptr = bpf::memory::MakeUnique<MyObject>(42);
     bpf::Event<int()> ev;
     ev += bpf::Delegate<int()>(&MyObject::TestFunc, ptr.Raw());
+    EXPECT_EQ(ev.GetEventCount(), 1u);
     ev.Invoke();
-}*/
+    EXPECT_EQ(ev.GetEventCount(), 1u);
+}
+
+TEST(Event, Basic_Const)
+{
+    auto ptr = bpf::memory::MakeUnique<MyObject>(42);
+    bpf::Event<int() const> ev;
+    ev += bpf::Delegate<int() const>(&MyObject::TestFunc2, ptr.Raw());
+    EXPECT_EQ(ev.GetEventCount(), 1u);
+    ev.Invoke();
+    EXPECT_EQ(ev.GetEventCount(), 1u);
+}
+
+TEST(Event, Safety_NonConst)
+{
+    auto ptr = bpf::memory::MakeUnique<MyObject>(42);
+    bpf::Event<int()> ev;
+    ev += bpf::Delegate<int()>(&MyObject::TestFunc, ptr.Raw());
+    ptr = nullptr;
+    EXPECT_EQ(ev.GetEventCount(), 1u);
+    ev.Invoke();
+    EXPECT_EQ(ev.GetEventCount(), 0);
+}
+
+TEST(Event, Safety_Const)
+{
+    auto ptr = bpf::memory::MakeUnique<MyObject>(42);
+    bpf::Event<int() const> ev;
+    ev += bpf::Delegate<int() const>(&MyObject::TestFunc2, ptr.Raw());
+    ptr = nullptr;
+    EXPECT_EQ(ev.GetEventCount(), 1u);
+    ev.Invoke();
+    EXPECT_EQ(ev.GetEventCount(), 0);
+}

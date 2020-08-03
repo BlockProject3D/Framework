@@ -70,9 +70,18 @@ namespace bpf
             {
                 if (!*it)
                     _lst.RemoveAt(it);
-                if (it != _lst.end() && *it)
+                if (it != _lst.end())
                     (*it)(std::forward<Args>(args)...);
             }
+        }
+
+        /**
+         * Returns number of events
+         * @return unsigned
+         */
+        inline fsize GetEventCount() const noexcept
+        {
+            return (_lst.Size());
         }
     };
 
@@ -103,12 +112,22 @@ namespace bpf
          */
         inline void Invoke(Args &&... args)
         {
-            for (auto &it = _lst.begin(); it != _lst.end(); ++it)
+            for (auto it = _lst.begin(); it != _lst.end(); ++it)
             {
                 if (!*it)
                     _lst.RemoveAt(it);
-                *it(std::forward<Args>(args)...);
+                if (it != _lst.end())
+                    (*it)(std::forward<Args>(args)...);
             }
+        }
+
+        /**
+         * Returns number of events
+         * @return unsigned
+         */
+        inline fsize GetEventCount() const noexcept
+        {
+            return (_lst.Size());
         }
     };
 }

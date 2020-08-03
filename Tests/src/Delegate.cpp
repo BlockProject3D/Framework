@@ -51,7 +51,7 @@ public:
         res = _val;
     }
 
-    int TestFunc2() const //NOLINT
+    int TestFunc2() const
     {
         return (_val);
     }
