@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(BPF.Compression)
 
-include("${CMAKE_CURRENT_SOURCE_DIR}/../CMakes/Framework.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/../CMakes/Module.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/../Version.cmake")
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.in.txt")

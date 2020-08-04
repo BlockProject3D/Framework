@@ -1,22 +1,17 @@
 include("${CMAKE_CURRENT_LIST_DIR}/Framework.cmake")
 
-function(bp_setup_program name)
+function(bp_setup_module name)
     set(props
-        API_MACRO
-        PACKAGE_NAME
-    )
+            API_MACRO
+            PACKAGE_NAME
+            )
     set(options
-        PACKAGE
-        GUI
-    )
+            PACKAGE
+            )
     set(multiValueArgs)
     cmake_parse_arguments(MODULE_INFO "${options}" "${props}" "${multiValueArgs}" ${ARGN})
 
-    if (MODULE_INFO_GUI)
-        add_executable(${name} WIN32 MACOSX_BUNDLE ${SOURCES} ${BP_GENERATED_SOURCE_FILES})
-    else (MODULE_INFO_GUI)
-        add_executable(${name} ${SOURCES} ${BP_ADDITIONAL_SOURCE_FILE})
-    endif (MODULE_INFO_GUI)
+    add_library(${name} SHARED ${SOURCES} ${BP_GENERATED_SOURCE_FILES})
 
     if (MODULE_INFO_API_MACRO)
         target_compile_definitions(${name} PRIVATE "${MODULE_INFO_API_MACRO}=${BP_SYMBOL_EXPORT_MACRO}")
@@ -33,7 +28,10 @@ function(bp_setup_program name)
     target_compile_options(${name} PRIVATE "$<$<C_COMPILER_ID:MSVC>:/utf-8>")
     target_compile_options(${name} PRIVATE "$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
-    bp_use_module(${name} "BPF")
+    if (NOT ${name} STREQUAL "BPF")
+        bp_use_module(${name} "BPF")
+    endif (NOT ${name} STREQUAL "BPF")
+
     bp_setup_target(${name} include ${SOURCES})
 
     if (MODULE_INFO_PACKAGE)
@@ -49,4 +47,4 @@ function(bp_setup_program name)
             __bp_package_module(${name} false ${MODULE_INFO_PACKAGE_NAME})
         endif (MODULE_INFO_API_MACRO)
     endif (MODULE_INFO_PACKAGE)
-endfunction(bp_setup_program)
+endfunction(bp_setup_module)
