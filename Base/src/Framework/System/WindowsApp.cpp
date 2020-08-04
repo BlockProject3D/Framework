@@ -175,7 +175,7 @@ void WindowsApp::CreateConsole(const fint rows, const fint columns)
     lStdHandle = GetStdHandle(STD_ERROR_HANDLE);
     hConHandle = _open_osfhandle((intptr_t)lStdHandle, _O_TEXT);
     fp = _fdopen(hConHandle, "w");
-    if (freopen_s(&fp, "CONERR$", "r", stderr) != 0)
+    if (freopen_s(&fp, "CONERR$", "w", stderr) != 0)
         throw OSException("Could not redirect console error output");
     std::ios::sync_with_stdio();
     _hasConsole = true;

@@ -87,7 +87,7 @@ fsize ConsoleWriter::Write(const void *buf, fsize bufsize)
     {
         DWORD out;
         if (!WriteFile(reinterpret_cast<HANDLE>(_handle), buf, (DWORD)bufsize, &out, nullptr))
-            throw IOException(String("Console write error: ") + OSPrivate::ObtainLastErrorString());
+            return (0);
         return ((fsize)out);
     }
     else
@@ -95,13 +95,13 @@ fsize ConsoleWriter::Write(const void *buf, fsize bufsize)
         DWORD out;
         if (!WriteConsoleW(reinterpret_cast<HANDLE>(_handle), reinterpret_cast<LPCVOID>(buf), (DWORD)(bufsize / 2),
                            &out, nullptr))
-            throw IOException(String("Console write error: ") + OSPrivate::ObtainLastErrorString());
+            return (0);
         return ((fsize)(out * 2));
     }
 #else
     int len = write(_handle, buf, bufsize);
     if (len < 0)
-        throw IOException(String("Console write error: ") + OSPrivate::ObtainLastErrorString());
+        return (0);
     return ((fsize)len);
 #endif
 }
