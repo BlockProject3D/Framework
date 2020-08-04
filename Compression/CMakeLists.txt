@@ -3,8 +3,14 @@ project(BPF.Compression)
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/../CMakes/Module.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/../Version.cmake")
+include(${CMAKE_CURRENT_SOURCE_DIR}/../CMakes/conan.cmake)
 
-include("${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.in.txt")
+conan_cmake_run(
+    REQUIRES zlib/1.2.11@conan/stable
+    OPTIONS zlib:shared=False
+    BASIC_SETUP CMAKE_TARGETS KEEP_RPATHS
+    BUILD missing
+)
 
 set(SOURCES
     include/Framework/Compression/ZInflater.hpp
