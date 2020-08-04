@@ -73,8 +73,7 @@ namespace bpf
              * On Linux it expects buf to contain UTF-8 bytes (last UTF-8 code can be cut)
              * @param buf buffer to write to console
              * @param bufsize the size in bytes of the buffer
-             * @throw IOException in case of system error
-             * @return number of bytes written
+             * @return number of bytes written, 0 if no bytes could be written
              */
             fsize Write(const void *buf, fsize bufsize) final;
 
