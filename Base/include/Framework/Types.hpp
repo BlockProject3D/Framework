@@ -29,11 +29,7 @@
 #pragma once
 
 #ifdef BP_COMPAT_2_X
-    #if defined(__GNUC__) || defined(__clang__)
-        #warning Use of compatibility layer for Framework 2.X; compatibility layer only lasts single versions
-    #else
-        #pragma message "Use of compatibility layer for Framework 2.X; compatibility layer only lasts single versions"
-    #endif
+    #pragma message("Use of compatibility layer for Framework 2.X; this layer will be removed in a later version")
 
     /**
      * Shortcut to C++ nullptr.
