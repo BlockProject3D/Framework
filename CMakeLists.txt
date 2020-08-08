@@ -9,6 +9,7 @@ set(BP_PACKAGE_NAME BPF)
 
 add_subdirectory("${CMAKE_SOURCE_DIR}/Base/")
 add_subdirectory("${CMAKE_SOURCE_DIR}/Compression/")
+add_subdirectory("${CMAKE_SOURCE_DIR}/Graphics/")
 add_subdirectory("${CMAKE_SOURCE_DIR}/Tests/")
 add_subdirectory("${CMAKE_SOURCE_DIR}/Tests.Console/")
 

@@ -1,6 +1,7 @@
 build
 BPF.cmake
 BPF.Compression.cmake
+BPF.Graphics.cmake
 build-linux
 .vscode
 cmake-build-debug
