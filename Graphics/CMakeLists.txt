@@ -5,8 +5,12 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/../CMakes/Module.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/../Version.cmake")
 
 set(SOURCES
+    include/Framework/Graphics/Image.hpp
+    include/Framework/Graphics/IImageLoader.hpp
     include/Framework/Graphics/PixelArray.hpp
+    include/Framework/Graphics/EPixelFormat.hpp
     include/Framework/Graphics/Graphics2D.hpp
+    src/Framework/Graphics/Image.cpp
     src/Framework/Graphics/Graphics2D.cpp
 )
 

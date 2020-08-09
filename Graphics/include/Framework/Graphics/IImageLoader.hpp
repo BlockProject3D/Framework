@@ -27,14 +27,19 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/Graphics/Image.hpp"
 
 namespace bpf
 {
     namespace graphics
     {
-        class PixelArray
+        class BPF_GRAPHICS_API IImageLoader
         {
-
+        public:
+            virtual ~IImageLoader() {}
+            virtual memory::UniquePtr<Image> CreateEmpty(fsize w, fsize h, EPixelFormat pformat) = 0;
+            virtual memory::UniquePtr<Image> Load(io::IInputStream &stream) = 0;
+            virtual memory::UniquePtr<Image> Load(const io::File &file) = 0;
         };
     }
 }

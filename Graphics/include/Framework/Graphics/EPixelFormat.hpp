@@ -32,9 +32,14 @@ namespace bpf
 {
     namespace graphics
     {
-        class PixelArray
+        enum class EPixelFormat
         {
-
+            RGB_U8,
+            RGBA_U8,
+            R_U8,
+            RGB_FLOAT,
+            RGBA_FLOAT,
+            R_FLOAT
         };
     }
 }
