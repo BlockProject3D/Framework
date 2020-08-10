@@ -11,6 +11,7 @@ set(SOURCES
     include/Framework/Graphics/EPixelFormat.hpp
     include/Framework/Graphics/Graphics2D.hpp
     src/Framework/Graphics/Image.cpp
+    src/Framework/Graphics/PixelArray.cpp
     src/Framework/Graphics/Graphics2D.cpp
 )
 

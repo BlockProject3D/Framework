@@ -66,8 +66,8 @@ namespace bpf
 
             plugin.Name = virtualName;
             plugin.Module = Module(moduleFile.PlatformPath());
-            auto sym = static_cast<ModuleLinkFunc<BaseClass>>(plugin.Module.LoadSymbol(moduleLnkSymbol));
-            auto sym1 = static_cast<ModuleDescribeFunc>(plugin.Module.LoadSymbol(moduleDescSymbol));
+            auto sym = reinterpret_cast<ModuleLinkFunc<BaseClass>>(plugin.Module.LoadSymbol(moduleLnkSymbol));
+            auto sym1 = reinterpret_cast<ModuleDescribeFunc>(plugin.Module.LoadSymbol(moduleDescSymbol));
             fint version = sym1();
             if (version > Platform::GetEnvInfo().VersionInt)
                 throw ModuleException("Plugin has been built against a newer version of the Framework");

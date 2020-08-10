@@ -39,7 +39,11 @@ namespace bpf
             R_U8,
             RGB_FLOAT,
             RGBA_FLOAT,
-            R_FLOAT
+            R_FLOAT,
+            BGR_U8,
+            BGRA_U8,
+            BGR_FLOAT,
+            BGRA_FLOAT
         };
     }
 }

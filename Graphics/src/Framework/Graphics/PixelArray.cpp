@@ -26,53 +26,53 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-#include "Framework/Graphics/EPixelFormat.hpp"
-#include "Framework/IO/ByteBuf.hpp"
-#include "Framework/Math/Color.hpp"
-#include "Framework/Types.hpp"
+#include "Framework/Graphics/PixelArray.hpp"
 
-namespace bpf
+using namespace bpf;
+using namespace bpf::io;
+using namespace bpf::graphics;
+using namespace bpf::math;
+
+PixelArray::PixelArray(const fsize w, const fsize h, const uint8 bpp, const EPixelFormat pformat)
+    : _buffer(w * h * (bpp / 8))
+    , _width(w)
+    , _height(h)
+    , _bspp(bpp / 8)
+    , _pixelFormat(pformat)
 {
-    namespace graphics
+}
+
+Color PixelArray::GetPixel(fsize x, fsize y)
+{
+    switch (_pixelFormat)
     {
-        class PixelArray
-        {
-        private:
-            io::ByteBuf _buffer;
-            const fsize _width;
-            const fsize _height;
-            const uint8 _bspp;
-            const EPixelFormat _pixelFormat;
-
-        public:
-            PixelArray(const fsize w, const fsize h, const uint8 bpp, const EPixelFormat pformat);
-
-            math::Color GetPixel(fsize x, fsize y);
-
-            void SetPixel(fsize x, fsize y, const math::Color &color);
-
-            PixelArray Convert(EPixelFormat target) const;
-
-            inline uint8 &operator()(fsize x, fsize y, uint8 c = 0)
-            {
-                return (_buffer[y * _width * _bspp + (x + c)]);
-            }
-
-            inline uint8 operator()(fsize x, fsize y, uint8 c = 0) const
-            {
-                return (_buffer[y * _width * _bspp + (x + c)]);
-            }
-
-            inline const uint8 *operator*() const
-            {
-                return (*_buffer);
-            }
-
-            inline uint8 *operator*()
-            {
-                return (*_buffer);
-            }
-        };
+    case EPixelFormat::RGB_U8:
+        return (Color(operator()(x, y, 0), operator()(x, y, 1), operator()(x, y, 2)));
+    case EPixelFormat::RGBA_U8:
+        return (Color(operator()(x, y, 0), operator()(x, y, 1), operator()(x, y, 2), operator()(x, y, 3)));
+    case EPixelFormat::R_U8:
+        return (Color(operator()(x, y, 0), operator()(x, y, 0), operator()(x, y, 0)));
+    case EPixelFormat::RGB_FLOAT:
+        break;
+    case EPixelFormat::RGBA_FLOAT:
+        break;
+    case EPixelFormat::R_FLOAT:
+        break;
+    case EPixelFormat::BGR_U8:
+        break;
+    case EPixelFormat::BGRA_U8:
+        break;
+    case EPixelFormat::BGR_FLOAT:
+        break;
+    case EPixelFormat::BGRA_FLOAT:
+        break;
     }
+}
+
+void PixelArray::SetPixel(fsize x, fsize y, const Color &color)
+{
+}
+
+PixelArray PixelArray::Convert(EPixelFormat target) const
+{
 }
