@@ -27,8 +27,8 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include "Framework/ClassCastException.hpp"
 #include "Framework/Memory/SharedPtr.hpp"
-#include "Framework/Memory/ClassCastException.hpp"
 #include "Framework/TypeInfo.hpp"
 
 namespace bpf

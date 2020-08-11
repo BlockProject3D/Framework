@@ -71,6 +71,7 @@ set(SOURCES
     src/Json/Json.cpp
     src/Json/JsonWriter.cpp
     src/Memory/ObjectConstructor.cpp
+    src/Memory/Casting.cpp
     src/BaseConvert.cpp
     src/Compression.cpp
     src/Tuple.cpp

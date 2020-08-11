@@ -27,7 +27,8 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Memory/ClassCastException.hpp"
+#include "Framework/Cast.hpp"
+#include "Framework/ClassCastException.hpp"
 #include "Framework/Memory/Object.hpp"
 #include "Framework/Memory/RawMemberFunction.hpp"
 
@@ -215,7 +216,7 @@ namespace bpf
              */
             template <typename R, typename U, typename... Args>
             inline typename std::enable_if<std::is_class<U>::value && std::is_same<T, U>::value,
-                RawMemberFunction<U, R, R (U::*)(Args...) const>>::type
+                                           RawMemberFunction<U, R, R (U::*)(Args...) const>>::type
             operator->*(R (U::*fn)(Args...) const) const
             {
                 return (RawMemberFunction<U, R, R (U::*)(Args...) const>(RawPtr, fn));
@@ -305,4 +306,16 @@ namespace bpf
             friend class ObjectPtr;
         };
     }
+
+    template <typename Target, typename Source>
+    class CastOperator<Target, memory::ObjectPtr<Source>>
+    {
+    public:
+        using Return = memory::SharedPtr<Target>;
+
+        inline static Return Cast(const memory::ObjectPtr<Source> &source)
+        {
+            return (source.template Cast<Target>());
+        }
+    };
 }

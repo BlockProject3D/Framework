@@ -36,7 +36,9 @@ TEST(Dynamic, Basic_1)
 
     EXPECT_EQ(dyn, nullptr);
     dyn = -42;
-    EXPECT_EQ((int)dyn, -42);
+    EXPECT_EQ(bpf::Cast<int>(dyn), -42);
+    const auto &v = dyn;
+    EXPECT_EQ(bpf::Cast<int>(v), -42);
 }
 
 TEST(Dynamic, Basic_2)

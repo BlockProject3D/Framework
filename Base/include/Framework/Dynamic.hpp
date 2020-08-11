@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Memory/ClassCastException.hpp"
+#include "ClassCastException.hpp"
 #include "Framework/Memory/MemUtils.hpp"
 #include "Framework/TypeInfo.hpp"
 #include <utility>
@@ -259,7 +259,7 @@ namespace bpf
          * @return immutable reference to T
          */
         template <typename T>
-        explicit inline operator const T &() const
+        explicit inline operator T() const
         {
             if (_storage == nullptr)
                 throw memory::ClassCastException("Cannot cast null object");

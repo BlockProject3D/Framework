@@ -28,6 +28,7 @@
 
 #pragma once
 #include "Framework/Types.hpp"
+#include "Framework/Cast.hpp"
 
 #if defined(__GNUC__) || defined(__clang__)
     /**

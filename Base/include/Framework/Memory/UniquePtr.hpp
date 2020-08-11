@@ -27,7 +27,8 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Memory/ClassCastException.hpp"
+#include "Framework/Cast.hpp"
+#include "Framework/ClassCastException.hpp"
 #include "Framework/Memory/MemUtils.hpp"
 #include "Framework/Memory/RawMemberFunction.hpp"
 #include "Framework/TypeInfo.hpp"
@@ -228,6 +229,18 @@ namespace bpf
             friend class UniquePtr;
         };
     }
-}
+
+    template <typename Target, typename Source>
+    class CastOperator<Target, memory::UniquePtr<Source>>
+    {
+    public:
+        using Return = memory::UniquePtr<Target>;
+
+        inline static Return Cast(memory::UniquePtr<Source> &source)
+        {
+            return (source.template Cast<Target>());
+        }
+    };
+};
 
 #include "Framework/Memory/UniquePtr.impl.hpp"

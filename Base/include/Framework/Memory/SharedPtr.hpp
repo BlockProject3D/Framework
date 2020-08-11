@@ -27,10 +27,11 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Framework/Memory/ClassCastException.hpp"
+#include "Framework/ClassCastException.hpp"
 #include "Framework/Memory/MemUtils.hpp"
 #include "Framework/Memory/RawMemberFunction.hpp"
 #include "Framework/TypeInfo.hpp"
+#include "Framework/Cast.hpp"
 
 namespace bpf
 {
@@ -267,6 +268,18 @@ namespace bpf
             friend class SharedPtr;
         };
     }
+
+    template <typename Target, typename Source>
+    class CastOperator<Target, memory::SharedPtr<Source>>
+    {
+    public:
+        using Return = memory::SharedPtr<Target>;
+
+        inline static Return Cast(const memory::SharedPtr<Source> &source)
+        {
+            return (source.template Cast<Target>());
+        }
+    };
 }
 
 #include "Framework/Memory/SharedPtr.impl.hpp"
