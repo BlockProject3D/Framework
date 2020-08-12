@@ -62,12 +62,24 @@ TEST(UniquePtr, Cast)
     EXPECT_EQ(ptr1->Val, 42);
 }
 
-TEST(SharedPtr, Cast)
+TEST(SharedPtr, Cast_1)
 {
     bpf::memory::SharedPtr<Parent> ptr = bpf::memory::MakeShared<MyClass1>(42);
     auto p = dynamic_cast<MyClass1 *>(ptr.Raw());
     EXPECT_EQ(p->Val, 42);
     auto ptr1 = bpf::Cast<MyClass1>(ptr);
+    EXPECT_NE(ptr, nullptr);
+    EXPECT_NE(ptr1, nullptr);
+    EXPECT_EQ(ptr1->Val, 42);
+}
+
+TEST(SharedPtr, Cast_2)
+{
+    bpf::memory::SharedPtr<Parent> ptr = bpf::memory::MakeShared<MyClass1>(42);
+    auto p = dynamic_cast<MyClass1 *>(ptr.Raw());
+    EXPECT_EQ(p->Val, 42);
+    const auto &pp = ptr;
+    auto ptr1 = bpf::Cast<MyClass1>(pp);
     EXPECT_NE(ptr, nullptr);
     EXPECT_NE(ptr1, nullptr);
     EXPECT_EQ(ptr1->Val, 42);

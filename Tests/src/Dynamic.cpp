@@ -112,10 +112,31 @@ TEST(Dynamic, Move_2)
     EXPECT_EQ(copy1, nullptr); //NOLINT
 }
 
-TEST(Dynamic, ComplexType)
+TEST(Dynamic, ComplexType_1)
 {
     bpf::Dynamic dyn = bpf::String("My String");
     auto str = (bpf::String)dyn;
+
+    EXPECT_STREQ(*str, "My String");
+    dyn = nullptr;
+    EXPECT_EQ(dyn, nullptr);
+}
+
+TEST(Dynamic, ComplexType_2)
+{
+    bpf::Dynamic dyn = bpf::String("My String");
+    auto str = bpf::Cast<bpf::String>(dyn);
+
+    EXPECT_STREQ(*str, "My String");
+    dyn = nullptr;
+    EXPECT_EQ(dyn, nullptr);
+}
+
+TEST(Dynamic, ComplexType_3)
+{
+    bpf::Dynamic dyn = bpf::String("My String");
+    const auto &d = dyn;
+    auto str = bpf::Cast<bpf::String>(d);
 
     EXPECT_STREQ(*str, "My String");
     dyn = nullptr;

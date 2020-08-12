@@ -34,18 +34,23 @@ namespace bpf
     template <typename Target, typename Source>
     class CastOperator
     {
-    /*public:
-        using Return = Target;
-        static Return Cast(Source source);*/
+    public:
+        constexpr static bool ShouldUse = false;
     };
 
-    template <typename Target, typename Source, typename = typename std::enable_if<std::is_constructible<Source, Target>::value>::type>
+    template <typename Target, typename Source,
+              typename =
+                  typename std::enable_if<!std::is_pointer<Source>::value && !CastOperator<Target, Source>::ShouldUse &&
+                                          std::is_constructible<Source, Target>::value>::type>
     inline Target Cast(Source &&source)
     {
         return (static_cast<Target>(source));
     }
 
-    template <typename Target, typename Source, typename = typename std::enable_if<std::is_constructible<Source, Target>::value>::type>
+    template <typename Target, typename Source,
+              typename =
+                  typename std::enable_if<!std::is_pointer<Source>::value && !CastOperator<Target, Source>::ShouldUse &&
+                                          std::is_constructible<Source, Target>::value>::type>
     inline Target Cast(const Source &source)
     {
         return (static_cast<Target>(source));
@@ -58,7 +63,7 @@ namespace bpf
     }
 
     template <typename Target, typename Source>
-    inline typename CastOperator<Target, Source>::Return Cast(const Source &source)
+    inline typename CastOperator<Target, Source>::CReturn Cast(const Source &source)
     {
         return (CastOperator<Target, Source>::Cast(source));
     }

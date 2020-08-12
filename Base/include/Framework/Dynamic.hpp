@@ -27,7 +27,8 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "ClassCastException.hpp"
+#include "Framework/Cast.hpp"
+#include "Framework/ClassCastException.hpp"
 #include "Framework/Memory/MemUtils.hpp"
 #include "Framework/TypeInfo.hpp"
 #include <utility>
@@ -259,7 +260,7 @@ namespace bpf
          * @return immutable reference to T
          */
         template <typename T>
-        explicit inline operator T() const
+        explicit inline operator const T &() const
         {
             if (_storage == nullptr)
                 throw memory::ClassCastException("Cannot cast null object");
@@ -267,6 +268,26 @@ namespace bpf
                 throw memory::ClassCastException(String("Cannot cast from ") + _storage->GetTypeName() + " to " +
                                                  TypeName<T>());
             return (*reinterpret_cast<T *>(_storage->DataPtr));
+        }
+    };
+
+    template <typename Target>
+    class CastOperator<Target, Dynamic>
+    {
+    public:
+        constexpr static bool ShouldUse = true;
+
+        using CReturn = const Target &;
+        using Return = Target &;
+
+        inline static CReturn Cast(const Dynamic &source)
+        {
+            return (static_cast<CReturn>(source));
+        }
+
+        inline static Return Cast(Dynamic &source)
+        {
+            return (static_cast<Return>(source));
         }
     };
 }
