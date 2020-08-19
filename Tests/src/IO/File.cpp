@@ -196,6 +196,28 @@ TEST(File, List_Test4)
     EXPECT_GT(fls.Size(), static_cast<bpf::uint32>(0));
 }
 
+TEST(File, List_Test5)
+{
+    bpf::io::File f(".");
+    bpf::collection::List<bpf::io::File> fls = f.ListFiles();
+
+    EXPECT_GT(fls.Size(), static_cast<bpf::uint32>(0));
+    EXPECT_EQ(fls.FindByValue(bpf::io::File("./.")), fls.end());
+    EXPECT_EQ(fls.FindByValue(bpf::io::File("../..")), fls.end());
+    EXPECT_EQ(fls.FindByValue(bpf::io::File(".")), fls.end());
+    EXPECT_EQ(fls.FindByValue(bpf::io::File("..")), fls.end());
+}
+
+TEST(File, Compare)
+{
+    bpf::io::File f(".");
+    bpf::io::File f1(".");
+    bpf::io::File f2("..");
+
+    EXPECT_EQ(f, f1);
+    EXPECT_NE(f, f2);
+}
+
 static void SetupTestFile(bpf::io::File &f)
 {
     bpf::io::FileStream stream(f, bpf::io::FILE_MODE_WRITE | bpf::io::FILE_MODE_TRUNCATE);
