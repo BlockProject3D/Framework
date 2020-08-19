@@ -194,7 +194,7 @@ TEST(String, OperatorEquall)
     EXPECT_TRUE(!(s != s1));
 }
 
-TEST(String, OperatorGreaterLess)
+TEST(String, OperatorGreaterLess_1)
 {
     bpf::String s("init");
     s += ' ';
@@ -214,6 +214,15 @@ TEST(String, OperatorGreaterLess)
     bpf::String test1 = "Test1";
     EXPECT_GT(test1, test);
     EXPECT_LT(test, test1);
+}
+
+TEST(String, OperatorGreaterLess_2)
+{
+    auto a = bpf::String("");
+    auto b = bpf::String("some very long string");
+
+    EXPECT_LT(a, b);
+    EXPECT_GT(b, a);
 }
 
 TEST(String, Replace_1)
@@ -534,7 +543,7 @@ TEST(String, EndsWithUTF8)
     EXPECT_TRUE(s.EndsWith(""));
 }
 
-TEST(String, ContainsString)
+TEST(String, ContainsString_1)
 {
     bpf::String s = "this is a test";
     EXPECT_TRUE(s.Contains(" is a "));
@@ -543,13 +552,28 @@ TEST(String, ContainsString)
     EXPECT_TRUE(!s.Contains("go"));
 }
 
-TEST(String, ContainsChar)
+TEST(String, ContainsChar_1)
 {
     bpf::String s = "this is a test";
     EXPECT_TRUE(s.Contains('i'));
     EXPECT_TRUE(s.Contains('t'));
     EXPECT_TRUE(s.Contains('a'));
     EXPECT_TRUE(!s.Contains('g'));
+}
+
+TEST(String, ContainsString_2)
+{
+    bpf::String a = "";
+    bpf::String b = "Some very long string";
+
+    EXPECT_FALSE(b.ToLower().Contains(a.ToLower()));
+}
+
+TEST(String, ContainsChar_2)
+{
+    bpf::String b = "Some very long string";
+
+    EXPECT_TRUE(b.ToLower().Contains(' '));
 }
 
 TEST(String, Sub)
