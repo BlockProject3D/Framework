@@ -117,7 +117,7 @@ namespace bpf
              * @throw IOException in case of system error
              * @return the output list of files (including directories/folders)
              */
-            collection::List<File> ListFiles();
+            collection::List<File> ListFiles() const;
 
             /**
              * Creates the directory/folder
@@ -208,6 +208,26 @@ namespace bpf
             inline const String &Extension() const
             {
                 return (FileExt);
+            }
+
+            /**
+             * Compare File
+             * @param other operand
+             * @return true if this equals other, false otherwise
+             */
+            inline bool operator==(const File &other) const
+            {
+                return (PlatformPath() == other.PlatformPath());
+            }
+
+            /**
+             * Compare File
+             * @param other operand
+             * @return true if this does not equal other, false otherwise
+             */
+            inline bool operator!=(const File &other) const
+            {
+                return (PlatformPath() != other.PlatformPath());
             }
         };
     }

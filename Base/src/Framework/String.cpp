@@ -573,6 +573,8 @@ static bool my_strstr(char *pathern, char *str)
 
 bool String::Contains(const String &other) const
 {
+    if (other.Data == nullptr)
+        return (false);
     for (fsize i = 0; i < StrLen; i++)
     {
         if (Data[i] == other.Data[0] && my_strstr(other.Data, Data + i))

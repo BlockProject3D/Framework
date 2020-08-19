@@ -176,7 +176,7 @@ bool File::MoveTo(const File &dst)
 {
 #ifdef WINDOWS
     BOOL val = MoveFileW(reinterpret_cast<LPCWSTR>(*FullPath.ToUTF16()), reinterpret_cast<LPCWSTR>(*dst.FullPath.ToUTF16()));
-    return (val == TRUE ? true : false);
+    return (val == TRUE);
 #else
     int val = rename(*FullPath, *dst.FullPath);
     return (val == 0);
@@ -292,7 +292,7 @@ bool File::Delete()
 #endif
 }
 
-List<File> File::ListFiles()
+List<File> File::ListFiles() const
 {
     List<File> flns;
 
@@ -304,9 +304,15 @@ List<File> File::ListFiles()
     HANDLE hdl = FindFirstFileW(reinterpret_cast<LPCWSTR>(*dir.FullPath.ToUTF16()), &data);
     if (hdl != INVALID_HANDLE_VALUE)
     {
-        flns.Add(File(FullPath + "/" + String::FromUTF16(reinterpret_cast<const fchar16 *>(data.cFileName))));
+        auto name = String::FromUTF16(reinterpret_cast<const fchar16 *>(data.cFileName));
+        if (name != '.' && name != "..")
+            flns.Add(File(FullPath + '/' + name));
         while (FindNextFileW(hdl, &data))
-            flns.Add(File(FullPath + "/" + String::FromUTF16(reinterpret_cast<const fchar16 *>(data.cFileName))));
+        {
+            auto sfk = String::FromUTF16(reinterpret_cast<const fchar16 *>(data.cFileName));
+            if (sfk != '.' && sfk != "..")
+                flns.Add(File(FullPath + '/' + sfk));
+        }
         FindClose(hdl);
     }
 #else
@@ -316,7 +322,11 @@ List<File> File::ListFiles()
     {
         struct dirent *dir;
         while ((dir = readdir(d)) != nullptr)
-            flns.Add(File(FullPath + "/" + String(dir->d_name)));
+        {
+            auto name = String(dir->d_name);
+            if (name != '.' && name != "..")
+                flns.Add(File(FullPath + '/' + name));
+        }
     }
     closedir(d);
 #endif
