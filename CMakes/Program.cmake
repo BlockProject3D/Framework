@@ -15,7 +15,7 @@ function(bp_setup_program name)
     if (MODULE_INFO_GUI)
         add_executable(${name} WIN32 MACOSX_BUNDLE ${SOURCES} ${BP_GENERATED_SOURCE_FILES})
     else (MODULE_INFO_GUI)
-        add_executable(${name} ${SOURCES} ${BP_ADDITIONAL_SOURCE_FILE})
+        add_executable(${name} ${SOURCES} ${BP_GENERATED_SOURCE_FILES})
     endif (MODULE_INFO_GUI)
 
     if (MODULE_INFO_API_MACRO)
