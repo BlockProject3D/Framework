@@ -33,6 +33,7 @@ class MyClass
 {
 public:
     int Val;
+    const char *MyName;
 
     explicit MyClass(int a)
         : Val(a)
@@ -42,10 +43,13 @@ public:
     MyClass()
         : Val(0)
     {
+        MyName = bpf::TypeName<MyClass>();
     }
 
     BP_USE_CONSTRUCTOR(MyClass, MyClass);
 };
+
+BP_DEFINE_TYPENAME(MyClass)
 
 BP_MAP_CONSTRUCTOR(MyClass, MyClass, int)
 BP_MAP_CONSTRUCTOR(MyClass, MyClass)
@@ -54,6 +58,9 @@ TEST(ObjectConstructor, Basic)
 {
     EXPECT_NE(MyClass::GetConstructor(), nullptr);
     EXPECT_NE(MyClass::GetConstructor<int>(), nullptr);
+    MyClass cl;
+    EXPECT_STREQ(bpf::TypeName<MyClass>(), "MyClass");
+    EXPECT_STREQ(cl.MyName, "MyClass");
 }
 
 TEST(ObjectConstructor, Instantiate_1)

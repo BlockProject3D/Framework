@@ -32,6 +32,15 @@
 
 namespace bpf
 {
+    namespace _bp_internal_typename
+    {
+        template <typename T>
+        struct TypeName
+        {
+            static constexpr const char *Name = "Unknown";
+        };
+    }
+
     /**
      * Returns the cross-platform type name of a given type.
      * Defaults to implementation defined typeid
@@ -41,7 +50,7 @@ namespace bpf
     template <typename T>
     inline const char *TypeName() noexcept
     {
-        return (typeid(T).name());
+        return (_bp_internal_typename::TypeName<T>::Name);
     }
 
     /**
@@ -63,13 +72,24 @@ namespace bpf
 #define BP_DEFINE_TYPENAME(T)                                                                                          \
     namespace bpf                                                                                                      \
     {                                                                                                                  \
-        template <>                                                                                                    \
-        inline const char *TypeName<T>() noexcept                                                                      \
-        {                                                                                                              \
-            return (#T);                                                                                               \
-        }                                                                                                              \
+        namespace _bp_internal_typename                                                                                \
+        {                                                                                                                      \
+            template <>                                                                                                \
+            struct TypeName<T>                                                                                         \
+            {                                                                                                          \
+                static constexpr const char *Name = #T;\
+            }; \
+        }                                               \
     }
 
-BP_DEFINE_TYPENAME(int)
 BP_DEFINE_TYPENAME(float)
 BP_DEFINE_TYPENAME(double)
+BP_DEFINE_TYPENAME(bool)
+BP_DEFINE_TYPENAME(bpf::int32)
+BP_DEFINE_TYPENAME(bpf::uint32)
+BP_DEFINE_TYPENAME(bpf::int64)
+BP_DEFINE_TYPENAME(bpf::uint64)
+BP_DEFINE_TYPENAME(bpf::int16)
+BP_DEFINE_TYPENAME(bpf::uint16)
+BP_DEFINE_TYPENAME(bpf::int8)
+BP_DEFINE_TYPENAME(bpf::uint8)
