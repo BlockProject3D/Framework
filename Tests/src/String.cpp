@@ -73,7 +73,7 @@ TEST(String, From_TypeName)
     bpf::String s = bpf::TypeName<int>();
     s += bpf::TypeName<float>();
     s += bpf::TypeName<double>();
-    EXPECT_STREQ(*s, "intfloatdouble");
+    EXPECT_STREQ(*s, "bpf::int32floatdouble");
 }
 
 TEST(String, UTF8)

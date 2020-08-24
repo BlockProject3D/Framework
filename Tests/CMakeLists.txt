@@ -84,6 +84,7 @@ set(SOURCES
     src/Event.cpp
     src/main.cpp
     src/LowLevelMain.cpp
+    src/TypeInfo.cpp
 )
 
 bp_setup_program(${PROJECT_NAME})
