@@ -27,8 +27,8 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include <typeinfo>
 #include "Framework/Types.hpp"
+#include <typeinfo>
 
 namespace bpf
 {
@@ -73,13 +73,13 @@ namespace bpf
     namespace bpf                                                                                                      \
     {                                                                                                                  \
         namespace _bp_internal_typename                                                                                \
-        {                                                                                                                      \
+        {                                                                                                              \
             template <>                                                                                                \
             struct TypeName<T>                                                                                         \
             {                                                                                                          \
-                static constexpr const char *Name = #T;\
-            }; \
-        }                                               \
+                static constexpr const char *Name = #T;                                                                \
+            };                                                                                                         \
+        }                                                                                                              \
     }
 
 BP_DEFINE_TYPENAME(float)
