@@ -225,7 +225,7 @@ bool File::Hide(const bool flag)
         UserPath = f.Path();
         FileExt = f.Extension();
     }
-    else if (IsHidden())
+    else if (!flag && IsHidden())
     {
         File f = File(GetParent().Path() + "/" + Name().Sub(1));
         if (rename(*FullPath, *f.Path()) != 0)
