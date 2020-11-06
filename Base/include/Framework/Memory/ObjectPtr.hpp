@@ -311,9 +311,7 @@ namespace bpf
     class CastOperator<Target, memory::ObjectPtr<Source>>
     {
     public:
-        constexpr static bool ShouldUse = true;
-
-        using Return = memory::SharedPtr<Target>;
+        using Return = memory::ObjectPtr<Target>;
         using CReturn = Return;
 
         inline static CReturn Cast(const memory::ObjectPtr<Source> &source)

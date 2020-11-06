@@ -273,8 +273,6 @@ namespace bpf
     class CastOperator<Target, memory::SharedPtr<Source>>
     {
     public:
-        constexpr static bool ShouldUse = true;
-
         using Return = memory::SharedPtr<Target>;
         using CReturn = Return;
 

@@ -27,9 +27,11 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <Framework/Memory/Utility.hpp>
+#include <Framework/Memory/Object.hpp>
+#include <Framework/Memory/ObjectPtr.hpp>
 #include <gtest/gtest.h>
 
-class Parent
+class Parent : public bpf::memory::Object
 {
 public:
     virtual ~Parent() {}
@@ -87,4 +89,18 @@ TEST(SharedPtr, Cast_2)
 
 TEST(ObjectPtr, Cast)
 {
+    bpf::memory::UniquePtr<Parent> ptr = bpf::memory::MakeUnique<MyClass1>(42);
+    auto p = bpf::memory::ObjectPtr<Parent>(ptr.Raw());
+    EXPECT_NE(ptr, nullptr);
+    EXPECT_NE(p, nullptr);
+    bpf::memory::ObjectPtr<MyClass1> p1 = bpf::Cast<MyClass1>(p);
+    EXPECT_NE(p1, nullptr);
+    EXPECT_EQ(p1->Val, 42);
+}
+
+TEST(CustomCast, Builtins_1)
+{
+    float f = 123.123f;
+    EXPECT_EQ(static_cast<bpf::uint32>(f), 123);
+    EXPECT_EQ(bpf::Cast<bpf::uint32>(f), 123);
 }

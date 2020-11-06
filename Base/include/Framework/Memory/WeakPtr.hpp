@@ -84,30 +84,6 @@ namespace bpf
              */
             SharedPtr<T> Lock() noexcept;
 
-            /**
-             * Quick casting function
-             * @tparam T1 the type to cast to
-             * @throw ClassCastException in debug only if the class cannot be casted
-             * @return new casted WeakPtr
-             */
-            template <typename T1>
-            inline WeakPtr<T1> Cast() const
-            {
-#ifdef BUILD_DEBUG
-                if (RawPtr == nullptr)
-                    return (nullptr);
-                else
-                {
-                    auto ptr = dynamic_cast<T1 *>(RawPtr);
-                    if (ptr == nullptr)
-                        throw ClassCastException(String("Cannot cast from ") + TypeName<T>() + " to " + TypeName<T1>());
-                    return (WeakPtr<T1>(Count, ptr, WCount));
-                }
-#else
-                return (WeakPtr<T1>(Count, static_cast<T1 *>(RawPtr), WCount));
-#endif
-            }
-
             template <typename T1>
             friend class WeakPtr;
         };

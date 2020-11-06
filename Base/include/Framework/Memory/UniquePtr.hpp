@@ -234,8 +234,6 @@ namespace bpf
     class CastOperator<Target, memory::UniquePtr<Source>>
     {
     public:
-        constexpr static bool ShouldUse = true;
-
         using Return = memory::UniquePtr<Target>;
 
         inline static Return Cast(memory::UniquePtr<Source> &source)
@@ -243,6 +241,6 @@ namespace bpf
             return (source.template Cast<Target>());
         }
     };
-};
+}
 
 #include "Framework/Memory/UniquePtr.impl.hpp"

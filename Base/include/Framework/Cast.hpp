@@ -27,21 +27,78 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include <Framework/Types.hpp>
 #include <type_traits>
 
 namespace bpf
 {
+    namespace _bpf_internal_cast
+    {
+        template <typename T>
+        class HasReturn
+        {
+            struct Fallback
+            {
+                int Return;
+            };
+            struct Derived : T, Fallback
+            {
+            };
+
+            template<typename U, U>
+            struct Check;
+
+            typedef uint8 OneByte;
+            typedef uint16 TwoBytes;
+
+            template<typename U>
+            static OneByte Func(Check<int Fallback::*, &U::Return> *);
+
+            template<typename U>
+            static TwoBytes Func(...);
+
+        public:
+            static constexpr bool Value = sizeof(Func<Derived>(0)) == 2;
+        };
+
+        template <typename T>
+        class HasCReturn
+        {
+            struct Fallback
+            {
+                int CReturn;
+            };
+            struct Derived : T, Fallback
+            {
+            };
+
+            template<typename U, U>
+            struct Check;
+
+            typedef uint8 OneByte;
+            typedef uint16 TwoBytes;
+
+            template<typename U>
+            static OneByte Func(Check<int Fallback::*, &U::CReturn> *);
+
+            template<typename U>
+            static TwoBytes Func(...);
+
+        public:
+            static constexpr bool Value = sizeof(Func<Derived>(0)) == 2;
+        };
+    }
+
     template <typename Target, typename Source>
     class CastOperator
     {
-    public:
-        constexpr static bool ShouldUse = false;
     };
 
     template <typename Target, typename Source,
               typename =
-                  typename std::enable_if<!std::is_pointer<Source>::value && !CastOperator<Target, Source>::ShouldUse &&
-                                          std::is_constructible<Source, Target>::value>::type>
+                  typename std::enable_if<!std::is_pointer<Source>::value
+                                          && !_bpf_internal_cast::HasReturn<CastOperator<Target, Source>>::Value
+                                          && std::is_constructible<Source, Target>::value>::type>
     inline Target Cast(Source &&source)
     {
         return (static_cast<Target>(source));
@@ -49,8 +106,9 @@ namespace bpf
 
     template <typename Target, typename Source,
               typename =
-                  typename std::enable_if<!std::is_pointer<Source>::value && !CastOperator<Target, Source>::ShouldUse &&
-                                          std::is_constructible<Source, Target>::value>::type>
+                  typename std::enable_if<!std::is_pointer<Source>::value
+                                          && !_bpf_internal_cast::HasCReturn<CastOperator<Target, Source>>::Value
+                                          && std::is_constructible<Source, Target>::value>::type>
     inline Target Cast(const Source &source)
     {
         return (static_cast<Target>(source));

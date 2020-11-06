@@ -275,8 +275,6 @@ namespace bpf
     class CastOperator<Target, Dynamic>
     {
     public:
-        constexpr static bool ShouldUse = true;
-
         using CReturn = const Target &;
         using Return = Target &;
 
