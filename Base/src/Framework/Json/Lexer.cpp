@@ -30,6 +30,7 @@
 #include "Framework/Json/Lexer.hpp"
 #include "Framework/Json/JsonParseException.hpp"
 #include "Framework/Scalar.hpp"
+#include "Framework/BaseConvert.hpp"
 
 using namespace bpf::collection;
 using namespace bpf::json;
@@ -77,9 +78,12 @@ fchar Lexer::ProcessUnicode(const String &str, fisize &pos)
     {
         if (str[i] >= 48 && str[i] <= 57)
             nbr += str[i];
+        else
+            break;
     }
-    pos = i;
-    return (UInt::Parse(nbr));
+    pos = i - 1;
+    auto base = BaseConvert<uint32>("0123456789ABCDEF");
+    return (base.FromString(nbr.ToUpper()));
 }
 
 fchar Lexer::ProcessStandard(const String &str, fisize &pos)

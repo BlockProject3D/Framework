@@ -475,6 +475,17 @@ TEST(Json, LexerParser_MultiLoadString)
     EXPECT_EQ(testObject["testStr"], "this is the end");
 }
 
+TEST(Json, LexerParser_Unicode)
+{
+    bpf::json::Lexer lexer(true);
+
+    lexer.LoadString(R"({"code":"400:BadRequest","message":"Invalid property \u0027Password\u0027: The Password field is required.","route":"/auth/login"})");
+    J::Object obj = bpf::json::Parser(std::move(lexer)).Parse();
+    EXPECT_EQ(obj["code"], "400:BadRequest");
+    EXPECT_EQ(obj["message"], "Invalid property 'Password': The Password field is required.");
+    EXPECT_EQ(obj["route"], "/auth/login");
+}
+
 TEST(Json, LexerParser_IgnoreNulls)
 {
     bpf::json::Lexer lexer(false, true);
