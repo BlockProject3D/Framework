@@ -76,7 +76,7 @@ fchar Lexer::ProcessUnicode(const String &str, fisize &pos)
 
     for (; i != str.Len(); ++i)
     {
-        if (str[i] >= 48 && str[i] <= 57)
+        if ((str[i] >= 48 && str[i] <= 57) || (str[i] >= 'A' && str[i] <= 'F') || (str[i] >= 'a' && str[i] <= 'f'))
             nbr += str[i];
         else
             break;

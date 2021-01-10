@@ -381,7 +381,7 @@ TEST(Json, LexerParser)
         "   \"Array\": [ true, false, null, 0.1, 1, 42, 42.42e2, 42.42e-2 ],"
         "   \"StrArray\": [\"test\",\"test1\",\"test2\"],"
         "   \"AdvTestStr\": \"String with special \b\t characters\b\t.\","
-        "   \"Unicode\": \"\\u233\","
+        "   \"Unicode\": \"\\u00E9\","
         "   \"Special\": \"\\t\\b\","
         "   \"MyString\": \"This is a true test of false and null containing 0.1 42.42 numbers and even \\\"strings\\\"\""
         "}";
